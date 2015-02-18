@@ -210,7 +210,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 			os.remove(dll_name)
 			
 		except:
-			constant.file_logger.info('Browser history failed to load, only few url will be tried')
+			print_debug('ERROR', 'Browser history failed to load, only few url will be tried')
 			pass
 		
 		urls.append('https://www.facebook.com/')
@@ -261,7 +261,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 		# define the length of the tab
 		if len(secret) % 2 == 0:
 			length = len(secret)
-		else: 
+		else:
 			length = len(secret)-1
 
 		values = {}
@@ -314,7 +314,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 			failed = True
 		
 		nb_site = 0
-		nb_pass_found = 0 
+		nb_pass_found = 0
 		if failed == False:
 			num = win32api.RegQueryInfoKey(hkey)[1]
 			for x in range(0, num):
