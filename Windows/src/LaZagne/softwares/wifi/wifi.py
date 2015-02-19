@@ -44,16 +44,16 @@ class Wifi():
 									values['Authentication'] = elem.text
 									
 								if elem.tag.endswith('protected'):
-									values['protected'] = elem.text
+									values['Protected'] = elem.text
 								
 								if elem.tag.endswith('keyMaterial'):
 									key = elem.text
 									try:
 										binary_string = binascii.unhexlify(key)
 										password = win32crypt.CryptUnprotectData(binary_string, None, None, None, 0)[1]
+										values['Password'] = password
 									except:
-										password = '[!] Try with System privileges'
-									values['password'] = elem.text
+										values['INFO'] = '[!] Password not found. Try with System privileges'
 							
 							# store credentials
 							if len(values) != 0:
