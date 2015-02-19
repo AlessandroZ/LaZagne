@@ -48,42 +48,49 @@ class Dbvisualizer():
 			tree = ET.ElementTree(file=xml_file)
 		
 		pwdFound = []
-		for elem in tree.iter('Databases'):
+		for e in tree.findall('Databases/Database'):
 			values = {}
-			passwordFound = False
-
-			for e in elem.iter():
-				if 'Alias' == e.tag:
-					values['Connection Name'] = str(e.text)
-
-				if 'Userid' == e.tag:
-					values['Userid'] = str(e.text)
-
-				if 'Password' == e.tag:
-					ciphered_password = e.text
-					try:
-						password = self.decrypt(salt, ciphered_password, passphrase)
-						values['Password'] = password
-						passwordFound = True
-					except:
-						pass
-
-				if 'UrlVariables' == e.tag:
-					for el in e.getchildren():
-						values['Driver'] = str(el.text).strip()
-
-						for ele in el.getchildren():
-							if 'Server' == ele.attrib['UrlVariableName']:
-								values['Server'] = str(ele.text)
-
-							if 'Port' == ele.attrib['UrlVariableName']:
-								values['Port'] = str(ele.text)
-
-							if 'SID' == ele.attrib['UrlVariableName']:
-								values['SID'] = str(ele.text)
-
-					if passwordFound:
-						pwdFound.append(values)
+			try:
+				values['Connection Name'] = e.find('Alias').text
+			except:
+				pass
+			
+			try:
+				values['Userid'] = e.find('Userid').text
+			except:
+				pass
+			
+			try:
+				ciphered_password = e.find('Password').text
+				try:
+					password = self.decrypt(salt, ciphered_password, passphrase)
+					values['Password'] = password
+					passwordFound = True
+				except:
+					pass
+			except:
+				pass
+			
+			try:
+				values['Driver'] = e.find('UrlVariables//Driver').text.strip()
+			except:
+				pass
+			
+			try:
+				elem = e.find('UrlVariables')
+				for ee in elem.getchildren():
+					for ele in ee.getchildren():
+						if 'Server' == ele.attrib['UrlVariableName']:
+							values['Server'] = str(ele.text)
+						if 'Port' == ele.attrib['UrlVariableName']:
+							values['Port'] = str(ele.text)
+						if 'SID' == ele.attrib['UrlVariableName']:
+							values['SID'] = str(ele.text)
+			except:
+				pass
+			
+			if len(values) > 0:
+				pwdFound.append(values)
 		
 		# print the results
 		print_output("DbVisualizer", pwdFound)
