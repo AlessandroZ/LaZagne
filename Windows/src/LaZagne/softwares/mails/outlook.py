@@ -39,8 +39,8 @@ class Outlook():
 							if len(values) != 0:
 								pwdFound.append(values)
 			
-			# print the results
-			print_output("Outlook", pwdFound)
+		# print the results
+		print_output("Outlook", pwdFound)
 		
 
 	def retrieve_info(self, hkey, name_key):
