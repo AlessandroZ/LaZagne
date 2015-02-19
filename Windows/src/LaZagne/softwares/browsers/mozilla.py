@@ -113,12 +113,12 @@ class Mozilla():
 	def get_path(self, software_name):
 		if 'APPDATA' in os.environ:
 			if software_name == 'Firefox':
-				path = os.environ['APPDATA'] + '\Mozilla\Firefox'
+				path =  '%s\Mozilla\Firefox' % str(os.environ['APPDATA'])
 			elif software_name == 'Thunderbird':
-				path = os.environ['APPDATA'] + os.environ.get('HOMEPATH' ) + '\Thunderbird'
+				path = '%s%s\Thunderbird' % (os.environ['APPDATA'], os.environ.get('HOMEPATH' ))
 		else:
 			print_debug('The APPDATA environment variable is not definded.\nUse the -s option and specify the folder path of the victim\nPath: <HOMEPATH>\Application Data\Mozilla\Firefox\Profiles\<PROFILE_NAME>')
-			return 
+			return
 		
 		return path
 	
