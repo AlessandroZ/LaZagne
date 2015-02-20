@@ -66,13 +66,13 @@ class Dot_net():
 					cipher_text = i['CredentialBlob']
 					pwd = self.Win32CryptUnprotectData(cipher_text, self.get_entropy())
 					if pwd != 'failed':
-						values['TargetName'] = i['TargetName'] 
+						values['TargetName'] = i['TargetName']
 						if i['UserName'] is not None:
 							values['Username'] = i['UserName']
 						try:
 							values['Password'] = pwd.decode('utf16')
-						except: 
-							values['Password'] = 'Error decoding the password'
+						except:
+							values['INFO'] = 'Error decoding the password'
 						
 						pwdFound.append(values)
 					

@@ -348,33 +348,33 @@ class Mozilla():
 			for profile in profile_list:
 				print_debug('INFO', 'Profile path found: %s' % profile)
 				
-				self.initialize_libnss(profile)
-				masterPwd = self.is_masterpasswd_set()
-				if masterPwd:
-					print_debug('WARNING', 'A masterpassword is used !!')
-					masterPwdFound = self.found_masterpassword()
-				
-				if not masterPwd or masterPwdFound:
-					# check if passwors are stored on the Json format
-					credentials = JsonDatabase(profile)
-					if not database_find:
-						# check if passwors are stored on the sqlite format
-						credentials = SqliteDatabase(profile)
+				if self.initialize_libnss(profile):
+					masterPwd = self.is_masterpasswd_set()
+					if masterPwd:
+						print_debug('WARNING', 'A masterpassword is used !!')
+						masterPwdFound = self.found_masterpassword()
 					
-					if not database_find:
-						print_debug('ERROR', 'Couldn\'t find credentials file (logins.json or signons.sqlite)')
-					
-					try:
-						# decrypt passwords on the db
-						pwdFound+=self.decrypt(software_name, credentials)
-					except:
-						pass
+					if not masterPwd or masterPwdFound:
+						# check if passwors are stored on the Json format
+						credentials = JsonDatabase(profile)
+						if not database_find:
+							# check if passwors are stored on the sqlite format
+							credentials = SqliteDatabase(profile)
+						
+						if not database_find:
+							print_debug('ERROR', 'Couldn\'t find credentials file (logins.json or signons.sqlite)')
+						
+						try:
+							# decrypt passwords on the db
+							pwdFound+=self.decrypt(software_name, credentials)
+						except:
+							pass
 
-				# if a master password is set (but not found), we save the db to bruteforce offline
-				elif masterPwd and not masterPwdFound and constant.output == 'txt':
-					self.save_db(profile)
-					
-				self.libnss.NSS_Shutdown()
+					# if a master password is set (but not found), we save the db to bruteforce offline
+					elif masterPwd and not masterPwdFound and constant.output == 'txt':
+						self.save_db(profile)
+						
+					self.libnss.NSS_Shutdown()
 			
 			# print the results
 			print_output(software_name, pwdFound)
