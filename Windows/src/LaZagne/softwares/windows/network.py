@@ -75,7 +75,7 @@ class Network():
 					
 					if pwd != 'failed':
 						targetName = i['TargetName'].replace('Microsoft_WinInet_', '')
-						values['TargetName'] = targetName 
+						values['TargetName'] = targetName
 							
 						if os_plateform == 'XP':
 							t = targetName.split('/')
@@ -86,8 +86,8 @@ class Network():
 						
 						try:
 							values['Password'] = pwd.decode('utf16')
-						except: 
-							values['Password'] = 'Error decoding the password'
+						except:
+							values['INFO'] = 'Error decoding the password'
 						
 						pwdFound.append(values)
 					
