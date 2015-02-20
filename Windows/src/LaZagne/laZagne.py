@@ -35,6 +35,7 @@ from softwares.chats.pidgin import Pidgin
 from softwares.chats.jitsi import Jitsi
 # wifi
 from softwares.wifi.wifi import Wifi
+from softwares.wifi.wifipass import WifiPass
 # mails
 from softwares.mails.outlook import Outlook
 # databases
@@ -58,6 +59,7 @@ modules['windows']['network'] = Network()
 # Wifi
 modules['wifi'] = {}
 modules['wifi']['wifi'] = Wifi()
+modules['wifi']['wifipass'] = WifiPass()
 # SVN
 modules['svn'] = {}
 modules['svn']['tortoise'] = Tortoise()
@@ -116,11 +118,14 @@ def verbosity():
 
 def launch_module(b):
 	ok = False
+	# launch only a specific module
 	for i in args.keys():
 		if args[i]:
 			if i in b.keys():
 				b[i].retrieve_password()
 				ok = True
+	
+	# launch all modules
 	if not ok:
 		for i in b.keys():
 			b[i].retrieve_password()
@@ -296,7 +301,9 @@ PSVN.add_argument('-t', action='store_true', dest='tortoise', help='tortoise')
 #1.6- Parent parser: wifi
 PWifi = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 PWifi._optionals.title = 'Wifi'
-PWifi.add_argument('-wi', action='store_true', dest='wifi', help='Vista and higher - Need System Privileges')
+PWifi.add_argument('-wi', action='store_true', dest='wifi', help='Vista and higher - Need Admin Privileges (UAC Bypassed)')
+# Manage wifi (when executed with a system account)
+PWifi.add_argument('--HiddenWifiArgs', action='store_true', dest='wifipass', help=argparse.SUPPRESS)
 
 #1.6- Parent parser: windows
 PWindows = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
@@ -359,4 +366,3 @@ print_footer()
 
 elapsed_time = time.time() - start_time
 print 'elapsed time = ' + str(elapsed_time)
-
