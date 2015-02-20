@@ -28,6 +28,8 @@ Usage
 * Write all passwords found into a file (-w options)
 	* cmd: laZagne.exe all -w
 
+__Note: For wifi passwords, launch it with administrator privileges (UAC bypassed / sudo)__
+
 Supported softwares
 ----
 
