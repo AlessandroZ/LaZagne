@@ -1,66 +1,58 @@
-import xml.etree.cElementTree as ET
-import os, win32crypt
-import binascii
 from config.write_output import print_output, print_debug
-from config.constant import *
 from config.header import Header
+from config.get_system_priv import get_system_priv
+from ctypes import *
+import time, tempfile
+from ConfigParser import RawConfigParser
+import os
 
 class Wifi():
 	
 	def retrieve_password(self):
+		
 		# print title
 		Header().title_debug('Wifi')
 		
-		if 'ALLUSERSPROFILE' in os.environ:
-			directory = os.environ['ALLUSERSPROFILE'] + os.sep + 'Microsoft\Wlansvc\Profiles\Interfaces'
-		else:
-			print_debug('ERROR', 'Environment variable (ALLUSERSPROFILE) has not been found.')
+		if not windll.Shell32.IsUserAnAdmin():
+			print_debug('ERROR', '[!] This script should be run as admin!')
 			return
-		
-		# for windows Vista or higher
-		if os.path.exists(directory):
-			rep = []
-			pwdFound = []
-			for repository in os.listdir(directory):
-				if os.path.isdir(directory + os.sep + repository):
-					
-					rep = directory + os.sep + repository
-					for file in os.listdir(rep):
-						values = {}
-						if os.path.isfile(rep + os.sep + file):
-							f = rep + os.sep + file
-							tree = ET.ElementTree(file=f)
-							root = tree.getroot()
-							xmlns =  root.tag.split("}")[0] + '}'
-							
-							iterate = False
-							for elem in tree.iter():
-								if elem.tag.endswith('SSID'):
-									for w in elem:
-										if w.tag == xmlns + 'name':
-											values['SSID'] = w.text
-								
-								if elem.tag.endswith('authentication'):
-									values['Authentication'] = elem.text
-									
-								if elem.tag.endswith('protected'):
-									values['Protected'] = elem.text
-								
-								if elem.tag.endswith('keyMaterial'):
-									key = elem.text
-									try:
-										binary_string = binascii.unhexlify(key)
-										password = win32crypt.CryptUnprotectData(binary_string, None, None, None, 0)[1]
-										values['Password'] = password
-									except:
-										values['INFO'] = '[!] Password not found. Try with System privileges'
-							
-							# store credentials
-							if len(values) != 0:
-								pwdFound.append(values)
-			
-			# print the results
-			print_output("Wifi", pwdFound)
 		else:
-			print_debug('INFO', 'No credentials found.\nFile containing passwords not found:\n%s' % directory)
-		
+			
+			if 'ALLUSERSPROFILE' in os.environ:
+				directory = os.environ['ALLUSERSPROFILE'] + os.sep + 'Microsoft\Wlansvc\Profiles\Interfaces'
+			else:
+				print_debug('ERROR', 'Environment variable (ALLUSERSPROFILE) has not been found.')
+				return
+			
+			if not os.path.exists(directory):
+				print_debug('INFO', 'No credentials found.\nFile containing passwords not found:\n%s' % directory)
+				return
+				
+			try:
+				print_debug('INFO', '[!] Trying to elevate our privilege')
+				get_system_priv()
+				print_debug('INFO', '[!] Elevation ok - Passwords decryption is in progress')
+			except:
+				print_debug('ERROR', '[!] An error occurs during the privilege elevation process. Wifi passwords have not been decrypted')
+			
+			time.sleep(5)
+			
+			# read temp file containing all passwords found
+			pwdFound = []
+			filepath = tempfile.gettempdir() + os.sep + 'TEMP123A.txt'
+			if os.path.exists(filepath):
+				cp = RawConfigParser()
+				cp.read(filepath)
+				for section in cp.sections():
+					values = {}
+					for c in cp.items(section):
+						values[str(c[0])] = str(c[1])
+					pwdFound.append(values)
+				
+				# remove file on the temporary directory
+				os.remove(filepath)
+				
+				# print the results
+				print_output("Wifi", pwdFound)
+			else:
+				print_debug('INFO', 'No passwords found')
