@@ -133,7 +133,10 @@ To compile the source code, some external library are required.
 		* http://sourceforge.net/projects/pywin32/
 
 * For Linux
-	* None
+	* None on ubuntu 14.04
+	* Other distributions
+		* crypto
+		* dbus
 
 ----
 | __Alessandro ZANNI__    |
