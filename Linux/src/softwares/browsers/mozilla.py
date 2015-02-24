@@ -76,15 +76,7 @@ class Mozilla():
 	def __init__(self):
 		
 		self.credentials_categorie = None
-		self.dll_NotFound = False
-
-		# tested on different system, the location seems to not change
-		path = "/usr/lib/x86_64-linux-gnu/libnss3.so"
-		try:
-			self.libnss = CDLL(path)
-		except:
-			self.dll_NotFound = True
-		
+		self.libnss = None
 		self.slot = None
 		
 		self.username = SECItem()
@@ -97,8 +89,6 @@ class Mozilla():
 		self.number_toStop = None
 
 	def __del__(self):
-		if self.dll_NotFound == False:
-			self.libnss.NSS_Shutdown()
 		self.libnss = None
 		
 		self.username = None
@@ -134,12 +124,25 @@ class Mozilla():
 			self.toCheck = ['b', 'd']
 			self.number_toStop = 3
 
-	def initialize_libnss(self, profile):
-		if self.libnss.NSS_Init(profile)!=0:
-			print_debug('ERROR', 'Could not initialize the NSS library\n')
-			return False
-		return True
-
+	def initialize_libnss(self, list_libnss, profile):
+		for lib in list_libnss:
+			try:
+				self.libnss = CDLL(lib)
+				if self.libnss.NSS_Init(profile) == 0:
+					return True
+			except:
+				pass
+		return False
+	
+	def found_libnss(self):
+		directory = '/usr/lib/'
+		list_libnss = []
+		for root, dirs, files in os.walk(directory):
+			for file in files:
+				if file == 'libnss3.so':
+					list_libnss.append(root + os.sep + file)
+		return list_libnss
+	
 	def decrypt(self, software_name, credentials):
 		pwdFound = []
 		for host, user, passw in credentials:
@@ -299,7 +302,7 @@ class Mozilla():
 			except:
 				pass
 			print_debug('WARNING', 'No password has been found using the brute force attack')
-		
+
 	# ------------------------------ End of Master Password Functions ------------------------------
 	
 	# main function
@@ -318,8 +321,10 @@ class Mozilla():
 		# print the title
 		Header().title_debug(software_name)
 		
+		list_libnss = self.found_libnss()
+		
 		# Check if the libnss could be initialized well
-		if self.dll_NotFound:
+		if not list_libnss:
 			print_debug('ERROR', 'The libnss have not been initialized because the libnss3.so has not been found')
 		
 		#Check if mozilla folder has been found
@@ -340,7 +345,7 @@ class Mozilla():
 			for profile in profile_list:
 				print_debug('INFO', 'Profile path found: %s' % profile)
 				
-				if self.initialize_libnss(profile):
+				if self.initialize_libnss(list_libnss, profile):
 					masterPwd = self.is_masterpasswd_set()
 					if masterPwd:
 						print_debug('WARNING', 'A masterpassword is used !!')
@@ -354,7 +359,7 @@ class Mozilla():
 							credentials = SqliteDatabase(profile)
 						
 						if not database_find:
-							print_debug('ERROR', 'Couldn\'t find credentials file (logins.json or signons.sqlite)')
+							print_debug('INFO', 'No credentials file found (logins.json or signons.sqlite) - or empty content')
 						
 						try:
 							# decrypt passwords on the db
@@ -367,6 +372,8 @@ class Mozilla():
 						self.save_db(profile)
 						
 					self.libnss.NSS_Shutdown()
+				else:
+					print_debug('ERROR', 'Could not initialize the NSS library\n')
 			
 			# print the results
 			print_output(software_name, pwdFound)
