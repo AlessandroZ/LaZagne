@@ -320,7 +320,7 @@ class Mozilla():
 		
 		# Check if the libnss could be initialized well
 		if self.dll_NotFound:
-			print_debug('ERROR', 'The libnss have not been initialized because the nss3.dll has not been found')
+			print_debug('ERROR', 'The libnss have not been initialized because the libnss3.so has not been found')
 		
 		#Check if mozilla folder has been found
 		elif not os.path.exists(path):
