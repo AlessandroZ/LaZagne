@@ -9,8 +9,8 @@ class Pidgin():
 	
 	# if pidgin is started, use the api to retrieve all passwords
 	def check_if_pidgin_started(self):
-		bus = dbus.SessionBus()
 		try:
+			bus = dbus.SessionBus()
 			purple = bus.get_object("im.pidgin.purple.PurpleService","/im/pidgin/purple/PurpleObject","im.pidgin.purple.PurpleInterface")
 			acc = purple.PurpleAccountsGetAllActive()
 			
