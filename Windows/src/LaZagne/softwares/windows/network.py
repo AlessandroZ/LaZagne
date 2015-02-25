@@ -75,7 +75,7 @@ class Network():
 					
 					if pwd != 'failed':
 						targetName = i['TargetName'].replace('Microsoft_WinInet_', '')
-						values['TargetName'] = targetName
+						values['TargetName'] = targetName 
 							
 						if os_plateform == 'XP':
 							t = targetName.split('/')
@@ -86,7 +86,7 @@ class Network():
 						
 						try:
 							values['Password'] = pwd.decode('utf16')
-						except:
+						except: 
 							values['INFO'] = 'Error decoding the password'
 						
 						pwdFound.append(values)
@@ -95,7 +95,7 @@ class Network():
 			print_output("Generic Network", pwdFound)
 			
 		else:
-			print_debug('ERROR', 'No credentials listed with the enum cred function')
+			print_debug('INFO', 'No credentials listed with the enum cred function')
 
 
 

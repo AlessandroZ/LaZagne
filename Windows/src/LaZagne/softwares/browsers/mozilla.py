@@ -76,20 +76,6 @@ class Mozilla():
 	def __init__(self):
 		
 		self.credentials_categorie = None
-		self.dll_NotFound = False
-		
-		firefox = ''
-		if os.path.exists(os.environ['ProgramFiles'] + '\Mozilla Firefox'):
-			firefox = os.environ['ProgramFiles'] + '\Mozilla Firefox'
-		elif os.path.exists(os.environ['ProgramFiles(x86)'] + '\Mozilla Firefox'):
-			firefox = os.environ['ProgramFiles(x86)'] + '\Mozilla Firefox'
-		
-		if os.path.exists(os.path.join(firefox, 'nss3.dll')):
-			os.environ['PATH'] = ';'.join([firefox, os.environ['PATH']])
-			self.libnss  = CDLL(os.path.join(firefox, 'nss3.dll'))
-		else:
-			self.dll_NotFound = True
-		
 		self.slot = None
 		
 		self.username = SECItem()
@@ -102,10 +88,7 @@ class Mozilla():
 		self.number_toStop = None
 
 	def __del__(self):
-		if self.dll_NotFound == False:
-			self.libnss.NSS_Shutdown()
 		self.libnss = None
-		
 		self.username = None
 		self.passwd = None
 		self.dectext = None
@@ -118,7 +101,7 @@ class Mozilla():
 				path = '%s%s\Thunderbird' % (os.environ['APPDATA'], os.environ.get('HOMEPATH' ))
 		else:
 			print_debug('The APPDATA environment variable is not definded.\nUse the -s option and specify the folder path of the victim\nPath: <HOMEPATH>\Application Data\Mozilla\Firefox\Profiles\<PROFILE_NAME>')
-			return
+			return 
 		
 		return path
 	
@@ -143,12 +126,35 @@ class Mozilla():
 			self.toCheck = ['b', 'd']
 			self.number_toStop = 3
 
-	def initialize_libnss(self, profile):
-		if self.libnss.NSS_Init(profile)!=0:
-			print_debug('ERROR', 'Could not initialize the NSS library\n')
-			return False
-		return True
-
+	def initialize_libnss(self, list_libnss, profile):
+		for lib in list_libnss:
+			try:
+				self.libnss = CDLL(lib)
+				if self.libnss.NSS_Init(profile) == 0:
+					return True
+			except:
+				pass
+		return False
+	
+	def found_libnss(self):
+		list_libnss = []
+		if 'ProgramFiles' in os.environ:
+			if os.path.exists(os.environ['ProgramFiles'] + '\Mozilla Firefox'):
+				path = os.environ['ProgramFiles'] + '\Mozilla Firefox'
+				if os.path.exists(os.path.join(path, 'nss3.dll')):
+					os.environ['PATH'] = ';'.join([path, os.environ['PATH']])
+					list_libnss.append(os.path.join(path, 'nss3.dll'))
+		
+		if 'ProgramFiles(x86)' in os.environ:
+			if os.path.exists(os.environ['ProgramFiles(x86)'] + '\Mozilla Firefox'):
+				path = os.environ['ProgramFiles(x86)'] + '\Mozilla Firefox'
+				if os.path.exists(os.path.join(path, 'nss3.dll')):
+					os.environ['PATH'] = ';'.join([path, os.environ['PATH']])
+					list_libnss.append(os.path.join(path, 'nss3.dll'))
+		
+		return list_libnss
+	
+		
 	def decrypt(self, software_name, credentials):
 		pwdFound = []
 		for host, user, passw in credentials:
@@ -320,15 +326,17 @@ class Mozilla():
 		# get the installation path
 		path = self.get_path(software_name)
 		if not path:
-			print_debug('ERROR', 'Installation path not found')
+			print_debug('WARNING', 'Installation path not found')
 			return
 		
 		# print the title
 		Header().title_debug(software_name)
 		
+		list_libnss = self.found_libnss()
+		
 		# Check if the libnss could be initialized well
-		if self.dll_NotFound:
-			print_debug('ERROR', 'The libnss have not been initialized because the nss3.dll has not been found')
+		if not list_libnss:
+			print_debug('WARNING', 'The libnss have not been initialized because the nss3.dll has not been found')
 		
 		#Check if mozilla folder has been found
 		elif not os.path.exists(path):
@@ -339,7 +347,7 @@ class Mozilla():
 				if os.path.exists(specific_path):
 					profile_list = [specific_path]
 				else:
-					print_debug('ERROR', 'The following file does not exist: %s' % specific_path)
+					print_debug('WARNING', 'The following file does not exist: %s' % specific_path)
 					return
 			else:
 				profile_list = self.get_firefox_profiles(path)
@@ -348,7 +356,7 @@ class Mozilla():
 			for profile in profile_list:
 				print_debug('INFO', 'Profile path found: %s' % profile)
 				
-				if self.initialize_libnss(profile):
+				if self.initialize_libnss(list_libnss, profile):
 					masterPwd = self.is_masterpasswd_set()
 					if masterPwd:
 						print_debug('WARNING', 'A masterpassword is used !!')
@@ -362,7 +370,7 @@ class Mozilla():
 							credentials = SqliteDatabase(profile)
 						
 						if not database_find:
-							print_debug('ERROR', 'Couldn\'t find credentials file (logins.json or signons.sqlite)')
+							print_debug('INFO', 'No credentials file found (logins.json or signons.sqlite) - or empty content')
 						
 						try:
 							# decrypt passwords on the db
@@ -375,6 +383,9 @@ class Mozilla():
 						self.save_db(profile)
 						
 					self.libnss.NSS_Shutdown()
-			
+				
+				else:
+					print_debug('ERROR', 'Could not initialize the NSS library\n')
+				
 			# print the results
 			print_output(software_name, pwdFound)

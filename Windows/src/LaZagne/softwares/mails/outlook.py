@@ -15,7 +15,7 @@ class Outlook():
 		try:
 			hkey = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, keyPath, 0, accessRead)
 		except:
-			print_debug('ERROR', 'Outlook not installed.\nAn error occurs retrieving the registry key.\nKey = %s' % keyPath)
+			print_debug('WARNING', 'Outlook not installed.\nAn error occurs retrieving the registry key.\nKey = %s' % keyPath)
 			return
 
 		num = win32api.RegQueryInfoKey(hkey)[0]
@@ -30,7 +30,6 @@ class Outlook():
 					name_skey = win32api.RegEnumKey(skey, y)
 					sskey = win32api.RegOpenKey(skey, name_skey, 0, accessRead)
 					num_sskey = win32api.RegQueryInfoKey(sskey)[1]
-					
 					for z in range(0, num_sskey):
 						k = win32api.RegEnumValue(sskey, z)
 						if 'password' in k[0].lower():
@@ -60,6 +59,7 @@ class Outlook():
 					values[k[0]] = str(k[1]).decode('utf16')
 				except:
 					values[k[0]] = str(k[1])
+				print values
 		return values
 
 

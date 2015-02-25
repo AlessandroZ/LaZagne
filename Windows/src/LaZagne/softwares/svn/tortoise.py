@@ -15,7 +15,7 @@ class Tortoise():
 		if 'APPDATA' in os.environ:
 			file_path = os.environ.get('APPDATA') + '\\Subversion\\auth\\svn.simple'
 		else:
-			'INFO', ('ERROR', 'The APPDATA environment variable is not definded.')
+			print_debug('ERROR', 'The APPDATA environment variable is not definded.')
 			return
 		
 		values = {}
