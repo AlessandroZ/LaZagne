@@ -59,7 +59,7 @@ class Cyberduck():
 		elif path == 'User_profil_not_found':
 			print_debug('INFO', 'User profil has not been found.')
 		elif path == 'APPDATA_NOT_FOUND': 
-			print_debug('ERROR', 'The APPDATA environment variable is not definded.')
+			print_debug('ERROR', 'The APPDATA environment variable is not defined.')
 		else:
 			self.parse_xml(path)
 			

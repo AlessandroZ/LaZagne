@@ -28,12 +28,12 @@ class Opera():
 		if CIPHERED_FILE == 'wand.dat':
 			# check the use of master password 
 			if not os.path.exists(path + os.sep + 'operaprefs.ini'):
-				print_debug('ERROR', 'The preference file operaprefs.ini has not been found.')
+				print_debug('WARNING', 'The preference file operaprefs.ini has not been found.')
 				return
 			else:
 				
 				if self.masterPasswordUsed(path) == '1':
-					print_debug('ERROR', 'A master password is used.')
+					print_debug('WARNING', 'A master password is used.')
 				elif self.masterPasswordUsed(path) != '0':
 					print_debug('ERROR', 'An error occurs, the use of master password is not sure.')
 			
@@ -75,7 +75,7 @@ class Opera():
 		
 		# retrieve wand.dat file
 		if not os.path.exists(path + os.sep + 'wand.dat'):
-			print_debug('ERROR', 'wand.dat file has not been found.')
+			print_debug('WARNING', 'wand.dat file has not been found.')
 			return 
 		
 		# read wand.dat

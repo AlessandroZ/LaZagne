@@ -115,7 +115,7 @@ class Dbvisualizer():
 			print_debug('INFO', 'Dbvisualizer not installed.')
 			
 		elif mainPath == 'var_Env_Not_Found':
-			print_debug('ERROR', 'The HOMEPATH environment variable is not definded.')
+			print_debug('ERROR', 'The HOMEPATH environment variable is not defined.')
 			
 		else:
 			passphrase = self.get_passphrase()

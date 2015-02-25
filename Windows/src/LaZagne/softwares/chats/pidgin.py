@@ -14,7 +14,7 @@ class Pidgin():
 			directory = os.environ['APPDATA'] + '\.purple'
 			path = os.path.join(directory, 'accounts.xml')
 		else:
-			print_debug('ERROR', 'The APPDATA environment variable is not definded.')
+			print_debug('ERROR', 'The APPDATA environment variable is not defined.')
 			return
 		
 		if os.path.exists(path):

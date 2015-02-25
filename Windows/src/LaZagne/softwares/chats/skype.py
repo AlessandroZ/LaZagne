@@ -94,7 +94,7 @@ class Skype():
 								enc_hex = self.get_hash_credential(directory + os.sep + d + os.sep + 'config.xml')
 								
 								if enc_hex == 'failed':
-									print_debug('ERROR', 'No credential stored on the config.xml file.')
+									print_debug('WARNING', 'No credential stored on the config.xml file.')
 								else:
 									# decrypt the hash to get the md5 to brue force
 									values['Hash_md5'] = self.get_md5_hash(enc_hex, key)
@@ -108,5 +108,5 @@ class Skype():
 			else:
 				print_debug('INFO', 'Skype not installed.')
 		else:
-			print_error('The APPDATA environment variable is not definded.')
+			print_debug('ERROR', 'The APPDATA environment variable is not defined.')
 			

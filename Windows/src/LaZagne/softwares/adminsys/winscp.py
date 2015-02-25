@@ -155,6 +155,6 @@ class WinSCP():
 				if r == False:
 					print_debug('INFO', 'WinSCP not installed.')
 			else:
-				print_debug('ERROR', 'A master password is used. Passwords cannot been retrieved')
+				print_debug('WARNING', 'A master password is used. Passwords cannot been retrieved')
 		else:
 			print_debug('INFO', 'WinSCP not installed.')
