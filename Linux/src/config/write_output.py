@@ -93,7 +93,7 @@ def print_debug(error_level, message):
 		logging.debug(b.FAIL + '[ERROR] ' + message + '\n' + b.ENDC)
 	
 	elif error_level == 'WARNING':
-		logging.debug(b.FAIL + '[WARNING] ' + message + '\n' + b.ENDC)
+		logging.debug(b.WARNING + '[WARNING] ' + message + '\n' + b.ENDC)
 	
 	elif error_level == 'INFO':
 		logging.debug('[INFO] ' + message + '\n')

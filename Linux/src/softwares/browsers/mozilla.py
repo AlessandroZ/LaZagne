@@ -312,20 +312,20 @@ class Mozilla():
 		software_name = constant.mozilla_software
 		specific_path = constant.specific_path
 		
+		# print the title
+		Header().title_debug(software_name)
+		
 		# get the installation path
 		path = self.get_path(software_name)
 		if not path:
-			print_debug('ERROR', 'Installation path not found')
+			print_debug('WARNING', 'Installation path not found')
 			return
-		
-		# print the title
-		Header().title_debug(software_name)
 		
 		list_libnss = self.found_libnss()
 		
 		# Check if the libnss could be initialized well
 		if not list_libnss:
-			print_debug('ERROR', 'The libnss have not been initialized because the libnss3.so has not been found')
+			print_debug('WARNING', 'The libnss have not been initialized because the libnss3.so has not been found')
 		
 		#Check if mozilla folder has been found
 		elif not os.path.exists(path):
@@ -336,7 +336,7 @@ class Mozilla():
 				if os.path.exists(specific_path):
 					profile_list = [specific_path]
 				else:
-					print_debug('ERROR', 'The following file does not exist: %s' % specific_path)
+					print_debug('WARNING', 'The following file does not exist: %s' % specific_path)
 					return
 			else:
 				profile_list = self.get_firefox_profiles(path)
