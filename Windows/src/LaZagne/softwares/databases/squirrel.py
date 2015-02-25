@@ -48,11 +48,11 @@ class Squirrel():
 		if path == 'Not_Found':
 			print_debug('INFO', 'Squirrel not installed')
 		elif path == 'var_Env_Not_Found':
-			print_debug('ERROR', 'The HOMEPATH environment variable is not definded.')
+			print_debug('ERROR', 'The HOMEPATH environment variable is not defined.')
 		else:
 			path += os.sep + 'SQLAliases23.xml'
 			if os.path.exists(path):
 				self.parse_xml(path)
 			else:
-				print_debug('ERROR', 'xml fil SQLAliases23.xml containing passwords has not be found')
+				print_debug('WARNING', 'xml fil SQLAliases23.xml containing passwords has not be found')
 		

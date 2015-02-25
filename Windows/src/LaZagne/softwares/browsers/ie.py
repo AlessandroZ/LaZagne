@@ -261,7 +261,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 		# define the length of the tab
 		if len(secret) % 2 == 0:
 			length = len(secret)
-		else:
+		else: 
 			length = len(secret)-1
 
 		values = {}
@@ -298,7 +298,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 				for line in f:
 					list.append(line.strip())
 			else:
-				print_debug('ERROR', 'The text file %s does not exist' % historic)
+				print_debug('WARNING', 'The text file %s does not exist' % historic)
 		
 		# retrieve the urls from the history
 		hash_tables = self.get_hash_table(list)
@@ -314,7 +314,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 			failed = True
 		
 		nb_site = 0
-		nb_pass_found = 0
+		nb_pass_found = 0 
 		if failed == False:
 			num = win32api.RegQueryInfoKey(hkey)[1]
 			for x in range(0, num):

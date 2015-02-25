@@ -126,7 +126,7 @@ class SQLDeveloper():
 		
 		mainPath = self.get_mainPath()
 		if mainPath == 'Error':
-			print_debug('ERROR', 'The APPDATA environment variable is not definded.')
+			print_debug('ERROR', 'The APPDATA environment variable is not defined.')
 		
 		elif mainPath == 'SQL_NOT_EXISTS':
 			print_debug('INFO','SQL Developer not installed.')
@@ -137,10 +137,10 @@ class SQLDeveloper():
 		else:
 			passphrase = self.get_passphrase(mainPath)
 			if passphrase == 'Not_Found':
-				print_debug('ERROR', 'The passphrase used to encrypt has not been found.')
+				print_debug('WARNING', 'The passphrase used to encrypt has not been found.')
 			
 			elif passphrase == 'xml_Not_Found':
-				print_debug('ERROR', 'The xml file containing the passphrase has not been found.')
+				print_debug('WARNING', 'The xml file containing the passphrase has not been found.')
 				
 			else:
 				salt = self.get_salt()

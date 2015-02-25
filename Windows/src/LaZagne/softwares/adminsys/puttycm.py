@@ -16,11 +16,11 @@ class Puttycm():
 		except:
 			print_debug('INFO', 'Puttycm not installed')
 			return
-			
+		
 		if os.path.exists(database_path):
 			self.parse_xml(database_path)
 		else:
-			print_debug('ERROR', 'Default database does not exist: %s' % database_path)
+			print_debug('WARNING', 'Default database does not exist: %s' % database_path)
 
 
 	def get_default_database(self):

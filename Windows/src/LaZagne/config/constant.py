@@ -2,9 +2,9 @@
 class constant():
 	folder_name = 'results'
 	MAX_HELP_POSITION = 27
-	CURRENT_VERSION = 0.2
-	output = None
-	file_logger = None
+	CURRENT_VERSION = 0.1
+	output = None 
+	file_logger = None 
 
 	# jitsi options
 	jitsi_masterpass = None

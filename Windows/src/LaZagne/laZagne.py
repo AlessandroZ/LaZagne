@@ -52,7 +52,7 @@ Header().first_title()
 
 # Add all modules
 modules = {}
-# windows
+# windows 
 modules['windows'] = {}
 modules['windows']['dotnet'] = Dot_net()
 modules['windows']['network'] = Network()
@@ -182,7 +182,7 @@ def runBrowsersModule():
 	constant.specific_path = args['specific_path']
 	constant.mozilla_software = 'Firefox'
 	
-	# Advanced ie options
+	# Advanced ie options 
 	constant.ie_historic = args['historic']
 	
 	launch_module(modules['browsers'])
@@ -224,12 +224,12 @@ PPoptional._optionals.title = 'optional arguments'
 PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='write a debug file')
 PPoptional.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION))
 
-#1.0.1- Parent parser: output
+#1.0.1- Parent parser: output 
 PWrite = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 PWrite._optionals.title = 'output'
 PWrite.add_argument('-w', dest='write',  action= 'store_true', help = 'write a text file on the current directory')
 
-#1.0.2- Parent parser: Advanced Mozilla master password options
+#1.0.2- Parent parser: Advanced Mozilla master password options 
 PMasterPass_Firefox = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 PMasterPass_Firefox._optionals.title = 'Advanced Mozilla master password options'
 PMasterPass_Firefox.add_argument('-m', action='store', dest='manually', help='enter the master password manually')
@@ -301,7 +301,7 @@ PSVN.add_argument('-t', action='store_true', dest='tortoise', help='tortoise')
 #1.6- Parent parser: wifi
 PWifi = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 PWifi._optionals.title = 'Wifi'
-PWifi.add_argument('-wi', action='store_true', dest='wifi', help='Vista and higher - Need Admin Privileges (UAC Bypassed)')
+PWifi.add_argument('-wi', action='store_true', dest='wifi', help='Vista and higher - Need System Privileges')
 # Manage wifi (when executed with a system account)
 PWifi.add_argument('--HiddenWifiArgs', action='store_true', dest='wifipass', help=argparse.SUPPRESS)
 
@@ -366,3 +366,4 @@ print_footer()
 
 elapsed_time = time.time() - start_time
 print 'elapsed time = ' + str(elapsed_time)
+

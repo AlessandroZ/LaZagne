@@ -26,7 +26,7 @@ class Wifi():
 			
 			if not os.path.exists(directory):
 				print_debug('INFO', 'No credentials found.\nFile containing passwords not found:\n%s' % directory)
-				return
+				return 
 				
 			try:
 				print_debug('INFO', '[!] Trying to elevate our privilege')

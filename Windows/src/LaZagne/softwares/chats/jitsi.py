@@ -101,7 +101,7 @@ class Jitsi():
 		
 		file_properties = self.get_path()
 		if file_properties == 'Error':
-			print_debug('ERROR', 'The APPDATA environment variable is not definded')
+			print_debug('ERROR', 'The APPDATA environment variable is not defined')
 		
 		elif file_properties == 'JITSI_NOT_EXISTS':
 			print_debug('INFO', 'Jitsi not installed.')

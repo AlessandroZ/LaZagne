@@ -13,7 +13,7 @@ class Filezilla():
 		if 'APPDATA' in os.environ:
 			directory = os.environ['APPDATA'] + '\FileZilla'
 		else:
-			print_debug('ERROR', 'The APPDATA environment variable is not definded.')
+			print_debug('ERROR', 'The APPDATA environment variable is not defined.')
 			return
 		
 		interesting_xml_file = []
