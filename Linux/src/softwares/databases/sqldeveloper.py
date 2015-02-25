@@ -125,7 +125,7 @@ class SQLDeveloper():
 			# print the results
 			print_output('SQL Developer', pwdFound)
 		else:
-			print_debug('ERROR', 'The xml file containing the passwords has not been found.')
+			print_debug('WARNING', 'The xml file containing the passwords has not been found.')
 
 	def retrieve_password(self):
 
@@ -142,10 +142,10 @@ class SQLDeveloper():
 			passphrase = self.get_passphrase(mainPath)
 
 			if passphrase == 'Not_Found':
-				print_debug('ERROR', 'The passphrase used to encrypt has not been found.')
+				print_debug('WARNING', 'The passphrase used to encrypt has not been found.')
 
 			elif passphrase == 'xml_Not_Found':
-				print_debug('ERROR', 'The xml file containing the passphrase has not been found.')
+				print_debug('WARNING', 'The xml file containing the passphrase has not been found.')
 
 			else:
 				salt = self.get_salt()
