@@ -35,4 +35,4 @@ class Wifi():
 			# print the results
 			print_output('Wifi', pwdFound)
 		else:
-			print_debug('ERROR', 'the path "%s" does not exist' %(directory))
+			print_debug('WARNING', 'the path "%s" does not exist' %(directory))
