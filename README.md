@@ -50,7 +50,7 @@ Supported software
 		* Outlook
 
 	* adminsys
-		* Filezilla
+		* FileZilla
 		* PuttyCM
 		* WinSCP
 		* Cyberduck
@@ -85,8 +85,8 @@ Supported software
 		* Thunderbird
 
 	* adminsys
-		* Filezilla
-		* Environment variables
+		* FileZilla
+		* Environment Variables
 
 	* database
 		* SQLdeveloper
