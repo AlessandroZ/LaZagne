@@ -102,7 +102,7 @@ Supported software
 
 IE Browser history
 ----
-Internet Explorer passwords (from IE7 and before Windows 8) can only be decrypted using the URL of the website. This one is used as an argument of the Win32CryptUnprotectData api. So to decrypt it, it is only necessary to retreive the browsing history of ie. 
+Internet Explorer passwords (from IE7 and before Windows 8) can only be decrypted using the URL of the website. This one is used as an argument of the Win32CryptUnprotectData api. So to decrypt it, it is only necessary to retrieve the browsing history of ie. 
 To do that, I used C code. So I used a dll (the code is in the "browser_history_dll" directory) and it is directly embedded to the Python code as a Base64 string (c.f. ie.py). Once launched, the dll is written to the disk, a wrapper is used to call dll functions and then the dll file is removed from the disk.
 
 Build your own password recovery script
