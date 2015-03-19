@@ -5,8 +5,8 @@ __The LaZagne Project !!!__
 Description
 ----
 The __LaZagne project__ is an open source application used to __retrieve lots of passwords__ stored on a local computer. 
-Each software stores its passwords using different technics (plaintext, using api, custom algorithms, etc.). This tool has been developped to find these passwords for most common softwares. 
-At this moment, it supports 22 softwares on windows and 12 on a linux plateform.
+Each software stores its passwords using different techniques (plaintext, APIs, custom algorithms, databases, etc.). This tool has been developed for the purpose of finding these passwords for the most commonly-used software. 
+At this moment, it supports 22 Programs on Microsoft Windows and 12 on a Linux/Unix-Like OS.
 
 <p align="center"><img src="./pictures/lazagne.png" alt="The LaZagne project"></p>
 
@@ -28,88 +28,88 @@ Usage
 * Write all passwords found into a file (-w options)
 	* cmd: laZagne.exe all -w
 
-__Note: For wifi passwords, launch it with administrator privileges (UAC bypassed / sudo)__
+__Note: For wifi passwords, launch it with administrator privileges (UAC Authentication / sudo)__
 
-Supported softwares
+Supported software
 ----
 
 * __Windows__ (tested on Windows XP, 7 and 8 - 32 and 64 bits)
-	* browsers
-		* firefox
-		* chrome
-		* opera
-		* ie
+	* Browsers
+		* Firefox
+		* Chrome
+		* Opera
+		* Explorer
 
 	* chats
-		* skype
-		* pidgin
-		* jitsi
+		* Skype
+		* Pidgin
+		* Jitsi
 
 	* mails
-		* thunderbird
-		* outlook
+		* Thunderbird
+		* Outlook
 
 	* adminsys
-		* filezilla
-		* puttycm
-		* winscp
-		* cyberduck
-		* coreFTP
+		* FileZilla
+		* PuttyCM
+		* WinSCP
+		* Cyberduck
+		* CoreFTP
 		* FTPNavigator
 
 	* database
-		* sqldeveloper
-		* squirrel
-		* dbvisualizer
+		* SQLdeveloper
+		* Squirrel
+		* DBvisualizer
 
 	* svn
-		* tortoise
+		* Tortoise
 
 	* wifi
-		* Wireless Network Password (Windows mechanism)
+		* Wireless Network Password (Windows Feature)
 
 	* windows credentials
-		* Domain visible network (.Net Passport)
+		* Domain visible network (.NET Passport)
 		* Generic network credentials
 
 * __Linux__
 	* browsers
-		* firefox
-		* opera
+		* Firefox
+		* Opera
 
 	* chats
-		* pidgin
-		* jitsi
+		* Pidgin
+		* Jitsi
 
 	* mails
-		* thunderbird
+		* Thunderbird
 
 	* adminsys
-		* filezilla
-		* environment variables
+		* FileZilla
+		* Environment Variables
 
 	* database
-		* sqldeveloper
-		* squirrel
-		* dbvisualizer
+		* SQLdeveloper
+		* Squirrel
+		* DBvisualizer
 
 	* wifi
-		* network manager
+		* Network Manager
 
 	* wallet
-		* gnome keyring
+		* GNOME Keyring
 
 
 IE Browser history
 ----
-Internet Explorer passwords (from ie7 and before windows 8) can only be decrypted using the URL of the website. This one is used as an argument of the Win32CryptUnprotectData api. So to decrypt it, it is necessary to retreive the browser history of ie. 
-To do that, I have used C code. So I used a dll (the code is on on the "browser_history_dll" directory) and it is directly embedded to the python code as a base64 string (c.f. ie.py). Once launched, the dll is written to the disk, a wrapper is used to call dll functions and then the dll file is removed from the disk.
+Internet Explorer passwords (from IE7 and before Windows 8) can only be decrypted using the URL of the website. This one is used as an argument of the Win32CryptUnprotectData api. So to decrypt it, it is only necessary to retreive the browsing history of ie. 
+To do that, I used C code. So I used a dll (the code is in the "browser_history_dll" directory) and it is directly embedded to the Python code as a Base64 string (c.f. ie.py). Once launched, the dll is written to the disk, a wrapper is used to call dll functions and then the dll file is removed from the disk.
 
 Build your own password recovery script
 ----
-It is possible to write your own script for the software of your choice. 
+It's possible to write your own script for the software of your choice. 
 
-To do that, some syntax requirements are needed: 
+To do that, some code standards are to be met: 
 * Create a class using the name of the software
 * This class has to have a function called "retrieve_password" (it will be the main function)
 * The output containing all passwords has to be send to the "print_output" function - ex: print_output(<software_name>, password_list)
@@ -118,14 +118,14 @@ To do that, some syntax requirements are needed:
 	* ex: print_debug("ERROR", "Failed to load ...")
 * Use an existing script to understand what I have said :)
 
-If you want to improve this tool, you could send me your script and it will be added to this project (authors will be of course credited on each script ;)).
+If you want to improve this tool, you can send me your script and it will be added to this project (authors will be, of course, credited on each script ;)).
 
 Requirements
 ----
-To compile the source code, some external library are required.
+To compile the source code, some external libraries are required.
 
 * For Windows
-	* Wconio (for the color)
+	* WConio (for the Console colors)
 		* http://newcenturycomputers.net/projects/wconio.html
 		* http://newcenturycomputers.net/projects/download.cgi/WConio-1.5.win32-py2.7.exe
 
@@ -133,7 +133,7 @@ To compile the source code, some external library are required.
 		* http://sourceforge.net/projects/pywin32/
 
 * For Linux
-	* None on ubuntu 14.04
+	* None for Ubuntu 14.04
 	* Other distributions
 		* crypto
 		* dbus
