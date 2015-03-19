@@ -20,13 +20,13 @@ from softwares.browsers.ie import IE
 # windows
 from softwares.windows.network import Network
 from softwares.windows.dot_net import Dot_net
-# adminsys
-from softwares.adminsys.filezilla import Filezilla
-from softwares.adminsys.cyberduck import Cyberduck
-from softwares.adminsys.puttycm import Puttycm
-from softwares.adminsys.winscp import WinSCP
-from softwares.adminsys.coreftp import CoreFTP
-from softwares.adminsys.ftpnavigator import FtpNavigator
+# sysadmin
+from softwares.sysadmin.filezilla import Filezilla
+from softwares.sysadmin.cyberduck import Cyberduck
+from softwares.sysadmin.puttycm import Puttycm
+from softwares.sysadmin.winscp import WinSCP
+from softwares.sysadmin.coreftp import CoreFTP
+from softwares.sysadmin.ftpnavigator import FtpNavigator
 # svn
 from softwares.svn.tortoise import Tortoise
 # chats
@@ -69,13 +69,13 @@ modules['database']['sqldeveloper'] = SQLDeveloper()
 modules['database']['squirrel'] = Squirrel()
 modules['database']['dbvis'] = Dbvisualizer()
 # SCP/SSH/FTP/FTPS clients
-modules['adminsys'] = {}
-modules['adminsys']['filezilla'] = Filezilla()
-modules['adminsys']['cyberduck'] = Cyberduck()
-modules['adminsys']['puttycm'] = Puttycm()
-modules['adminsys']['winscp'] = WinSCP()
-modules['adminsys']['coreftp'] = CoreFTP()
-modules['adminsys']['ftpnavigator'] = FtpNavigator()
+modules['sysadmin'] = {}
+modules['sysadmin']['filezilla'] = Filezilla()
+modules['sysadmin']['cyberduck'] = Cyberduck()
+modules['sysadmin']['puttycm'] = Puttycm()
+modules['sysadmin']['winscp'] = WinSCP()
+modules['sysadmin']['coreftp'] = CoreFTP()
+modules['sysadmin']['ftpnavigator'] = FtpNavigator()
 # Mails
 modules['mails'] = {}
 modules['mails']['outlook'] = Outlook()
@@ -147,8 +147,8 @@ def runDatabaseModule():
 	launch_module(modules['database'])
 
 # SCP/SSH/FTP/FTPS clients
-def runAdminsysModule():
-	launch_module(modules['adminsys'])
+def runSysadminModule():
+	launch_module(modules['sysadmin'])
 	
 # Mails
 def runMailsModule():
@@ -199,7 +199,7 @@ def runAllModules():
 	time.sleep(time_to_sleep)
 	runDatabaseModule()
 	time.sleep(time_to_sleep)
-	runAdminsysModule()
+	runSysadminModule()
 	time.sleep(time_to_sleep)
 	runMailsModule()
 	time.sleep(time_to_sleep)
@@ -276,15 +276,15 @@ PMails._optionals.title = 'Email clients supported'
 PMails.add_argument('-o', action='store_true', dest='outlook', help='outlook - IMAP, POP3, HTTP, SMTP, LDPAP (not Exchange)')
 PMails.add_argument('-t', action='store_true', dest='thunderbird', help='thunderbird')
 
-#1.3- Parent parser: adminsys
-PAdminsys = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PAdminsys._optionals.title = 'SCP/SSH/FTP/FTPS clients supported'
-PAdminsys.add_argument('-f', action='store_true', dest='filezilla', help='filezilla')
-PAdminsys.add_argument('-c', action='store_true', dest='cyberduck', help='cyberduck')
-PAdminsys.add_argument('-p', action='store_true', dest='puttycm', help='puttycm')
-PAdminsys.add_argument('-scp', action='store_true', dest='winscp', help='winscp')
-PAdminsys.add_argument('-core', action='store_true', dest='coreftp', help='coreftp')
-PAdminsys.add_argument('-ftp', action='store_true', dest='ftpnavigator', help='FTP Navigator')
+#1.3- Parent parser: sysadmin
+PSysadmin = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
+PSysadmin._optionals.title = 'SCP/SSH/FTP/FTPS clients supported'
+PSysadmin.add_argument('-f', action='store_true', dest='filezilla', help='filezilla')
+PSysadmin.add_argument('-c', action='store_true', dest='cyberduck', help='cyberduck')
+PSysadmin.add_argument('-p', action='store_true', dest='puttycm', help='puttycm')
+PSysadmin.add_argument('-scp', action='store_true', dest='winscp', help='winscp')
+PSysadmin.add_argument('-core', action='store_true', dest='coreftp', help='coreftp')
+PSysadmin.add_argument('-ftp', action='store_true', dest='ftpnavigator', help='FTP Navigator')
 
 #1.4- Parent parser: database
 PDatabase = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
@@ -331,9 +331,9 @@ parser_chats.set_defaults(func=runChatsModule,auditType='chats')
 parser_mails = subparsers.add_parser('mails',parents=[PPoptional, PMails, PMode, PMasterPass_Firefox, PWrite],help='Run mails module')
 parser_mails.set_defaults(func=runMailsModule,auditType='mails')
 
-#2.e- Run adminsys module
-parser_adminsys = subparsers.add_parser('adminsys',parents=[PPoptional, PAdminsys, PWrite],help='Run adminsys module')
-parser_adminsys.set_defaults(func=runAdminsysModule,auditType='adminsys')
+#2.e- Run sysadmin module
+parser_sysadmin = subparsers.add_parser('sysadmin',parents=[PPoptional, PSysadmin, PWrite],help='Run sysadmin module')
+parser_sysadmin.set_defaults(func=runSysadminModule,auditType='sysadmin')
 
 #2.f- Run database module
 parser_database = subparsers.add_parser('database',parents=[PPoptional, PDatabase, PWrite],help='Run database module')
