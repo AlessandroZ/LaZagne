@@ -18,9 +18,9 @@ from softwares.wallet.kde import KDE
 # browsers
 from softwares.browsers.mozilla import Mozilla
 from softwares.browsers.opera import Opera
-# adminsys
-from softwares.adminsys.filezilla import Filezilla
-from softwares.adminsys.env_variable import Env_variable
+# sysadmin
+from softwares.sysadmin.filezilla import Filezilla
+from softwares.sysadmin.env_variable import Env_variable
 # chats
 from softwares.chats.pidgin import Pidgin
 from softwares.chats.jitsi import Jitsi
@@ -49,9 +49,9 @@ modules['database']['sqldeveloper'] = SQLDeveloper()
 modules['database']['squirrel'] = Squirrel()
 modules['database']['dbvis'] = DbVisualizer()
 # SCP/SSH/FTP/FTPS clients
-modules['adminsys'] = {}
-modules['adminsys']['filezilla'] = Filezilla()
-modules['adminsys']['env'] = Env_variable()
+modules['sysadmin'] = {}
+modules['sysadmin']['filezilla'] = Filezilla()
+modules['sysadmin']['env'] = Env_variable()
 # Mails
 modules['mails'] = {}
 modules['mails']['thunderbird'] = Mozilla()
@@ -83,7 +83,7 @@ def verbosity():
 	if args['verbose']==0: level=logging.INFO
 	elif args['verbose'] >= 1: level=logging.DEBUG
 	elif args['verbose']>=2: level=logging.WARNING
-	
+
 	FORMAT = "%(message)s"
 	formatter = logging.Formatter(fmt=FORMAT)
 	stream = logging.StreamHandler()
@@ -91,7 +91,7 @@ def verbosity():
 	root = logging.getLogger()
 	root.setLevel(level)
 	root.addHandler(stream)
-	
+
 	del args['verbose']
 
 def launch_module(b):
@@ -118,8 +118,8 @@ def runDatabaseModule():
 	launch_module(modules['database'])
 
 # SCP/SSH/FTP/FTPS clients + Environment variables
-def runAdminsysModule():
-	launch_module(modules['adminsys'])
+def runSysadminModule():
+	launch_module(modules['sysadmin'])
 
 # Mails
 def runMailsModule():
@@ -130,7 +130,7 @@ def runMailsModule():
 	constant.defaultpass = args['defaultpass']
 	constant.specific_path = args['specific_path']
 	constant.mozilla_software = 'Thunderbird'
-	
+
 	launch_module(modules['mails'])
 
 # Chats
@@ -148,7 +148,7 @@ def runBrowsersModule():
 	constant.defaultpass = args['defaultpass']
 	constant.specific_path = args['specific_path']
 	constant.mozilla_software = 'Firefox'
-	
+
 	launch_module(modules['browsers'])
 
 # All
@@ -160,7 +160,7 @@ def runAllModules():
 	time.sleep(time_to_sleep)
 	runDatabaseModule()
 	time.sleep(time_to_sleep)
-	runAdminsysModule()
+	runSysadminModule()
 	time.sleep(time_to_sleep)
 	runMailsModule()
 	time.sleep(time_to_sleep)
@@ -223,11 +223,11 @@ PMails = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: arg
 PMails._optionals.title = 'Email clients supported'
 PMails.add_argument('-t', action='store_true', dest='thunderbird', help='thunderbird')
 
-#1.3- Parent parser: adminsys
-PAdminsys = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PAdminsys._optionals.title = 'SCP/SSH/FTP/FTPS clients supported'
-PAdminsys.add_argument('-f', action='store_true', dest='filezilla', help='filezilla')
-PAdminsys.add_argument('-e', action='store_true', dest='env', help='environment variables')
+#1.3- Parent parser: sysadmin
+PSysadmin = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
+PSysadmin._optionals.title = 'SCP/SSH/FTP/FTPS clients supported'
+PSysadmin.add_argument('-f', action='store_true', dest='filezilla', help='filezilla')
+PSysadmin.add_argument('-e', action='store_true', dest='env', help='environment variables')
 
 #1.4- Parent parser: database
 PDatabase = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
@@ -267,9 +267,9 @@ parser_chats.set_defaults(func=runChatsModule,auditType='chats')
 parser_mails = subparsers.add_parser('mails',parents=[PPoptional, PMails, PMasterPass_Firefox, PWrite],help='Run mails module')
 parser_mails.set_defaults(func=runMailsModule,auditType='mails')
 
-#2.e- Run adminsys module
-parser_adminsys = subparsers.add_parser('adminsys',parents=[PPoptional, PAdminsys, PWrite],help='Run adminsys module')
-parser_adminsys.set_defaults(func=runAdminsysModule,auditType='adminsys')
+#2.e- Run sysadmin module
+parser_sysadmin = subparsers.add_parser('sysadmin',parents=[PPoptional, PSysadmin, PWrite],help='Run sysadmin module')
+parser_sysadmin.set_defaults(func=runSysadminModule,auditType='sysadmin')
 
 #2.f- Run database module
 parser_database = subparsers.add_parser('database',parents=[PPoptional, PDatabase, PWrite],help='Run database module')
