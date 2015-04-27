@@ -20,6 +20,7 @@ from softwares.browsers.ie import IE
 # windows
 from softwares.windows.network import Network
 from softwares.windows.dot_net import Dot_net
+from softwares.windows.secrets import Secrets
 # sysadmin
 from softwares.sysadmin.filezilla import Filezilla
 from softwares.sysadmin.cyberduck import Cyberduck
@@ -54,6 +55,7 @@ Header().first_title()
 modules = {}
 # windows 
 modules['windows'] = {}
+modules['windows']['secrets'] = Secrets()
 modules['windows']['dotnet'] = Dot_net()
 modules['windows']['network'] = Network()
 # Wifi
@@ -99,7 +101,7 @@ def output():
 			os.makedirs(constant.folder_name)
 			write_header()
 	del args['write']
-	
+
 def verbosity():
 	# write on the console + debug file
 	if args['verbose']==0: level=logging.INFO
@@ -112,6 +114,8 @@ def verbosity():
 	stream.setFormatter(formatter)
 	root = logging.getLogger()
 	root.setLevel(level)
+	# print help(root)
+	root.handlers = []
 	root.addHandler(stream)
 	
 	del args['verbose']
@@ -191,8 +195,6 @@ def runBrowsersModule():
 def runAllModules():
 	time_to_sleep = 0
 	
-	runWindowsModule()
-	time.sleep(time_to_sleep)
 	runWifiModule()
 	time.sleep(time_to_sleep)
 	runSVNModule()
@@ -206,6 +208,8 @@ def runAllModules():
 	runChatsModule()
 	time.sleep(time_to_sleep)
 	runBrowsersModule()
+	time.sleep(time_to_sleep)
+	runWindowsModule()
 
 # prompt help if an error occurs
 class MyParser(argparse.ArgumentParser):
@@ -308,6 +312,7 @@ PWifi.add_argument('--HiddenWifiArgs', action='store_true', dest='wifipass', hel
 #1.6- Parent parser: windows
 PWindows = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 PWindows._optionals.title = 'Windows credentials (credential manager, etc.)'
+PWindows.add_argument('-s', action='store_true', dest='secrets', help='Windows secrets (hashes, lsa secrets, etc.)')
 PWindows.add_argument('-d', action='store_true', dest='dotnet', help='domain visible network (.Net Passport) Passwords')
 PWindows.add_argument('-n', action='store_true', dest='network', help='generic network credentials')
 
