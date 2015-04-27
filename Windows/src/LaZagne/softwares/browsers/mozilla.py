@@ -281,10 +281,11 @@ class Mozilla():
 		
 		# 500 most used passwords
 		if 'd' in self.toCheck:
-			num_lines = (len(get_dico())-1)
+			wordlist = get_dico() + constant.passwordFound
+			num_lines = (len(wordlist)-1)
 			print_debug('ATTACK', '%d most used passwords !!! ' % num_lines)
 
-			for word in get_dico():
+			for word in wordlist:
 				if self.is_masterpassword_correct(word):
 					print_debug('FIND', 'Master password found: %s\n' % word.strip())
 					return True
