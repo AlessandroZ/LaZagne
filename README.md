@@ -71,6 +71,8 @@ Supported software
 	* windows credentials
 		* Domain visible network (.NET Passport)
 		* Generic network credentials
+		* Windows hashes (LM/NT)
+                * LSA Secrets
 
 * __Linux__
 	* browsers
@@ -105,6 +107,10 @@ IE Browser history
 Internet Explorer passwords (from IE7 and before Windows 8) can only be decrypted using the URL of the website. This one is used as an argument of the Win32CryptUnprotectData api. So to decrypt it, it is only necessary to retrieve the browsing history of ie. 
 To do that, I used C code. So I used a dll (the code is in the "browser_history_dll" directory) and it is directly embedded to the Python code as a Base64 string (c.f. ie.py). Once launched, the dll is written to the disk, a wrapper is used to call dll functions and then the dll file is removed from the disk.
 
+Windows hashes
+----
+To dump windows hashes and LSA Secrets, the impacket library has been used: https://github.com/CoreSecurity/impacket
+
 Build your own password recovery script
 ----
 It's possible to write your own script for the software of your choice. 
@@ -131,9 +137,12 @@ To compile the source code, some external libraries are required.
 
 	* Python for Windows Extensions
 		* http://sourceforge.net/projects/pywin32/
+	
+	* Impacket (for Windows hashes + LSA Secrets)
+		* https://github.com/CoreSecurity/impacket
 
 * For Linux
-	* None for Ubuntu 14.04
+	* None for Ubuntu 14.04 (except Python 2.7)
 	* Other distributions
 		* crypto
 		* dbus

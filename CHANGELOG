@@ -1,8 +1,9 @@
 LaZagne 0.2 (27/04/2014)
-* New modules: Windows hashes + LSA Secrets
-* Passwords found previously are used to test windows hashes and firefox masterpassword
-* 500 most famous passwords are used to retrieve the windows password (once we get the hashes)
-* Wifi bug fixed: only one password was printed
-* I.E bug fixed
+- For Windows
+	* New modules: Windows hashes + LSA Secrets
+	* Passwords found previously are used to test windows hashes and firefox masterpassword
+	* 500 most famous passwords are used to retrieve the windows password (once we get the hashes)
+	* Wifi bug fixed: only one password was printed
+	* I.E bug fixed
 
 
