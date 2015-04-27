@@ -16,7 +16,6 @@ class WifiPass():
 			directory = ''
 			if 'ALLUSERSPROFILE' in os.environ:
 				directory = os.environ['ALLUSERSPROFILE'] + os.sep + 'Microsoft\Wlansvc\Profiles\Interfaces'
-			
 			# for windows Vista or higher
 			if os.path.exists(directory):
 				passwordFound = False
@@ -68,7 +67,7 @@ class WifiPass():
 						tmp = ''
 						cpt = 1
 						for pwd in pwdFound:
-							tmp = '[wifi%s]\r\n' % str(cpt)
+							tmp += '[wifi%s]\r\n' % str(cpt)
 							cpt += 1
 							for p in pwd.keys():
 								tmp = str(tmp) + str(p) + '=' + str(pwd[p]) + '\r\n'

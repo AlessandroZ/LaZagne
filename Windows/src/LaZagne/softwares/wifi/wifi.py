@@ -40,6 +40,11 @@ class Wifi():
 			# read temp file containing all passwords found
 			pwdFound = []
 			filepath = tempfile.gettempdir() + os.sep + 'TEMP123A.txt'
+			
+			# the file has not been created yet
+			if not os.path.exists(filepath):
+				time.sleep(5)
+			
 			if os.path.exists(filepath):
 				cp = RawConfigParser()
 				cp.read(filepath)
