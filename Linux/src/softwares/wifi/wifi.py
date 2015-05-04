@@ -1,10 +1,15 @@
 from ConfigParser import RawConfigParser
 from config.header import Header
 from config.write_output import print_debug, print_output
+from config.moduleInfo import ModuleInfo
 import os
 
-class Wifi():
-	def retrieve_password(self):
+class Wifi(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-wi', 'action': 'store_true', 'dest': 'wifi', 'help': 'Network Manager - Need root Privileges'}
+		ModuleInfo.__init__(self, 'wifi', 'wifi', options)
+
+	def run(self):
 		# print the title
 		Header().title_debug('Wifi (from Network Manager)')
 		

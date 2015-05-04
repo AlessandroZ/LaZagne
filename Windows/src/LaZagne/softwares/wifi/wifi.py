@@ -5,10 +5,14 @@ from ctypes import *
 import time, tempfile
 from ConfigParser import RawConfigParser
 import os
+from config.moduleInfo import ModuleInfo
 
-class Wifi():
+class Wifi(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-wi', 'action': 'store_true', 'dest': 'wifi', 'help': 'Vista and higher - Need System Privileges'}
+		ModuleInfo.__init__(self, 'Wifi', 'wifi', options)
 	
-	def retrieve_password(self):
+	def run(self):
 		
 		# print title
 		Header().title_debug('Wifi')

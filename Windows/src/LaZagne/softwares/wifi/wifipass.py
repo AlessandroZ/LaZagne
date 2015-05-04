@@ -3,12 +3,16 @@ import os, win32crypt
 import binascii
 import tempfile, socket
 from ctypes import *
+from config.moduleInfo import ModuleInfo
+import argparse
 
-class WifiPass():
+class WifiPass(ModuleInfo):
+	def __init__(self):
+		options = {'command': '--HiddenWifiArgs', 'action': 'store_true', 'dest': 'wifipass', 'help': argparse.SUPPRESS}
+		ModuleInfo.__init__(self, 'wifipass', 'wifi', options)
 	
 	# used when launched with a system account 
-	def retrieve_password(self):
-		
+	def run(self):
 		# need to be admin privilege, to find passwords
 		if not windll.Shell32.IsUserAnAdmin():
 			return

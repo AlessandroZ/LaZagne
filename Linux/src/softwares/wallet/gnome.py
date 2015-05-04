@@ -2,10 +2,14 @@
 import os
 from config.header import Header
 from config.write_output import print_debug, print_output
+from config.moduleInfo import ModuleInfo
 
-class Gnome():
+class Gnome(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-g', 'action': 'store_true', 'dest': 'gnomeKeyring', 'help': 'Gnome Keyring'}
+		ModuleInfo.__init__(self, 'gnomeKeyring', 'wallet', options)
 	
-	def retrieve_password(self):
+	def run(self):
 		# print the title
 		Header().title_debug('Gnome keyring')
 		

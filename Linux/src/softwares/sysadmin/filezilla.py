@@ -1,11 +1,15 @@
 import xml.etree.cElementTree as ET
 from config.header import Header
 from config.write_output import print_debug, print_output
+from config.moduleInfo import ModuleInfo
 import os
 
-class Filezilla():
-
-	def retrieve_password(self):
+class Filezilla(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-f', 'action': 'store_true', 'dest': 'filezilla', 'help': 'filezilla'}
+		ModuleInfo.__init__(self, 'filezilla', 'sysadmin', options)
+	
+	def run(self):
 		# print the title
 		Header().title_debug('Filezilla')
 		

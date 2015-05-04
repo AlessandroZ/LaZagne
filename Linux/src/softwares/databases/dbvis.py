@@ -5,8 +5,12 @@ import base64, re, os
 import xml.etree.cElementTree as ET
 from config.header import Header
 from config.write_output import print_debug, print_output
+from config.moduleInfo import ModuleInfo
 
-class DbVisualizer():
+class DbVisualizer(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-d', 'action': 'store_true', 'dest': 'dbvis', 'help': 'dbvisualizer'}
+		ModuleInfo.__init__(self, 'dbvis', 'database', options)
 
 	# ---- functions used to decrypt the password ----
 	def get_salt(self):
@@ -97,7 +101,7 @@ class DbVisualizer():
 		else:
 			return 'DBVIS_NOT_EXISTS'
 
-	def retrieve_password(self):
+	def run(self):
 		# print the title
 		Header().title_debug('DbVisualizer')
 

@@ -11,88 +11,29 @@
 import argparse
 import time, sys, os
 import logging
-
-# browsers
 from softwares.browsers.mozilla import Mozilla
-from softwares.browsers.chrome import Chrome
-from softwares.browsers.opera import Opera
-from softwares.browsers.ie import IE
-# windows
-from softwares.windows.network import Network
-from softwares.windows.dot_net import Dot_net
-from softwares.windows.secrets import Secrets
-# sysadmin
-from softwares.sysadmin.filezilla import Filezilla
-from softwares.sysadmin.cyberduck import Cyberduck
-from softwares.sysadmin.puttycm import Puttycm
-from softwares.sysadmin.winscp import WinSCP
-from softwares.sysadmin.coreftp import CoreFTP
-from softwares.sysadmin.ftpnavigator import FtpNavigator
-# svn
-from softwares.svn.tortoise import Tortoise
-# chats
-from softwares.chats.skype import Skype
-from softwares.chats.pidgin import Pidgin
-from softwares.chats.jitsi import Jitsi
-# wifi
-from softwares.wifi.wifi import Wifi
-from softwares.wifi.wifipass import WifiPass
-# mails
-from softwares.mails.outlook import Outlook
-# databases
-from softwares.databases.sqldeveloper import SQLDeveloper
-from softwares.databases.squirrel import Squirrel
-from softwares.databases.dbvis import Dbvisualizer
+
 # configuration
 from config.header import Header
 from config.write_output import write_header, write_footer, print_footer
 from config.constant import *
+from config.manageModules import get_categories, get_modules
 
 # print the title
 Header().first_title()
 
-# Add all modules
+category = get_categories()
+moduleNames = get_modules()
+
+# Define a dictionary for all modules
 modules = {}
-# windows 
-modules['windows'] = {}
-modules['windows']['secrets'] = Secrets()
-modules['windows']['dotnet'] = Dot_net()
-modules['windows']['network'] = Network()
-# Wifi
-modules['wifi'] = {}
-modules['wifi']['wifi'] = Wifi()
-modules['wifi']['wifipass'] = WifiPass()
-# SVN
-modules['svn'] = {}
-modules['svn']['tortoise'] = Tortoise()
-# SQL clients
-modules['database'] = {}
-modules['database']['sqldeveloper'] = SQLDeveloper()
-modules['database']['squirrel'] = Squirrel()
-modules['database']['dbvis'] = Dbvisualizer()
-# SCP/SSH/FTP/FTPS clients
-modules['sysadmin'] = {}
-modules['sysadmin']['filezilla'] = Filezilla()
-modules['sysadmin']['cyberduck'] = Cyberduck()
-modules['sysadmin']['puttycm'] = Puttycm()
-modules['sysadmin']['winscp'] = WinSCP()
-modules['sysadmin']['coreftp'] = CoreFTP()
-modules['sysadmin']['ftpnavigator'] = FtpNavigator()
-# Mails
-modules['mails'] = {}
-modules['mails']['outlook'] = Outlook()
-modules['mails']['thunderbird'] = Mozilla()
-# Chats
-modules['chats'] = {}
-modules['chats']['skype'] = Skype()
-modules['chats']['pidgin'] = Pidgin()
-modules['chats']['jitsi'] = Jitsi()
-# Browsers
-modules['browsers'] = {}
-modules['browsers']['firefox'] = Mozilla()
-modules['browsers']['ie'] = IE()
-modules['browsers']['chrome'] = Chrome()
-modules['browsers']['opera'] = Opera()
+for categoryName in category.keys():
+	modules[categoryName] = {}
+
+# Add all modules to the dictionary
+for module in moduleNames:
+	modules[module.category][module.options['dest']] = module
+modules['mails']['thunderbird'] = Mozilla(True) # For thunderbird (firefox and thunderbird use the same class)
 
 def output():
 	if args['write'] == True:
@@ -114,10 +55,8 @@ def verbosity():
 	stream.setFormatter(formatter)
 	root = logging.getLogger()
 	root.setLevel(level)
-	# print help(root)
 	root.handlers = []
 	root.addHandler(stream)
-	
 	del args['verbose']
 
 def launch_module(b):
@@ -126,90 +65,48 @@ def launch_module(b):
 	for i in args.keys():
 		if args[i]:
 			if i in b.keys():
-				b[i].retrieve_password()
+				b[i].run()
 				ok = True
 	
 	# launch all modules
 	if not ok:
 		for i in b.keys():
-			b[i].retrieve_password()
-		
-# Credential Manager
-def runWindowsModule():
-	launch_module(modules['windows'])
+			b[i].run()
 
-# Wifi
-def runWifiModule():
-	launch_module(modules['wifi'])
+def manage_advanced_options():
+	if 'manually' in args:
+		constant.manually = args['manually']
+	if 'path' in args:
+		constant.path = args['path']
+	if 'bruteforce' in args: 
+		constant.bruteforce = args['bruteforce']
+	if 'defaultpass' in args: 
+		constant.defaultpass = args['defaultpass']
+	if 'specific_path' in args:
+		constant.specific_path = args['specific_path']
+	if 'mails' in args['auditType']:
+		constant.mozilla_software = 'Thunderbird'
+	elif 'browsers' in args['auditType']:
+		constant.mozilla_software = 'Firefox'
+	if 'master_pwd' in args:
+		constant.jitsi_masterpass = args['master_pwd']
+	if 'historic' in args:
+		constant.ie_historic = args['historic']
 
-# SVN
-def runSVNModule():
-	launch_module(modules['svn'])
+# Run only one module
+def runModule():
+	manage_advanced_options()
+	launch_module(modules[args['auditType']])
 
-# SQL clients
-def runDatabaseModule():
-	launch_module(modules['database'])
-
-# SCP/SSH/FTP/FTPS clients
-def runSysadminModule():
-	launch_module(modules['sysadmin'])
-	
-# Mails
-def runMailsModule():
-	isInteractive = args['isInteractive']
-	
-	# Advanced Thunderbird master password options
-	constant.manually = args['manually']
-	constant.path = args['path']
-	constant.bruteforce = args['bruteforce']
-	constant.defaultpass = args['defaultpass']
-	constant.specific_path = args['specific_path']
-	constant.mozilla_software = 'Thunderbird'
-	
-	launch_module(modules['mails'])
-	
-# Chats
-def runChatsModule():
-	# manage master password for jitsi
-	constant.jitsi_masterpass = args['master_pwd']
-	launch_module(modules['chats'])
-	
-# Web Browsers
-def runBrowsersModule():
-	isInteractive = args['isInteractive']
-	
-	# Advanced Firefox master password options
-	constant.manually = args['manually']
-	constant.path = args['path']
-	constant.bruteforce = args['bruteforce']
-	constant.defaultpass = args['defaultpass']
-	constant.specific_path = args['specific_path']
-	constant.mozilla_software = 'Firefox'
-	
-	# Advanced ie options 
-	constant.ie_historic = args['historic']
-	
-	launch_module(modules['browsers'])
-	
-# ALL
+# Run all
 def runAllModules():
-	time_to_sleep = 0
-	
-	runWifiModule()
-	time.sleep(time_to_sleep)
-	runSVNModule()
-	time.sleep(time_to_sleep)
-	runDatabaseModule()
-	time.sleep(time_to_sleep)
-	runSysadminModule()
-	time.sleep(time_to_sleep)
-	runMailsModule()
-	time.sleep(time_to_sleep)
-	runChatsModule()
-	time.sleep(time_to_sleep)
-	runBrowsersModule()
-	time.sleep(time_to_sleep)
-	runWindowsModule()
+	manage_advanced_options()
+	for categoryName in category.keys():
+		if categoryName == 'browsers':
+			constant.mozilla_software = 'Firefox'
+		elif categoryName == 'mails':
+			constant.mozilla_software = 'Thunderbird'
+		launch_module(modules[categoryName])
 
 # prompt help if an error occurs
 class MyParser(argparse.ArgumentParser):
@@ -220,141 +117,60 @@ class MyParser(argparse.ArgumentParser):
 
 parser = MyParser()
 
-# ------------------------------------------- Advanced options -------------------------------------------
-#1- Parent parsers
-#1.0- Parent parser: optional
+# ------------------------------------------- Permanent options -------------------------------------------
+# Version and verbosity 
 PPoptional = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 PPoptional._optionals.title = 'optional arguments'
-PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='write a debug file')
-PPoptional.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION))
+PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='increase verbosity level')
+PPoptional.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION), help='laZagne version')
 
-#1.0.1- Parent parser: output 
+# Output 
 PWrite = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 PWrite._optionals.title = 'output'
 PWrite.add_argument('-w', dest='write',  action= 'store_true', help = 'write a text file on the current directory')
 
-#1.0.2- Parent parser: Advanced Mozilla master password options 
-PMasterPass_Firefox = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PMasterPass_Firefox._optionals.title = 'Advanced Mozilla master password options'
-PMasterPass_Firefox.add_argument('-m', action='store', dest='manually', help='enter the master password manually')
-PMasterPass_Firefox.add_argument('-p', action='store', dest='path', help='path of a dictionnary file')
-PMasterPass_Firefox.add_argument('-b', type=int, action='store', dest='bruteforce', help='number of caracter to brute force')
-PMasterPass_Firefox.add_argument('-d', action='store_true', dest='defaultpass', help='try 500 most common passwords')
-PMasterPass_Firefox.add_argument('-s', action='store', dest='specific_path', help='enter the specific path to a profile you want to crack')
+# ------------------------------------------- Add options and suboptions to all modules -------------------------------------------
+all_subparser = []
+for c in category.keys():
+	category[c]['parser'] = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
+	category[c]['parser']._optionals.title = category[c]['help']
+	
+	# manage options
+	category[c]['subparser'] = []
+	for module in modules[c].keys():
+		m = modules[c][module]
+		category[c]['parser'].add_argument(m.options['command'], action=m.options['action'], dest=m.options['dest'], help=m.options['help'])
+		
+		# manage all suboptions by modules
+		if m.suboptions and m.name != 'thunderbird':
+			tmp = []
+			for sub in m.suboptions:
+				tmp_subparser = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
+				tmp_subparser._optionals.title = sub['title']
+				if 'type' in sub:
+					tmp_subparser.add_argument(sub['command'], type=sub['type'], action=sub['action'], dest=sub['dest'], help=sub['help'])
+				else:
+					tmp_subparser.add_argument(sub['command'], action=sub['action'], dest=sub['dest'], help=sub['help'])
+				tmp.append(tmp_subparser)
+				all_subparser.append(tmp_subparser)
+			category[c]['subparser'] += tmp
 
-#1.0.2- Parent parser: Advanced ie option
-PEntropy_Ie = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PEntropy_Ie._optionals.title = 'Advanced ie option'
-PEntropy_Ie.add_argument('-l', action='store', dest='historic', help='text file with a list of websites')
+# ------------------------------------------- Print all -------------------------------------------
+parents = [PPoptional] + all_subparser + [PWrite]
+dic = {'all':{'parents':parents, 'help':'Run all modules', 'func': runAllModules}}
+for c in category.keys():
+	parser_tab = [PPoptional, category[c]['parser']]
+	if 'subparser' in category[c]:
+		if category[c]['subparser']:
+			parser_tab += category[c]['subparser']
+	parser_tab += [PWrite]
+	dic_tmp = {c: {'parents': parser_tab, 'help':'Run %s module' % c, 'func': runModule}}
+	dic = dict(dic.items() + dic_tmp.items())
 
-#1.0.3- Parent parser: Advanced jitsi option
-PMasterPass_Jitsi = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PMasterPass_Jitsi._optionals.title = 'Advanced jitsi option'
-PMasterPass_Jitsi.add_argument('-ma', action='store', dest='master_pwd', help='enter the master password manually')
-
-#1.0.4- Parent parser: Interactive mode option
-PMode = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PMode._optionals.title = 'Interactive mode'
-PMode.add_argument('-i', dest='isInteractive', action='store_true', help='launch the program in an interactive mode')
-
-
-# ------------------------------------------- Functions (by Modules) -------------------------------------------
-#1.1- Parent parser: browsers
-PBrowsers = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PBrowsers._optionals.title = 'Web browsers supported'
-PBrowsers.add_argument('-f', action='store_true', dest='firefox', help='firefox')
-PBrowsers.add_argument('-e', action='store_true', dest='ie', help='internet explorer from version 7 to 11 (but not with win8)')
-PBrowsers.add_argument('-c', action='store_true', dest='chrome', help='chrome')
-PBrowsers.add_argument('-o', action='store_true', dest='opera', help='opera')
-
-#1.1- Parent parser: chats
-PChats = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PChats._optionals.title = 'Chat clients supported'
-PChats.add_argument('-s', action='store_true', dest='skype', help='skype')
-PChats.add_argument('-p', action='store_true', dest='pidgin', help='pidgin')
-PChats.add_argument('-j', action='store_true', dest='jitsi', help='jitsi')
-
-#1.2- Parent parser: mails
-PMails = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PMails._optionals.title = 'Email clients supported'
-PMails.add_argument('-o', action='store_true', dest='outlook', help='outlook - IMAP, POP3, HTTP, SMTP, LDPAP (not Exchange)')
-PMails.add_argument('-t', action='store_true', dest='thunderbird', help='thunderbird')
-
-#1.3- Parent parser: sysadmin
-PSysadmin = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PSysadmin._optionals.title = 'SCP/SSH/FTP/FTPS clients supported'
-PSysadmin.add_argument('-f', action='store_true', dest='filezilla', help='filezilla')
-PSysadmin.add_argument('-c', action='store_true', dest='cyberduck', help='cyberduck')
-PSysadmin.add_argument('-p', action='store_true', dest='puttycm', help='puttycm')
-PSysadmin.add_argument('-scp', action='store_true', dest='winscp', help='winscp')
-PSysadmin.add_argument('-core', action='store_true', dest='coreftp', help='coreftp')
-PSysadmin.add_argument('-ftp', action='store_true', dest='ftpnavigator', help='FTP Navigator')
-
-#1.4- Parent parser: database
-PDatabase = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PDatabase._optionals.title = 'SQL clients supported'
-PDatabase.add_argument('-s', action='store_true', dest='sqldeveloper', help='sqldeveloper')
-PDatabase.add_argument('-q', action='store_true', dest='squirrel', help='squirrel')
-PDatabase.add_argument('-d', action='store_true', dest='dbvis', help='dbvisualizer')
-
-#1.5- Parent parser: svn
-PSVN = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PSVN._optionals.title = 'SVN clients supported'
-PSVN.add_argument('-t', action='store_true', dest='tortoise', help='tortoise')
-
-#1.6- Parent parser: wifi
-PWifi = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PWifi._optionals.title = 'Wifi'
-PWifi.add_argument('-wi', action='store_true', dest='wifi', help='Vista and higher - Need System Privileges')
-# Manage wifi (when executed with a system account)
-PWifi.add_argument('--HiddenWifiArgs', action='store_true', dest='wifipass', help=argparse.SUPPRESS)
-
-#1.6- Parent parser: windows
-PWindows = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PWindows._optionals.title = 'Windows credentials (credential manager, etc.)'
-PWindows.add_argument('-s', action='store_true', dest='secrets', help='Windows secrets (hashes, lsa secrets, etc.)')
-PWindows.add_argument('-d', action='store_true', dest='dotnet', help='domain visible network (.Net Passport) Passwords')
-PWindows.add_argument('-n', action='store_true', dest='network', help='generic network credentials')
-
-# ------------------------------------------- Main Modules -------------------------------------------
 #2- main commands
 subparsers = parser.add_subparsers(help='Choose a main command')
-
-#2.a- Run all modules
-parser_all = subparsers.add_parser('all',parents=[PPoptional, PMode, PMasterPass_Firefox, PEntropy_Ie, PMasterPass_Jitsi, PWrite],help='Run all modules')
-parser_all.set_defaults(func=runAllModules,auditType='all')
-
-#2.b- Run browsers module
-parser_browsers = subparsers.add_parser('browsers',parents=[PPoptional, PBrowsers, PMode, PMasterPass_Firefox, PEntropy_Ie, PWrite],help='Run browsers module')
-parser_browsers.set_defaults(func=runBrowsersModule,auditType='browsers')
-
-#2.c- Run chats module
-parser_chats = subparsers.add_parser('chats',parents=[PPoptional, PChats, PMasterPass_Jitsi, PWrite],help='Run chats module')
-parser_chats.set_defaults(func=runChatsModule,auditType='chats')
-
-#2.d- Run mails module
-parser_mails = subparsers.add_parser('mails',parents=[PPoptional, PMails, PMode, PMasterPass_Firefox, PWrite],help='Run mails module')
-parser_mails.set_defaults(func=runMailsModule,auditType='mails')
-
-#2.e- Run sysadmin module
-parser_sysadmin = subparsers.add_parser('sysadmin',parents=[PPoptional, PSysadmin, PWrite],help='Run sysadmin module')
-parser_sysadmin.set_defaults(func=runSysadminModule,auditType='sysadmin')
-
-#2.f- Run database module
-parser_database = subparsers.add_parser('database',parents=[PPoptional, PDatabase, PWrite],help='Run database module')
-parser_database.set_defaults(func=runDatabaseModule,auditType='database')
-
-#2.g- Run svn module
-parser_svn = subparsers.add_parser('svn',parents=[PPoptional, PSVN, PWrite],help='Run svn module')
-parser_svn.set_defaults(func=runSVNModule,auditType='svn')
-
-#2.h- Run wifi module
-parser_wifi = subparsers.add_parser('wifi',parents=[PPoptional, PWifi, PWrite],help='Run wifi module')
-parser_wifi.set_defaults(func=runWifiModule,auditType='wifi')
-
-#2.i- Run windows module
-parser_windows = subparsers.add_parser('windows',parents=[PPoptional, PWindows, PWrite],help='Run windows module')
-parser_windows.set_defaults(func=runWindowsModule,auditType='windows')
+for d in dic.keys():
+	subparsers.add_parser(d,parents=dic[d]['parents'],help=dic[d]['help']).set_defaults(func=dic[d]['func'],auditType=d)
 
 # ------------------------------------------- Parse arguments -------------------------------------------
 args = dict(parser.parse_args()._get_kwargs())
@@ -371,4 +187,3 @@ print_footer()
 
 elapsed_time = time.time() - start_time
 print 'elapsed time = ' + str(elapsed_time)
-

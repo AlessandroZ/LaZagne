@@ -4,11 +4,15 @@ import sys, os, platform
 from config.constant import *
 from config.write_output import print_output, print_debug
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class Chrome():
+class Chrome(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-c', 'action': 'store_true', 'dest': 'chrome', 'help': 'chrome'}
+		ModuleInfo.__init__(self, 'chrome', 'browsers', options)
 
 	# main function
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('Chrome')
 		

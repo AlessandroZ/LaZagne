@@ -5,8 +5,13 @@ import xml.etree.cElementTree as ET
 from config.constant import *
 from config.write_output import print_output, print_debug
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class SQLDeveloper():
+class SQLDeveloper(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-s', 'action': 'store_true', 'dest': 'sqldeveloper', 'help': 'sqldeveloper'}
+		ModuleInfo.__init__(self, 'sqldeveloper', 'database', options)
+	
 	def get_salt(self):
 		salt_array = [5, 19, -103, 66, -109, 114, -24, -83]
 		salt = array.array('b', salt_array)
@@ -120,7 +125,7 @@ class SQLDeveloper():
 		else:
 			print_debug('ERROR', 'The xml file connections.xml containing the passwords has not been found.')
 	
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('SQL Developer')
 		

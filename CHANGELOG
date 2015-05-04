@@ -1,4 +1,14 @@
-LaZagne 0.2 (27/04/2014)
+LaZagne 0.3 (30/04/2015)
+- For Windows
+	* Flexibility on the code: much more easy to add modules
+	* Passwords found previously are used to test firefox masterpassword if set
+
+- For Linux
+	* Flexibility on the code: much more easy to add modules
+	* Passwords found previously are used to test firefox masterpassword if set
+	* 2 different standalones (32 bits / 64 bits)
+
+LaZagne 0.2 (27/04/2015)
 - For Windows
 	* New modules: Windows hashes + LSA Secrets
 	* Passwords found previously are used to test windows hashes and firefox masterpassword

@@ -3,11 +3,15 @@ import sys, os, platform, base64
 from config.write_output import print_output, print_debug
 from config.constant import *
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class Tortoise():
+class Tortoise(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-t', 'action': 'store_true', 'dest': 'tortoise', 'help': 'tortoise'}
+		ModuleInfo.__init__(self, 'tortoise', 'svn', options)
 
 	# main function
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('Tortoise')
 		
