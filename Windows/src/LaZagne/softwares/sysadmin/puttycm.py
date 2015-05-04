@@ -4,10 +4,14 @@ import os
 from config.constant import *
 from config.write_output import print_output, print_debug
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class Puttycm():
-
-	def retrieve_password(self):
+class Puttycm(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-p', 'action': 'store_true', 'dest': 'puttycm', 'help': 'puttycm'}
+		ModuleInfo.__init__(self, 'puttycm', 'sysadmin', options)
+		
+	def run(self):
 		# print title
 		Header().title_debug('Puttycm')
 		

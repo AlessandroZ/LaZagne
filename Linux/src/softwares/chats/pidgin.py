@@ -4,8 +4,12 @@ from config.header import Header
 from config.constant import *
 from config.write_output import print_debug, print_output
 import dbus
+from config.moduleInfo import ModuleInfo
 
-class Pidgin():
+class Pidgin(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-p', 'action': 'store_true', 'dest': 'pidgin', 'help': 'pidgin'}
+		ModuleInfo.__init__(self, 'pidgin', 'chats', options)
 	
 	# if pidgin is started, use the api to retrieve all passwords
 	def check_if_pidgin_started(self):
@@ -30,7 +34,7 @@ class Pidgin():
 			return False
 			
 
-	def retrieve_password(self):
+	def run(self):
 		# print the title
 		Header().title_debug('Pidgin')
 		

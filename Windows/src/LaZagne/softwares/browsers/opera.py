@@ -5,11 +5,16 @@ import sqlite3, win32crypt
 from config.constant import *
 from config.write_output import print_output, print_debug
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
 CIPHERED_FILE = ''
 
-class Opera():
-	def retrieve_password(self):
+class Opera(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-o', 'action': 'store_true', 'dest': 'opera', 'help': 'opera'}
+		ModuleInfo.__init__(self, 'opera', 'browsers', options)
+	
+	def run(self):
 		# print title
 		Header().title_debug('Opera')
 		

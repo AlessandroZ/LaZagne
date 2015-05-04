@@ -3,8 +3,13 @@ from Crypto.Cipher import AES
 import win32con, win32api
 from config.write_output import print_output, print_debug
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class CoreFTP():
+class CoreFTP(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-core', 'action': 'store_true', 'dest': 'coreftp', 'help': 'coreftp'}
+		ModuleInfo.__init__(self, 'coreftp', 'sysadmin', options)
+	
 	def get_secret(self):
 		return "hdfzpysvpzimorhk"
 	
@@ -49,7 +54,7 @@ class CoreFTP():
 		# print the results
 		print_output('CoreFTP', pwdFound)
 		
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('CoreFTP')
 		

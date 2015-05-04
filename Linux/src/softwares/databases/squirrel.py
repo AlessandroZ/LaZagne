@@ -2,9 +2,14 @@ import xml.etree.cElementTree as ET
 from config.header import Header
 from config.constant import *
 from config.write_output import print_debug, print_output
+from config.moduleInfo import ModuleInfo
 import os
 
-class Squirrel():
+class Squirrel(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-q', 'action': 'store_true', 'dest': 'squirrel', 'help': 'squirrel'}
+		ModuleInfo.__init__(self, 'squirrel', 'database', options)
+
 	def get_path(self):
 		
 		path = '~/.squirrel-sql'
@@ -40,7 +45,7 @@ class Squirrel():
 		print_output('Squirrel', pwdFound)
 		
 	# Main function
-	def retrieve_password(self):
+	def run(self):
 		# print the title
 		Header().title_debug('Squirrel')
 		

@@ -3,8 +3,13 @@ import os
 from config.write_output import print_output, print_debug
 from config.constant import *
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class Squirrel():
+class Squirrel(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-q', 'action': 'store_true', 'dest': 'squirrel', 'help': 'squirrel'}
+		ModuleInfo.__init__(self, 'squirrel', 'database', options)
+
 	def get_path(self):
 		if 'HOMEPATH' in os.environ:
 			path = os.environ['HOMEPATH'] + os.sep + '.squirrel-sql'
@@ -40,7 +45,7 @@ class Squirrel():
 		print_output("Squirrel", pwdFound)
 		
 	# Main function
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('Squirrel')
 		

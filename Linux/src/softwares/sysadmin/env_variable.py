@@ -2,10 +2,14 @@
 import os
 from config.header import Header
 from config.write_output import  print_debug, print_output
+from config.moduleInfo import ModuleInfo
 
-class Env_variable():
+class Env_variable(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-e', 'action': 'store_true', 'dest': 'env', 'help': 'environment variables'}
+		ModuleInfo.__init__(self, 'Environnement variables', 'sysadmin', options)
 
-	def retrieve_password(self):
+	def run(self):
 		values = {}
 		pwdFound = []
 		

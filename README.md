@@ -28,84 +28,18 @@ Usage
 * Write all passwords found into a file (-w options)
 	* cmd: laZagne.exe all -w
 
-__Note: For wifi passwords, launch it with administrator privileges (UAC Authentication / sudo)__
+__Note: For wifi passwords \ Windows Secrets, launch it with administrator privileges (UAC Authentication / sudo)__
 
 Supported software
 ----
 
-* __Windows__ (tested on Windows XP, 7 and 8 - 32 and 64 bits)
-	* Browsers
-		* Firefox
-		* Chrome
-		* Opera
-		* Explorer
-
-	* chats
-		* Skype
-		* Pidgin
-		* Jitsi
-
-	* mails
-		* Thunderbird
-		* Outlook
-
-	* adminsys
-		* FileZilla
-		* PuttyCM
-		* WinSCP
-		* Cyberduck
-		* CoreFTP
-		* FTPNavigator
-
-	* database
-		* SQLdeveloper
-		* Squirrel
-		* DBvisualizer
-
-	* svn
-		* Tortoise
-
-	* wifi
-		* Wireless Network Password (Windows Feature)
-
-	* windows credentials
-		* Domain visible network (.NET Passport)
-		* Generic network credentials
-		* Windows hashes (LM/NT)
-                * LSA Secrets
-
-* __Linux__
-	* browsers
-		* Firefox
-		* Opera
-
-	* chats
-		* Pidgin
-		* Jitsi
-
-	* mails
-		* Thunderbird
-
-	* adminsys
-		* FileZilla
-		* Environment Variables
-
-	* database
-		* SQLdeveloper
-		* Squirrel
-		* DBvisualizer
-
-	* wifi
-		* Network Manager
-
-	* wallet
-		* GNOME Keyring
+<p align="center"><img src="./pictures/softwares.png" alt="The LaZagne project"></p>
 
 
 IE Browser history
 ----
-Internet Explorer passwords (from IE7 and before Windows 8) can only be decrypted using the URL of the website. This one is used as an argument of the Win32CryptUnprotectData api. So to decrypt it, it is only necessary to retrieve the browsing history of ie. 
-To do that, I used C code. So I used a dll (the code is in the "browser_history_dll" directory) and it is directly embedded to the Python code as a Base64 string (c.f. ie.py). Once launched, the dll is written to the disk, a wrapper is used to call dll functions and then the dll file is removed from the disk.
+Internet Explorer passwords (from IE7 and before Windows 8) can only be decrypted using the URL of the website. This one is used as an argument of the Win32CryptUnprotectData api. Thus, using the browsing history of ie will permit to decrypt many passwords. 
+To do that, I used a dll written in C code (the code is in the "browser_history_dll" directory) and it is directly embedded to the Python code as a Base64 string (c.f. ie.py). Once launched, the dll is written on the disk, a wrapper is used to call dll functions and then the dll file is removed from the disk.
 
 Windows hashes
 ----
@@ -113,15 +47,21 @@ To dump windows hashes and LSA Secrets, the impacket library has been used: http
 
 Build your own password recovery script
 ----
-It's possible to write your own script for the software of your choice. 
+It's possible to write your own script for the software of your choice. Building your own module has become extremely easy. 
 
 To do that, some code standards are to be met: 
-* Create a class using the name of the software
-* This class has to have a function called "retrieve_password" (it will be the main function)
-* The output containing all passwords has to be send to the "print_output" function - ex: print_output(<software_name>, password_list)
+* Create a class using the name of the software containing 2 importants functions:
+	* init: used to define all arguments used to launch the class. 
+	* run:  will be the main function
+
+* Add on the config.manageModules.py file your class name and your import
+
+* The output containing all passwords has to be send to the "print_output" function - ex: print_output(software_name, password_list)
 	* password_list has to be an array of dictionnaries. 
+
 * Optional: you could use the function "print_debug" to print your output 
 	* ex: print_debug("ERROR", "Failed to load ...")
+
 * Use an existing script to understand what I have said :)
 
 If you want to improve this tool, you can send me your script and it will be added to this project (authors will be, of course, credited on each script ;)).

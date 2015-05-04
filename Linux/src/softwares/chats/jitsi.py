@@ -5,12 +5,17 @@ from Crypto.Cipher import AES
 from config.header import Header
 from config.constant import *
 from config.write_output import print_debug, print_output
+from config.moduleInfo import ModuleInfo
 
 # From https://github.com/mitsuhiko/python-pbkdf2
 from pbkdf2 import pbkdf2_bin
 
-class Jitsi():
+class Jitsi(ModuleInfo):
 	def __init__(self):
+		options = {'command': '-j', 'action': 'store_true', 'dest': 'jitsi', 'help': 'jitsi'}
+		suboptions = [{'command': '-ma', 'action': 'store', 'dest': 'master_pwd', 'help': 'enter the master password manually', 'title': 'Advanced jitsi option'}]
+		ModuleInfo.__init__(self, 'jitsi', 'chats', options, suboptions)
+
 		self.keylen = 32
 		self.iterations = 1024
 		self.padding = '\f'
@@ -96,7 +101,7 @@ class Jitsi():
 		return plaintext
 	
 	# main function
-	def retrieve_password(self):
+	def run(self):
 		# print the title
 		Header().title_debug('Jitsi')
 		

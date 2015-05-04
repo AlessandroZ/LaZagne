@@ -14,6 +14,7 @@ import itertools
 from config.header import Header
 from config.constant import *
 from config.write_output import print_debug, print_output
+from config.moduleInfo import ModuleInfo
 
 # Password structures
 class SECItem(Structure):
@@ -67,13 +68,13 @@ class SqliteDatabase(Credentials):
 		self.conn.close()
 
 
-class Mozilla():
+class Mozilla(ModuleInfo):
 	# b = brute force attack
 	# m = manually
 	# d = default list
 	# a = dictionnary attack
 
-	def __init__(self):
+	def __init__(self, isThunderbird = False):
 		
 		self.credentials_categorie = None
 		self.libnss = None
@@ -87,6 +88,22 @@ class Mozilla():
 		self.manually_pass = None
 		self.dictionnary_path = None
 		self.number_toStop = None
+
+		# Manage options
+		suboptions = [
+			{'command': '-m', 'action': 'store', 'dest': 'manually', 'help': 'enter the master password manually', 'title': 'Advanced Mozilla master password options'},
+			{'command': '-p', 'action': 'store', 'dest': 'path', 'help': 'path of a dictionnary file', 'title': 'Advanced Mozilla master password options'},
+			{'command': '-b', 'type':int, 'action': 'store', 'dest': 'bruteforce', 'help': 'number of caracter to brute force', 'title': 'Advanced Mozilla master password options'},
+			{'command': '-d', 'action': 'store_true', 'dest': 'defaultpass', 'help': 'try 500 most common passwords', 'title': 'Advanced Mozilla master password options'},
+			{'command': '-s', 'action': 'store', 'dest': 'specific_path', 'help': 'enter the specific path to a profile you want to crack', 'title': 'Advanced Mozilla master password options'}
+		]
+		
+		if not isThunderbird:
+			options = {'command': '-f', 'action': 'store_true', 'dest': 'firefox', 'help': 'firefox'}
+			ModuleInfo.__init__(self, 'firefox', 'browsers', options, suboptions)
+		else:
+			options = {'command': '-t', 'action': 'store_true', 'dest': 'thunderbird', 'help': 'thunderbird'}
+			ModuleInfo.__init__(self, 'thunderbird', 'browsers', options, suboptions)
 
 	def __del__(self):
 		self.libnss = None
@@ -270,10 +287,11 @@ class Mozilla():
 		
 		# 500 most used passwords
 		if 'd' in self.toCheck:
-			num_lines = (len(get_dico())-1)
+			wordlist = get_dico() + constant.passwordFound
+			num_lines = (len(wordlist)-1)
 			print_debug('ATTACK', '%d most used passwords !!! ' % num_lines)
 
-			for word in get_dico():
+			for word in wordlist:
 				if self.is_masterpassword_correct(word):
 					print_debug('FIND', 'Master password found: %s\n' % word.strip())
 					return True
@@ -306,7 +324,7 @@ class Mozilla():
 	# ------------------------------ End of Master Password Functions ------------------------------
 	
 	# main function
-	def retrieve_password(self):
+	def run(self):
 		self.manage_advanced_options()
 		
 		software_name = constant.mozilla_software

@@ -2,10 +2,14 @@ import win32api, win32con, win32crypt
 from config.write_output import print_output, print_debug
 from config.constant import *
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class Outlook():
-	
-	def retrieve_password(self):
+class Outlook(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-o', 'action': 'store_true', 'dest': 'outlook', 'help': 'outlook - IMAP, POP3, HTTP, SMTP, LDPAP (not Exchange)'}
+		ModuleInfo.__init__(self, 'outlook', 'mails', options)
+
+	def run(self):
 		# print title
 		Header().title_debug('Outlook')
 		

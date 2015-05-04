@@ -6,9 +6,13 @@ import binascii, struct
 from config.constant import *
 from config.write_output import print_output, print_debug
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class Skype():
-	
+class Skype(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-s', 'action': 'store_true', 'dest': 'skype', 'help': 'skype'}
+		ModuleInfo.__init__(self, 'skype', 'chats', options)
+
 	def aes_encrypt(self, message, passphrase):
 		IV = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
 		aes = AES.new(passphrase, AES.MODE_CBC, IV)
@@ -69,7 +73,7 @@ class Skype():
 		return binascii.hexlify(tmp)
 
 	# main function
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('Skype')
 		

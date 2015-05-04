@@ -27,7 +27,7 @@ def write_header():
 	open(constant.folder_name + os.sep + 'credentials.txt',"a+b").write(header)
 
 def write_footer():
-	footer = '\n[+] %s passwords have been found.\nFor more information launch it again  with the -v option\n\n' % str(constant.nbPasswordFound)
+	footer = '\n[+] %s passwords have been found.\n\n' % str(constant.nbPasswordFound)
 	open(constant.folder_name + os.sep + 'credentials.txt',"a+b").write(footer)
 
 def write_credentials(pwdFound, category):
@@ -52,7 +52,9 @@ def checks_write(values, category):
 # --------------------------- Output functions ---------------------------
 
 def print_footer():
-	footer = '\n[+] %s passwords have been found.\nFor more information launch it again with the -v option\n' % str(constant.nbPasswordFound)
+	footer = '\n[+] %s passwords have been found.\n' % str(constant.nbPasswordFound)
+	if logging.getLogger().isEnabledFor(logging.DEBUG) == False:
+		footer += 'For more information launch it again with the -v option\n'
 	logging.info(footer)
 
 # print output if passwords have been found
@@ -74,7 +76,15 @@ def print_output(software_name, pwdFound):
 			else:
 				print_debug("OK", "Password found !!!")
 				toWrite.append(pwd)
+				# Store all passwords found on a table => for dictionnary attack if masterpassword set
 				constant.nbPasswordFound += 1
+				try:
+					if password:
+						constant.passwordFound.append(pwd['Password'].strip())
+					elif key:
+						constant.passwordFound.append(pwd['key'])
+				except:
+					pass
 			
 			for p in pwd.keys():
 				logging.info("%s: %s" % (p, pwd[p]))
