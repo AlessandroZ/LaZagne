@@ -5,8 +5,12 @@ import xml.etree.cElementTree as ET
 from config.write_output import print_output, print_debug
 from config.constant import *
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class Cyberduck():
+class Cyberduck(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-c', 'action': 'store_true', 'dest': 'cyberduck', 'help': 'cyberduck'}
+		ModuleInfo.__init__(self, 'cyberduck', 'sysadmin', options)
 
 	# find the user.config file containing passwords
 	def get_path(self):
@@ -27,7 +31,6 @@ class Cyberduck():
 		else:
 			return 'APPDATA_NOT_FOUND'
 			
-	
 	# parse the xml file
 	def parse_xml(self, xml_file):
 		tree = ET.ElementTree(file=xml_file)
@@ -49,7 +52,7 @@ class Cyberduck():
 		print_output("Cyberduck", pwdFound)
 		
 	# main function
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('Cyberduck')
 		

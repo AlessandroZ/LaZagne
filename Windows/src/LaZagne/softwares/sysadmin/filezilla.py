@@ -3,10 +3,14 @@ import os
 from config.constant import *
 from config.write_output import print_output, print_debug
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class Filezilla():
+class Filezilla(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-f', 'action': 'store_true', 'dest': 'filezilla', 'help': 'filezilla'}
+		ModuleInfo.__init__(self, 'filezilla', 'sysadmin', options)
 
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('Filezilla')
 		

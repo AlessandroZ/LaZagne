@@ -4,6 +4,7 @@ from ctypes.wintypes import DWORD
 from config.write_output import print_output, print_debug
 from config.constant import *
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
 memcpy = cdll.msvcrt.memcpy
 LocalFree = windll.kernel32.LocalFree
@@ -16,7 +17,11 @@ class DATA_BLOB(Structure):
 		('pbData', POINTER(c_char))
 	]
 
-class Network():
+class Network(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-n', 'action': 'store_true', 'dest': 'network', 'help': 'generic network credentials'}
+		ModuleInfo.__init__(self, 'Generic Network', 'windows', options)
+	
 	def getData(self, blobOut):
 		cbData = int(blobOut.cbData)
 		pbData = blobOut.pbData
@@ -53,7 +58,7 @@ class Network():
 		else:
 			return 'failed'
 
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('Generic Network')
 		

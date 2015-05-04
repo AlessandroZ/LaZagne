@@ -5,9 +5,13 @@ from config.header import Header
 from config.write_output import print_debug
 from ctypes import *
 import logging
+from config.moduleInfo import ModuleInfo
 
-class Secrets():
+class Secrets(ModuleInfo):
 	def __init__(self):
+		options = {'command': '-s', 'action': 'store_true', 'dest': 'secrets', 'help': 'Windows secrets (hashes, lsa secrets, etc.)'}
+		ModuleInfo.__init__(self, 'Windows secrets', 'windows', options)
+		
 		self.sysFile = ['sam', 'security', 'system']
 		self.address = 'LOCAL'
 		self.ntds = os.environ['systemroot'] + os.sep + 'ntds' + os.sep + 'ntds.dit'
@@ -26,7 +30,7 @@ class Secrets():
 		for f in self.sysFile:
 			os.remove('%s.save' % f)
 	
-	def retrieve_password(self):
+	def run(self):
 		# Need admin privileges
 		if not windll.Shell32.IsUserAnAdmin():
 			if logging.getLogger().isEnabledFor(logging.DEBUG) == True:

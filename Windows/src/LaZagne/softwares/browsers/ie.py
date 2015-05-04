@@ -5,6 +5,7 @@ from ctypes.wintypes import DWORD
 from config.constant import *
 from config.write_output import print_output, print_debug
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
 memcpy = cdll.msvcrt.memcpy
 LocalFree = windll.kernel32.LocalFree
@@ -20,7 +21,12 @@ class DATA_BLOB(Structure):
 		('pbData', POINTER(c_char))
 	]
 
-class IE():
+class IE(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-e', 'action': 'store_true', 'dest': 'ie', 'help': 'internet explorer from version 7 to 11 (but not with win8)'}
+		suboptions = [{'command': '-l', 'action': 'store', 'dest': 'historic', 'help': 'text file with a list of websites', 'title': 'Advanced ie option'}]
+		ModuleInfo.__init__(self, 'ie', 'browsers', options, suboptions)
+
 	def getData(self, blobOut):
 		cbData = int(blobOut.cbData)
 		pbData = blobOut.pbData
@@ -278,10 +284,8 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 					pass
 			else:
 				password = secret[length - s]
-		
-
-
-	def retrieve_password(self, historic=''):
+	
+	def run(self, historic=''):
 		# print title
 		Header().title_debug('Internet Explorer')
 		

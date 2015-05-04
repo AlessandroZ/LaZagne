@@ -2,12 +2,16 @@ import win32con, win32api
 from config.write_output import print_output, print_debug
 from config.constant import *
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class WinSCP():
+class WinSCP(ModuleInfo):
 	def __init__(self):
 		self.hash = ''
 		self.username = ''
 		self.hostname = ''
+		
+		options = {'command': '-scp', 'action': 'store_true', 'dest': 'winscp', 'help': 'winscp'}
+		ModuleInfo.__init__(self, 'winscp', 'sysadmin', options)
 	
 	# ------------------------------ Getters and Setters ------------------------------
 	def get_hash(self):
@@ -145,7 +149,7 @@ class WinSCP():
 		return result
 	
 	# --------- Main function ---------
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('WinSCP')
 		

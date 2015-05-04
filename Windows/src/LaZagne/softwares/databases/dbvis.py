@@ -7,8 +7,12 @@ import xml.etree.cElementTree as ET
 from config.write_output import print_output, print_debug
 from config.constant import *
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class Dbvisualizer():
+class Dbvisualizer(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-d', 'action': 'store_true', 'dest': 'dbvis', 'help': 'dbvisualizer'}
+		ModuleInfo.__init__(self, 'dbvis', 'database', options)
 
 	# ---- functions used to decrypt the password ----
 	def get_salt(self):
@@ -105,7 +109,7 @@ class Dbvisualizer():
 		else:
 			return 'var_Env_Not_Found'
 
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('Dbvisualizer')
 		

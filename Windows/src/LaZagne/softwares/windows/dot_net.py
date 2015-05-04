@@ -5,6 +5,7 @@ import win32cred
 from config.constant import *
 from config.write_output import print_output, print_debug
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
 memcpy = cdll.msvcrt.memcpy
 LocalFree = windll.kernel32.LocalFree
@@ -17,7 +18,11 @@ class DATA_BLOB(Structure):
 		('pbData', POINTER(c_char))
 	]
 
-class Dot_net():
+class Dot_net(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-d', 'action': 'store_true', 'dest': 'dotnet', 'help': 'domain visible network (.Net Passport) Passwords'}
+		ModuleInfo.__init__(self, 'Dot Net', 'windows', options)
+
 	def getData(self, blobOut):
 		cbData = int(blobOut.cbData)
 		pbData = blobOut.pbData
@@ -52,7 +57,7 @@ class Dot_net():
 		else:
 			return 'failed'
 
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('Dot Net Passport')
 		

@@ -1,8 +1,13 @@
 import struct, os
 from config.write_output import print_output, print_debug
 from config.header import Header
+from config.moduleInfo import ModuleInfo
 
-class FtpNavigator():
+class FtpNavigator(ModuleInfo):
+	def __init__(self):
+		options = {'command': '-ftp', 'action': 'store_true', 'dest': 'ftpnavigator', 'help': 'FTP Navigator'}
+		ModuleInfo.__init__(self, 'ftpnavigator', 'sysadmin', options)
+
 	def decode(self, encode_password):
 		password = ''
 		for p in encode_password:
@@ -37,7 +42,7 @@ class FtpNavigator():
 		# print the results
 		print_output('FTP Navigator', pwdFound)
 		
-	def retrieve_password(self):
+	def run(self):
 		# print title
 		Header().title_debug('FTP Navigator')
 	
