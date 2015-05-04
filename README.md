@@ -82,9 +82,11 @@ To compile the source code, some external libraries are required.
 		* https://github.com/CoreSecurity/impacket
 
 * For Linux
-	* None for Ubuntu 14.04 (except Python 2.7)
+	* None for Ubuntu 14.04
 	* Other distributions
-		* crypto
+		* Python 2.7
+		* argparse
+		* Crypto
 		* dbus
 
 ----
