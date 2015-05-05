@@ -55,8 +55,11 @@ class IE(ModuleInfo):
 		# calculate the hash for all urls found on the history
 		hash_tables = []
 		for u in range(len(urls)):
-			h = (urls[u] + '\0').encode('UTF-16LE')
-			hash_tables.append([h, hashlib.sha1(h).hexdigest().lower()])
+			try:
+				h = (urls[u] + '\0').encode('UTF-16LE')
+				hash_tables.append([h, hashlib.sha1(h).hexdigest().lower()])
+			except:
+				pass
 		return hash_tables
 
 	def write_binary_file(self):
@@ -273,17 +276,17 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 		values = {}
 		# list username / password in clear text
 		for s in range(length):
-			if s % 2 != 0:
-				try:
+			try:
+				if s % 2 != 0:
 					values = {}
 					values['Site'] = u.decode('UTF-16LE')
 					values['Username'] = secret[length - s]
 					values['Password'] = password
 					pwdFound.append(values)
-				except:
+				else:
+					password = secret[length - s]
+			except:
 					pass
-			else:
-				password = secret[length - s]
 	
 	def run(self, historic=''):
 		# print title
