@@ -205,11 +205,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 			ret = lib.list()
 
 			for r in ret:
-				if r:
-					if r.startswith("http") and r not in urls:
-						urls.append(r)
-				else:
-					break
+				try:
+					if r:
+						if r.startswith("http") and r not in urls:
+							urls.append(r)
+					else:
+						break
+				except:
+					pass
 		
 			# Unload the dll to delete it later
 			handle = lib._handle # obtain the DLL handle
