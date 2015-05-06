@@ -343,6 +343,9 @@ class Mozilla(ModuleInfo):
 	
 	# main function
 	def run(self):
+		global database_find
+		database_find = False
+		
 		self.manage_advanced_options()
 		
 		software_name = constant.mozilla_software
@@ -385,13 +388,17 @@ class Mozilla(ModuleInfo):
 					masterPwd = self.is_masterpasswd_set()
 					
 					# check if passwors are stored on the Json format
-					credentials = JsonDatabase(profile)
+					try:
+						credentials = JsonDatabase(profile)
+					except:
+						database_find = False
 					if not database_find:
 						# check if passwors are stored on the sqlite format
-						credentials = SqliteDatabase(profile)
+						try:
+							credentials = SqliteDatabase(profile)
+						except:
+							database_find = False
 					
-					# if not database_find:
-						# print_debug('INFO', 'No credentials file found (logins.json or signons.sqlite) - or empty content')
 					if database_find:
 						print 
 						if masterPwd:
