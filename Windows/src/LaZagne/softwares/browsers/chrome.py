@@ -19,10 +19,10 @@ class Chrome(ModuleInfo):
 		database_path = ''
 		if 'HOMEDRIVE' in os.environ and 'HOMEPATH' in os.environ:
 			# For Win7
-			path_Win7 = os.environ.get('HOMEDRIVE') + os.sep + os.environ.get('HOMEPATH') + '\Local Settings\Application Data\Google\Chrome\User Data\Default\Login Data'
+			path_Win7 = os.environ.get('HOMEDRIVE') + os.environ.get('HOMEPATH') + '\Local Settings\Application Data\Google\Chrome\User Data\Default\Login Data'
 			
 			# For XP
-			path_XP = os.environ.get('HOMEDRIVE') + os.sep + os.environ.get('HOMEPATH') + '\AppData\Local\Google\Chrome\User Data\Default\Login Data'
+			path_XP = os.environ.get('HOMEDRIVE') + os.environ.get('HOMEPATH') + '\AppData\Local\Google\Chrome\User Data\Default\Login Data'
 			
 			if os.path.exists(path_XP):
 				database_path = path_XP
