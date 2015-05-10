@@ -62,6 +62,6 @@ class Gnome(ModuleInfo):
 				print_output('Gnome keyring', pwdFound)
 			else:
 				print_debug('WARNING', 'The Gnome Keyring wallet is empty')
-		except:
-			print_debug('ERROR', 'An error occurs with the Gnome Keyring wallet')
+		except Exception,e:
+			print_debug('ERROR', 'An error occurs with the Gnome Keyring wallet: {0}'.format(e))
 		
