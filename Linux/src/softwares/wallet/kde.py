@@ -1,3 +1,9 @@
+#######################
+#
+# By Quentin HARDY
+#
+#######################
+
 import os, sys
 from config.header import Header
 from config.write_output import print_debug, print_output
@@ -47,4 +53,3 @@ class kde(ModuleInfo):
 		except Exception,e:
 			print_debug('ERROR', 'An error occurs with KWallet: {0}'.format(e))
 			
-#By Quentin HARDY
