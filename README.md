@@ -33,43 +33,7 @@ __Note: For wifi passwords \ Windows Secrets, launch it with administrator privi
 Supported software
 ----
 
-
-| Type of tool                             |                 Windows      |                        Linux |
-|------------------------------------------|:----------------------------:|:----------------------------:|
-| **Admin sys**                            |  --------------------------  | --------------------------  |
-|                                          |  CoreFTP                     | FileZilla                   |
-|                                          |  Cyberduck                   | Environment Variables       |
-|                                          |  FileZilla                   |                             |
-|                                          |  FTPNavigator                |                             |
-|                                          |  PuttyCM                     |                             |
-|                                          |  WinSCP                      |                             |
-| **Browsers**                             |  --------------------------  | --------------------------  |
-|                                          |  Chrome                      | Firefox                     |
-|                                          |  Firefox                     | Opera                       |
-|                                          |  IE                          |                             |
-|                                          |  Opera                       |                             |
-| **Chats**                                |  --------------------------  | --------------------------  |
-|                                          |  Jitsi                       | Jitsi                       |
-|                                          |  Pidgin                      | Pidgin                      |
-|                                          |  Skype                       | Skype                       |
-| **Cloud**                                | --------------------------   | --------------------------  |
-|                                          |                              | Owncloud                    |
-| **Database**                             |  --------------------------  | --------------------------  |
-|                                          |  DBvisualizer                | DBvisualizer                |
-|                                          |  Squirrel                    | Squirrel                    |
-|                                          |  SQLdevelopper               | SQLdevelopper               |
-| **Mails**                                | --------------------------   | --------------------------  |
-|                                          |  Outlouk                     | Thunderbird                 |
-|                                          |  Thunderbird                 |                             |
-| **Svn**                                  | --------------------------   | --------------------------  |
-|                                          |  Tortoise                    |                             |
-| **Wifi**                                 |  Wireless Network            | Network Manager             |
-|                                          |  Wireless Network            | Network Manager             |
-|**Internat mechanism / Passwords storage**| --------------------------   |--------------------------   |
-|                                          |  .NET Password               | GNOME Keyring               |
-|                                          |  Generic network             | KWallet                     |
-|                                          |  Windows Hashes (LM/NT)      |                             |
-|                                          |  LSA Secrets                 |                             |
+<p align="center"><img src="./pictures/softwares.png" alt="The LaZagne project"></p>
 
 
 IE Browser history
