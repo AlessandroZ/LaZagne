@@ -1,6 +1,6 @@
 # keyring
 from softwares.wallet.gnome import Gnome
-from softwares.wallet.kde import KDE
+from softwares.wallet.kde import kde
 # browsers
 from softwares.browsers.mozilla import Mozilla
 from softwares.browsers.opera import Opera
@@ -41,6 +41,7 @@ def get_modules():
 		Pidgin(),
 		SQLDeveloper(),
 		Squirrel(),
-		Wifi()
+		Wifi(),
+		kde()
 	]
 	return moduleNames
