@@ -10,6 +10,8 @@ At this moment, it supports 22 Programs on Microsoft Windows and 12 on a Linux/U
 
 <p align="center"><img src="./pictures/lazagne.png" alt="The LaZagne project"></p>
 
+(*) used by many tools to store passwords: Chrome, Owncloud, Evolution, KMail, etc.
+
 Usage
 ----
 * Launch all modules
@@ -71,23 +73,28 @@ Requirements
 To compile the source code, some external libraries are required.
 
 * For Windows
-	* WConio (for the Console colors)
-		* http://newcenturycomputers.net/projects/wconio.html
-		* http://newcenturycomputers.net/projects/download.cgi/WConio-1.5.win32-py2.7.exe
+	* colorama (for the Console colors)
+		* https://pypi.python.org/pypi/colorama
 
 	* Python for Windows Extensions
 		* http://sourceforge.net/projects/pywin32/
 	
+	* pycrypto
+		* pip install pycrypto
+
 	* Impacket (for Windows hashes + LSA Secrets)
 		* https://github.com/CoreSecurity/impacket
 
 * For Linux
-	* None for Ubuntu 14.04
+	* For Ubuntu 14.04
+		* python-kde4 (Kwallet)
+		
 	* Other distributions
 		* Python 2.7
 		* argparse
 		* Crypto
-		* dbus
+		* dbus (Pidgin)
+		* python-kde4 (Kwallet)
 
 ----
 | __Alessandro ZANNI__    |

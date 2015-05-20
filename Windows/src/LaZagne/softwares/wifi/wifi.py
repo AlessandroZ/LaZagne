@@ -15,10 +15,10 @@ class Wifi(ModuleInfo):
 	def run(self):
 		
 		# print title
-		Header().title_debug('Wifi')
+		Header().title_info('Wifi')
 		
 		if not windll.Shell32.IsUserAnAdmin():
-			print_debug('ERROR', '[!] This script should be run as admin!')
+			print_debug('WARNING', '[!] This script should be run as admin!')
 			return
 		else:
 			
@@ -36,7 +36,8 @@ class Wifi(ModuleInfo):
 				print_debug('INFO', '[!] Trying to elevate our privilege')
 				get_system_priv()
 				print_debug('INFO', '[!] Elevation ok - Passwords decryption is in progress')
-			except:
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', '[!] An error occurs during the privilege elevation process. Wifi passwords have not been decrypted')
 			
 			time.sleep(5)

@@ -53,16 +53,16 @@ def checks_write(values, category):
 
 def print_footer():
 	footer = '\n[+] %s passwords have been found.\n' % str(constant.nbPasswordFound)
-	if logging.getLogger().isEnabledFor(logging.DEBUG) == False:
+	if logging.getLogger().isEnabledFor(logging.INFO) == False:
 		footer += 'For more information launch it again with the -v option\n'
-	logging.info(footer)
+	print footer
 
 # print output if passwords have been found
 def print_output(software_name, pwdFound):
 	if pwdFound:
 		# if the debug logging level is not apply => print the title
-		if logging.getLogger().isEnabledFor(logging.DEBUG) == False:
-			Header().title_info(software_name)
+		if logging.getLogger().isEnabledFor(logging.INFO) == False:
+			Header().title(software_name)
 		
 		toWrite = []
 		for pwd in pwdFound:
@@ -76,7 +76,7 @@ def print_output(software_name, pwdFound):
 			else:
 				print_debug("OK", "Password found !!!")
 				toWrite.append(pwd)
-				# Store all passwords found on a table => for dictionnary attack if masterpassword set
+				# Store all passwords found on a table => for dictionary attack if master password set
 				constant.nbPasswordFound += 1
 				try:
 					if password:
@@ -87,39 +87,44 @@ def print_output(software_name, pwdFound):
 					pass
 			
 			for p in pwd.keys():
-				logging.info("%s: %s" % (p, pwd[p]))
+				print '%s: %s' % (p, pwd[p])
 			print
 		
 		# write credentials into a text file
 		checks_write(toWrite, software_name)
 	else:
-		logging.debug("[!] No passwords found\n")
+		logging.info("[!] No passwords found\n")
 
 
 def print_debug(error_level, message):
 	
 	b = bcolors()
-	if error_level == 'ERROR':
-		logging.debug(b.FAIL + '[ERROR] ' + message + '\n' + b.ENDC)
-	
-	elif error_level == 'WARNING':
-		logging.debug(b.WARNING + '[WARNING] ' + message + '\n' + b.ENDC)
-	
-	elif error_level == 'INFO':
-		logging.debug('[INFO] ' + message + '\n')
-	
+
+	# print when password is found
+	if error_level == 'OK':
+		print b.OK + message + b.ENDC
+
 	# print when password is not found
 	elif error_level == 'FAILED':
-		logging.info(b.FAIL + message + b.ENDC)
+		print b.FAIL + message + b.ENDC
+
+	# print messages depending of their criticism
+	elif error_level == 'CRITICAL':
+		logging.error(b.FAIL + '[CRITICAL] ' + message + '\n' + b.ENDC)
+
+	elif error_level == 'ERROR':
+		logging.error(b.FAIL + '[ERROR] ' + message + '\n' + b.ENDC)
 	
-	# print when password is found
-	elif error_level == 'OK':
-		logging.info(b.OK + message + b.ENDC)
-		
+	elif error_level == 'WARNING':
+		logging.warning(b.WARNING + message + '\n' + b.ENDC)
+	
 	elif error_level == 'DEBUG':
 		logging.debug(message + '\n')
+
+	elif error_level == 'INFO':
+		logging.info(message + '\n')
 	
 	else:
-		logging.debug('[%s] %s' % (error_level, message))
+		logging.info('[%s] %s' % (error_level, message))
 
 # --------------------------- End of output functions ---------------------------

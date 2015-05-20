@@ -127,7 +127,7 @@ class SQLDeveloper(ModuleInfo):
 	
 	def run(self):
 		# print title
-		Header().title_debug('SQL Developer')
+		Header().title_info('SQL Developer')
 		
 		mainPath = self.get_mainPath()
 		if mainPath == 'Error':

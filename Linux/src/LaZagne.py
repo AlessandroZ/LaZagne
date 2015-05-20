@@ -1,4 +1,4 @@
-#!/usr/bin/python
+# !/usr/bin/python
 
 ##############################################################################
 #                                                                            #
@@ -45,9 +45,9 @@ def output():
 
 def verbosity():
 	# write on the console + debug file
-	if args['verbose']==0: level=logging.INFO
-	elif args['verbose'] >= 1: level=logging.DEBUG
-	elif args['verbose']>=2: level=logging.WARNING
+	if args['verbose']==0: level=logging.CRITICAL
+	elif args['verbose'] == 1: level=logging.INFO
+	elif args['verbose']>=2: level=logging.DEBUG
 	
 	FORMAT = "%(message)s"
 	formatter = logging.Formatter(fmt=FORMAT)
@@ -55,7 +55,9 @@ def verbosity():
 	stream.setFormatter(formatter)
 	root = logging.getLogger()
 	root.setLevel(level)
-	root.handlers = []
+	# if other logging are set
+	for r in root.handlers:
+		r.setLevel(logging.CRITICAL)
 	root.addHandler(stream)
 	del args['verbose']
 

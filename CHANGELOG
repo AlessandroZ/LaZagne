@@ -1,3 +1,16 @@
+LaZagne 0.5 (20/05/2015)
+- For Windows / Linux 
+	* 2 levels of verbosity added for debugs
+	* try / except more verbose depending on the verbosity levels
+	* dico file moved from browsers to config repository (used for dictionary attack)
+	* new Filezilla versions managed
+
+- Only Windows
+	* check weak passwords (logins equal to password) for windows account when hashes (nthash) have been found
+	* function to write the output modified on windows module
+	* WConio replaced by colorama for the window color
+	* Skype: try a dictionary attack (500 famous password) when the hash has been retrieved
+
 LaZagne 0.4 (12/05/2015)
 - For Linux
 	* Kwallet module implemented (by quentin hardy)

@@ -47,7 +47,7 @@ class Squirrel(ModuleInfo):
 	# Main function
 	def run(self):
 		# print the title
-		Header().title_debug('Squirrel')
+		Header().title_info('Squirrel')
 		
 		path = self.get_path()
 		if path == 'Not_Found':

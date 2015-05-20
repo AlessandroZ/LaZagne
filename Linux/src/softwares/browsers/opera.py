@@ -16,7 +16,7 @@ class Opera(ModuleInfo):
 	
 	def run(self):
 		# print the title
-		Header().title_debug('Opera')
+		Header().title_info('Opera')
 	
 		# retrieve opera folder
 		path = self.get_path()

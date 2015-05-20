@@ -11,10 +11,10 @@ class Gnome(ModuleInfo):
 	
 	def run(self):
 		# print the title
-		Header().title_debug('Gnome keyring')
+		Header().title_info('Gnome keyring')
 		
 		if os.getuid() == 0:
-			print_debug('INFO', 'Do not run with root privileges)\n')
+			print_debug('WARNING', 'Do not run it with root privileges)\n')
 			return
 		try:
 			import gnomekeyring

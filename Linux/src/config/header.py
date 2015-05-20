@@ -13,18 +13,13 @@ class Header():
 		print '|====================================================================|'
 		print bcolors().ENDC
 		
-		
+
+	# print the title if no logging level has been set
 	def title(self, title):
-		print bcolors().TITLE
-		print "------------------- " +  title + " passwords -----------------"
-		print bcolors().ENDC
-	
-	# info option for the logging
+		b = bcolors()
+		print b.TITLE + "------------------- " + title + " passwords -----------------\n" + b.ENDC
+
+	# print the title if logging level is higher or equal to info
 	def title_info(self, title):
 		b = bcolors()
-		logging.info(b.TITLE + "------------------- " + title + " passwords -----------------\n" + b.ENDC)
-
-	# debug option for the logging
-	def title_debug(self, title):
-		b = bcolors()
-		logging.debug(b.TITLE + "------------------- " + title + " passwords -----------------\n" + b.ENDC )
+		logging.info(b.TITLE + "------------------- " + title + " passwords -----------------\n" + b.ENDC )
