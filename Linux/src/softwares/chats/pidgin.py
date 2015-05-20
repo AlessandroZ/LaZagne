@@ -36,7 +36,7 @@ class Pidgin(ModuleInfo):
 
 	def run(self):
 		# print the title
-		Header().title_debug('Pidgin')
+		Header().title_info('Pidgin')
 		
 		pwdFound = []
 		try:

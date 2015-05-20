@@ -9,7 +9,7 @@ from ConfigParser import RawConfigParser
 import sqlite3
 import json
 import shutil
-from dico import get_dico
+from config.dico import get_dico
 import itertools
 from config.header import Header
 from config.constant import *
@@ -156,8 +156,8 @@ class Mozilla(ModuleInfo):
 				self.libnss = CDLL(lib)
 				if self.libnss.NSS_Init(profile) == 0:
 					return True
-			except:
-				pass
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
 		return False
 	
 	def found_libnss(self):
@@ -232,7 +232,8 @@ class Mozilla(ModuleInfo):
 			dst_db = relative_path + os.sep + dbname
 			shutil.copyfile(ori_db, dst_db)
 			print_debug('INFO', '%s has been copied here: %s' % (dbname, dst_db))
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('ERROR', '%s has not been copied' % dbname)
 		
 		try:
@@ -241,7 +242,8 @@ class Mozilla(ModuleInfo):
 			dst_db = relative_path + os.sep + dbname
 			shutil.copyfile(ori_db, dst_db)
 			print_debug('INFO', '%s has been copied here: %s' % (dbname, dst_db))
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('ERROR', '%s has not been copied' % dbname)
 
 	# ------------------------------ Master Password Functions ------------------------------
@@ -283,7 +285,8 @@ class Mozilla(ModuleInfo):
 			try:
 				pass_file = open(self.dictionnary_path, 'r')
 				num_lines = sum(1 for line in pass_file)
-			except:
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', 'Unable to open passwords file: %s' % str(self.dictionnary_path))
 				return 1
 			pass_file.close()
@@ -299,7 +302,8 @@ class Mozilla(ModuleInfo):
 			except (KeyboardInterrupt, SystemExit):
 				print 'INTERRUPTED!'
 				print_debug('DEBUG', 'Dictionnary attack interrupted')
-			except:
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
 				pass
 			print_debug('WARNING', 'The Master password has not been found using the dictionnary attack')
 		
@@ -335,8 +339,8 @@ class Mozilla(ModuleInfo):
 			except (KeyboardInterrupt, SystemExit):
 				print 'INTERRUPTED!'
 				print_debug('INFO', 'Dictionnary attack interrupted')
-			except:
-				pass
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
 			print_debug('WARNING', 'No password has been found using the brute force attack')
 		
 	# ------------------------------ End of Master Password Functions ------------------------------
@@ -358,7 +362,7 @@ class Mozilla(ModuleInfo):
 			return
 		
 		# print the title
-		Header().title_debug(software_name)
+		Header().title_info(software_name)
 		
 		list_libnss = self.found_libnss()
 		
@@ -390,13 +394,15 @@ class Mozilla(ModuleInfo):
 					# check if passwors are stored on the Json format
 					try:
 						credentials = JsonDatabase(profile)
-					except:
+					except Exception,e:
+						print_debug('DEBUG', '{0}'.format(e))
 						database_find = False
 					if not database_find:
 						# check if passwors are stored on the sqlite format
 						try:
 							credentials = SqliteDatabase(profile)
-						except:
+						except Exception,e:
+							print_debug('DEBUG', '{0}'.format(e))
 							database_find = False
 					
 					if database_find:
@@ -409,15 +415,14 @@ class Mozilla(ModuleInfo):
 							try:
 								# decrypt passwords on the db
 								pwdFound+=self.decrypt(software_name, credentials)
-							except:
-								pass
+							except Exception,e:
+								print_debug('DEBUG', '{0}'.format(e))
 
 						# if a master password is set (but not found), we save the db to bruteforce offline
 						elif masterPwd and not masterPwdFound and constant.output == 'txt':
 							self.save_db(profile)
 							
 					self.libnss.NSS_Shutdown()
-				
 				else:
 					print_debug('ERROR', 'Could not initialize the NSS library\n')
 				

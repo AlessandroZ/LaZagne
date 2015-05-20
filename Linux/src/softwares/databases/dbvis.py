@@ -69,8 +69,8 @@ class DbVisualizer(ModuleInfo):
 							password = self.decrypt(salt, ciphered_password, passphrase)
 							values['Password'] = password
 							passwordFound = True
-						except:
-							pass
+						except Exception,e:
+							print_debug('ERROR', '{0}'.format(e))
 
 					if 'UrlVariables' == e.tag:
 						for el in e.getchildren():
@@ -103,7 +103,7 @@ class DbVisualizer(ModuleInfo):
 
 	def run(self):
 		# print the title
-		Header().title_debug('DbVisualizer')
+		Header().title_info('DbVisualizer')
 
 		mainPath = self.get_mainPath()
 

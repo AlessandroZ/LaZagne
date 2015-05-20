@@ -11,14 +11,15 @@ class Outlook(ModuleInfo):
 
 	def run(self):
 		# print title
-		Header().title_debug('Outlook')
+		Header().title_info('Outlook')
 		
 		accessRead = win32con.KEY_READ | win32con.KEY_ENUMERATE_SUB_KEYS | win32con.KEY_QUERY_VALUE
 		keyPath = 'Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows Messaging Subsystem\\Profiles\\Outlook'
 		
 		try:
 			hkey = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, keyPath, 0, accessRead)
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('WARNING', 'Outlook not installed.\nAn error occurs retrieving the registry key.\nKey = %s' % keyPath)
 			return
 
@@ -45,7 +46,6 @@ class Outlook(ModuleInfo):
 		# print the results
 		print_output("Outlook", pwdFound)
 		
-
 	def retrieve_info(self, hkey, name_key):
 		values = {}
 		num = win32api.RegQueryInfoKey(hkey)[1]
@@ -55,15 +55,14 @@ class Outlook(ModuleInfo):
 				try:
 					password = win32crypt.CryptUnprotectData(k[1][1:], None, None, None, 0)[1]
 					values[k[0]] = password.decode('utf16')
-				except:
+				except Exception,e:
+					print_debug('DEBUG', '{0}'.format(e))
 					values[k[0]] = 'N/A'
-					pass
 			else:
 				try:
 					values[k[0]] = str(k[1]).decode('utf16')
 				except:
 					values[k[0]] = str(k[1])
-				print values
 		return values
 
 

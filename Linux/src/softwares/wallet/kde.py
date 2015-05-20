@@ -15,7 +15,7 @@ class kde(ModuleInfo):
 		ModuleInfo.__init__(self, 'kwallet', 'wallet', options)
 	
 	def run(self):
-		Header().title_debug("KWallet")
+		Header().title_info("KWallet")
 		
 		if os.getuid() == 0:
 			print_debug('INFO', 'Do not run with root privileges)\n')

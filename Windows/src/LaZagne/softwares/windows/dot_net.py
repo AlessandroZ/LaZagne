@@ -35,7 +35,8 @@ class Dot_net(ModuleInfo):
 		try:
 			creds = win32cred.CredEnumerate(None, 0)
 			return creds
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			return None
 
 	def get_entropy(self):
@@ -59,7 +60,7 @@ class Dot_net(ModuleInfo):
 
 	def run(self):
 		# print title
-		Header().title_debug('Dot Net Passport')
+		Header().title_info('Dot Net Passport')
 		
 		a = self.get_creds()
 		pwd = ''
@@ -76,7 +77,8 @@ class Dot_net(ModuleInfo):
 							values['Username'] = i['UserName']
 						try:
 							values['Password'] = pwd.decode('utf16')
-						except: 
+						except Exception,e:
+							print_debug('DEBUG', '{0}'.format(e))
 							values['INFO'] = 'Error decoding the password'
 						
 						pwdFound.append(values)

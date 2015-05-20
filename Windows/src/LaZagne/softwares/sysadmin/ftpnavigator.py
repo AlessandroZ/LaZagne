@@ -44,11 +44,13 @@ class FtpNavigator(ModuleInfo):
 		
 	def run(self):
 		# print title
-		Header().title_debug('FTP Navigator')
+		Header().title_info('FTP Navigator')
 	
-		path = "C:\\FTP Navigator\\Ftplist.txt"
-		if os.path.exists(path):
-			self.read_file(path)
-		else:
-			print_debug('INFO', 'Paht %s does not exist.\nFTP Navigator not installed or not found.' % path)
+		if 'HOMEDRIVE' in os.environ:
+			path = os.environ.get('HOMEDRIVE') + os.sep + 'FTP Navigator\\Ftplist.txt'
+			
+			if os.path.exists(path):
+				self.read_file(path)
+			else:
+				print_debug('INFO', 'Paht %s does not exist.\nFTP Navigator not installed or not found.' % path)
 

@@ -9,7 +9,7 @@ from ConfigParser import RawConfigParser
 import sqlite3
 import json
 import shutil
-from dico import get_dico
+from config.dico import get_dico
 import itertools
 from config.header import Header
 from config.constant import *
@@ -27,10 +27,16 @@ class Credentials(object):
 		global database_find
 		self.db = db
 		if os.path.isfile(db):
-			database_find = True
+			# check if the database is not empty
+			f = open(db, 'r')
+			tmp = f.read()
+			if tmp:
+				database_find = True
+			f.close()
 	
 	def __iter__(self):
 		pass
+	
 	def done(self):
 		pass
 
@@ -147,8 +153,8 @@ class Mozilla(ModuleInfo):
 				self.libnss = CDLL(lib)
 				if self.libnss.NSS_Init(profile) == 0:
 					return True
-			except:
-				pass
+			except Exception,e:
+				print_debug('ERROR', '{0}'.format(e))
 		return False
 	
 	def found_libnss(self):
@@ -214,7 +220,8 @@ class Mozilla(ModuleInfo):
 			dst_db = relative_path + os.sep + dbname
 			shutil.copyfile(ori_db, dst_db)
 			print_debug('INFO', '%s has been copied here: %s' % (dbname, dst_db))
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('ERROR', '%s has not been copied' % dbname)
 		
 		try:
@@ -223,7 +230,8 @@ class Mozilla(ModuleInfo):
 			dst_db = relative_path + os.sep + dbname
 			shutil.copyfile(ori_db, dst_db)
 			print_debug('INFO', '%s has been copied here: %s' % (dbname, dst_db))
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('ERROR', '%s has not been copied' % dbname)
 
 	# ------------------------------ Master Password Functions ------------------------------
@@ -255,7 +263,7 @@ class Mozilla(ModuleInfo):
 		if 'm' in self.toCheck:
 			print_debug('ATTACK', 'Check the password entered manually !')
 			if self.is_masterpassword_correct(self.manually_pass):
-				print_debug('FIND', 'Master password found: %s\n' % self.manually_pass)
+				print_debug('FIND', 'Master password found: %s' % self.manually_pass)
 				return True
 			else:
 				print_debug('WARNING', 'The Master password entered is not correct')
@@ -275,14 +283,15 @@ class Mozilla(ModuleInfo):
 				with open(self.dictionnary_path) as f:
 					for p in f:
 						if self.is_masterpassword_correct(p.strip()):
-							print_debug('FIND', 'Master password found: %s\n' % p.strip())
+							print_debug('FIND', 'Master password found: %s' % p.strip())
 							return True
 			
 			except (KeyboardInterrupt, SystemExit):
 				print 'INTERRUPTED!'
 				print_debug('DEBUG', 'Dictionnary attack interrupted')
-			except:
-				pass
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
+
 			print_debug('WARNING', 'The Master password has not been found using the dictionnary attack')
 		
 		# 500 most used passwords
@@ -293,7 +302,7 @@ class Mozilla(ModuleInfo):
 
 			for word in wordlist:
 				if self.is_masterpassword_correct(word):
-					print_debug('FIND', 'Master password found: %s\n' % word.strip())
+					print_debug('FIND', 'Master password found: %s' % word.strip())
 					return True
 				
 			print_debug('WARNING', 'No password has been found using the default list')
@@ -311,27 +320,31 @@ class Mozilla(ModuleInfo):
 					for i in itertools.product(tab, repeat=current):
 						word = ''.join(map(str,i))
 						if self.is_masterpassword_correct(word):
-							print_debug('FIND', 'Master password found: %s\n' % word.strip())
+							print_debug('FIND', 'Master password found: %s' % word.strip())
 							return True
 					current+= 1
 			except (KeyboardInterrupt, SystemExit):
 				print 'INTERRUPTED!'
 				print_debug('INFO', 'Dictionnary attack interrupted')
-			except:
-				pass
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
+
 			print_debug('WARNING', 'No password has been found using the brute force attack')
 
 	# ------------------------------ End of Master Password Functions ------------------------------
 	
 	# main function
 	def run(self):
+		global database_find
+		database_find = False
+
 		self.manage_advanced_options()
 		
 		software_name = constant.mozilla_software
 		specific_path = constant.specific_path
 		
 		# print the title
-		Header().title_debug(software_name)
+		Header().title_info(software_name)
 		
 		# get the installation path
 		path = self.get_path(software_name)
@@ -362,36 +375,42 @@ class Mozilla(ModuleInfo):
 			pwdFound = []
 			for profile in profile_list:
 				print_debug('INFO', 'Profile path found: %s' % profile)
-				
+
 				if self.initialize_libnss(list_libnss, profile):
 					masterPwd = self.is_masterpasswd_set()
-					if masterPwd:
-						print_debug('WARNING', 'A masterpassword is used !!')
-						masterPwdFound = self.found_masterpassword()
 					
-					if not masterPwd or masterPwdFound:
-						# check if passwors are stored on the Json format
+					# check if passwors are stored on the Json format
+					try:
 						credentials = JsonDatabase(profile)
-						if not database_find:
-							# check if passwors are stored on the sqlite format
-							credentials = SqliteDatabase(profile)
-						
-						if not database_find:
-							print_debug('INFO', 'No credentials file found (logins.json or signons.sqlite) - or empty content')
-						
+					except:
+						database_find = False
+
+					if not database_find:
+						# check if passwors are stored on the sqlite format
 						try:
-							# decrypt passwords on the db
-							pwdFound+=self.decrypt(software_name, credentials)
+							credentials = SqliteDatabase(profile)
 						except:
-							pass
-	
-					# if a master password is set (but not found), we save the db to bruteforce offline
-					elif masterPwd and not masterPwdFound and constant.output == 'txt':
-						self.save_db(profile)
+							database_find = False
+					
+					if database_find:
+						if masterPwd:
+							print_debug('WARNING', 'A masterpassword is used !!')
+							masterPwdFound = self.found_masterpassword()
+						
+						if not masterPwd or masterPwdFound:
+							try:
+								# decrypt passwords on the db
+								pwdFound+=self.decrypt(software_name, credentials)
+							except Exception,e:
+								print_debug('ERROR', '{0}'.format(e))
+
+						# if a master password is set (but not found), we save the db to bruteforce offline
+						elif masterPwd and not masterPwdFound and constant.output == 'txt':
+							self.save_db(profile)
 						
 					self.libnss.NSS_Shutdown()
 				else:
-					print_debug('ERROR', 'Could not initialize the NSS library\n')
+					print_debug('ERROR', 'Could not initialize the NSS library')
 			
 			# print the results
 			print_output(software_name, pwdFound)

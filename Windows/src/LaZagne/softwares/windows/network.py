@@ -34,7 +34,8 @@ class Network(ModuleInfo):
 		try:
 			creds = win32cred.CredEnumerate(None, 0)
 			return creds
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			return None
 
 	def get_entropy(self):
@@ -60,7 +61,7 @@ class Network(ModuleInfo):
 
 	def run(self):
 		# print title
-		Header().title_debug('Generic Network')
+		Header().title_info('Generic Network')
 		
 		os_plateform = platform.release()
 		
@@ -91,7 +92,8 @@ class Network(ModuleInfo):
 						
 						try:
 							values['Password'] = pwd.decode('utf16')
-						except: 
+						except Exception,e:
+							print_debug('DEBUG', '{0}'.format(e)) 
 							values['INFO'] = 'Error decoding the password'
 						
 						pwdFound.append(values)

@@ -111,7 +111,7 @@ class Dbvisualizer(ModuleInfo):
 
 	def run(self):
 		# print title
-		Header().title_debug('Dbvisualizer')
+		Header().title_info('Dbvisualizer')
 		
 		mainPath = self.get_mainPath()
 

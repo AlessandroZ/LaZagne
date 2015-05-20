@@ -46,15 +46,16 @@ class Cyberduck(ModuleInfo):
 					values['Password'] = password
 					
 					pwdFound.append(values)
-			except:
-				pass
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
+
 		# print the results
 		print_output("Cyberduck", pwdFound)
 		
 	# main function
 	def run(self):
 		# print title
-		Header().title_debug('Cyberduck')
+		Header().title_info('Cyberduck')
 		
 		path = self.get_path()
 		if path == 'CYBERDUCK_NOT_EXISTS':

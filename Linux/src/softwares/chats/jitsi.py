@@ -103,7 +103,7 @@ class Jitsi(ModuleInfo):
 	# main function
 	def run(self):
 		# print the title
-		Header().title_debug('Jitsi')
+		Header().title_info('Jitsi')
 		
 		file_properties = self.get_path()
 		if file_properties == 'JITSI_NOT_EXISTS':

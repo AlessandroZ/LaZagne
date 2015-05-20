@@ -13,11 +13,12 @@ class Puttycm(ModuleInfo):
 		
 	def run(self):
 		# print title
-		Header().title_debug('Puttycm')
+		Header().title_info('Puttycm')
 		
 		try:
 			database_path = self.get_default_database()
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('INFO', 'Puttycm not installed')
 			return
 		

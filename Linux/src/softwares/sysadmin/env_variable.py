@@ -14,7 +14,7 @@ class Env_variable(ModuleInfo):
 		pwdFound = []
 		
 		# print the title
-		Header().title_debug('Environnement variables')
+		Header().title_info('Environnement variables')
 		
 		# --------- http_proxy --------
 		tmp = ''

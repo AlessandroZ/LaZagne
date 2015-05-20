@@ -48,11 +48,11 @@ from struct import unpack, pack
 from collections import OrderedDict
 import win32con, win32security, win32net
 import binascii
-from softwares.browsers.dico import get_dico
-from config.write_output import print_debug, checks_write
-import WConio
-import logging
+from config.dico import get_dico
+from config.write_output import print_debug, print_output
+# import logging
 from config.constant import *
+from config.header import Header
 
 import sys
 import random
@@ -640,7 +640,7 @@ class LSASecrets(OfflineRegistry):
 			values['password'] = password
 		else:
 			# Default print, hexdump
-			values['hex'] = secretItem.encode('hex')
+			values['password in hex'] = secretItem.encode('hex')
 			# hexdump(secretItem)
 		
 		self.__secretItems.append(values)
@@ -988,6 +988,7 @@ class DumpSecrets:
 		self.__noLMHash = True
 		self.__isRemote = False
 		self.categoryName = ''
+		self.wordlist = get_dico() + constant.passwordFound
 
 	def getBootKey(self):
 		# Local Version whenever we are given the files directly
@@ -1040,54 +1041,39 @@ class DumpSecrets:
 	
 	def bruteForce_Hash(self, hash):
 		# check with a basic dictionary list and with all passwords already found
-		wordlist = get_dico() + constant.passwordFound
-		for word in wordlist:
+		for word in self.wordlist:
 			generated_hash = self.create_nthash(word)
 			if generated_hash == hash:
 				return word
 		return False
 	
-	def print_hashes(self, category, content):
-		if category == 'title':
-			WConio.textcolor(WConio.WHITE)
-			logging.info('%s\n' % content)
-			WConio.textcolor(WConio.LIGHTGREY)
-			self.categoryName = content
+	def hashes_to_dic(self, title, format, content):
+		Header().title1(title)
+		print_debug('INFO', 'Format: (%s)' % format)
 		
-		elif category == 'hashes':
-			accounts = []
-			items = sorted(content)
-			toWrite = "############ %s passwords ############\r\n\r\n" % self.categoryName
-			for item in items:
-				hash = content[item]
-				toWrite += hash + '\r\n'
-				logging.info('%s' % hash)
-				(uid, rid, lmhash, nthash) = hash.split(':')[:4]
-				password = self.bruteForce_Hash(nthash)
-				if password:
-					accounts.append((uid, password))
-			# if the bruteforce attacks worked
-			if accounts:
-				logging.info('\n')
-				print_debug("OK", "Password found !!!")
-				toWrite += '\r\n- Password in cleartext\r\n'
-				for account in accounts:
-					constant.nbPasswordFound += 1
-					(user, password) = account
-					toWrite += '%s: %s\r\n' % (user, password)
-					logging.info('%s: %s' % (user, password))
-			logging.info('\n')
-			toWrite += '\r\n'
-			open(constant.folder_name + os.sep + 'credentials.txt',"a+b").write(toWrite)
+		items = sorted(content)
+		pwdFound = []
+		values = {}
 		
-		elif category == 'secrets':
-			for secret in content:
-				print_debug("OK", "Password found !!!")
-				constant.nbPasswordFound += 1
-				for s in secret.keys():
-					logging.info('%s: %s' % (s, secret[s]))
-				logging.info('\n')
-			checks_write(content, self.categoryName)
+		all_hash = '\r\n'
+		for item in items:
+			hash = content[item]
+			(uid, rid, lmhash, nthash) = hash.split(':')[:4]
+			self.wordlist.append(uid.encode("utf8"))
+			all_hash = '%s\r\n%s' % (all_hash, hash)
+			password = self.bruteForce_Hash(nthash)
+			
+			# if a password has been found from the dictionary attack
+			if password:
+				accounts = {}
+				accounts['Category'] = 'System account'
+				accounts['user'] = uid
+				accounts['password'] = password
+				pwdFound.append(accounts)
+			
+		values['hashes'] = all_hash
+		pwdFound.append(values)
+		return pwdFound
 	
 	def dump(self):
 		try:
@@ -1101,8 +1087,8 @@ class DumpSecrets:
 			self.__SAMHashes = SAMHashes(SAMFileName, bootKey, isRemote = self.__isRemote)
 			samHashes_tab = self.__SAMHashes.dump()
 			if samHashes_tab:
-				self.print_hashes('title', '[*] Local SAM hashes (uid:rid:lmhash:nthash')
-				self.print_hashes('hashes', samHashes_tab)
+				pwdFound = self.hashes_to_dic('Local SAM hashes', 'uid:rid:lmhash:nthash', samHashes_tab)
+				print_output('Local SAM hashes', pwdFound, True)
 			
 			# -------------- LSA SECRETS --------------
 			SECURITYFileName = self.__securityHive
@@ -1111,21 +1097,21 @@ class DumpSecrets:
 			# --- Cached Hashes ---
 			cachedHashes = self.__LSASecrets.dumpCachedHashes()
 			if cachedHashes:
-				self.print_hashes('title', '[*] Cached domain logon information (uid:encryptedHash:longDomain:domain)')
-				self.print_hashes('hashes', cachedHashes)
+				pwdFound = self.hashes_to_dic('Cached domain logon information', 'uid:encryptedHash:longDomain:domain', cachedHashes)
+				print_output('Cached domain logon information', pwdFound, True)
 			
 			# --- LSA Secrets ---
 			secrets = self.__LSASecrets.dumpSecrets()
 			if secrets:
-				self.print_hashes('title', '[*] LSA Secrets')
-				self.print_hashes('secrets', secrets)
+				Header().title1('LSA Secrets')
+				print_output('LSA Secrets', secrets, True)
 			
 			# -------------- NTDS File --------------
 			NTDSFileName = self.__ntdsFile
 			self.__NTDSHashes = NTDSHashes(NTDSFileName, bootKey, isRemote = self.__isRemote, history = self.__history, noLMHash = self.__noLMHash)
 			ntdsHashes_dic = self.__NTDSHashes.dump()
 			if ntdsHashes_dic:
-				self.print_hashes('title', '[*] NTDS File')
+				Header().title1('NTDS File')
 				for nts_keys in ntdsHashes_dic.keys():
 					hashesFound = ntdsHashes_dic[nts_keys]
 					if nts_keys == 'ntds':
@@ -1133,8 +1119,8 @@ class DumpSecrets:
 						for item in items:
 							try:
 								hashesFound[item]
-							except:
-								pass
+							except Exception,e:
+								print_debug('DEBUG', '{0}'.format(e))
 					elif nts_keys == 'ntds.kerberos':
 						for itemKey in hashesFound:
 							print itemKey

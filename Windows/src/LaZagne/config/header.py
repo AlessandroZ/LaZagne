@@ -1,10 +1,13 @@
-import WConio
 import logging
+from colorama import init, Fore, Back, Style
 
 class Header():
+	def __init__(self):
+		init() # for colorama
+	
 	def first_title(self):
-		WConio.textcolor(WConio.WHITE)
-		print
+		init()
+		print Style.BRIGHT + Fore.WHITE
 		print '|====================================================================|'
 		print '|                                                                    |'
 		print '|                        The LaZagne Project                         |'
@@ -12,18 +15,16 @@ class Header():
 		print '|                          ! BANG BANG !                             |'
 		print '|                                                                    |'
 		print '|====================================================================|'
-		print
-		WConio.textcolor(WConio.LIGHTGREY)
+		print Style.RESET_ALL
 	
 	# info option for the logging
-	def title_info(self, title):
-		WConio.textcolor(WConio.WHITE)
-		logging.info("------------------- %s passwords -----------------\n" % title)
-		WConio.textcolor(WConio.LIGHTGREY)
+	def title(self, title):
+		print Style.BRIGHT + Fore.WHITE + '------------------- ' + title + ' passwords -----------------\n' + Style.RESET_ALL
+		
+	# Subtitle
+	def title1(self, title1):
+		print Style.BRIGHT + Fore.WHITE + '[*] ' + title1 + '\n' + Style.RESET_ALL
 
 	# debug option for the logging
-	def title_debug(self, title):
-		WConio.textcolor(WConio.WHITE)
-		logging.debug("------------------- %s passwords -----------------\n" % title)
-		WConio.textcolor(WConio.LIGHTGREY)
-
+	def title_info(self, title):
+		logging.info(Style.BRIGHT + Fore.WHITE + '------------------- ' + title + ' passwords -----------------\n' + Style.RESET_ALL)
