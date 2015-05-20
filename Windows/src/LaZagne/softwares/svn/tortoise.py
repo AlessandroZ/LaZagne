@@ -13,7 +13,7 @@ class Tortoise(ModuleInfo):
 	# main function
 	def run(self):
 		# print title
-		Header().title_debug('Tortoise')
+		Header().title_info('Tortoise')
 		
 		file_path = ''
 		if 'APPDATA' in os.environ:

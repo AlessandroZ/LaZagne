@@ -11,7 +11,7 @@ class Wifi(ModuleInfo):
 
 	def run(self):
 		# print the title
-		Header().title_debug('Wifi (from Network Manager)')
+		Header().title_info('Wifi (from Network Manager)')
 		
 		directory = '/etc/NetworkManager/system-connections'
 		if os.path.exists(directory):

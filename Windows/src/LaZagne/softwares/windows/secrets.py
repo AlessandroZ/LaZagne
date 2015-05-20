@@ -33,13 +33,13 @@ class Secrets(ModuleInfo):
 	def run(self):
 		# Need admin privileges
 		if not windll.Shell32.IsUserAnAdmin():
-			if logging.getLogger().isEnabledFor(logging.DEBUG) == True:
-				Header().title_info('Windows Secrets')
-			print_debug('ERROR', '[!] This script should be run as admin!')
+			if logging.getLogger().isEnabledFor(logging.INFO) == True:
+				Header().title('Windows Secrets')
+			print_debug('WARNING', '[!] This script should be run as admin!')
 			return
 		
 		# print the title
-		Header().title_info('Windows Secrets')
+		Header().title('Windows Secrets')
 		
 		# if hives already exists
 		if self.check_existing_systemFiles():

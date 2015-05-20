@@ -25,7 +25,8 @@ class CoreFTP(ModuleInfo):
 		accessRead = win32con.KEY_READ | win32con.KEY_ENUMERATE_SUB_KEYS | win32con.KEY_QUERY_VALUE
 		try:
 			key = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, 'Software\\FTPware\\CoreFTP\\Sites', 0, accessRead)
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			return False
 			
 		num_profiles = win32api.RegQueryInfoKey(key)[0]
@@ -49,14 +50,15 @@ class CoreFTP(ModuleInfo):
 				if k[0] == 'PW':
 					try:
 						values['Password'] = self.decrypt(k[1])
-					except:
+					except Exception,e:
+						print_debug('DEBUG', '{0}'.format(e))
 						values['Password'] = 'N/A'
 		# print the results
 		print_output('CoreFTP', pwdFound)
 		
 	def run(self):
 		# print title
-		Header().title_debug('CoreFTP')
+		Header().title_info('CoreFTP')
 		
 		if self.get_key_info() == False:
 			print_debug('INFO', 'CoreFTP not installed')

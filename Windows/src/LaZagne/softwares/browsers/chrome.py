@@ -14,7 +14,7 @@ class Chrome(ModuleInfo):
 	# main function
 	def run(self):
 		# print title
-		Header().title_debug('Chrome')
+		Header().title_info('Chrome')
 		
 		database_path = ''
 		if 'HOMEDRIVE' in os.environ and 'HOMEPATH' in os.environ:
@@ -38,8 +38,13 @@ class Chrome(ModuleInfo):
 			return
 			
 		# Connect to the Database
-		conn = sqlite3.connect(database_path)
-		cursor = conn.cursor()
+		try:
+			conn = sqlite3.connect(database_path)
+			cursor = conn.cursor()
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
+			print_debug('ERROR', 'An error occured opening the database file')
+			return 
 		
 		# Get the results
 		try:

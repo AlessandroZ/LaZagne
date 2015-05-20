@@ -58,8 +58,8 @@ class IE(ModuleInfo):
 			try:
 				h = (urls[u] + '\0').encode('UTF-16LE')
 				hash_tables.append([h, hashlib.sha1(h).hexdigest().lower()])
-			except:
-				pass
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
 		return hash_tables
 
 	def write_binary_file(self):
@@ -211,8 +211,8 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 							urls.append(r)
 					else:
 						break
-				except:
-					pass
+				except Exception,e:
+					print_debug('DEBUG', '{0}'.format(e))
 		
 			# Unload the dll to delete it later
 			handle = lib._handle # obtain the DLL handle
@@ -221,9 +221,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 			# delete the dll
 			os.remove(dll_name)
 			
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('ERROR', 'Browser history failed to load, only few url will be tried')
-			pass
 		
 		urls.append('https://www.facebook.com/')
 		urls.append('https://www.gmail.com/')
@@ -241,7 +241,8 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 		
 		try:
 			hkey = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, keyPath, 0, accessRead)
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			return []
 		
 		num = win32api.RegQueryInfoKey(hkey)[1]
@@ -249,7 +250,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 			k = win32api.RegEnumValue(hkey, x)
 			if k:
 				urls.append(k[1])
-		
 		return urls
 		
 	def decipher_password(self, cipher_text, u):
@@ -261,9 +261,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 				a = pwd[i:].decode('UTF-16LE')
 				a = a.decode('utf-8')
 				break
-			except:
-				result = ''
+			except Exception,e:
 				pass
+				result = ''
 		
 		# the last one is always equal to 0
 		secret = a.split('\x00')
@@ -288,17 +288,18 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 					pwdFound.append(values)
 				else:
 					password = secret[length - s]
-			except:
-					pass
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
 	
 	def run(self, historic=''):
 		# print title
-		Header().title_debug('Internet Explorer')
+		Header().title_info('Internet Explorer')
 		
 		# write the binary file
 		try:
 			self.write_binary_file()
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('ERROR', '%s cannot be created, check your file permission' % dll_name)
 		
 		list = []
@@ -320,7 +321,8 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 		failed = False
 		try:
 			hkey = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, keyPath, 0, accessRead)
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			failed = True
 		
 		nb_site = 0

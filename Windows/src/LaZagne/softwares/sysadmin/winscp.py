@@ -55,7 +55,8 @@ class WinSCP(ModuleInfo):
 		try:
 			key = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Configuration\Security', 0, accessRead)
 			return True
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			return False
 	
 	def check_masterPassword(self):
@@ -72,7 +73,8 @@ class WinSCP(ModuleInfo):
 		accessRead = win32con.KEY_READ | win32con.KEY_ENUMERATE_SUB_KEYS | win32con.KEY_QUERY_VALUE
 		try:
 			key = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Sessions', 0, accessRead)
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			return False
 		
 		num_profiles = win32api.RegQueryInfoKey(key)[0]
@@ -107,7 +109,8 @@ class WinSCP(ModuleInfo):
 					port = '22'
 				try:
 					password = self.decrypt_password()
-				except:
+				except Exception,e:
+					print_debug('DEBUG', '{0}'.format(e))
 					password = 'N/A'
 				
 				values['Hostname'] = self.get_hostname()
@@ -139,7 +142,8 @@ class WinSCP(ModuleInfo):
 			
 			try:
 				result += chr(int(self.decrypt_char()))
-			except:
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
 				pass
 		
 		if flag == hex_flag:
@@ -151,7 +155,7 @@ class WinSCP(ModuleInfo):
 	# --------- Main function ---------
 	def run(self):
 		# print title
-		Header().title_debug('WinSCP')
+		Header().title_info('WinSCP')
 		
 		if self.check_winscp_installed():
 			if not self.check_masterPassword():

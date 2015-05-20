@@ -7,6 +7,7 @@ from config.constant import *
 from config.write_output import print_output, print_debug
 from config.header import Header
 from config.moduleInfo import ModuleInfo
+from config.dico import get_dico
 
 class Skype(ModuleInfo):
 	def __init__(self):
@@ -26,7 +27,8 @@ class Skype(ModuleInfo):
 			
 			try:
 				hkey = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, keyPath, 0, accessRead)
-			except:
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
 				return ''
 			
 			num = win32api.RegQueryInfoKey(hkey)[1]
@@ -35,7 +37,8 @@ class Skype(ModuleInfo):
 			if k:
 				key = k[1]
 				return win32crypt.CryptUnprotectData(key, None, None, None, 0)[1] 
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			return 'failed'
 			
 	# get hash from configuration file
@@ -71,11 +74,19 @@ class Skype(ModuleInfo):
 
 		# byte to hex 
 		return binascii.hexlify(tmp)
-
+	
+	def dictionary_attack(self, login, md5):
+		wordlist = get_dico()
+		for word in wordlist:
+			hash = hashlib.md5('%s\nskyper\n%s' % (login, word)).hexdigest()
+			if hash == md5:
+				return word
+		return False
+	
 	# main function
 	def run(self):
 		# print title
-		Header().title_debug('Skype')
+		Header().title_info('Skype')
 		
 		if 'APPDATA' in os.environ:
 			directory = os.environ['APPDATA'] + '\Skype'
@@ -92,7 +103,7 @@ class Skype(ModuleInfo):
 							values = {}
 							
 							try:
-								values['Username'] = d
+								values['username'] = d
 								
 								# get encrypted hash from the config file
 								enc_hex = self.get_hash_credential(directory + os.sep + d + os.sep + 'config.xml')
@@ -101,12 +112,17 @@ class Skype(ModuleInfo):
 									print_debug('WARNING', 'No credential stored on the config.xml file.')
 								else:
 									# decrypt the hash to get the md5 to brue force
-									values['Hash_md5'] = self.get_md5_hash(enc_hex, key)
-									values['shema to bruteforce'] = values['Username'] + '\\nskyper\\n<password>'
+									values['hash_md5'] = self.get_md5_hash(enc_hex, key)
+									values['shema to bruteforce'] = values['username'] + '\\nskyper\\n<password>'
 									
+									# Try a dictionary attack on the hash
+									password = self.dictionary_attack(values['username'], values['hash_md5'])
+									if password:
+										values['password'] = password
+
 									pwdFound.append(values)
-							except:
-								pass
+							except Exception,e:
+								print_debug('DEBUG', '{0}'.format(e))
 					# print the results
 					print_output("Skype", pwdFound)
 			else:

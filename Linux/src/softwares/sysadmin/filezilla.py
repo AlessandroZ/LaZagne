@@ -2,7 +2,7 @@ import xml.etree.cElementTree as ET
 from config.header import Header
 from config.write_output import print_debug, print_output
 from config.moduleInfo import ModuleInfo
-import os
+import os, base64
 
 class Filezilla(ModuleInfo):
 	def __init__(self):
@@ -11,7 +11,7 @@ class Filezilla(ModuleInfo):
 	
 	def run(self):
 		# print the title
-		Header().title_debug('Filezilla')
+		Header().title_info('Filezilla')
 		
 		directory = '~/.filezilla'
 		directory = os.path.expanduser(directory)
@@ -35,8 +35,7 @@ class Filezilla(ModuleInfo):
 			
 			pwdFound = []
 			for i in range(len(interesting_xml_file)):
-				print_debug('INFO', interesting_xml_file[i])
-				print_debug('INFO', info_xml_file[i] + '\n')
+				print_debug('INFO', '%s: %s' % (interesting_xml_file[i], info_xml_file[i]))
 				
 				xml_file = os.path.expanduser(directory + os.sep + interesting_xml_file[i])
 				
@@ -62,7 +61,15 @@ class Filezilla(ModuleInfo):
 								values['Login'] = s11.text
 							
 							if s11.tag == 'Pass':
-								values['Password'] = s11.text
+								try:
+									# if base64 encoding
+									if 'encoding' in  s11.attrib:
+										if s11.attrib['encoding'] == 'base64':
+											values['Password'] = base64.b64decode(s11.text)
+									else: 
+										values['Password'] = s11.text
+								except:
+									values['Password'] = s11.text
 						
 						# write credentials into a text file
 						if len(values) != 0:

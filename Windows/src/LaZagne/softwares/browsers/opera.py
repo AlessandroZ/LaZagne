@@ -16,7 +16,7 @@ class Opera(ModuleInfo):
 	
 	def run(self):
 		# print title
-		Header().title_debug('Opera')
+		Header().title_info('Opera')
 		
 		# retrieve opera folder
 		path = self.get_path()
@@ -134,7 +134,8 @@ class Opera(ModuleInfo):
 			# Get the results
 			try:
 				cursor.execute('SELECT action_url, username_value, password_value FROM logins')
-			except:
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', 'Opera seems to be used, the database is locked. Kill the process and try again !')
 				return 
 			
@@ -166,12 +167,14 @@ class Opera(ModuleInfo):
 			try:
 				cp.readfp(f)
 				break
-			except:
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
 				f.readline() # discard first line
 		try:
 			master_pass = cp.get('Security Prefs','Use Paranoid Mailpassword')
 			return master_pass
-		except:
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
 			return False
 			
 		
