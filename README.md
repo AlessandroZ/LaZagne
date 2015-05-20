@@ -10,7 +10,6 @@ At this moment, it supports 22 Programs on Microsoft Windows and 12 on a Linux/U
 
 <p align="center"><img src="./pictures/lazagne.png" alt="The LaZagne project"></p>
 
-(*) used by many tools to store passwords: Chrome, Owncloud, Evolution, KMail, etc.
 
 Usage
 ----
@@ -37,6 +36,7 @@ Supported software
 
 <p align="center"><img src="./pictures/softwares.png" alt="The LaZagne project"></p>
 
+(*) used by many tools to store passwords: Chrome, Owncloud, Evolution, KMail, etc.
 
 IE Browser history
 ----
