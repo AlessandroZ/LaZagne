@@ -57,8 +57,13 @@ class Chrome(ModuleInfo):
 		for result in cursor.fetchall():
 			values = {}
 			
-			# Decrypt the Password
-			password = win32crypt.CryptUnprotectData(result[2], None, None, None, 0)[1]
+			try:
+				# Decrypt the Password
+				password = win32crypt.CryptUnprotectData(result[2], None, None, None, 0)[1]
+			except Exception,e:
+				password = ''
+				print_debug('DEBUG', '{0}'.format(e))
+			
 			if password:
 				values['Site'] = result[0]
 				values['Username'] = result[1]
