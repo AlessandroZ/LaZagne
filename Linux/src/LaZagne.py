@@ -27,7 +27,7 @@ moduleNames = get_modules()
 
 # Define a dictionary for all modules
 modules = {}
-for categoryName in category.keys():
+for categoryName in category:
 	modules[categoryName] = {}
 
 # Add all modules to the dictionary
@@ -64,15 +64,14 @@ def verbosity():
 def launch_module(b):
 	ok = False
 	# launch only a specific module
-	for i in args.keys():
-		if args[i]:
-			if i in b.keys():
-				b[i].run()
-				ok = True
+	for i in args:
+		if args[i] and i in b:
+			b[i].run()
+			ok = True
 	
 	# launch all modules
 	if not ok:
-		for i in b.keys():
+		for i in b:
 			b[i].run()
 
 def manage_advanced_options():
@@ -103,7 +102,7 @@ def runModule():
 # Run all
 def runAllModules():
 	manage_advanced_options()
-	for categoryName in category.keys():
+	for categoryName in category:
 		if categoryName == 'browsers':
 			constant.mozilla_software = 'Firefox'
 		elif categoryName == 'mails':
@@ -133,13 +132,13 @@ PWrite.add_argument('-w', dest='write',  action= 'store_true', help = 'write a t
 
 # ------------------------------------------- Add options and suboptions to all modules -------------------------------------------
 all_subparser = []
-for c in category.keys():
+for c in category:
 	category[c]['parser'] = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 	category[c]['parser']._optionals.title = category[c]['help']
 	
 	# manage options
 	category[c]['subparser'] = []
-	for module in modules[c].keys():
+	for module in modules[c]:
 		m = modules[c][module]
 		category[c]['parser'].add_argument(m.options['command'], action=m.options['action'], dest=m.options['dest'], help=m.options['help'])
 		
@@ -160,7 +159,7 @@ for c in category.keys():
 # ------------------------------------------- Print all -------------------------------------------
 parents = [PPoptional] + all_subparser + [PWrite]
 dic = {'all':{'parents':parents, 'help':'Run all modules', 'func': runAllModules}}
-for c in category.keys():
+for c in category:
 	parser_tab = [PPoptional, category[c]['parser']]
 	if 'subparser' in category[c]:
 		if category[c]['subparser']:
@@ -171,7 +170,7 @@ for c in category.keys():
 
 #2- main commands
 subparsers = parser.add_subparsers(help='Choose a main command')
-for d in dic.keys():
+for d in dic:
 	subparsers.add_parser(d,parents=dic[d]['parents'],help=dic[d]['help']).set_defaults(func=dic[d]['func'],auditType=d)
 
 # ------------------------------------------- Parse arguments -------------------------------------------
