@@ -13,13 +13,13 @@ import time, sys, os
 import logging
 from softwares.browsers.mozilla import Mozilla
 
-# configuration
+# Configuration
 from config.header import Header
 from config.write_output import write_header, write_footer, print_footer
 from config.constant import *
 from config.manageModules import get_categories, get_modules
 
-# print the title
+# Print the title
 Header().first_title()
 
 category = get_categories()
@@ -44,7 +44,7 @@ def output():
 	del args['write']
 
 def verbosity():
-	# write on the console + debug file
+	# Write on the console + debug file
 	if args['verbose']==0: level=logging.CRITICAL
 	elif args['verbose'] == 1: level=logging.INFO
 	elif args['verbose']>=2: level=logging.DEBUG
@@ -55,7 +55,7 @@ def verbosity():
 	stream.setFormatter(formatter)
 	root = logging.getLogger()
 	root.setLevel(level)
-	# if other logging are set
+	# If other logging are set
 	for r in root.handlers:
 		r.setLevel(logging.CRITICAL)
 	root.addHandler(stream)
@@ -63,13 +63,13 @@ def verbosity():
 
 def launch_module(b):
 	ok = False
-	# launch only a specific module
+	# Launch only a specific module
 	for i in args:
 		if args[i] and i in b:
 			b[i].run()
 			ok = True
 	
-	# launch all modules
+	# Launch all modules
 	if not ok:
 		for i in b:
 			b[i].run()
@@ -109,7 +109,7 @@ def runAllModules():
 			constant.mozilla_software = 'Thunderbird'
 		launch_module(modules[categoryName])
 
-# prompt help if an error occurs
+# Prompt help if an error occurs
 class MyParser(argparse.ArgumentParser):
 	def error(self, message):
 		sys.stderr.write('error: %s\n\n' % message)
@@ -136,13 +136,13 @@ for c in category:
 	category[c]['parser'] = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 	category[c]['parser']._optionals.title = category[c]['help']
 	
-	# manage options
+	# Manage options
 	category[c]['subparser'] = []
 	for module in modules[c]:
 		m = modules[c][module]
 		category[c]['parser'].add_argument(m.options['command'], action=m.options['action'], dest=m.options['dest'], help=m.options['help'])
 		
-		# manage all suboptions by modules
+		# Manage all suboptions by modules
 		if m.suboptions and m.name != 'thunderbird':
 			tmp = []
 			for sub in m.suboptions:
@@ -168,7 +168,7 @@ for c in category:
 	dic_tmp = {c: {'parents': parser_tab, 'help':'Run %s module' % c, 'func': runModule}}
 	dic = dict(dic.items() + dic_tmp.items())
 
-#2- main commands
+# 2- main commands
 subparsers = parser.add_subparsers(help='Choose a main command')
 for d in dic:
 	subparsers.add_parser(d,parents=dic[d]['parents'],help=dic[d]['help']).set_defaults(func=dic[d]['func'],auditType=d)
@@ -181,7 +181,7 @@ output()
 verbosity()
 arguments.func()
 
-# print the number of passwords found
+# Print the number of passwords found
 if constant.output == 'txt':
 	write_footer()
 print_footer()

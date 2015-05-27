@@ -109,14 +109,14 @@ class WinSCP(ModuleInfo):
 					port = '22'
 				try:
 					password = self.decrypt_password()
+					values['Password'] = password
 				except Exception,e:
 					print_debug('DEBUG', '{0}'.format(e))
-					password = 'N/A'
 				
 				values['Hostname'] = self.get_hostname()
 				values['Port'] = port
 				values['Username'] = self.get_username()
-				values['Password'] = password
+				
 				pwdFound.append(values)
 		
 		# print the results

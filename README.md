@@ -73,28 +73,20 @@ Requirements
 To compile the source code, some external libraries are required.
 
 * For Windows
-	* colorama (for the Console colors)
-		* https://pypi.python.org/pypi/colorama
+	* Python 2.7
+	* Colorama (for the Console colors): https://pypi.python.org/pypi/colorama
+	* Python for Windows Extensions: http://sourceforge.net/projects/pywin32/
+	* PyCrypto: pip install pycrypto
+	* Impacket (for Windows hashes + LSA Secrets): https://github.com/CoreSecurity/impacket
+	* Pyasn1 (for ASN1 decoding): https://pypi.python.org/pypi/pyasn1/
 
-	* Python for Windows Extensions
-		* http://sourceforge.net/projects/pywin32/
-	
-	* pycrypto
-		* pip install pycrypto
-
-	* Impacket (for Windows hashes + LSA Secrets)
-		* https://github.com/CoreSecurity/impacket
-
-* For Linux
-	* For Ubuntu 14.04
-		* python-kde4 (Kwallet)
-		
-	* Other distributions
-		* Python 2.7
-		* argparse
-		* Crypto
-		* dbus (Pidgin)
-		* python-kde4 (Kwallet)
+* For Linux	
+	* Python 2.7
+	* Argparse
+	* PyCrypto: https://www.dlitz.net/software/pycrypto/
+	* Dbus (Pidgin)
+	* Python-kde4 (Kwallet)
+	* Pyasn1 (for ASN1 decoding): https://pypi.python.org/pypi/pyasn1/
 
 ----
 | __Alessandro ZANNI__    |
