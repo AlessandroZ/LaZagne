@@ -58,7 +58,7 @@ class Opera(ModuleInfo):
 		
 		# retrieve wand.dat file
 		if not os.path.exists(path + os.sep + 'wand.dat'):
-			constant.file_logger.warn('wand.dat file has not been found.\n')
+			print_debug('WARNING', 'wand.dat file has not been found.')
 			return
 		
 		# read wand.dat

@@ -7,14 +7,14 @@ from config.moduleInfo import ModuleInfo
 class Env_variable(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-e', 'action': 'store_true', 'dest': 'env', 'help': 'environment variables'}
-		ModuleInfo.__init__(self, 'Environnement variables', 'sysadmin', options)
+		ModuleInfo.__init__(self, 'Environment variables', 'sysadmin', options)
 
 	def run(self):
 		values = {}
 		pwdFound = []
 		
 		# print the title
-		Header().title_info('Environnement variables')
+		Header().title_info('Environment variables')
 		
 		# --------- http_proxy --------
 		tmp = ''
