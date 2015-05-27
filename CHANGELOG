@@ -1,3 +1,11 @@
+LaZagne 0.6 (26/05/2015)
+- For Windows / Linux 
+	* Firefox / Thunderbird: No more dependency with nss library (many thanks to Laurent for his technic: https://github.com/lclevy/firepwd)
+	* Fix opera bug
+
+- Only Windows
+	* WinSCP false positive removed (when SSH key is used)
+
 LaZagne 0.5 (21/05/2015)
 - For Windows
 	* Fix chrome bug

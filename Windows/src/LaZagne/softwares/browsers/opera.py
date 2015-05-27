@@ -46,11 +46,10 @@ class Opera(ModuleInfo):
 			if passwords:
 				self.parse_results(passwords)
 			else:
-				print_debug('The wand.dat seems to be empty')
+				print_debug('INFO', 'The wand.dat seems to be empty')
 		# new versions
 		else:
 			passwords = self.decipher_new_version(path)
-
 	
 	def get_path(self):
 		global CIPHERED_FILE
