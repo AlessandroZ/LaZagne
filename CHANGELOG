@@ -1,6 +1,10 @@
+LaZagne 0.7 (29/05/2015)
+- For Windows / Linux 
+	* Fix mozilla bug (special characters were not printed)
+
 LaZagne 0.6 (26/05/2015)
 - For Windows / Linux 
-	* Firefox / Thunderbird: No more dependency with nss library (many thanks to Laurent for his technic: https://github.com/lclevy/firepwd)
+	* Firefox / Thunderbird: No more dependency with nss library (many thanks to Laurent Clevy for its awesome technic: https://github.com/lclevy/firepwd)
 	* Fix opera bug
 
 - Only Windows
