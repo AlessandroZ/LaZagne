@@ -507,15 +507,26 @@ class Mozilla(ModuleInfo):
 						loginASN1 = decoder.decode(b64decode(user))
 						iv = loginASN1[0][1][1].asOctets()
 						ciphertext = loginASN1[0][2].asOctets()
-						login = re.sub( r'[^\\x\w]', '', DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext) )
-						values["Username"] = login
+						login = DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext)
+						# remove bad character at the end
+						try:
+							nb = unpack('B', login[-1])[0]
+							values["Username"] = login[:-nb]
+						except:
+							values["Username"] = login
 						
 						# Password
 						passwdASN1 = decoder.decode(b64decode(passw))
 						iv = passwdASN1[0][1][1].asOctets()
 						ciphertext = passwdASN1[0][2].asOctets()
-						password = re.sub( r'[^\\x\w]', '', DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext) )
-						values["Password"] =  password
+						password = DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext)
+						# remove bad character at the end
+						try:
+							nb = unpack('B', password[-1])[0]
+							values["Password"] =  password[:-nb]
+						except:
+							values["Password"] =  password
+
 
 						if len(values):
 							pwdFound.append(values)
