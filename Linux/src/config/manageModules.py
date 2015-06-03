@@ -12,6 +12,7 @@ from softwares.chats.pidgin import Pidgin
 from softwares.chats.jitsi import Jitsi
 # wifi
 from softwares.wifi.wifi import Wifi
+from softwares.wifi.wpa_supplicant import wpa_supplicant
 # databases
 from softwares.databases.squirrel import Squirrel
 from softwares.databases.dbvis import DbVisualizer
@@ -42,6 +43,7 @@ def get_modules():
 		SQLDeveloper(),
 		Squirrel(),
 		Wifi(),
+		wpa_supplicant(),
 		kde()
 	]
 	return moduleNames
