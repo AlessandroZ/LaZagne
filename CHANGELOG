@@ -1,3 +1,7 @@
+LaZagne 0.71 (04/06/2015)
+- Only Linux
+	* Wifi password module from WPA Supplicant implemented (by rpesche)
+
 LaZagne 0.7 (29/05/2015)
 - For Windows / Linux 
 	* Fix mozilla bug (special characters were not printed)
