@@ -75,22 +75,29 @@ def launch_module(b):
 			b[i].run()
 
 def manage_advanced_options():
-	if 'manually' in args:
-		constant.manually = args['manually']
+
+	# file used for dictionary attacks
 	if 'path' in args:
 		constant.path = args['path']
 	if 'bruteforce' in args: 
 		constant.bruteforce = args['bruteforce']
-	if 'defaultpass' in args: 
-		constant.defaultpass = args['defaultpass']
+
+	# mozilla advanced options
+	if 'manually' in args:
+		constant.manually = args['manually']
 	if 'specific_path' in args:
 		constant.specific_path = args['specific_path']
+	
 	if 'mails' in args['auditType']:
 		constant.mozilla_software = 'Thunderbird'
 	elif 'browsers' in args['auditType']:
 		constant.mozilla_software = 'Firefox'
+	
+	# jitsi advanced options
 	if 'master_pwd' in args:
 		constant.jitsi_masterpass = args['master_pwd']
+	
+	# i.e advanced options
 	if 'historic' in args:
 		constant.ie_historic = args['historic']
 
@@ -124,6 +131,8 @@ PPoptional = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog:
 PPoptional._optionals.title = 'optional arguments'
 PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='increase verbosity level')
 PPoptional.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION), help='laZagne version')
+PPoptional.add_argument('-path', dest='path',  action= 'store', help = 'path of a file used for dictionnary file')
+PPoptional.add_argument('-b', dest='bruteforce',  action= 'store', help = 'number of character to brute force')
 
 # Output 
 PWrite = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))

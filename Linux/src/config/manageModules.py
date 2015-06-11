@@ -7,6 +7,7 @@ from softwares.browsers.opera import Opera
 # sysadmin
 from softwares.sysadmin.filezilla import Filezilla
 from softwares.sysadmin.env_variable import Env_variable
+from softwares.sysadmin.shadow import Shadow
 # chats
 from softwares.chats.pidgin import Pidgin
 from softwares.chats.jitsi import Jitsi
@@ -40,6 +41,7 @@ def get_modules():
 		Mozilla(),
 		Opera(),
 		Pidgin(),
+		Shadow(),
 		SQLDeveloper(),
 		Squirrel(),
 		Wifi(),
