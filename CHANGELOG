@@ -1,3 +1,10 @@
+LaZagne 0.8 (11/06/2015)
+- Only Linux
+	* /etc/shadow modules (dictionary attack on hash)
+
+- For Windows / Linux 
+	* management of the following options "-path" (for dictionary attack) and "-b" (for bruteforce attack) in a different way. Used as general options and not implemented by module. Using the same option, the file will be used by different modules; example: to find the mozilla masterpassword, the unix system password (from the hash), used by skype (for windows), etc.
+
 LaZagne 0.71 (04/06/2015)
 - Only Linux
 	* Wifi password module from WPA Supplicant implemented (by rpesche)

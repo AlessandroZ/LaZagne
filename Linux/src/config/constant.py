@@ -2,7 +2,7 @@
 class constant():
 	folder_name = 'results'
 	MAX_HELP_POSITION = 27
-	CURRENT_VERSION = 0.71
+	CURRENT_VERSION = 0.8
 	output = None
 	file_logger = None
 	verbose = False
@@ -14,7 +14,6 @@ class constant():
 	manually = None
 	path = None
 	bruteforce = None
-	defaultpass = None
 	specific_path = None
 	mozilla_software = ''
 
