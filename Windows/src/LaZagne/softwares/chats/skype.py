@@ -75,8 +75,29 @@ class Skype(ModuleInfo):
 		# byte to hex 
 		return binascii.hexlify(tmp)
 	
+	# used for dictionary attack, if user specify a specific file
+	def get_dic_file(self, dictionnary_path):
+		words = []
+		if dictionnary_path:
+			try:
+				dicFile = open (dictionnary_path,'r')
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
+				print_debug('ERROR', 'Unable to open passwords file: %s' % str(dictionnary_path))
+				return []
+			
+			for word in dicFile.readlines():
+				words.append(word.strip('\n'))
+			dicFile.close()
+		return words
+	
 	def dictionary_attack(self, login, md5):
 		wordlist = get_dico()
+		
+		# if the user specify the file path
+		if constant.path:
+			wordlist += self.get_dic_file(constant.path)
+
 		for word in wordlist:
 			hash = hashlib.md5('%s\nskyper\n%s' % (login, word)).hexdigest()
 			if hash == md5:
