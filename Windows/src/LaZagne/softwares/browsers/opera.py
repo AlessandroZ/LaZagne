@@ -153,7 +153,7 @@ class Opera(ModuleInfo):
 			# print the results
 			print_output("Opera", pwdFound)
 		else:
-			print_debug('No passwords stored\nThe database Login Data is not present.')
+			print_debug('INFO', 'No passwords stored\nThe database Login Data is not present.')
 		
 	def masterPasswordUsed(self, path):
 		
