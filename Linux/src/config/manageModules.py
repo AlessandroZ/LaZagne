@@ -7,11 +7,13 @@ from softwares.browsers.opera import Opera
 # sysadmin
 from softwares.sysadmin.filezilla import Filezilla
 from softwares.sysadmin.env_variable import Env_variable
+from softwares.sysadmin.shadow import Shadow
 # chats
 from softwares.chats.pidgin import Pidgin
 from softwares.chats.jitsi import Jitsi
 # wifi
 from softwares.wifi.wifi import Wifi
+from softwares.wifi.wpa_supplicant import Wpa_supplicant
 # databases
 from softwares.databases.squirrel import Squirrel
 from softwares.databases.dbvis import DbVisualizer
@@ -39,9 +41,11 @@ def get_modules():
 		Mozilla(),
 		Opera(),
 		Pidgin(),
+		Shadow(),
 		SQLDeveloper(),
 		Squirrel(),
 		Wifi(),
+		Wpa_supplicant(),
 		kde()
 	]
 	return moduleNames

@@ -10,7 +10,7 @@ import sqlite3
 import json
 import shutil
 from config.dico import get_dico
-import itertools
+from itertools import product
 #https://pypi.python.org/pypi/pyasn1/
 from pyasn1.codec.der import decoder
 from struct import unpack
@@ -98,9 +98,6 @@ class Mozilla(ModuleInfo):
 		# Manage options
 		suboptions = [
 			{'command': '-m', 'action': 'store', 'dest': 'manually', 'help': 'enter the master password manually', 'title': 'Advanced Mozilla master password options'},
-			{'command': '-p', 'action': 'store', 'dest': 'path', 'help': 'path of a dictionnary file', 'title': 'Advanced Mozilla master password options'},
-			{'command': '-b', 'type':int, 'action': 'store', 'dest': 'bruteforce', 'help': 'number of caracter to brute force', 'title': 'Advanced Mozilla master password options'},
-			{'command': '-d', 'action': 'store_true', 'dest': 'defaultpass', 'help': 'try 500 most common passwords', 'title': 'Advanced Mozilla master password options'},
 			{'command': '-s', 'action': 'store', 'dest': 'specific_path', 'help': 'enter the specific path to a profile you want to crack', 'title': 'Advanced Mozilla master password options'}
 		]
 		
@@ -133,11 +130,8 @@ class Mozilla(ModuleInfo):
 			self.toCheck.append('a')
 		
 		if constant.bruteforce:
-			self.number_toStop = constant.bruteforce
+			self.number_toStop = int(constant.bruteforce) + 1
 			self.toCheck.append('b')
-		
-		if constant.defaultpass:
-			self.toCheck.append('d')
 		
 		# default attack
 		if self.toCheck == []:
@@ -399,21 +393,20 @@ class Mozilla(ModuleInfo):
 			print_debug('WARNING', 'No password has been found using the default list')
 		
 		# brute force attack
-		if 'b' in self.toCheck:
+		if 'b' in self.toCheck  or constant.bruteforce:
 			charset_list = 'abcdefghijklmnopqrstuvwxyz1234567890!?'
-			tab = [i for i in charset_list]
-			
-			print_debug('ATTACK', 'Brute force attack !!! (%s characters)' %  str(self.number_toStop))
-			current = 0
-			pass_found = False
+			print_debug('ATTACK', 'Brute force attack !!! (%s characters)' %  str(constant.bruteforce))
+			print_debug('DEBUG', 'charset: %s' %  charset_list)
+
 			try:
-				while current <= self.number_toStop and pass_found == False:
-					for i in itertools.product(tab, repeat=current):
-						word = ''.join(map(str,i))
-						if self.is_masterpassword_correct(word)[0]:
-							print_debug('FIND', 'Master password found: %s' % word.strip())
-							return word.strip()
-					current+= 1
+				for length in range(1, int(self.number_toStop)):
+					words = product(charset_list, repeat=length)
+					for word in words:
+						print_debug('DEBUG', '%s' %  ''.join(word))
+						if self.is_masterpassword_correct(''.join(word))[0]:
+							w = ''.join(word)
+							print_debug('FIND', 'Master password found: %s' % w.strip())
+							return w.strip()
 			except (KeyboardInterrupt, SystemExit):
 				print 'INTERRUPTED!'
 				print_debug('INFO', 'Dictionnary attack interrupted')
@@ -421,7 +414,7 @@ class Mozilla(ModuleInfo):
 				print_debug('DEBUG', '{0}'.format(e))
 
 			print_debug('WARNING', 'No password has been found using the brute force attack')
-			return False
+		return False
 
 	# ------------------------------ End of Master Password Functions ------------------------------
 	
@@ -507,15 +500,26 @@ class Mozilla(ModuleInfo):
 						loginASN1 = decoder.decode(b64decode(user))
 						iv = loginASN1[0][1][1].asOctets()
 						ciphertext = loginASN1[0][2].asOctets()
-						login = re.sub( r'[^\\x\w]', '', DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext) )
-						values["Username"] = login
+						login = DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext)
+						# remove bad character at the end
+						try:
+							nb = unpack('B', login[-1])[0]
+							values["Username"] = login[:-nb]
+						except:
+							values["Username"] = login
 						
 						# Password
 						passwdASN1 = decoder.decode(b64decode(passw))
 						iv = passwdASN1[0][1][1].asOctets()
 						ciphertext = passwdASN1[0][2].asOctets()
-						password = re.sub( r'[^\\x\w]', '', DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext) )
-						values["Password"] =  password
+						password = DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext)
+						# remove bad character at the end
+						try:
+							nb = unpack('B', password[-1])[0]
+							values["Password"] =  password[:-nb]
+						except:
+							values["Password"] =  password
+
 
 						if len(values):
 							pwdFound.append(values)

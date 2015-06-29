@@ -63,6 +63,7 @@ import traceback
 import ntpath
 import time
 import string
+from itertools import product
 
 try:
 	from Crypto.Cipher import DES, ARC4, AES
@@ -1039,13 +1040,53 @@ class DumpSecrets:
 		generated_hash = hashlib.new('md4', word.encode('utf-16le')).digest()
 		return binascii.hexlify(generated_hash)
 	
-	def bruteForce_Hash(self, hash):
-		# check with a basic dictionary list and with all passwords already found
+	def dictionaryAttack_Hash(self, hash):
+		# check using a basic dictionary list and all passwords already found
 		for word in self.wordlist:
 			generated_hash = self.create_nthash(word)
 			if generated_hash == hash:
 				return word
 		return False
+	
+	def bruteFortce_hash(self, hash):
+		# brute force attack
+		charset_list = 'abcdefghijklmnopqrstuvwxyz1234567890!?'
+		print_debug('ATTACK', 'Brute force attack !!! (%s characters)' %  str(constant.bruteforce))
+		print_debug('DEBUG', 'charset: %s' %  charset_list)
+
+		try:
+			for length in range(1, int(constant.bruteforce)+1):
+				words = product(charset_list, repeat=length)
+				for word in words:
+					print_debug('DEBUG', '%s' %  ''.join(word))
+					generated_hash = self.create_nthash(''.join(word).strip())
+					if generated_hash == hash:
+						return ''.join(word)
+
+		except (KeyboardInterrupt, SystemExit):
+			print 'INTERRUPTED!'
+			print_debug('INFO', 'Dictionnary attack interrupted')
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
+
+		print_debug('WARNING', 'No password has been found using the brute force attack')
+		return False
+	
+	# used for dictionary attack, if user specify a specific file
+	def get_dic(self, dictionnary_path):
+		words = []
+		if dictionnary_path:
+			try:
+				dicFile = open (dictionnary_path,'r')
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
+				print_debug('ERROR', 'Unable to open passwords file: %s' % str(dictionnary_path))
+				return []
+			
+			for word in dicFile.readlines():
+				words.append(word.strip('\n'))
+			dicFile.close()
+		return words
 	
 	def hashes_to_dic(self, title, format, content):
 		Header().title1(title)
@@ -1054,14 +1095,19 @@ class DumpSecrets:
 		items = sorted(content)
 		pwdFound = []
 		values = {}
-		
+		self.wordlist += self.get_dic(constant.path)
 		all_hash = '\r\n'
 		for item in items:
 			hash = content[item]
 			(uid, rid, lmhash, nthash) = hash.split(':')[:4]
+			
+			# add the user on the list to found weak password (login equal password)
 			self.wordlist.append(uid.encode("utf8"))
 			all_hash = '%s\r\n%s' % (all_hash, hash)
-			password = self.bruteForce_Hash(nthash)
+			password = self.dictionaryAttack_Hash(nthash)
+			
+			if not password and constant.bruteforce:
+				password = self.bruteFortce_hash(nthash)
 			
 			# if a password has been found from the dictionary attack
 			if password:

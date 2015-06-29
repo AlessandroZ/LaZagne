@@ -65,24 +65,33 @@ def print_output(software_name, pwdFound):
 			Header().title(software_name)
 		
 		toWrite = []
+		password_category = False
 		for pwd in pwdFound:
+			# detect which kinds of password has been found
 			lower_list = [s.lower() for s in pwd.keys()]
 			password = [s for s in lower_list if "password" in s]
-			key = [s for s in lower_list if "key" in s] # for the wifi
+			if password: 
+				password_category = password
+			else:
+				key = [s for s in lower_list if "key" in s] # for the wifi
+				if key: 
+					password_category = key
+				else:
+					hash = [s for s in lower_list if "hash" in s]
+					if hash:
+						password_category = hash
 			
 			# No password found
-			if not password and not key:
+			if not password_category:
 				print_debug("FAILED", "Password not found !!!")
 			else:
-				print_debug("OK", "Password found !!!")
+				print_debug("OK", '%s found !!!' % password_category[0].title())
 				toWrite.append(pwd)
+				
 				# Store all passwords found on a table => for dictionary attack if master password set
 				constant.nbPasswordFound += 1
 				try:
-					if password:
-						constant.passwordFound.append(pwd['Password'].strip())
-					elif key:
-						constant.passwordFound.append(pwd['key'])
+					constant.passwordFound.append(pwd[password_category[0]])
 				except:
 					pass
 			
