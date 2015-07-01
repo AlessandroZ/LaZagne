@@ -10,9 +10,15 @@ At this moment, it supports 22 Programs on Microsoft Windows and 12 on a Linux/U
 
 <p align="center"><img src="./pictures/lazagne.png" alt="The LaZagne project"></p>
 
+Standalones
+----
+Standalones are now available here: https://github.com/AlessandroZ/LaZagne/releases/tag/0.9
 
 Usage
 ----
+* Retrieve version
+	* cmd: laZagne.exe --version
+
 * Launch all modules
 	* cmd: laZagne.exe all
 
@@ -28,6 +34,12 @@ Usage
 
 * Write all passwords found into a file (-w options)
 	* cmd: laZagne.exe all -w
+
+* Use a file for dictionary attacks (used only when it's necessary: mozilla masterpassword, system hahes, etc.). The file has to be a wordlist in cleartext (no rainbow), it has not been optmized to be fast but could useful for basic passwords. 
+	* cmd: laZagne.exe all -path file.txt
+
+* Change verbosity mode (2 different levels)
+	* cmd: laZagne.exe all -vv
 
 __Note: For wifi passwords \ Windows Secrets, launch it with administrator privileges (UAC Authentication / sudo)__
 

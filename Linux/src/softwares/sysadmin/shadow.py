@@ -19,14 +19,14 @@ class Shadow(ModuleInfo):
 		self.pwdFound = []
 
 	# used for dictionary attack, if user specify a specific file
-	def get_dic(self, dictionnary_path):
+	def get_dic(self, dictionary_path):
 		words = []
-		if dictionnary_path:
+		if dictionary_path:
 			try:
-				dicFile = open (dictionnary_path,'r')
+				dicFile = open (dictionary_path,'r')
 			except Exception,e:
 				print_debug('DEBUG', '{0}'.format(e))
-				print_debug('ERROR', 'Unable to open passwords file: %s' % str(self.dictionnary_path))
+				print_debug('ERROR', 'Unable to open passwords file: %s' % str(self.dictionary_path))
 				return []
 
 			for word in dicFile.readlines():
@@ -40,7 +40,7 @@ class Shadow(ModuleInfo):
 		# add the user on the list to found weak password (login equal password)
 		dic.insert(0, user)
 
-		# file for dictionnary attack entered 
+		# file for dictionary attack entered 
 		if constant.path:
 			if os.path.exists(constant.path):
 				dic = self.get_dic(constant.path)
@@ -71,7 +71,7 @@ class Shadow(ModuleInfo):
 		realSalt = "$" + hashType + "$" + salt + "$"
 		
 		# -------------------------- Dictionary attack --------------------------
-		print_debug('INFO', 'Dictionnary Attack on the hash !!! ')
+		print_debug('INFO', 'Dictionary Attack on the hash !!! ')
 		try:
 			for word in dic:
 				try:
@@ -87,7 +87,7 @@ class Shadow(ModuleInfo):
 					return
 		except (KeyboardInterrupt, SystemExit):
 			print 'INTERRUPTED!'
-			print_debug('DEBUG', 'Dictionnary attack interrupted')
+			print_debug('DEBUG', 'Dictionary attack interrupted')
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 

@@ -1073,14 +1073,14 @@ class DumpSecrets:
 		return False
 	
 	# used for dictionary attack, if user specify a specific file
-	def get_dic(self, dictionnary_path):
+	def get_dic(self, dictionary_path):
 		words = []
-		if dictionnary_path:
+		if dictionary_path:
 			try:
-				dicFile = open (dictionnary_path,'r')
+				dicFile = open (dictionary_path,'r')
 			except Exception,e:
 				print_debug('DEBUG', '{0}'.format(e))
-				print_debug('ERROR', 'Unable to open passwords file: %s' % str(dictionnary_path))
+				print_debug('ERROR', 'Unable to open passwords file: %s' % str(dictionary_path))
 				return []
 			
 			for word in dicFile.readlines():
