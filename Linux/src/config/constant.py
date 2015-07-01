@@ -2,7 +2,7 @@
 class constant():
 	folder_name = 'results'
 	MAX_HELP_POSITION = 27
-	CURRENT_VERSION = 0.8
+	CURRENT_VERSION = 0.9
 	output = None
 	file_logger = None
 	verbose = False

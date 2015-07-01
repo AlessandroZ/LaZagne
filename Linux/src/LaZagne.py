@@ -124,14 +124,14 @@ class MyParser(argparse.ArgumentParser):
 		sys.exit(2)
 
 parser = MyParser()
+parser.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION), help='laZagne version')
 
 # ------------------------------------------- Permanent options -------------------------------------------
 # Version and verbosity 
 PPoptional = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 PPoptional._optionals.title = 'optional arguments'
 PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='increase verbosity level')
-PPoptional.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION), help='laZagne version')
-PPoptional.add_argument('-path', dest='path',  action= 'store', help = 'path of a file used for dictionnary file')
+PPoptional.add_argument('-path', dest='path',  action= 'store', help = 'path of a file used for dictionary file')
 PPoptional.add_argument('-b', dest='bruteforce',  action= 'store', help = 'number of character to brute force')
 
 # Output 

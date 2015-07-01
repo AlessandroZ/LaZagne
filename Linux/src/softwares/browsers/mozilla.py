@@ -82,7 +82,7 @@ class Mozilla(ModuleInfo):
 	# b = brute force attack
 	# m = manually
 	# d = default list
-	# a = dictionnary attack
+	# a = dictionary attack
 
 	def __init__(self, isThunderbird = False):
 		
@@ -90,7 +90,7 @@ class Mozilla(ModuleInfo):
 
 		self.toCheck = []
 		self.manually_pass = None
-		self.dictionnary_path = None
+		self.dictionary_path = None
 		self.number_toStop = 0
 
 		self.key3 = ''
@@ -122,7 +122,7 @@ class Mozilla(ModuleInfo):
 			self.toCheck.append('m')
 		
 		if constant.path:
-			self.dictionnary_path = constant.path
+			self.dictionary_path = constant.path
 			self.toCheck.append('a')
 		
 		if constant.bruteforce:
@@ -349,19 +349,19 @@ class Mozilla(ModuleInfo):
 			else:
 				print_debug('WARNING', 'The Master password entered is not correct')
 		
-		# dictionnary attack
+		# dictionary attack
 		if 'a' in self.toCheck:
 			try:
-				pass_file = open(self.dictionnary_path, 'r')
+				pass_file = open(self.dictionary_path, 'r')
 				num_lines = sum(1 for line in pass_file)
 			except:
-				print_debug('ERROR', 'Unable to open passwords file: %s' % str(self.dictionnary_path))
+				print_debug('ERROR', 'Unable to open passwords file: %s' % str(self.dictionary_path))
 				return False
 			pass_file.close()
 			
-			print_debug('ATTACK', 'Dictionnary Attack !!! (%s words)' % str(num_lines))
+			print_debug('ATTACK', 'Dictionary Attack !!! (%s words)' % str(num_lines))
 			try:
-				with open(self.dictionnary_path) as f:
+				with open(self.dictionary_path) as f:
 					for p in f:
 						if self.is_masterpassword_correct(p.strip())[0]:
 							print_debug('FIND', 'Master password found: %s' % p.strip())
@@ -369,11 +369,11 @@ class Mozilla(ModuleInfo):
 			
 			except (KeyboardInterrupt, SystemExit):
 				print 'INTERRUPTED!'
-				print_debug('DEBUG', 'Dictionnary attack interrupted')
+				print_debug('DEBUG', 'Dictionary attack interrupted')
 			except Exception,e:
 				print_debug('DEBUG', '{0}'.format(e))
 
-			print_debug('WARNING', 'The Master password has not been found using the dictionnary attack')
+			print_debug('WARNING', 'The Master password has not been found using the dictionary attack')
 		
 		# 500 most used passwords
 		if 'd' in self.toCheck:
@@ -405,7 +405,7 @@ class Mozilla(ModuleInfo):
 							return w.strip()
 			except (KeyboardInterrupt, SystemExit):
 				print 'INTERRUPTED!'
-				print_debug('INFO', 'Dictionnary attack interrupted')
+				print_debug('INFO', 'Dictionary attack interrupted')
 			except Exception,e:
 				print_debug('DEBUG', '{0}'.format(e))
 

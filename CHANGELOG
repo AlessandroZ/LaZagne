@@ -1,9 +1,18 @@
+LaZagne 0.9 (01/07/2015)
+- Only Windows
+	* Fix Opera bug (thanks to rolandstarke)
+	* Fix encoding error for generic network passwords
+
+- For Windows / Linux
+	* Version number available from the main menu (before: Lazagne all --version => now: Lazagne --version)
+	* spelling mistake corrected
+
 LaZagne 0.8 (11/06/2015)
 - Only Linux
 	* /etc/shadow modules (dictionary attack on hash)
 
 - For Windows / Linux 
-	* management of the following options "-path" (for dictionary attack) and "-b" (for bruteforce attack) in a different way. Used as general options and not implemented by module. Using the same option, the file will be used by different modules; example: to find the mozilla masterpassword, the unix system password (from the hash), used by skype (for windows), etc.
+	* Management of the following options "-path" (for dictionary attack) and "-b" (for bruteforce attack) in a different way. Used as general options and not implemented by module. Using the same option, the file will be used by different modules; example: to find the mozilla masterpassword, the unix system password (from the hash), used by skype (for windows), etc.
 
 LaZagne 0.71 (04/06/2015)
 - Only Linux

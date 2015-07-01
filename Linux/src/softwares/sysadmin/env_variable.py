@@ -51,7 +51,7 @@ class Env_variable(ModuleInfo):
 		# write credentials into a text file
 		if len(values) != 0:
 			# print the results
-			print_output('Environnement variables', pwdFound)
+			print_output('Environment variables', pwdFound)
 		
 		else:
 			print_debug('INFO', 'No passwords stored in the environment variables.')
