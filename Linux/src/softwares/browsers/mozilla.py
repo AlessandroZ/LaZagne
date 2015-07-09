@@ -50,15 +50,16 @@ class JsonDatabase(Credentials):
 		super(JsonDatabase, self).__init__(db)
 	
 	def __iter__(self):
-		with open(self.db) as fh:
-			data = json.load(fh)
-			try:
-				logins = data["logins"]
-			except:
-				raise Exception("Unrecognized format in {0}".format(self.db))
-			
-			for i in logins:
-				yield (i["hostname"], i["encryptedUsername"],	i["encryptedPassword"])
+		if os.path.exists(self.db):
+			with open(self.db) as fh:
+				data = json.load(fh)
+				try:
+					logins = data["logins"]
+				except:
+					raise Exception("Unrecognized format in {0}".format(self.db))
+				
+				for i in logins:
+					yield (i["hostname"], i["encryptedUsername"],	i["encryptedPassword"])
 
 class SqliteDatabase(Credentials):
 	def __init__(self, profile):
@@ -325,17 +326,20 @@ class Mozilla(ModuleInfo):
 	# ------------------------------ Master Password Functions ------------------------------
 	
 	def is_masterpassword_correct(self, masterPassword=''):
-		#see http://www.drh-consultancy.demon.co.uk/key3.html
-		pwdCheck = self.key3['password-check']	
-		entrySaltLen = ord(pwdCheck[1])
-		entrySalt = pwdCheck[3: 3+entrySaltLen]
-		encryptedPasswd = pwdCheck[-16:]
-		globalSalt = self.key3['global-salt']
-		cleartextData = self.decrypt3DES( globalSalt, masterPassword, entrySalt, encryptedPasswd )
-		if cleartextData != 'password-check\x02\x02':
-			return ('', '', '')
+		try:
+			#see http://www.drh-consultancy.demon.co.uk/key3.html
+			pwdCheck = self.key3['password-check']	
+			entrySaltLen = ord(pwdCheck[1])
+			entrySalt = pwdCheck[3: 3+entrySaltLen]
+			encryptedPasswd = pwdCheck[-16:]
+			globalSalt = self.key3['global-salt']
+			cleartextData = self.decrypt3DES( globalSalt, masterPassword, entrySalt, encryptedPasswd )
+			if cleartextData != 'password-check\x02\x02':
+				return ('', '', '')
 
-		return (globalSalt, masterPassword, entrySalt)
+			return (globalSalt, masterPassword, entrySalt)
+		except:
+			return ('', '', '')
 	
 	# Retrieve masterpassword
 	def found_masterpassword(self):
