@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import struct, platform, win32cred
 from ctypes import *
 from ctypes.wintypes import DWORD
@@ -92,13 +91,13 @@ class Network(ModuleInfo):
 							values['Username'] = i['UserName']
 						
 						try:
-							values['Password'] = pwd.decode('utf16').encode('utf-8')
+							values['Password'] = pwd.decode('utf16')
 						except Exception,e:
 							print_debug('DEBUG', '{0}'.format(e)) 
 							values['INFO'] = 'Error decoding the password'
 						
 						pwdFound.append(values)
-					
+			
 			# print the results
 			print_output("Generic Network", pwdFound)
 			
