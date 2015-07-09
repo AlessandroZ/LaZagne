@@ -1,3 +1,11 @@
+LaZagne 0.9.1 (09/07/2015)
+- Only Windows
+	* Fix mastepassword check error - mozilla
+	* Fix database error - mozilla
+
+- For Windows
+	* Fix encoding error
+
 LaZagne 0.9 (01/07/2015)
 - Only Windows
 	* Fix Opera bug (thanks to rolandstarke)
