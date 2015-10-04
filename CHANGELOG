@@ -1,9 +1,19 @@
+LaZagne 1.0 (04/10/2015)
+- Only Windows
+	* Fix chrome database locked
+	* Fix windows secrets bug
+	* Fix opera bug
+
+- For Linux
+	* Fix opera bug
+
+
 LaZagne 0.9.1 (09/07/2015)
 - Only Windows
 	* Fix mastepassword check error - mozilla
 	* Fix database error - mozilla
 
-- For Windows
+- For Linux
 	* Fix encoding error
 
 LaZagne 0.9 (01/07/2015)

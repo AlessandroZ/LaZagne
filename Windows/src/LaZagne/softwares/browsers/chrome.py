@@ -1,4 +1,5 @@
 import sqlite3
+import shutil
 import win32crypt
 import sys, os, platform
 from config.constant import *
@@ -36,7 +37,16 @@ class Chrome(ModuleInfo):
 		else:
 			print_debug('ERROR', 'Environment variables (HOMEDRIVE or HOMEPATH) have not been found')
 			return
-			
+		
+		# Copy database before to query it (bypass lock errors)
+		try:
+			shutil.copy(database_path, os.getcwd() + os.sep + 'tmp_db')
+			database_path = os.getcwd() + os.sep + 'tmp_db'
+
+		except Exception,e:
+			print_debug('DEBUG', '{0}'.format(e))
+			print_debug('ERROR', 'An error occured copying the database file')
+
 		# Connect to the Database
 		try:
 			conn = sqlite3.connect(database_path)
@@ -50,6 +60,7 @@ class Chrome(ModuleInfo):
 		try:
 			cursor.execute('SELECT action_url, username_value, password_value FROM logins')
 		except:
+			
 			print_debug('ERROR', 'Google Chrome seems to be used, the database is locked. Kill the process and try again !')
 			return
 		
@@ -72,4 +83,8 @@ class Chrome(ModuleInfo):
 		
 		# print the results
 		print_output("Chrome", pwdFound)
+
+		conn.close()
+		if database_path.endswith('tmp_db'):
+			os.remove(database_path)
 		
