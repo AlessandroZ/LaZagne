@@ -47,8 +47,13 @@ class Secrets(ModuleInfo):
 		
 		# save system hives
 		for f in self.sysFile:
-			subprocess.Popen('reg.exe save hklm\%s %s.save' % (f,f) , shell=True, stdout=subprocess.PIPE).stdout.read()
-		
+			try:
+				subprocess.Popen('reg.exe save hklm\%s %s.save' % (f,f) , shell=True, stdout=subprocess.PIPE).stdout.read()
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
+				print_debug('ERROR', 'Failed to save %s hive' % f)
+
+
 		if not self.check_existing_systemFiles():
 			print_debug('WARNING', 'Remove existing hive files and launch it again.')
 			return
