@@ -95,10 +95,13 @@ class Opera(ModuleInfo):
 			data = file[offset + 8 + 4: offset + 8 + 4 + datalen]
 
 			des3dec = DES3.new(key, DES3.MODE_CBC, iv)
-			plaintext = des3dec.decrypt(data)
-			
-			plaintext = re.sub(r'[^\x20-\x7e]', '', plaintext)
-			passwords.append(plaintext)
+			try:
+				plaintext = des3dec.decrypt(data)
+				plaintext = re.sub(r'[^\x20-\x7e]', '', plaintext)
+				passwords.append(plaintext)
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
+				print_debug('ERROR', 'Failed to decrypt password')
 			
 			offset += 8 + 4 + datalen
 		return passwords
