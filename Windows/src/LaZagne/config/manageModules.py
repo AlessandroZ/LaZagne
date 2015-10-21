@@ -31,6 +31,7 @@ from softwares.databases.squirrel import Squirrel
 from softwares.databases.dbvis import Dbvisualizer
 # games
 from softwares.games.roguestale import RoguesTale
+from softwares.games.kalypsomedia import KalypsoMedia
 
 def get_categories():
 	category = {
@@ -56,7 +57,8 @@ def get_modules():
 		Filezilla(), 
 		FtpNavigator(), 
 		IE(),
-		Jitsi(), 
+		Jitsi(),
+		KalypsoMedia(),
 		Mozilla(),
 		Network(), 
 		Opera(),
