@@ -42,7 +42,7 @@ def get_categories():
 		'wifi': {'help': 'Wifi'},
 		'browsers': {'help': 'Web browsers supported'},
 		'windows': {'help': 'Windows credentials (credential manager, etc.)'},
-      'games': {'help': 'Games etc.'}
+		'games': {'help': 'Games etc.'}
 	}
 	return category
 	
