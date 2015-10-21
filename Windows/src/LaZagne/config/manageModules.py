@@ -29,6 +29,8 @@ from softwares.mails.outlook import Outlook
 from softwares.databases.sqldeveloper import SQLDeveloper
 from softwares.databases.squirrel import Squirrel
 from softwares.databases.dbvis import Dbvisualizer
+# games
+from softwares.games.roguestale import RoguesTale
 
 def get_categories():
 	category = {
@@ -39,7 +41,8 @@ def get_categories():
 		'mails': {'help': 'Email clients supported'},
 		'wifi': {'help': 'Wifi'},
 		'browsers': {'help': 'Web browsers supported'},
-		'windows': {'help': 'Windows credentials (credential manager, etc.)'}
+		'windows': {'help': 'Windows credentials (credential manager, etc.)'},
+      'games': {'help': 'Games etc.'}
 	}
 	return category
 	
@@ -60,6 +63,7 @@ def get_modules():
 		Outlook(),
 		Pidgin(),
 		Puttycm(),
+      RoguesTale(),
 		Tortoise(), 
 		Secrets(), 
 		Skype(), 
