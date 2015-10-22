@@ -7,7 +7,7 @@ import ConfigParser
 
 class KalypsoMedia(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-kalypsomedia', 'action': 'store_true', 'dest': 'kalypsomedia', 'help': 'kalypsomedia'}
+		options = {'command': '-k', 'action': 'store_true', 'dest': 'kalypsomedia', 'help': 'kalypsomedia'}
 		ModuleInfo.__init__(self, 'kalypsomedia', 'games', options)
 
 	# xorstring(s, k)
