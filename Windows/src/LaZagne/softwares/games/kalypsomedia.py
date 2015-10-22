@@ -29,7 +29,7 @@ class KalypsoMedia(ModuleInfo):
 		
 		# The actual user details are stored in *.userdata files
 		if not os.path.exists(inifile):
-			print_debug('ERROR', 'The Kalypso Media Launcher doesn\'t appear to be installed.')
+			print_debug('INFO', 'The Kalypso Media Launcher doesn\'t appear to be installed.')
 			return
 		
 		config = ConfigParser.ConfigParser()

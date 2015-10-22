@@ -23,7 +23,7 @@ class RoguesTale(ModuleInfo):
 		
 		# The actual user details are stored in *.userdata files
 		if not os.path.exists(directory):
-			print_debug('ERROR', 'Rogue\'s Tale appears to not be installed.')
+			print_debug('INFO', 'Rogue\'s Tale appears to not be installed.')
 			return
 		
 		files = os.listdir(directory)

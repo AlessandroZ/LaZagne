@@ -21,11 +21,11 @@ class Turba(ModuleInfo):
 			with OpenKey(HKEY_CURRENT_USER, 'Software\Valve\Steam') as key:
 				results=QueryValueEx(key, 'SteamPath')
 		except:
-			print_debug('ERROR', 'Steam does not appear to be installed.')
+			print_debug('INFO', 'Steam does not appear to be installed.')
 			return
 		
 		if not results:
-			print_debug('ERROR', 'Steam does not appear to be installed.')
+			print_debug('INFO', 'Steam does not appear to be installed.')
 			return
 			
 		steampath=results[0]
@@ -39,7 +39,7 @@ class Turba(ModuleInfo):
 		filepath = steamapps + '\\Turba\\Assets\\Settings.bin'
 		
 		if not os.path.exists(filepath):
-			print_debug('ERROR', 'Turba doesn\'t appear to be installed.')
+			print_debug('INFO', 'Turba doesn\'t appear to be installed.')
 			return
 			
 		# If we're here we should have a valid config file file
