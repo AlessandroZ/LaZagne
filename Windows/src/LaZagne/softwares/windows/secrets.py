@@ -52,6 +52,7 @@ class Secrets(ModuleInfo):
 			except Exception,e:
 				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', 'Failed to save %s hive' % f)
+				return
 
 
 		if not self.check_existing_systemFiles():
