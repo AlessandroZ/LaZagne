@@ -21,11 +21,11 @@ class GalconFusion(ModuleInfo):
 			with OpenKey(HKEY_CURRENT_USER, 'Software\Valve\Steam') as key:
 				results=QueryValueEx(key, 'SteamPath')
 		except:
-			print_debug('ERROR', 'Steam does not appear to be installed.')
+			print_debug('INFO', 'Steam does not appear to be installed.')
 			return
 		
 		if not results:
-			print_debug('ERROR', 'Steam does not appear to be installed.')
+			print_debug('INFO', 'Steam does not appear to be installed.')
 			return
 			
 		steampath=results[0]
