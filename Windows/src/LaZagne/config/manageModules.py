@@ -33,6 +33,7 @@ from softwares.databases.dbvis import Dbvisualizer
 from softwares.games.roguestale import RoguesTale
 from softwares.games.kalypsomedia import KalypsoMedia
 from softwares.games.galconfusion import GalconFusion
+from softwares.games.turba import Turba
 
 def get_categories():
 	category = {
@@ -72,7 +73,8 @@ def get_modules():
 		Secrets(), 
 		Skype(), 
 		SQLDeveloper(), 
-		Squirrel(), 
+		Squirrel(),
+		Turba(),
 		Wifi(), 
 		WifiPass(),
 		WinSCP()

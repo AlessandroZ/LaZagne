@@ -7,7 +7,7 @@ from config.moduleInfo import ModuleInfo
 
 class RoguesTale(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-r', 'action': 'store_true', 'dest': 'roguestale', 'help': 'roguestale'}
+		options = {'command': '-r', 'action': 'store_true', 'dest': 'roguestale', 'help': 'Extract Rogue\'s Tale SHA1 password hashes.'}
 		ModuleInfo.__init__(self, 'roguestale', 'games', options)
 		
 	def run(self):
