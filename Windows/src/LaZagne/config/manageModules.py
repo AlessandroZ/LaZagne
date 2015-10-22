@@ -32,6 +32,7 @@ from softwares.databases.dbvis import Dbvisualizer
 # games
 from softwares.games.roguestale import RoguesTale
 from softwares.games.kalypsomedia import KalypsoMedia
+from softwares.games.galconfusion import GalconFusion
 
 def get_categories():
 	category = {
@@ -57,6 +58,7 @@ def get_modules():
 		Filezilla(), 
 		FtpNavigator(), 
 		IE(),
+		GalconFusion(),
 		Jitsi(),
 		KalypsoMedia(),
 		Mozilla(),
