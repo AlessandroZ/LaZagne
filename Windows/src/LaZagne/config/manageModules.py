@@ -29,6 +29,11 @@ from softwares.mails.outlook import Outlook
 from softwares.databases.sqldeveloper import SQLDeveloper
 from softwares.databases.squirrel import Squirrel
 from softwares.databases.dbvis import Dbvisualizer
+# games
+from softwares.games.roguestale import RoguesTale
+from softwares.games.kalypsomedia import KalypsoMedia
+from softwares.games.galconfusion import GalconFusion
+from softwares.games.turba import Turba
 
 def get_categories():
 	category = {
@@ -39,7 +44,8 @@ def get_categories():
 		'mails': {'help': 'Email clients supported'},
 		'wifi': {'help': 'Wifi'},
 		'browsers': {'help': 'Web browsers supported'},
-		'windows': {'help': 'Windows credentials (credential manager, etc.)'}
+		'windows': {'help': 'Windows credentials (credential manager, etc.)'},
+		'games': {'help': 'Games etc.'}
 	}
 	return category
 	
@@ -53,18 +59,22 @@ def get_modules():
 		Filezilla(), 
 		FtpNavigator(), 
 		IE(),
-		Jitsi(), 
+		GalconFusion(),
+		Jitsi(),
+		KalypsoMedia(),
 		Mozilla(),
 		Network(), 
 		Opera(),
 		Outlook(),
 		Pidgin(),
 		Puttycm(),
+      RoguesTale(),
 		Tortoise(), 
 		Secrets(), 
 		Skype(), 
 		SQLDeveloper(), 
-		Squirrel(), 
+		Squirrel(),
+		Turba(),
 		Wifi(), 
 		WifiPass(),
 		WinSCP()
