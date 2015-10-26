@@ -12,7 +12,7 @@ At this moment, it supports 22 Programs on Microsoft Windows and 12 on a Linux/U
 
 Standalones
 ----
-Standalones are now available here: https://github.com/AlessandroZ/LaZagne/releases/tag/0.9
+Standalones are now available here: https://github.com/AlessandroZ/LaZagne/releases/
 
 Usage
 ----
