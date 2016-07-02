@@ -32,8 +32,8 @@ Usage
 	* example: laZagne.exe browsers -f
 	* help: laZagne.exe browsers -h
 
-* Write all passwords found into a file (-w options)
-	* cmd: laZagne.exe all -w
+* Write all passwords found into a file (-oN for Normal txt, -oJ for Json, -oA for All)
+	* cmd: laZagne.exe all -oN
 
 * Use a file for dictionary attacks (used only when it's necessary: mozilla masterpassword, system hahes, etc.). The file has to be a wordlist in cleartext (no rainbow), it has not been optmized to be fast but could useful for basic passwords. 
 	* cmd: laZagne.exe all -path file.txt
@@ -49,6 +49,13 @@ Supported software
 <p align="center"><img src="./pictures/softwares.png" alt="The LaZagne project"></p>
 
 (*) used by many tools to store passwords: Chrome, Owncloud, Evolution, KMail, etc.
+
+User impersonnation
+----
+When laZagne is launched with admin privileges (UAC bypassed) or System, it manages to retrieve passwords from other user.
+It uses two ways to do that: 
+	* If a process from another user is launched (using runas or if many users are connected to the same host), it manages to steal a process token to launch laZagne with its privileges (this is the best way). It could retrieve passwords stored encrypted with the Windows API. 
+	* If no process has been launched but other user exists (visible on the file system in C:\Users\...), it browses the file system in order to retrieve passwords from these users. However, it could not retrieve passwords encrypted with the Windows API (we have to be on the same context as the user to decrypt these passwords). Only few passwords could be retrieved (Firefox, Jitsi, Dbvis, etc.).
 
 IE Browser history
 ----
@@ -91,14 +98,16 @@ To compile the source code, some external libraries are required.
 	* PyCrypto: pip install pycrypto
 	* Impacket (for Windows hashes + LSA Secrets): https://github.com/CoreSecurity/impacket
 	* Pyasn1 (for ASN1 decoding): https://pypi.python.org/pypi/pyasn1/
+	* Microsoft Visual C++ 2010 Redistributable Package (x86): https://www.microsoft.com/en-us/download/details.aspx?id=5555
 
 * For Linux	
 	* Python 2.7
 	* Argparse
 	* PyCrypto: https://www.dlitz.net/software/pycrypto/
 	* Dbus (Pidgin)
-	* Python-kde4 (Kwallet)
 	* Pyasn1 (for ASN1 decoding): https://pypi.python.org/pypi/pyasn1/
+	* Python Gnome keyring: apt-get install python-gnomekeyring
+	* Python-kde4 (Kwallet): apt-get install python-kde4
 
 ----
 | __Alessandro ZANNI__    |

@@ -7,6 +7,7 @@ from config.header import Header
 from config.color import bcolors
 from config.constant import constant
 import logging
+import json
 
 # --------------------------- Functions used to write ---------------------------
 
@@ -39,13 +40,17 @@ def write_credentials(pwdFound, category):
 	open(constant.folder_name + os.sep + 'credentials.txt',"a+b").write(tmp)
 	
 def checks_write(values, category):
+	# if values:
+	# 	if constant.output == 'txt':
+	# 		try:
+	# 			write_credentials(values, category)
+	# 			logging.info('[+] Credentials stored successfully on the file: %s\\credentials.txt\n' % constant.folder_name)
+	# 		except:
+	# 			logging.info('Couldn\'t write the results file\n')
 	if values:
-		if constant.output == 'txt':
-			try:
-				write_credentials(values, category)
-				logging.info('[+] Credentials stored successfully on the file: %s\\credentials.txt\n' % constant.folder_name)
-			except:
-				logging.info('Couldn\'t write the results file\n')
+		if "Passwords" not in constant.finalResults:
+			constant.finalResults["Passwords"] = []
+		constant.finalResults["Passwords"].append([{"Category": category}, values])
 
 # --------------------------- End of functions used to write ---------------------------
 
@@ -137,3 +142,29 @@ def print_debug(error_level, message):
 		logging.info('[%s] %s' % (error_level, message))
 
 # --------------------------- End of output functions ---------------------------
+
+def parseJsonResultToBuffer(jsonString):
+	buffer = ''
+	try:
+		if jsonString:
+			buffer += '\r\n\r\n########## User: %s ##########\r\n' % jsonString['User']
+			if 'Passwords' not in jsonString:
+				buffer += 'No passwords found for this user !'
+			else:
+				for all_passwords in jsonString['Passwords']:
+					# print '- Category: %s' % all_passwords[0]['Category']
+					buffer += '------------------- %s -----------------\r\n' % all_passwords[0]['Category']
+					for password_by_category in all_passwords[1]:
+						buffer += '\r\nPassword found !!!\r\n'
+						for dic in password_by_category.keys():
+							try:
+								buffer += '%s: %s\r\n' % (dic, password_by_category[dic])
+							except:
+								buffer += '%s: %s\r\n' % (dic, password_by_category[dic].encode('utf-8'))
+					buffer += '\r\n'
+
+	except Exception as e:
+		print_debug('ERROR', 'Error parsing the json results: %s' % e)
+		print_debug('ERROR', 'json content: %s' % jsonString)
+
+	return buffer 

@@ -6,6 +6,7 @@ from config.constant import *
 from config.write_output import print_output, print_debug
 from config.header import Header
 from config.moduleInfo import ModuleInfo
+import getpass
 
 class Chrome(ModuleInfo):
 	def __init__(self):
@@ -18,25 +19,30 @@ class Chrome(ModuleInfo):
 		Header().title_info('Chrome')
 		
 		database_path = ''
+		homedrive = ''
+		homepath = ''
 		if 'HOMEDRIVE' in os.environ and 'HOMEPATH' in os.environ:
-			# For Win7
-			path_Win7 = os.environ.get('HOMEDRIVE') + os.environ.get('HOMEPATH') + '\Local Settings\Application Data\Google\Chrome\User Data\Default\Login Data'
-			
-			# For XP
-			path_XP = os.environ.get('HOMEDRIVE') + os.environ.get('HOMEPATH') + '\AppData\Local\Google\Chrome\User Data\Default\Login Data'
-			
-			if os.path.exists(path_XP):
-				database_path = path_XP
-			
-			elif os.path.exists(path_Win7):
-				database_path = path_Win7
-			
-			else:
-				print_debug('INFO', 'Google Chrome not installed.')
-				return
-		else:
-			print_debug('ERROR', 'Environment variables (HOMEDRIVE or HOMEPATH) have not been found')
+			homedrive = os.environ.get('HOMEDRIVE')
+			homepath = os.environ.get('HOMEPATH')
+		
+		# All possible path
+		pathTab = [
+			homedrive + homepath + '\Local Settings\Application Data\Google\Chrome\User Data\Default\Login Data', 
+			homedrive + homepath + '\AppData\Local\Google\Chrome\User Data\Default\Login Data', 
+			homedrive + '\Users\\' + getpass.getuser() + '\Local Settings\Application Data\Google\Chrome\User Data\Default\Login Data',
+			homedrive + '\Users\\' + getpass.getuser() + '\AppData\Local\Google\Chrome\User Data\Default\Login Data',
+			'C:\Users\\' + getpass.getuser() + '\Local Settings\Application Data\Google\Chrome\User Data\Default\Login Data',
+			'C:\Users\\' + getpass.getuser() + '\AppData\Local\Google\Chrome\User Data\Default\Login Data'
+		]
+
+		database_path = [p for p in pathTab if os.path.exists(p)]
+		if not database_path:
+			print_debug('INFO', 'Google Chrome not installed.')
 			return
+
+		# if many path are valid
+		if len(database_path) !=1:
+			database_path = database_path[0]
 		
 		# Copy database before to query it (bypass lock errors)
 		try:
@@ -76,7 +82,7 @@ class Chrome(ModuleInfo):
 				print_debug('DEBUG', '{0}'.format(e))
 			
 			if password:
-				values['Site'] = result[0]
+				values['Website'] = result[0]
 				values['Username'] = result[1]
 				values['Password'] = password
 				pwdFound.append(values)

@@ -137,7 +137,7 @@ def EnablePrivilege(privilegeStr, hToken = None):
 	laa = LUID_AND_ATTRIBUTES(privilege_id, SE_PRIVILEGE_ENABLED)
 	tp  = TOKEN_PRIVILEGES(1, laa)
 	
-	windll.advapi32.AdjustTokenPrivileges(hToken, False, byref(tp), sizeof(tp), None, None)  
+	windll.advapi32.AdjustTokenPrivileges(hToken, False, byref(tp), sizeof(tp), None, None)
 
 def procids():
 	"""A list of every pid, sorted but first pids is winlogon.exe"""
@@ -227,7 +227,7 @@ def get_system_priv():
 		CREATE_NEW_CONSOLE = 0x00000010
 		CREATE_NO_WINDOW = 0x08000000
 		
-		windll.advapi32.CreateProcessAsUserA(hTokendupe, r"%s" % current_filepath, " wifi --HiddenWifiArgs" , None, None, True, CREATE_NO_WINDOW, None, None, byref(lpStartupInfo), byref(lpProcessInformation))
+		windll.advapi32.CreateProcessAsUserA(hTokendupe, r"%s" % current_filepath, " all" , None, None, True, CREATE_NO_WINDOW, None, None, byref(lpStartupInfo), byref(lpProcessInformation))
 	except WindowsError, e :
 		pass
 

@@ -1,3 +1,16 @@
+LaZagne 1.3 (02/07/2016)
+- Only Windows
+See "User impersonnation" in README for more information
+	* User impersonation (high privileges needed)
+		* Stealing user process token (when other user processes are running on the system)
+			* All credentials can be retrieved (Chrome, Firefox, etc.)
+		* Browsing file system (ex: C:\Users\<user>\...) 
+			* Only software's passwords which do not use Windows API to encrypt it, can be retrieved (Firefox, Jitsi, Pidgin, etc.). 
+	* Json output has been implemented (txt output is still present with the options -oN)
+		* Lazagne all -oJ => Json output
+	* Standalone lighter (from 18 Mo to 6 Mo) => Thanks to the new version of Pyinstaller
+	* Fix some bugs
+
 LaZagne 1.1 (22/10/2015)
 - Only Windows
 	* New category: games (Thanks to David Lodge)

@@ -14,7 +14,11 @@ class Pidgin(ModuleInfo):
 		# print title
 		Header().title_info('Pidgin')
 		
-		if 'APPDATA' in os.environ:
+		if constant.appdata:
+			directory =  '%s\.purple' % constant.appdata
+			path = os.path.join(directory, 'accounts.xml')
+		
+		elif 'APPDATA' in os.environ:
 			directory = os.environ['APPDATA'] + '\.purple'
 			path = os.path.join(directory, 'accounts.xml')
 		else:

@@ -148,7 +148,7 @@ class Opera(ModuleInfo):
 				# Decrypt the Password
 				password = win32crypt.CryptUnprotectData(result[2], None, None, None, 0)[1]
 				if password:
-					values['Site'] = result[0]
+					values['Website'] = result[0]
 					values['Username'] = result[1]
 					values['Password'] = password
 					pwdFound.append(values)
