@@ -30,7 +30,13 @@ class Jitsi(ModuleInfo):
 		return binascii.unhexlify(hexsalt)
 	
 	def get_path(self):
-		if 'APPDATA' in os.environ:
+		if constant.appdata:
+			directory =  '%s\Jitsi\sip-communicator.properties' % constant.appdata
+			if os.path.exists(directory):
+				return directory
+			return 'JITSI_NOT_EXISTS'
+
+		elif 'APPDATA' in os.environ:
 			directory = os.environ.get('APPDATA') + os.sep + 'Jitsi' + os.sep + 'sip-communicator.properties'
 			if os.path.exists(directory):
 				return directory

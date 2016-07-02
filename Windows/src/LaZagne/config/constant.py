@@ -1,10 +1,13 @@
 
 class constant():
 	folder_name = 'results'
+	file_name_results = 'credentials' # the extention is added depending on the user output choice
 	MAX_HELP_POSITION = 27
-	CURRENT_VERSION = '1.1'
-	output = None 
-	file_logger = None 
+	CURRENT_VERSION = '1.3'
+	output = None
+	file_logger = None
+
+	# tmpFile
 
 	# jitsi options
 	jitsi_masterpass = None
@@ -22,3 +25,7 @@ class constant():
 	# total password found
 	nbPasswordFound = 0
 	passwordFound = []
+
+	finalResults = {}
+	userprofile = ''
+	appdata = ''

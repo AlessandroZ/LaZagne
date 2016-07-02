@@ -14,7 +14,9 @@ class Filezilla(ModuleInfo):
 		# print title
 		Header().title_info('Filezilla')
 		
-		if 'APPDATA' in os.environ:
+		if constant.appdata:
+			directory =  '%s\FileZilla' % constant.appdata
+		elif 'APPDATA' in os.environ:
 			directory = os.environ['APPDATA'] + '\FileZilla'
 		else:
 			print_debug('ERROR', 'The APPDATA environment variable is not defined.')

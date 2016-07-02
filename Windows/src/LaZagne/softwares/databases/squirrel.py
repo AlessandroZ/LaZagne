@@ -11,14 +11,20 @@ class Squirrel(ModuleInfo):
 		ModuleInfo.__init__(self, 'squirrel', 'database', options)
 
 	def get_path(self):
-		if 'HOMEPATH' in os.environ:
+		path = ''
+		if constant.userprofile:
+			path =  '%s\.squirrel-sql' % constant.userprofile
+
+		elif 'HOMEPATH' in os.environ:
 			path = os.environ['HOMEPATH'] + os.sep + '.squirrel-sql'
-			if os.path.exists(path):
-				return path
-			else:
-				return 'Not_Found'
 		else:
 			return 'var_Env_Not_Found'
+		
+		if os.path.exists(path):
+			return path
+		else:
+			return 'Not_Found'
+		
 	
 	def parse_xml(self, xml_file):
 		tree = ET.ElementTree(file=xml_file)

@@ -110,15 +110,22 @@ class Mozilla(ModuleInfo):
 			ModuleInfo.__init__(self, 'thunderbird', 'browsers', options, suboptions)
 	
 	def get_path(self, software_name):
-		if 'APPDATA' in os.environ:
+		
+		path = ''
+		if constant.appdata:
+			if software_name == 'Firefox':
+				path =  '%s\Mozilla\Firefox' % constant.appdata
+			elif software_name == 'Thunderbird':
+				path = '%s\Thunderbird' % constant.appdata
+
+		elif 'APPDATA' in os.environ:
 			if software_name == 'Firefox':
 				path =  '%s\Mozilla\Firefox' % str(os.environ['APPDATA'])
 			elif software_name == 'Thunderbird':
 				path = '%s\Thunderbird' % str(os.environ['APPDATA'])
 		else:
-			print_debug('The APPDATA environment variable is not definded.\nUse the -s option and specify the folder path of the victim\nPath: <HOMEPATH>\Application Data\Mozilla\Firefox\Profiles\<PROFILE_NAME>')
-			return 
-		
+			print_debug('DEBUG', 'The APPDATA environment variable is not definded.\nUse the -s option and specify the folder path of the victim\nPath: <HOMEPATH>\Application Data\Mozilla\Firefox\Profiles\<PROFILE_NAME>')
+
 		return path
 	
 	def manage_advanced_options(self):
