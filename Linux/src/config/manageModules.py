@@ -11,6 +11,8 @@ from softwares.sysadmin.shadow import Shadow
 # chats
 from softwares.chats.pidgin import Pidgin
 from softwares.chats.jitsi import Jitsi
+# mails
+from softwares.mails.clawsmail import ClawsMail
 # wifi
 from softwares.wifi.wifi import Wifi
 from softwares.wifi.wpa_supplicant import Wpa_supplicant
@@ -33,6 +35,7 @@ def get_categories():
 	
 def get_modules():
 	moduleNames = [
+		ClawsMail(),
 		DbVisualizer(),
 		Env_variable(),
 		Filezilla(),
