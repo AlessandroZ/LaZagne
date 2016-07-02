@@ -282,7 +282,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 			try:
 				if s % 2 != 0:
 					values = {}
-					values['Site'] = u.decode('UTF-16LE')
+					values['Website'] = u.decode('UTF-16LE')
 					values['Username'] = secret[length - s]
 					values['Password'] = password
 					pwdFound.append(values)
@@ -353,3 +353,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='''
 		else:
 			print_debug('INFO', 'No password stored.\nThe registry key storing the ie password has not been found.\nKey: %s' % keyPath)
 
+
+		# Clean up
+		if os.path.exists(dll_name):
+			os.remove(dll_name)

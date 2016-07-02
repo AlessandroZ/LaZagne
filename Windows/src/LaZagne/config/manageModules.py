@@ -68,7 +68,7 @@ def get_modules():
 		Outlook(),
 		Pidgin(),
 		Puttycm(),
-      RoguesTale(),
+      	RoguesTale(),
 		Tortoise(), 
 		Secrets(), 
 		Skype(), 

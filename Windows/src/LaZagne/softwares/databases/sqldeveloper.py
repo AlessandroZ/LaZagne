@@ -36,18 +36,23 @@ class SQLDeveloper(ModuleInfo):
 		return re.sub(r'[\x01-\x08]','',text)
 	
 	def get_mainPath(self):
-		if 'APPDATA' in os.environ:
+		directory = ''
+		if constant.appdata:
+			directory =  '%s\SQL Developer' % constant.appdata
+		elif 'APPDATA' in os.environ:
 			directory = os.environ.get('APPDATA') + os.sep + 'SQL Developer'
-			if os.path.exists(directory):
-				for d in os.listdir(directory):
-					if d.startswith('system'):
-						directory += os.sep + d
-						return directory
-				return 'SQL_NO_PASSWD'
-			else:
-				return 'SQL_NOT_EXISTS'
 		else:
 			return 'Error'
+
+		if os.path.exists(directory):
+			for d in os.listdir(directory):
+				if d.startswith('system'):
+					directory += os.sep + d
+					return directory
+			return 'SQL_NO_PASSWD'
+		else:
+			return 'SQL_NOT_EXISTS'
+		
 	
 	def get_passphrase(self, path):
 		for p in os.listdir(path):

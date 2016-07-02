@@ -100,14 +100,19 @@ class Dbvisualizer(ModuleInfo):
 		print_output("DbVisualizer", pwdFound)
 
 	def get_mainPath(self):
-		if 'HOMEPATH' in os.environ:
+		path = ''
+		if constant.userprofile:
+			path =  '%s\.dbvis' % constant.userprofile
+		elif 'HOMEPATH' in os.environ:
 			path = os.environ['HOMEPATH'] + os.sep + '.dbvis'
-			if os.path.exists(path):
-				return path
-			else:
-				return 'DBVIS_NOT_EXISTS'
 		else:
 			return 'var_Env_Not_Found'
+		
+		if os.path.exists(path):
+			return path
+		else:
+			return 'DBVIS_NOT_EXISTS'
+		
 
 	def run(self):
 		# print title

@@ -62,23 +62,25 @@ class WifiPass(ModuleInfo):
 								
 								# store credentials
 								if len(values) != 0:
-									pwdFound.append(values)
+									pwdFound.append(values)	
+				# print the results
+				print_output('Wifi', pwdFound)
 				
 				# If at least one password has been found, we create the file in temp directory
-				if passwordFound:
-					try:
-						filepath = tempfile.gettempdir()
-						tmp = ''
-						cpt = 1
-						for pwd in pwdFound:
-							tmp += '[wifi%s]\r\n' % str(cpt)
-							cpt += 1
-							for p in pwd.keys():
-								tmp = str(tmp) + str(p) + '=' + str(pwd[p]) + '\r\n'
-							tmp = str(tmp) + '\r\n'
-						open(filepath + os.sep + 'TEMP123A.txt','w').write(tmp)
-					except:
-						pass
+				# if passwordFound:
+				# 	try:
+				# 		filepath = tempfile.gettempdir()
+				# 		tmp = ''
+				# 		cpt = 1
+				# 		for pwd in pwdFound:
+				# 			tmp += '[wifi%s]\r\n' % str(cpt)
+				# 			cpt += 1
+				# 			for p in pwd.keys():
+				# 				tmp = str(tmp) + str(p) + '=' + str(pwd[p]) + '\r\n'
+				# 			tmp = str(tmp) + '\r\n'
+				# 		open(filepath + os.sep + 'TEMP123A.txt','w').write(tmp)
+				# 	except:
+				# 		pass
 			
 		
 	

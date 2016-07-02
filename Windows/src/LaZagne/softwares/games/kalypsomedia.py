@@ -21,7 +21,10 @@ class KalypsoMedia(ModuleInfo):
 		creds = []
 		key = 'lwSDFSG34WE8znDSmvtwGSDF438nvtzVnt4IUv89'
 		
-		if 'APPDATA' in os.environ:
+		if constant.appdata:
+			inifile =  '%s\\Kalypso Media\\Launcher\\launcher.ini' % constant.appdata
+
+		elif 'APPDATA' in os.environ:
 			inifile = os.environ['APPDATA'] + '\\Kalypso Media\\Launcher\\launcher.ini'
 		else:
 			print_debug('ERROR', 'The APPDATA environment variable is not defined.')

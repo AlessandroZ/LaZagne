@@ -15,6 +15,8 @@ class RoguesTale(ModuleInfo):
 		Header().title_info('Rogue\'s Tale')
 		creds = []
 		
+		if constant.userprofile:
+			directory =  '%s\\Documents\\Rogue\'s Tale\\users' % constant.userprofile
 		if 'USERPROFILE' in os.environ:
 			directory = os.environ['USERPROFILE'] + '\\Documents\\Rogue\'s Tale\\users'
 		else:
