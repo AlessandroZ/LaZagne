@@ -16,6 +16,8 @@ from softwares.sysadmin.coreftp import CoreFTP
 from softwares.sysadmin.ftpnavigator import FtpNavigator
 # svn
 from softwares.svn.tortoise import Tortoise
+# git
+from softwares.git.gitforwindows import GitForWindows
 # chats
 from softwares.chats.skype import Skype
 from softwares.chats.pidgin import Pidgin
@@ -41,6 +43,7 @@ def get_categories():
 		'sysadmin': {'help': 'SCP/SSH/FTP/FTPS clients supported'},
 		'database': {'help': 'SQL clients supported'},
 		'svn': {'help': 'SVN clients supported'},
+		'git': {'help': 'GIT clients supported'},
 		'mails': {'help': 'Email clients supported'},
 		'wifi': {'help': 'Wifi'},
 		'browsers': {'help': 'Web browsers supported'},
@@ -77,6 +80,7 @@ def get_modules():
 		Turba(),
 		Wifi(), 
 		WifiPass(),
-		WinSCP()
+		WinSCP(),
+		GitForWindows()
 	]
 	return moduleNames
