@@ -18,6 +18,8 @@ from softwares.sysadmin.ftpnavigator import FtpNavigator
 from softwares.svn.tortoise import Tortoise
 # git
 from softwares.git.gitforwindows import GitForWindows
+# maven
+from softwares.maven.mavenrepositories import MavenRepositories
 # chats
 from softwares.chats.skype import Skype
 from softwares.chats.pidgin import Pidgin
@@ -44,6 +46,7 @@ def get_categories():
 		'database': {'help': 'SQL clients supported'},
 		'svn': {'help': 'SVN clients supported'},
 		'git': {'help': 'GIT clients supported'},
+		'maven': {'help': 'Maven java build tool'},
 		'mails': {'help': 'Email clients supported'},
 		'wifi': {'help': 'Wifi'},
 		'browsers': {'help': 'Web browsers supported'},
@@ -81,6 +84,7 @@ def get_modules():
 		Wifi(), 
 		WifiPass(),
 		WinSCP(),
-		GitForWindows()
+		GitForWindows(),
+		MavenRepositories()
 	]
 	return moduleNames
