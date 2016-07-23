@@ -34,7 +34,7 @@ class ApacheDirectoryStudio(ModuleInfo):
                     if len(creds) > 0:
                         repos_creds.append(creds)
             except Exception as e:
-                print_debug("ERROR", "Cannot retrieve connections credetentials '%s'" % e)
+                print_debug("ERROR", "Cannot retrieve connections credentials '%s'" % e)
                 pass
 
         return repos_creds
