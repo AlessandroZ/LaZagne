@@ -14,6 +14,7 @@ from softwares.sysadmin.puttycm import Puttycm
 from softwares.sysadmin.winscp import WinSCP
 from softwares.sysadmin.coreftp import CoreFTP
 from softwares.sysadmin.ftpnavigator import FtpNavigator
+from softwares.sysadmin.apachedirectorystudio import ApacheDirectoryStudio
 # svn
 from softwares.svn.tortoise import Tortoise
 # git
@@ -85,6 +86,7 @@ def get_modules():
 		WifiPass(),
 		WinSCP(),
 		GitForWindows(),
-		MavenRepositories()
+		MavenRepositories(),
+		ApacheDirectoryStudio()
 	]
 	return moduleNames
