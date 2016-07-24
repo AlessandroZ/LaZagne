@@ -15,6 +15,7 @@ from softwares.sysadmin.winscp import WinSCP
 from softwares.sysadmin.coreftp import CoreFTP
 from softwares.sysadmin.ftpnavigator import FtpNavigator
 from softwares.sysadmin.apachedirectorystudio import ApacheDirectoryStudio
+from softwares.sysadmin.opensshforwindows import OpenSSHForWindows
 # svn
 from softwares.svn.tortoise import Tortoise
 # git
@@ -87,6 +88,7 @@ def get_modules():
 		WinSCP(),
 		GitForWindows(),
 		MavenRepositories(),
-		ApacheDirectoryStudio()
+		ApacheDirectoryStudio(),
+		OpenSSHForWindows()
 	]
 	return moduleNames
