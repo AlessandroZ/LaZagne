@@ -11,7 +11,7 @@ class ApacheDirectoryStudio(ModuleInfo):
         options = {'command': '-t', 'action': 'store_true', 'dest': 'apachedirectorystudio', 'help': 'Apache Directory Studio'}
         ModuleInfo.__init__(self, 'apachedirectorystudio', 'sysadmin', options)
         # Interesting XML attributes in ADS connection configuration
-        self.attr_to_extract = ["host", "port", "bindPrincipal", "bindPassword"]
+        self.attr_to_extract = ["host", "port", "bindPrincipal", "bindPassword", "authMethod"]
 
 
     def extract_connections_credentials(self):
@@ -59,6 +59,7 @@ class ApacheDirectoryStudio(ModuleInfo):
             values["Port"] = creds["port"]
             values["BindPrincipal"] = creds["bindPrincipal"]
             values["BindPassword"] = creds["bindPassword"]
+            values["AuthenticationMethod"] = creds["authMethod"]
             pwd_found.append(values)
 
         # Print the results
