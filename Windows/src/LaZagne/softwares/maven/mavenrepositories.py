@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 class MavenRepositories(ModuleInfo):
 
     def __init__(self):
-        options = {'command': '-t', 'action': 'store_true', 'dest': 'mavenrepositories', 'help': 'Maven repositories'}
+        options = {'command': '-mvn', 'action': 'store_true', 'dest': 'mavenrepositories', 'help': 'Maven repositories'}
         ModuleInfo.__init__(self, 'mavenrepositories', 'maven', options)
         # Interesting XML nodes in Maven repository configuration
         self.nodes_to_extract = ["id", "username", "password", "privateKey", "passphrase"]
@@ -128,7 +128,7 @@ class MavenRepositories(ModuleInfo):
                 pk_file_location = creds["privateKey"]
                 pk_file_location = pk_file_location.replace("${user.home}", os.environ.get("USERPROFILE"))
                 with open(pk_file_location, "r") as pk_file:
-                    values["PrivateKey"] = pk_file.read().replace("\n", "").strip()
+                    values["PrivateKey"] = pk_file.read()
                 if "passphrase" in creds:
                     values["Passphrase"] = creds["passphrase"]
             pwd_found.append(values)
