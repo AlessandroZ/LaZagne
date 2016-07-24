@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 class ApacheDirectoryStudio(ModuleInfo):
 
     def __init__(self):
-        options = {'command': '-t', 'action': 'store_true', 'dest': 'apachedirectorystudio', 'help': 'Apache Directory Studio'}
+        options = {'command': '-ads', 'action': 'store_true', 'dest': 'apachedirectorystudio', 'help': 'Apache Directory Studio'}
         ModuleInfo.__init__(self, 'apachedirectorystudio', 'sysadmin', options)
         # Interesting XML attributes in ADS connection configuration
         self.attr_to_extract = ["host", "port", "bindPrincipal", "bindPassword", "authMethod"]
