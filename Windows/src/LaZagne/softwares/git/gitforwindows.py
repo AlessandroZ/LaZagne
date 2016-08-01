@@ -65,5 +65,4 @@ class GitForWindows(ModuleInfo):
                 duplicates_track.append(pwd_id)
 
         # Print the results
-        if len(final_pwd_found) > 0:
-            print_output(title, final_pwd_found)
+        print_output(title, final_pwd_found)

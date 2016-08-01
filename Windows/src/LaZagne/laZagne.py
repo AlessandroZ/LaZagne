@@ -513,7 +513,7 @@ else:
 			os.remove(dst)
 			rev2self()
 		except Exception as e:
-			print_debug('ERROR', 'Not enough privileges to get system rights: %s' % e)
+			print_debug('WARNING', 'Not enough privileges to get system rights: %s' % e)
 			# Is not system and is not elevated
 			# Realize a normal execution
 			stopExecute = False

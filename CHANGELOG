@@ -1,3 +1,14 @@
+LaZagne 1.5 (01/08/2016)
+- Only Windows:
+	* New modules (thanks to righettod => https://github.com/righettod): 
+		* Maven java build tool 
+		* Apache Directory Studio 
+		* "OpenSSH" application
+
+LaZagne 1.4 (21/07/2016)
+- Only Windows:
+	* New module: Git for Windows (thanks to righettod => https://github.com/righettod)
+
 LaZagne 1.3 (02/07/2016)
 - Only Windows
 See "User impersonnation" in README for more information
