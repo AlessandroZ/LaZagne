@@ -21,6 +21,7 @@ class ClawsMail(ModuleInfo):
         path = self.get_path()
         if not path:
             print_debug('INFO', 'ClawsMail not installed.')
+            return
 
         mode = DES.MODE_CFB
         if 'FreeBSD' in platform.system():
