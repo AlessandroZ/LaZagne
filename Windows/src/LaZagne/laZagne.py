@@ -18,25 +18,24 @@ import psutil
 import getpass
 
 # Softwares that passwords can be retrieved without needed to be in the user environmment
-from softwares.browsers.mozilla import Mozilla
-from softwares.wifi.wifipass import WifiPass
-from softwares.windows.secrets import Secrets
-from softwares.chats.jitsi import Jitsi
-from softwares.chats.pidgin import Pidgin
-from softwares.databases.dbvis import Dbvisualizer
-from softwares.databases.sqldeveloper import SQLDeveloper
-from softwares.games.kalypsomedia import KalypsoMedia
-from softwares.games.roguestale import RoguesTale
-from softwares.sysadmin.filezilla import Filezilla
-
+from lazagne.softwares.browsers.mozilla import Mozilla
+from lazagne.softwares.wifi.wifipass import WifiPass
+from lazagne.softwares.windows.secrets import Secrets
+from lazagne.softwares.chats.jitsi import Jitsi
+from lazagne.softwares.chats.pidgin import Pidgin
+from lazagne.softwares.databases.dbvis import Dbvisualizer
+from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
+from lazagne.softwares.games.kalypsomedia import KalypsoMedia
+from lazagne.softwares.games.roguestale import RoguesTale
+from lazagne.softwares.sysadmin.filezilla import Filezilla
 
 # Configuration
-from config.header import Header
-from config.write_output import write_header, write_footer, print_footer, print_debug, parseJsonResult, parseJsonResultToBuffer
-from config.constant import *
-from config.manageModules import get_categories, get_modules
-from config.changePrivileges import ListSids, GetUserName, create_proc_as_sid, rev2self, getsystem, isChildProcess, isProcessStillAlive
-from config.get_system_priv import get_system_priv
+from lazagne.config.header import Header
+from lazagne.config.write_output import write_header, write_footer, print_footer, print_debug, parseJsonResult, parseJsonResultToBuffer, print_output
+from lazagne.config.constant import *
+from lazagne.config.manageModules import get_categories, get_modules
+from lazagne.config.changePrivileges import ListSids, GetUserName, create_proc_as_sid, rev2self, getsystem, isChildProcess, isProcessStillAlive
+from lazagne.config.get_system_priv import get_system_priv
 
 category = get_categories()
 moduleNames = get_modules()
@@ -95,16 +94,20 @@ def verbosity():
 
 def launch_module(b):
 	ok = False
+	modulesToLaunch = []
 	# Launch only a specific module
 	for i in args:
 		if args[i] and i in b:
-			b[i].run()
-			ok = True
-	
+			modulesToLaunch.append(i)
+
 	# Launch all modules
-	if not ok:
-		for i in b:
-			b[i].run()
+	if not modulesToLaunch:
+		modulesToLaunch = b
+
+	for i in modulesToLaunch:
+			Header().title_info(i.capitalize()) 	# print title
+			pwdFound = b[i].run(i.capitalize())		# run the module
+			print_output(i.capitalize(), pwdFound) 	# print the results
 
 def manage_advanced_options():
 	# File used for dictionary attacks
@@ -398,7 +401,7 @@ if isSystem:
 		constant.finalResults = {}
 		constant.finalResults['User'] = user_selected
 		
-		# Try to retrieve all passwords from softwares which do not need to be in the user session
+		# Try to retrieve all passwords from lazagne.softwares which do not need to be in the user session
 		constant.mozilla_software = 'Firefox'
 		Mozilla(False).run()
 		constant.mozilla_software = 'Thunderbird'
