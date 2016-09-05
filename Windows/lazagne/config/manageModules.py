@@ -28,7 +28,6 @@ from lazagne.softwares.chats.pidgin import Pidgin
 from lazagne.softwares.chats.jitsi import Jitsi
 # wifi
 from lazagne.softwares.wifi.wifi import Wifi
-from lazagne.softwares.wifi.wifipass import WifiPass
 # mails
 from lazagne.softwares.mails.outlook import Outlook
 # databases
@@ -84,7 +83,6 @@ def get_modules():
 		Squirrel(),
 		Turba(),
 		Wifi(), 
-		WifiPass(),
 		WinSCP(),
 		GitForWindows(),
 		MavenRepositories(),

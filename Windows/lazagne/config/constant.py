@@ -3,7 +3,7 @@ class constant():
 	folder_name = 'results'
 	file_name_results = 'credentials' # the extention is added depending on the user output choice
 	MAX_HELP_POSITION = 27
-	CURRENT_VERSION = '1.5'
+	CURRENT_VERSION = '1.6'
 	output = None
 	file_logger = None
 

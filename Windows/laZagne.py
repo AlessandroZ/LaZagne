@@ -19,7 +19,7 @@ import getpass
 
 # Softwares that passwords can be retrieved without needed to be in the user environmment
 from lazagne.softwares.browsers.mozilla import Mozilla
-from lazagne.softwares.wifi.wifipass import WifiPass
+from lazagne.softwares.wifi.wifi import Wifi
 from lazagne.softwares.windows.secrets import Secrets
 from lazagne.softwares.chats.jitsi import Jitsi
 from lazagne.softwares.chats.pidgin import Pidgin
@@ -428,8 +428,12 @@ if isSystem:
 	if isChild:
 		constant.output = 'json'
 		try:
-			Secrets().run()
-			WifiPass().run()
+			if "windows" in argv or "all" in argv:
+				Secrets().run()
+				
+			elif "wifi" in argv or "all" in argv:
+				pwdFound = Wifi().run()
+				print_output('Wifi', pwdFound)
 		except Exception,e:
 			print_debug('ERROR', e)
 			pass
@@ -447,8 +451,12 @@ if isSystem:
 		# Get all privilege passwords
 		print '\n\n########## User: SYSTEM ##########\n' 
 		try:
-			Secrets().run()
-			WifiPass().run()
+			if "windows" in argv or "all" in argv:
+				Secrets().run()
+				
+			elif "wifi" in argv or "all" in argv:
+				pwdFound = Wifi().run()
+				print_output('Wifi', pwdFound)
 			stdoutRes.append(constant.finalResults)
 		except Exception,e:
 			print_debug('ERROR', e)
@@ -501,7 +509,6 @@ else:
 					with open(constant.folder_name + os.sep + constant.file_name_results + '.json', 'w') as f:
 						json.dump(json.dumps(chld), f)
 					print '[+] File written: ' + constant.folder_name + os.sep + constant.file_name_results + '.json'
-
 
 				# Write to a txt file
 				if constant.output != 'json':
@@ -562,4 +569,4 @@ if not stopExecute:
 	print_footer()
 
 elapsed_time = time.time() - start_time
-print 'elapsed time = ' + str(elapsed_time)
+print '\nelapsed time = ' + str(elapsed_time)
