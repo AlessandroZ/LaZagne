@@ -35,6 +35,7 @@ from softwares.mails.outlook import Outlook
 from softwares.databases.sqldeveloper import SQLDeveloper
 from softwares.databases.squirrel import Squirrel
 from softwares.databases.dbvis import Dbvisualizer
+from softwares.databases.robomongo import Robomongo
 # games
 from softwares.games.roguestale import RoguesTale
 from softwares.games.kalypsomedia import KalypsoMedia
@@ -45,7 +46,7 @@ def get_categories():
 	category = {
 		'chats': {'help': 'Chat clients supported'},
 		'sysadmin': {'help': 'SCP/SSH/FTP/FTPS clients supported'},
-		'database': {'help': 'SQL clients supported'},
+		'database': {'help': 'SQL/NoSQL clients supported'},
 		'svn': {'help': 'SVN clients supported'},
 		'git': {'help': 'GIT clients supported'},
 		'maven': {'help': 'Maven java build tool'},
@@ -89,6 +90,8 @@ def get_modules():
 		GitForWindows(),
 		MavenRepositories(),
 		ApacheDirectoryStudio(),
-		OpenSSHForWindows()
+		OpenSSHForWindows(),
+		Robomongo()
+
 	]
 	return moduleNames
