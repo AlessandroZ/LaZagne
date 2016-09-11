@@ -67,10 +67,11 @@ Supported software
 
 User impersonnation
 ----
-When laZagne is launched with admin privileges (UAC bypassed) or System, it manages to retrieve passwords from other user.
-It uses two ways to do that: 
-	* If a process from another user is launched (using runas or if many users are connected to the same host), it manages to steal a process token to launch laZagne with its privileges (this is the best way). It could retrieve passwords stored encrypted with the Windows API. 
-	* If no process has been launched but other user exists (visible on the file system in C:\Users\...), it browses the file system in order to retrieve passwords from these users. However, it could not retrieve passwords encrypted with the Windows API (we have to be on the same context as the user to decrypt these passwords). Only few passwords could be retrieved (Firefox, Jitsi, Dbvis, etc.).
+When laZagne is launched with admin privileges (UAC bypassed) or System, it manages to retrieve passwords from other users. It uses two ways to do that: 
+
+* If a process from another user is launched (using runas or if many users are connected to the same host), it manages to steal a process token to launch laZagne with its privileges (this is the best way). It could retrieve passwords stored encrypted with the Windows API. 
+	
+* If no process has been launched but other user exists (visible on the file system in C:\Users\...), it browses the file system in order to retrieve passwords from these users. However, it could not retrieve passwords encrypted with the Windows API (we have to be on the same context as the user to decrypt these passwords). Only few passwords could be retrieved (Firefox, Jitsi, Dbvis, etc.).
 
 Build your own password recovery script
 ----
