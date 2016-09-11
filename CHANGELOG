@@ -1,3 +1,9 @@
+LaZagne 1.7 (11/09/2016)
+- Only Windows:
+	* New modules (thanks to righettod => https://github.com/righettod): 
+		* Robomongo - MongoDB client
+	* Internet Explorer bug fix (for windows 7)
+
 LaZagne 1.6 (05/09/2016)
 - Only Windows:
 	* Internet Explorer history retrieved using powershell - no more dll written on the disk (all in memory)
