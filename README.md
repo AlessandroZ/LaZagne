@@ -16,29 +16,45 @@ Standalones are now available here: https://github.com/AlessandroZ/LaZagne/relea
 Usage
 ----
 * Retrieve version
-	* cmd: laZagne.exe --version
+```
+laZagne.exe --version
+```
 
 * Launch all modules
-	* cmd: laZagne.exe all
+```
+laZagne.exe all
+```
 
 * Launch only a specific module
-	* cmd: laZagne.exe <module_name>
-	* example: laZagne.exe browsers
-	* help: laZagne.exe -h
+```
+laZagne.exe browsers
+```
 
 * Launch only a specific software script
-	* cmd: laZagne.exe <module_name> <software>
-	* example: laZagne.exe browsers -f
-	* help: laZagne.exe browsers -h
+```
+laZagne.exe browsers -f (for firefox)
+```
 
 * Write all passwords found into a file (-oN for Normal txt, -oJ for Json, -oA for All)
-	* cmd: laZagne.exe all -oN
+```
+laZagne.exe all -oN
+```
 
-* Use a file for dictionary attacks (used only when it's necessary: mozilla masterpassword, system hahes, etc.). The file has to be a wordlist in cleartext (no rainbow), it has not been optmized to be fast but could useful for basic passwords. 
-	* cmd: laZagne.exe all -path file.txt
+* Get help
+```
+laZagne.exe -h
+laZagne.exe browsers -h
+```
+
+* Use a file for dictionary attacks (used only when it's necessary: mozilla masterpassword, system hahes, etc.). The file has to be a wordlist in cleartext (no rainbow), it has not been optmized to be fast but could useful for basic passwords.
+```
+laZagne.exe all -path file.txt
+```
 
 * Change verbosity mode (2 different levels)
-	* cmd: laZagne.exe all -vv
+```
+laZagne.exe all -vv
+```
 
 __Note: For wifi passwords \ Windows Secrets, launch it with administrator privileges (UAC Authentication / sudo)__
 
