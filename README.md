@@ -6,7 +6,6 @@ Description
 ----
 The __LaZagne project__ is an open source application used to __retrieve lots of passwords__ stored on a local computer. 
 Each software stores its passwords using different techniques (plaintext, APIs, custom algorithms, databases, etc.). This tool has been developed for the purpose of finding these passwords for the most commonly-used software. 
-At this moment, it supports 22 Programs on Microsoft Windows and 12 on a Linux/Unix-Like OS.
 
 <p align="center"><img src="./pictures/lazagne.png" alt="The LaZagne project"></p>
 
@@ -57,10 +56,6 @@ It uses two ways to do that:
 	* If a process from another user is launched (using runas or if many users are connected to the same host), it manages to steal a process token to launch laZagne with its privileges (this is the best way). It could retrieve passwords stored encrypted with the Windows API. 
 	* If no process has been launched but other user exists (visible on the file system in C:\Users\...), it browses the file system in order to retrieve passwords from these users. However, it could not retrieve passwords encrypted with the Windows API (we have to be on the same context as the user to decrypt these passwords). Only few passwords could be retrieved (Firefox, Jitsi, Dbvis, etc.).
 
-Windows hashes
-----
-To dump windows hashes and LSA Secrets, the impacket library has been used: https://github.com/CoreSecurity/impacket
-
 Build your own password recovery script
 ----
 It's possible to write your own script for the software of your choice. Building your own module has become extremely easy. 
@@ -107,9 +102,5 @@ To compile the source code, some external libraries are required.
 ----
 | __Alessandro ZANNI__    |
 | ------------- |
-| __alessandro.zanni@bt.com__    |
 | __zanni.alessandro@gmail.com__  |
-
-
- 
 
