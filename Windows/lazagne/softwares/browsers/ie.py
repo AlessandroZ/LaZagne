@@ -276,7 +276,7 @@ class IE(ModuleInfo):
 		# ----------------- For Win8 and after (passwords stored on the credential manager) -----------------
 		try:
 			pwdFound += self.windows_vault_ie()
-		except:
+		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 
 		return pwdFound

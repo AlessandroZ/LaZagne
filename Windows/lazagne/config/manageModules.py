@@ -34,6 +34,7 @@ from lazagne.softwares.mails.outlook import Outlook
 from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
 from lazagne.softwares.databases.squirrel import Squirrel
 from lazagne.softwares.databases.dbvis import Dbvisualizer
+from lazagne.softwares.databases.robomongo import Robomongo
 # games
 from lazagne.softwares.games.roguestale import RoguesTale
 from lazagne.softwares.games.kalypsomedia import KalypsoMedia
@@ -44,7 +45,7 @@ def get_categories():
 	category = {
 		'chats': {'help': 'Chat clients supported'},
 		'sysadmin': {'help': 'SCP/SSH/FTP/FTPS clients supported'},
-		'database': {'help': 'SQL clients supported'},
+		'database': {'help': 'SQL/NoSQL clients supported'},
 		'svn': {'help': 'SVN clients supported'},
 		'git': {'help': 'GIT clients supported'},
 		'maven': {'help': 'Maven java build tool'},
@@ -58,6 +59,7 @@ def get_categories():
 	
 def get_modules():
 	moduleNames = [
+		ApacheDirectoryStudio(),
 		Dbvisualizer(), 
 		Dot_net(),
 		Chrome(), 
@@ -67,14 +69,18 @@ def get_modules():
 		FtpNavigator(), 
 		IE(),
 		GalconFusion(),
+		GitForWindows(),
 		Jitsi(),
 		KalypsoMedia(),
+		MavenRepositories(),
 		Mozilla(),
-		Network(), 
+		Network(),
+		OpenSSHForWindows(), 
 		Opera(),
 		Outlook(),
 		Pidgin(),
 		Puttycm(),
+		Robomongo(),
       	RoguesTale(),
 		Tortoise(), 
 		Secrets(), 
@@ -83,10 +89,6 @@ def get_modules():
 		Squirrel(),
 		Turba(),
 		Wifi(), 
-		WinSCP(),
-		GitForWindows(),
-		MavenRepositories(),
-		ApacheDirectoryStudio(),
-		OpenSSHForWindows()
+		WinSCP()
 	]
 	return moduleNames
