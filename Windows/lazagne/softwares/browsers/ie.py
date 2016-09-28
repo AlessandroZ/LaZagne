@@ -107,7 +107,12 @@ class IE(ModuleInfo):
 		get-iehistory
 		'''
 		command=['powershell.exe', '/c', cmdline]
-		res = subprocess.check_output(command, stderr=subprocess.STDOUT, stdin=subprocess.PIPE, universal_newlines=True)
+
+		info=subprocess.STARTUPINFO()
+		info.dwFlags=subprocess.STARTF_USESHOWWINDOW | subprocess.CREATE_NEW_PROCESS_GROUP
+		info.wShowWindow=subprocess.SW_HIDE
+		p=subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
+		res, _=p.communicate()
 		urls = []
 		for r in res.split('\n'):
 			if r.startswith('http'):
@@ -216,7 +221,13 @@ class IE(ModuleInfo):
 		'''
 
 		command=['powershell.exe', '/c', cmdline]
-		results = subprocess.check_output(command, stderr=subprocess.STDOUT, stdin=subprocess.PIPE, universal_newlines=True)
+
+		info=subprocess.STARTUPINFO()
+		info.dwFlags=subprocess.STARTF_USESHOWWINDOW | subprocess.CREATE_NEW_PROCESS_GROUP
+		info.wShowWindow=subprocess.SW_HIDE
+		p=subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
+		results, _=p.communicate()
+
 		passwords = []
 		for result in results.replace('\n', '').split('_________'):
 			values = {}
