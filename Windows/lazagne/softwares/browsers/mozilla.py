@@ -502,7 +502,7 @@ class Mozilla(ModuleInfo):
 					# everything is ready to decrypt password
 					for host, user, passw in credentials:
 						values = {}
-						values["Website"] = host
+						values["URL"] = host
 
 						# Login	
 						loginASN1 = decoder.decode(b64decode(user))
@@ -512,9 +512,9 @@ class Mozilla(ModuleInfo):
 						# remove bad character at the end
 						try:
 							nb = unpack('B', login[-1])[0]
-							values["Username"] = login[:-nb]
+							values["Login"] = login[:-nb]
 						except:
-							values["Username"] = login
+							values["Login"] = login
 						
 						# Password
 						passwdASN1 = decoder.decode(b64decode(passw))

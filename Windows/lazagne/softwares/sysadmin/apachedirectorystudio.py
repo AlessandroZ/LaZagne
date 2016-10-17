@@ -52,8 +52,8 @@ class ApacheDirectoryStudio(ModuleInfo):
             values = {}
             values["Host"] = creds["host"]
             values["Port"] = creds["port"]
-            values["BindPrincipal"] = creds["bindPrincipal"]
-            values["BindPassword"] = creds["bindPassword"]
+            values["Login"] = creds["bindPrincipal"]
+            values["Password"] = creds["bindPassword"]
             values["AuthenticationMethod"] = creds["authMethod"]
             pwd_found.append(values)
 

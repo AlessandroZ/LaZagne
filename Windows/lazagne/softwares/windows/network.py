@@ -77,14 +77,14 @@ class Network(ModuleInfo):
 					
 					if pwd != 'failed':
 						targetName = i['TargetName'].replace('Microsoft_WinInet_', '')
-						values['TargetName'] = targetName 
+						values['URL'] = targetName 
 							
 						if os_plateform == 'XP':
 							t = targetName.split('/')
 							targetName = t[0]
 						
 						if i['UserName'] is not None:
-							values['Username'] = i['UserName']
+							values['Login'] = i['UserName']
 						
 						try:
 							values['Password'] = pwd.decode('utf16')

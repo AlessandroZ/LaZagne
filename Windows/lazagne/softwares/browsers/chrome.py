@@ -78,8 +78,8 @@ class Chrome(ModuleInfo):
 				print_debug('DEBUG', '{0}'.format(e))
 			
 			if password:
-				values['Website'] = result[0]
-				values['Username'] = result[1]
+				values['URL'] = result[0]
+				values['Login'] = result[1]
 				values['Password'] = password
 				pwdFound.append(values)
 		

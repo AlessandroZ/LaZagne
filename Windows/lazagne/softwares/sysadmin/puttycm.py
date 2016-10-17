@@ -62,7 +62,7 @@ class Puttycm(ModuleInfo):
 						find = True
 					
 					if find:
-						values[str(c.tag)] = str(c.text)
+						values[str(c.tag).capitalize()] = str(c.text)
 			
 			# password found 
 			if len(values) != 0:
