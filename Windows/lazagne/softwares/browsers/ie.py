@@ -170,8 +170,8 @@ class IE(ModuleInfo):
 			try:
 				if s % 2 != 0:
 					values = {}
-					values['Website'] = u.decode('UTF-16LE')
-					values['Username'] = secret[length - s]
+					values['URL'] = u.decode('UTF-16LE')
+					values['Login'] = secret[length - s]
 					values['Password'] = password
 					pfound.append(values)
 				else:

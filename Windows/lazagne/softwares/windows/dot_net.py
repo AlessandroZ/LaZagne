@@ -68,9 +68,9 @@ class Dot_net(ModuleInfo):
 					cipher_text = i['CredentialBlob']
 					pwd = self.Win32CryptUnprotectData(cipher_text, self.get_entropy())
 					if pwd != 'failed':
-						values['TargetName'] = i['TargetName'] 
+						values['URL'] = i['TargetName'] 
 						if i['UserName'] is not None:
-							values['Username'] = i['UserName']
+							values['Login'] = i['UserName']
 						try:
 							values['Password'] = pwd.decode('utf16')
 						except Exception,e:

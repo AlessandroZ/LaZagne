@@ -70,7 +70,7 @@ class Tortoise(ModuleInfo):
 						
 						if password:
 							values['URL'] = url
-							values['Username'] = username
+							values['Login'] = username
 							values['Password'] = password
 							
 							pwdFound.append(values)

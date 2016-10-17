@@ -24,17 +24,17 @@ class FtpNavigator(ModuleInfo):
 				if i[0] == 'Name':
 					values['Name'] = i[1]
 				if i[0] == 'Server':
-					values['Server'] =  i[1]
+					values['Host'] =  i[1]
 				if i[0] == 'Port':
 					values['Port'] =  i[1]
 				if i[0] == 'User':
-					values['User'] = i[1]
+					values['Login'] = i[1]
 				if i[0] == "Password":
 					if i[1] != '1' and i[1] != '0':
 						values['Password'] = self.decode(i[1])
 			
 			# used to save the password if it is an anonymous authentication
-			if values['User'] == 'anonymous' and 'Password' not in values.keys():
+			if values['Login'] == 'anonymous' and 'Password' not in values.keys():
 				values['Password'] = 'anonymous'
 			
 			pwdFound.append(values)

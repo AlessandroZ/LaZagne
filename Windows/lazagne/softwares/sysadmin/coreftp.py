@@ -44,7 +44,7 @@ class CoreFTP(ModuleInfo):
 				if k[0] == 'Port':
 					values['Port'] = k[1]
 				if k[0] == 'User':
-					values['User'] = k[1]
+					values['Login'] = k[1]
 					pwdFound.append(values)
 				if k[0] == 'PW':
 					try:

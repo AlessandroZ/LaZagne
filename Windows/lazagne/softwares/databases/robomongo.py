@@ -46,9 +46,9 @@ class Robomongo(ModuleInfo):
                                 connections_infos = json.load(connection_file)
                                 for connection_infos in connections_infos["connections"]:
                                     creds = {}
-                                    creds["ConnectionName"] = connection_infos["connectionName"]
-                                    creds["ServerHost"] = connection_infos["serverHost"]
-                                    creds["ServerPort"] = connection_infos["serverPort"]
+                                    creds["Name"] = connection_infos["connectionName"]
+                                    creds["Host"] = connection_infos["serverHost"]
+                                    creds["Port"] = connection_infos["serverPort"]
                                     if bool(connection_infos["credentials"][0]["enabled"]):
                                         creds["AuthMode"] = "CREDENTIALS"
                                         creds["DatabaseName"] = connection_infos["credentials"][0]["databaseName"]
@@ -56,9 +56,9 @@ class Robomongo(ModuleInfo):
                                         creds["Login"] = connection_infos["credentials"][0]["userName"]
                                         creds["Password"] = connection_infos["credentials"][0]["userPassword"]
                                     else:
-                                        creds["SSHHost"] = connection_infos["ssh"]["host"]
-                                        creds["SSHPort"] = connection_infos["ssh"]["port"]
-                                        creds["SSHLogin"] = connection_infos["ssh"]["userName"]
+                                        creds["Host"] = connection_infos["ssh"]["host"]
+                                        creds["Port"] = connection_infos["ssh"]["port"]
+                                        creds["Login"] = connection_infos["ssh"]["userName"]
                                         if (bool(connection_infos["ssh"]["enabled"]) and
                                                     connection_infos["ssh"]["method"] == "password"):
                                             creds["AuthMode"] = "SSH_CREDENTIALS"
