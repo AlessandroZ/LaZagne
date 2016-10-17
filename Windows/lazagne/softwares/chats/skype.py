@@ -120,7 +120,7 @@ class Skype(ModuleInfo):
 							values = {}
 							
 							try:
-								values['username'] = d
+								values['Login'] = d
 								
 								# get encrypted hash from the config file
 								enc_hex = self.get_hash_credential(directory + os.sep + d + os.sep + 'config.xml')
@@ -129,13 +129,13 @@ class Skype(ModuleInfo):
 									print_debug('WARNING', 'No credential stored on the config.xml file.')
 								else:
 									# decrypt the hash to get the md5 to brue force
-									values['hash_md5'] = self.get_md5_hash(enc_hex, key)
-									values['shema to bruteforce'] = values['username'] + '\\nskyper\\n<password>'
+									values['Hash'] = self.get_md5_hash(enc_hex, key)
+									values['shema to bruteforce using md5'] = values['Login'] + '\\nskyper\\n<password>'
 									
 									# Try a dictionary attack on the hash
-									password = self.dictionary_attack(values['username'], values['hash_md5'])
+									password = self.dictionary_attack(values['Login'], values['Hash'])
 									if password:
-										values['password'] = password
+										values['Password'] = password
 
 									pwdFound.append(values)
 							except Exception,e:

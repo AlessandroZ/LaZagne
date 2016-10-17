@@ -62,7 +62,7 @@ class Jitsi(ModuleInfo):
 						cpt = 0
 					
 					values = {}
-					values['Account id'] = m.group(2)
+					values['Login'] = m.group(2)
 					cpt += 1
 				
 			if 'ENCRYPTED_PASSWORD' in line:

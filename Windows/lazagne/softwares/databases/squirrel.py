@@ -31,16 +31,16 @@ class Squirrel(ModuleInfo):
 			values = {}
 			for e in elem:
 				if e.tag == 'name':
-					values['name'] = e.text
+					values['Name'] = e.text
 				
 				elif e.tag == 'url':
-					values['url'] = e.text
+					values['URL'] = e.text
 				
 				elif e.tag == 'userName':
-					values['userName'] = e.text
+					values['Login'] = e.text
 				
 				elif e.tag == 'password':
-					values['password'] = e.text
+					values['Password'] = e.text
 			
 			if len(values):
 				pwdFound.append(values)

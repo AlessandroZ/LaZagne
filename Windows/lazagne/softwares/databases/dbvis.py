@@ -53,12 +53,12 @@ class Dbvisualizer(ModuleInfo):
 		for e in tree.findall('Databases/Database'):
 			values = {}
 			try:
-				values['Connection Name'] = e.find('Alias').text
+				values['Name'] = e.find('Alias').text
 			except:
 				pass
 			
 			try:
-				values['Userid'] = e.find('Userid').text
+				values['Login'] = e.find('Userid').text
 			except:
 				pass
 			
@@ -83,7 +83,7 @@ class Dbvisualizer(ModuleInfo):
 				for ee in elem.getchildren():
 					for ele in ee.getchildren():
 						if 'Server' == ele.attrib['UrlVariableName']:
-							values['Server'] = str(ele.text)
+							values['Host'] = str(ele.text)
 						if 'Port' == ele.attrib['UrlVariableName']:
 							values['Port'] = str(ele.text)
 						if 'SID' == ele.attrib['UrlVariableName']:

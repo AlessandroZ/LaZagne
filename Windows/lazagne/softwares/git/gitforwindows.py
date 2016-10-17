@@ -26,7 +26,7 @@ class GitForWindows(ModuleInfo):
                 for cred in creds:
                     if len(cred) > 0:
                         parts = urlparse(cred)
-                        values["Username"] = parts.username
+                        values["Login"] = parts.username
                         values["Password"] = parts.password
                         values["URL"] = parts.geturl().replace(parts.username + ":" + parts.password + "@", "").strip()
                         pwd_found.append(values)

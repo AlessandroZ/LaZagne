@@ -110,7 +110,7 @@ class MavenRepositories(ModuleInfo):
         for creds in repos_creds:
             values = {}
             values["Id"] = creds["id"]
-            values["Username"] = creds["username"]
+            values["Login"] = creds["username"]
             if not self.use_key_auth(creds):
                 pwd = creds["password"].strip()
                 # Case for authentication using password protected with the master password

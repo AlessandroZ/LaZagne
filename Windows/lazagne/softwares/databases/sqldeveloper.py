@@ -86,23 +86,23 @@ class SQLDeveloper(ModuleInfo):
 				if 'addrType' in elem.attrib.keys():
 					if elem.attrib['addrType'] == 'sid':
 						for e in elem.getchildren():
-							values['sid'] = e.text
+							values['SID'] = e.text
 					
 					elif elem.attrib['addrType'] == 'port':
 						for e in elem.getchildren():
-							values['port'] = e.text
+							values['Port'] = e.text
 							
 					elif elem.attrib['addrType'] == 'user':
 						for e in elem.getchildren():
-							values['user'] = e.text
+							values['Login'] = e.text
 					
 					elif elem.attrib['addrType'] == 'ConnName':
 						for e in elem.getchildren():
-							values['Connection Name'] = e.text
+							values['Name'] = e.text
 					
 					elif elem.attrib['addrType'] == 'customUrl':
 						for e in elem.getchildren():
-							values['custom Url'] = e.text
+							values['URL'] = e.text
 							
 					elif elem.attrib['addrType'] == 'SavePassword':
 						for e in elem.getchildren():
@@ -110,16 +110,16 @@ class SQLDeveloper(ModuleInfo):
 				
 					elif elem.attrib['addrType'] == 'hostname':
 						for e in elem.getchildren():
-							values['hostname'] = e.text
+							values['Host'] = e.text
 							
 					elif elem.attrib['addrType'] == 'password':
 						for e in elem.getchildren():
 							pwd = self.decrypt(salt, e.text, passphrase)
-							values['password'] = pwd
+							values['Password'] = pwd
 							
 					elif elem.attrib['addrType'] == 'driver':
 						for e in elem.getchildren():
-							values['driver'] = e.text
+							values['Driver'] = e.text
 							
 							# password found 
 							pwdFound.append(values)
