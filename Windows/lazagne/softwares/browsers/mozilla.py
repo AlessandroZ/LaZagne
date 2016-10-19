@@ -109,7 +109,6 @@ class Mozilla(ModuleInfo):
 			ModuleInfo.__init__(self, 'thunderbird', 'browsers', options, suboptions)
 	
 	def get_path(self, software_name):
-		
 		path = ''
 		if constant.appdata:
 			if software_name == 'Firefox':
@@ -373,7 +372,7 @@ class Mozilla(ModuleInfo):
 				return False
 			pass_file.close()
 			
-			print_debug('ATTACK', 'Dictionnary Attack !!! (%s words)' % str(num_lines))
+			print_debug('ATTACK', 'Dictionary Attack !!! (%s words)' % str(num_lines))
 			try:
 				with open(self.dictionary_path) as f:
 					for p in f:
@@ -383,7 +382,7 @@ class Mozilla(ModuleInfo):
 			
 			except (KeyboardInterrupt, SystemExit):
 				print 'INTERRUPTED!'
-				print_debug('DEBUG', 'Dictionnary attack interrupted')
+				print_debug('DEBUG', 'Dictionary attack interrupted')
 			except Exception,e:
 				print_debug('DEBUG', '{0}'.format(e))
 
@@ -403,7 +402,7 @@ class Mozilla(ModuleInfo):
 			print_debug('WARNING', 'No password has been found using the default list')
 		
 		# brute force attack
-		if 'b' in self.toCheck  or constant.bruteforce:
+		if 'b' in self.toCheck or constant.bruteforce:
 			charset_list = 'abcdefghijklmnopqrstuvwxyz1234567890!?'
 			print_debug('ATTACK', 'Brute force attack !!! (%s characters)' %  str(constant.bruteforce))
 			print_debug('DEBUG', 'charset: %s' %  charset_list)
@@ -419,7 +418,7 @@ class Mozilla(ModuleInfo):
 							return w.strip()
 			except (KeyboardInterrupt, SystemExit):
 				print 'INTERRUPTED!'
-				print_debug('INFO', 'Dictionnary attack interrupted')
+				print_debug('INFO', 'Dictionary attack interrupted')
 			except Exception,e:
 				print_debug('DEBUG', '{0}'.format(e))
 
@@ -527,7 +526,6 @@ class Mozilla(ModuleInfo):
 							values["Password"] =  password[:-nb]
 						except:
 							values["Password"] =  password
-
 
 						if len(values):
 							pwdFound.append(values)

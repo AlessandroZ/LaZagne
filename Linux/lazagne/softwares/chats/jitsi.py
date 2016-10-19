@@ -2,10 +2,9 @@ from base64 import b64decode
 import hashlib, os, re
 import binascii, array
 from Crypto.Cipher import AES
-from config.header import Header
-from config.constant import *
-from config.write_output import print_debug, print_output
-from config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
 
 # From https://github.com/mitsuhiko/python-pbkdf2
 from pbkdf2 import pbkdf2_bin
@@ -58,7 +57,7 @@ class Jitsi(ModuleInfo):
 						cpt = 0
 	
 					values = {}
-					values['Account id'] = m.group(2)
+					values['Login'] = m.group(2)
 					cpt += 1
 				
 			if 'ENCRYPTED_PASSWORD' in line:
@@ -78,9 +77,8 @@ class Jitsi(ModuleInfo):
 		if len(values) != 0:
 			pwdFound.append(values)
 		
-		# print the results
-		print_output('Jitsi', pwdFound)
 		f.close()
+		return pwdFound
 		
 	def decrypt_password(self, encrypted_pass):
 		salt = self.get_salt()
@@ -101,15 +99,12 @@ class Jitsi(ModuleInfo):
 		return plaintext
 	
 	# main function
-	def run(self):
-		# print the title
-		Header().title_info('Jitsi')
-		
+	def run(self, software_name = None):
 		file_properties = self.get_path()
 		if file_properties == 'JITSI_NOT_EXISTS':
 			print_debug('INFO', 'Jitsi not installed.')
 		
 		else:
-			self.get_info(file_properties)
+			return self.get_info(file_properties)
 
 

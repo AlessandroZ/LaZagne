@@ -3,9 +3,9 @@ import os
 from time import gmtime, strftime
 import getpass
 import socket
-from config.header import Header
-from config.color import bcolors
-from config.constant import constant
+from lazagne.config.header import Header
+from lazagne.config.color import bcolors
+from lazagne.config.constant import constant
 import logging
 import json
 
@@ -70,8 +70,8 @@ def print_output(software_name, pwdFound):
 			Header().title(software_name)
 		
 		toWrite = []
-		password_category = False
 		for pwd in pwdFound:
+			password_category = False
 			# detect which kinds of password has been found
 			lower_list = [s.lower() for s in pwd.keys()]
 			password = [s for s in lower_list if "password" in s]
@@ -79,7 +79,7 @@ def print_output(software_name, pwdFound):
 				password_category = password
 			else:
 				key = [s for s in lower_list if "key" in s] # for the wifi
-				if key: 
+				if key:
 					password_category = key
 				else:
 					hash = [s for s in lower_list if "hash" in s]

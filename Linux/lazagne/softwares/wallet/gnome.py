@@ -1,18 +1,14 @@
 #!/usr/bin/env python
 import os
-from config.header import Header
-from config.write_output import print_debug, print_output
-from config.moduleInfo import ModuleInfo
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
 
 class Gnome(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-g', 'action': 'store_true', 'dest': 'gnomeKeyring', 'help': 'Gnome Keyring'}
 		ModuleInfo.__init__(self, 'gnomeKeyring', 'wallet', options)
 	
-	def run(self):
-		# print the title
-		Header().title_info('Gnome keyring')
-		
+	def run(self, software_name = None):		
 		if os.getuid() == 0:
 			print_debug('WARNING', 'Do not run it with root privileges)\n')
 			return
@@ -32,7 +28,7 @@ class Gnome(ModuleInfo):
 								values["Item"] = item.get_display_name()
 							
 							if attr.has_key('server'):
-								values["Server"] = attr['server']
+								values["Host"] = attr['server']
 							
 							if attr.has_key('protocol'):
 								values["Protocol"] = attr['protocol']
@@ -44,13 +40,13 @@ class Gnome(ModuleInfo):
 								values["Domain"] = attr['domain']
 							
 							if attr.has_key('origin_url'):
-								values["Origin_url"] = attr['origin_url']
+								values["URL"] = attr['origin_url']
 							
 							if attr.has_key('username_value'):
-								values["Username"] = attr['username_value']
+								values["Login"] = attr['username_value']
 							
 							if attr.has_key('user'):
-								values["Username"] = attr['user']
+								values["User"] = attr['user']
 							
 							if item.get_secret():
 								values["Password"] = item.get_secret()
@@ -58,8 +54,7 @@ class Gnome(ModuleInfo):
 							# write credentials into a text file
 							if len(values) != 0:
 								pwdFound.append(values)
-				# print the results
-				print_output('Gnome keyring', pwdFound)
+				return pwdFound
 			else:
 				print_debug('WARNING', 'The Gnome Keyring wallet is empty')
 		except Exception,e:

@@ -3,9 +3,8 @@ from Crypto.Cipher import DES
 import binascii, array, hashlib
 import base64, re, os
 import xml.etree.cElementTree as ET
-from config.header import Header
-from config.write_output import print_debug, print_output
-from config.moduleInfo import ModuleInfo
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
 
 class DbVisualizer(ModuleInfo):
 	def __init__(self):
@@ -58,10 +57,10 @@ class DbVisualizer(ModuleInfo):
 
 				for e in elem.iter():
 					if 'Alias' == e.tag:
-						values['Connection Name'] = str(e.text)
+						values['Name'] = str(e.text)
 
 					if 'Userid' == e.tag:
-						values['Userid'] = str(e.text)
+						values['Login'] = str(e.text)
 
 					if 'Password' == e.tag:
 						ciphered_password = e.text
@@ -78,7 +77,7 @@ class DbVisualizer(ModuleInfo):
 
 							for ele in el.getchildren():
 								if 'Server' == ele.attrib['UrlVariableName']:
-									values['Server'] = str(ele.text)
+									values['Host'] = str(ele.text)
 
 								if 'Port' == ele.attrib['UrlVariableName']:
 									values['Port'] = str(ele.text)
@@ -89,8 +88,7 @@ class DbVisualizer(ModuleInfo):
 						if passwordFound:
 							pwdFound.append(values)
 
-			# print the results
-			print_output('DbVisualizer', pwdFound)
+			return pwdFound
 
 	def get_mainPath(self):
 		directory = '~/.dbvis'
@@ -101,10 +99,7 @@ class DbVisualizer(ModuleInfo):
 		else:
 			return 'DBVIS_NOT_EXISTS'
 
-	def run(self):
-		# print the title
-		Header().title_info('DbVisualizer')
-
+	def run(self, software_name = None):
 		mainPath = self.get_mainPath()
 
 		if mainPath == 'DBVIS_NOT_EXISTS':
@@ -114,4 +109,4 @@ class DbVisualizer(ModuleInfo):
 			passphrase = self.get_passphrase()
 
 			salt = self.get_salt()
-			self.get_infos(mainPath, passphrase, salt)
+			return self.get_infos(mainPath, passphrase, salt)

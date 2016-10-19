@@ -9,7 +9,7 @@ from ConfigParser import RawConfigParser
 import sqlite3
 import json
 import shutil
-from config.dico import get_dico
+from lazagne.config.dico import get_dico
 from itertools import product
 #https://pypi.python.org/pypi/pyasn1/
 from pyasn1.codec.der import decoder
@@ -19,10 +19,9 @@ from hashlib import sha1
 import hmac
 from Crypto.Util.number import long_to_bytes 
 from Crypto.Cipher import DES3
-from config.header import Header
-from config.constant import *
-from config.write_output import print_debug, print_output
-from config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
 
 # Database classes
 database_find = False
@@ -92,7 +91,7 @@ class Mozilla(ModuleInfo):
 		self.toCheck = []
 		self.manually_pass = None
 		self.dictionary_path = None
-		self.number_toStop = 0
+		self.number_toStop = None
 
 		self.key3 = ''
 
@@ -110,10 +109,10 @@ class Mozilla(ModuleInfo):
 			ModuleInfo.__init__(self, 'thunderbird', 'browsers', options, suboptions)
 	
 	def get_path(self, software_name):
-		path = ""
-		if software_name == "Firefox":
+		path = ''
+		if software_name == 'Firefox':
 			path = os.path.expanduser("~/.mozilla/firefox")
-		elif software_name == "Thunderbird":
+		elif software_name == 'Thunderbird':
 			path = os.path.expanduser("~/.thunderbird")
 		return path
 	
@@ -127,7 +126,7 @@ class Mozilla(ModuleInfo):
 			self.toCheck.append('a')
 		
 		if constant.bruteforce:
-			self.number_toStop = int(constant.bruteforce) + 1 
+			self.number_toStop = int(constant.bruteforce) + 1
 			self.toCheck.append('b')
 		
 		# default attack
@@ -142,7 +141,7 @@ class Mozilla(ModuleInfo):
 
 	def getLongBE(self, d, a):
 		return unpack('>L',(d)[a:a+4])[0]
-             
+
 	def printASN1(self, d, l, rl):
 		type = ord(d[0])
 		length = ord(d[1])
@@ -414,23 +413,20 @@ class Mozilla(ModuleInfo):
 				print_debug('DEBUG', '{0}'.format(e))
 
 			print_debug('WARNING', 'No password has been found using the brute force attack')
-		
 		return False
 
 	# ------------------------------ End of Master Password Functions ------------------------------
 	
 	# main function
-	def run(self):
+	def run(self, software_name = None):
 		global database_find
 		database_find = False
 
 		self.manage_advanced_options()
 		
-		software_name = constant.mozilla_software
+		if constant.mozilla_software:
+			software_name = constant.mozilla_software
 		specific_path = constant.specific_path
-		
-		# print the title
-		Header().title_info(software_name)
 		
 		# get the installation path
 		path = self.get_path(software_name)
@@ -495,7 +491,7 @@ class Mozilla(ModuleInfo):
 					# everything is ready to decrypt password
 					for host, user, passw in credentials:
 						values = {}
-						values["Website"] = host
+						values["URL"] = host
 
 						# Login	
 						loginASN1 = decoder.decode(b64decode(user))
@@ -505,10 +501,9 @@ class Mozilla(ModuleInfo):
 						# remove bad character at the end
 						try:
 							nb = unpack('B', login[-1])[0]
-							values["Username"] = login[:-nb]
+							values["Login"] = login[:-nb]
 						except:
-							values["Username"] = login
-						
+							values["Login"] = login
 						
 						# Password
 						passwdASN1 = decoder.decode(b64decode(passw))
@@ -525,5 +520,4 @@ class Mozilla(ModuleInfo):
 						if len(values):
 							pwdFound.append(values)
 
-			# print the results
-			print_output(software_name, pwdFound)
+			return pwdFound

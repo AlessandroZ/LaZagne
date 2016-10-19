@@ -1,10 +1,9 @@
 import xml.etree.cElementTree as ET
 import os
-from config.header import Header
-from config.constant import *
-from config.write_output import print_debug, print_output
+from lazagne.config.constant import *
+from lazagne.config.write_output import print_debug
 import dbus
-from config.moduleInfo import ModuleInfo
+from lazagne.config.moduleInfo import ModuleInfo
 
 class Pidgin(ModuleInfo):
 	def __init__(self):
@@ -34,10 +33,7 @@ class Pidgin(ModuleInfo):
 			return False
 			
 
-	def run(self):
-		# print the title
-		Header().title_info('Pidgin')
-		
+	def run(self, software_name = None):		
 		pwdFound = []
 		try:
 			pwdTab = self.check_if_pidgin_started()
@@ -72,8 +68,7 @@ class Pidgin(ModuleInfo):
 				if len(values) != 0:
 					pwdFound.append(values)
 			
-			# print the results
-			print_output('Pidgin', pwdFound)
+			return pwdFound
 		else:
 			print_debug('INFO', 'Pidgin not installed.')
 		

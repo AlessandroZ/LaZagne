@@ -5,18 +5,15 @@
 #######################
 
 import os, sys
-from config.header import Header
-from config.write_output import print_debug, print_output
-from config.moduleInfo import ModuleInfo
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
 
 class kde(ModuleInfo):
   	def __init__(self):
 		options = {'command': '-k', 'action': 'store_true', 'dest': 'kwallet', 'help': 'KWallet'}
 		ModuleInfo.__init__(self, 'kwallet', 'wallet', options)
 	
-	def run(self):
-		Header().title_info("KWallet")
-		
+	def run(self, software_name = None):		
 		if os.getuid() == 0:
 			print_debug('INFO', 'Do not run with root privileges)\n')
 			return
@@ -48,8 +45,7 @@ class kde(ModuleInfo):
 			      values["Password"] = (entries[entry][1].toHex().data()).decode('hex').decode('utf-8')[5:]
 			      if len(values) != 0:
 				pwdFound.append(values)
-		    # print the results
-		    print_output('Gnome keyring', pwdFound)
+		    return pwdFound
 		except Exception,e:
 			print_debug('ERROR', 'An error occurs with KWallet: {0}'.format(e))
 			
