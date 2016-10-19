@@ -4,9 +4,8 @@
 #
 #######################
 
-from config.header import Header
-from config.write_output import print_debug, print_output
-from config.moduleInfo import ModuleInfo
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
 import re
 import os
 
@@ -48,7 +47,7 @@ class Wpa_supplicant(ModuleInfo):
 					values = {}
 					(ssid,password) = self.parse_file_network(fd)
 					if ssid and password:
-						values['PASSWORD'] = password
+						values['Password'] = password
 						values['SSID'] = ssid
 						pwdFound.append(values)
 			fd.close()
@@ -60,8 +59,7 @@ class Wpa_supplicant(ModuleInfo):
 			return -1
 		return 0
 
-	def run(self):
-		Header().title_info('Wifi (from WPA Supplicant)')
+	def run(self, software_name = None):
 		if self.check_file_access():
 			return
 
@@ -71,4 +69,4 @@ class Wpa_supplicant(ModuleInfo):
 			return 
 
 		pwdFound = self.parse_file()
-		print_output("wpa_supplicant", pwdFound)
+		return pwdFound

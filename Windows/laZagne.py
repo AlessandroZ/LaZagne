@@ -51,7 +51,6 @@ for module in moduleNames:
 modules['mails']['thunderbird'] = Mozilla(True) # For thunderbird (firefox and thunderbird use the same class)
 
 def output():
-	
 	if args['write_normal']:
 		constant.output = 'txt'
 	
@@ -150,7 +149,6 @@ def runAllModules():
 			constant.mozilla_software = 'Thunderbird'
 		launch_module(modules[categoryName])
 
-
 def childOutput(pid, fileName, isSys):
 	while True:
 	 	# Wait until the child process died
@@ -206,7 +204,6 @@ class MyParser(argparse.ArgumentParser):
 		sys.stderr.write('error: %s\n\n' % message)
 		self.print_help()
 		sys.exit(2)
-
 
 # Print the title
 Header().first_title()

@@ -1,4 +1,4 @@
-# !/usr/bin/python
+#!/usr/bin/python
 
 ##############################################################################
 #                                                                            #
@@ -7,22 +7,18 @@
 ##############################################################################
 
 # Disclaimer: Do Not Use this program for illegal purposes ;)
-
 import argparse
 import time, sys, os
 import logging
 import json
 import getpass
-from softwares.browsers.mozilla import Mozilla
+from lazagne.softwares.browsers.mozilla import Mozilla
 
 # Configuration
-from config.header import Header
-from config.write_output import write_header, write_footer, print_footer, parseJsonResultToBuffer
-from config.constant import *
-from config.manageModules import get_categories, get_modules
-
-# Print the title
-Header().first_title()
+from lazagne.config.header import Header
+from lazagne.config.write_output import write_header, write_footer, print_footer, parseJsonResultToBuffer, print_debug, print_output
+from lazagne.config.constant import *
+from lazagne.config.manageModules import get_categories, get_modules
 
 category = get_categories()
 moduleNames = get_modules()
@@ -80,26 +76,29 @@ def verbosity():
 
 def launch_module(b):
 	ok = False
+	modulesToLaunch = []
 	# Launch only a specific module
 	for i in args:
 		if args[i] and i in b:
-			b[i].run()
-			ok = True
-	
+			modulesToLaunch.append(i)
+
 	# Launch all modules
-	if not ok:
-		for i in b:
-			b[i].run()
+	if not modulesToLaunch:
+		modulesToLaunch = b
+
+	for i in modulesToLaunch:
+			Header().title_info(i.capitalize()) 	# print title
+			pwdFound = b[i].run(i.capitalize())		# run the module
+			print_output(i.capitalize(), pwdFound) 	# print the results
 
 def manage_advanced_options():
-
-	# file used for dictionary attacks
+	# File used for dictionary attacks
 	if 'path' in args:
 		constant.path = args['path']
 	if 'bruteforce' in args: 
 		constant.bruteforce = args['bruteforce']
 
-	# mozilla advanced options
+	# Mozilla advanced options
 	if 'manually' in args:
 		constant.manually = args['manually']
 	if 'specific_path' in args:
@@ -110,7 +109,7 @@ def manage_advanced_options():
 	elif 'browsers' in args['auditType']:
 		constant.mozilla_software = 'Firefox'
 	
-	# jitsi advanced options
+	# Jitsi advanced options
 	if 'master_pwd' in args:
 		constant.jitsi_masterpass = args['master_pwd']
 	
@@ -133,12 +132,42 @@ def runAllModules():
 			constant.mozilla_software = 'Thunderbird'
 		launch_module(modules[categoryName])
 
+def childOutput(pid, fileName, isSys):
+	while True:
+	 	# Wait until the child process died
+		if isProcessStillAlive(pid):
+			print_debug('INFO', 'The child process is still alive')
+			time.sleep(2)
+
+		# The child process died
+		else:
+			print_debug('INFO', 'The child process has dead')
+			if os.path.exists(fileName):
+				try:
+					with open(fileName, 'r') as jsonFile:
+						stdoutRes = json.load(jsonFile)
+					if isSys:
+						stdoutRes = json.loads(stdoutRes)
+					os.remove(fileName)
+					return stdoutRes
+				except Exception, e:
+					print_debug('ERROR', e)
+					if os.path.exists(fileName):
+						os.remove(fileName)
+					return ''
+			else:
+				print_debug('ERROR', 'Children process did not create a result file')
+				return ''
+
 # Prompt help if an error occurs
 class MyParser(argparse.ArgumentParser):
 	def error(self, message):
 		sys.stderr.write('error: %s\n\n' % message)
 		self.print_help()
 		sys.exit(2)
+
+# Print the title
+Header().first_title()
 
 parser = MyParser()
 parser.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION), help='laZagne version')
@@ -196,7 +225,7 @@ for c in category:
 	dic_tmp = {c: {'parents': parser_tab, 'help':'Run %s module' % c, 'func': runModule}}
 	dic = dict(dic.items() + dic_tmp.items())
 
-# 2- main commands
+#2- Main commands
 subparsers = parser.add_subparsers(help='Choose a main command')
 for d in dic:
 	subparsers.add_parser(d,parents=dic[d]['parents'],help=dic[d]['help']).set_defaults(func=dic[d]['func'],auditType=d)
@@ -230,4 +259,4 @@ if constant.output == 'txt' or constant.output == 'all':
 print_footer()
 
 elapsed_time = time.time() - start_time
-print 'elapsed time = ' + str(elapsed_time)
+print '\nelapsed time = ' + str(elapsed_time)

@@ -1,10 +1,9 @@
 import os,sys
 import crypt
-from config.header import Header
-from config.write_output import print_debug, print_output
-from config.moduleInfo import ModuleInfo
-from config.dico import get_dico
-from config.constant import *
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.dico import get_dico
+from lazagne.config.constant import *
 from itertools import product
 
 class Shadow(ModuleInfo): 
@@ -105,9 +104,7 @@ class Shadow(ModuleInfo):
 			return False
 		return True
 
-	def run(self):
-		Header().title_info('System account (from /etc/shadow)')
-
+	def run(self, software_name = None):
 		# check root access
 		if self.root_access():
 			if self.check_file_access():
@@ -128,8 +125,7 @@ class Shadow(ModuleInfo):
 						# try dictionary and bruteforce attack 
 						self.attack(user, cryptPwd)
 				
-				values = {'Category' : 'Hash', 'Hash' : self.hash }
+				values = {'Hash':':'.join(self.hash.split(':')[1:]), 'Login': self.hash.split(':')[0].replace('\n', '')}
 				self.pwdFound.append(values)
 				
-				# print the results
-				print_output('System account (from /etc/shadow)', self.pwdFound)
+				return self.pwdFound

@@ -4,9 +4,8 @@
 from Crypto.Cipher import DES
 from base64 import standard_b64decode as b64decode
 from ConfigParser import ConfigParser
-from config.moduleInfo import ModuleInfo
-from config.header import Header
-from config.write_output import print_debug, print_output
+from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.write_output import print_debug
 import platform, os
 
 class ClawsMail(ModuleInfo):
@@ -14,10 +13,7 @@ class ClawsMail(ModuleInfo):
         options = {'command': '-c', 'action': 'store_true', 'dest': 'clawsmail', 'help': 'clawsmail'}
         ModuleInfo.__init__(self, 'clawsmail', 'mails', options)    
 
-    def run(self):
-        # print the title
-        Header().title_info('ClawsMail')
-        
+    def run(self, software_name = None):
         path = self.get_path()
         if not path:
             print_debug('INFO', 'ClawsMail not installed.')
@@ -28,9 +24,7 @@ class ClawsMail(ModuleInfo):
             mode = DES.MODE_ECB
                 
         pwdFound = self.accountrc_decrypt(path, self.get_passcrypt_key(), mode)
-
-        # print the results
-        print_output('ClawsMail', pwdFound)
+        return pwdFound
 
     def get_path(self):
         file = '~/.claws-mail/accountrc'
@@ -82,7 +76,7 @@ class ClawsMail(ModuleInfo):
 
                 password = self.pass_decrypt(p.get(s, 'password'), key, mode=mode)
                 # print('password for %s, %s is "%s"' % (account, address, password))
-                values = {'Account' : account, 'Address': address, 'Password': password}
+                values = {'Login' : account, 'URL': address, 'Password': password}
             except Exception as e:
                 print_debug('ERROR', 'Error resolving password for account "%s": %s' % (s, e))
 

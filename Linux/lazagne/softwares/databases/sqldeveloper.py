@@ -3,10 +3,9 @@ from Crypto.Cipher import DES
 import array
 import hashlib, re, os
 import xml.etree.cElementTree as ET
-from config.header import Header
-from config.constant import *
-from config.write_output import print_debug, print_output
-from config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
 
 class SQLDeveloper(ModuleInfo):
 	def __init__(self):
@@ -91,15 +90,15 @@ class SQLDeveloper(ModuleInfo):
 
 					elif elem.attrib['addrType'] == 'user':
 						for e in elem.getchildren():
-							values['Username'] = e.text
+							values['Login'] = e.text
 
 					elif elem.attrib['addrType'] == 'ConnName':
 						for e in elem.getchildren():
-							values['Connection Name'] = e.text
+							values['Name'] = e.text
 
 					elif elem.attrib['addrType'] == 'customUrl':
 						for e in elem.getchildren():
-							values['Custom Url'] = e.text
+							values['URL'] = e.text
 
 					elif elem.attrib['addrType'] == 'SavePassword':
 						for e in elem.getchildren():
@@ -107,7 +106,7 @@ class SQLDeveloper(ModuleInfo):
 
 					elif elem.attrib['addrType'] == 'hostname':
 						for e in elem.getchildren():
-							values['Hostname'] = e.text
+							values['Host'] = e.text
 
 					elif elem.attrib['addrType'] == 'password':
 						for e in elem.getchildren():
@@ -127,16 +126,11 @@ class SQLDeveloper(ModuleInfo):
 
 							values = {}
 
-			# print the results
-			print_output('SQL Developer', pwdFound)
+			return pwdFound
 		else:
 			print_debug('WARNING', 'The xml file containing the passwords has not been found.')
 
-	def run(self):
-
-		# print the title
-		Header().title_info('SQL Developer')
-
+	def run(self, software_name = None):
 		mainPath = self.get_mainPath()
 
 		if mainPath == 'SQL_NOT_EXISTS':
@@ -154,4 +148,4 @@ class SQLDeveloper(ModuleInfo):
 
 			else:
 				salt = self.get_salt()
-				self.get_infos(mainPath, passphrase, salt)
+				return self.get_infos(mainPath, passphrase, salt)
