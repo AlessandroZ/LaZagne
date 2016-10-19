@@ -1,8 +1,8 @@
 import xml.etree.cElementTree as ET
-from config.header import Header
-from config.constant import *
-from config.write_output import print_debug, print_output
-from config.moduleInfo import ModuleInfo
+from lazagne.config.header import Header
+from lazagne.config.constant import *
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
 import os
 
 class Squirrel(ModuleInfo):
@@ -33,7 +33,7 @@ class Squirrel(ModuleInfo):
 					values['URL'] = e.text
 				
 				elif e.tag == 'userName':
-					values['UserName'] = e.text
+					values['Login'] = e.text
 				
 				elif e.tag == 'password':
 					values['Password'] = e.text
@@ -41,14 +41,10 @@ class Squirrel(ModuleInfo):
 			if len(values):
 				pwdFound.append(values)
 		
-		# print the results
-		print_output('Squirrel', pwdFound)
+		return pwdFound
 		
 	# Main function
-	def run(self):
-		# print the title
-		Header().title_info('Squirrel')
-		
+	def run(self, software_name = None):		
 		path = self.get_path()
 		if path == 'Not_Found':
 			print_debug('INFO', 'Squirrel not installed')
@@ -56,7 +52,7 @@ class Squirrel(ModuleInfo):
 		else:
 			path += os.sep + 'SQLAliases23.xml'
 			if os.path.exists(path):
-				self.parse_xml(path)
+				return self.parse_xml(path)
 			else:
 				print_debug('WARNING', 'xml file containing passwords has not be found')
 		

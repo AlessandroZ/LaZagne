@@ -1,7 +1,6 @@
 import xml.etree.cElementTree as ET
-from config.header import Header
-from config.write_output import print_debug, print_output
-from config.moduleInfo import ModuleInfo
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
 import os, base64
 
 class Filezilla(ModuleInfo):
@@ -9,10 +8,7 @@ class Filezilla(ModuleInfo):
 		options = {'command': '-f', 'action': 'store_true', 'dest': 'filezilla', 'help': 'filezilla'}
 		ModuleInfo.__init__(self, 'filezilla', 'sysadmin', options)
 	
-	def run(self):
-		# print the title
-		Header().title_info('Filezilla')
-		
+	def run(self, software_name = None):		
 		directory = '~/.filezilla'
 		directory = os.path.expanduser(directory)
 		
@@ -74,8 +70,7 @@ class Filezilla(ModuleInfo):
 						# write credentials into a text file
 						if len(values) != 0:
 							pwdFound.append(values)
-			# print the results
-			print_output('Filezilla', pwdFound)
+			return pwdFound
 		else:
 			print_debug('INFO', 'Filezilla not installed.')
 		

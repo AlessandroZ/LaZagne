@@ -1,7 +1,6 @@
 from ConfigParser import RawConfigParser
-from config.header import Header
-from config.write_output import print_debug, print_output
-from config.moduleInfo import ModuleInfo
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
 import os
 
 class Wifi(ModuleInfo):
@@ -9,10 +8,7 @@ class Wifi(ModuleInfo):
 		options = {'command': '-wi', 'action': 'store_true', 'dest': 'wifi', 'help': 'Network Manager - Need root Privileges'}
 		ModuleInfo.__init__(self, 'wifi', 'wifi', options)
 
-	def run(self):
-		# print the title
-		Header().title_info('Wifi (from Network Manager)')
-		
+	def run(self, software_name = None):
 		directory = '/etc/NetworkManager/system-connections'
 		if os.path.exists(directory):
 			if os.getuid() != 0:
@@ -24,20 +20,12 @@ class Wifi(ModuleInfo):
 			for w in wireless_ssid:
 				cp = RawConfigParser()
 				cp.read(os.path.join(directory, w))
-				values = {}
-				
-				values['SSID'] = w
-				if cp.sections():
-					for section in cp.sections():
-						if 'wireless' in section:
-							for i in cp.items(section):
-								values[i[0]] = i[1]
-				
-				# write credentials into a text file
-				if len(values) != 0:
-					pwdFound.append(values)
-			
-			# print the results
-			print_output('Wifi', pwdFound)
+				values = {'SSID': w}
+				try:
+					values['Password'] = cp.get('wifi-security', 'psk')
+				except:
+					pass
+				pwdFound.append(values)
+			return pwdFound
 		else:
 			print_debug('WARNING', 'the path "%s" does not exist' %(directory))

@@ -2,10 +2,9 @@ import sys, struct, hashlib, binascii, re, os
 from Crypto.Cipher import DES3
 from ConfigParser import RawConfigParser
 import sqlite3
-from config.header import Header
-from config.constant import *
-from config.write_output import print_debug, print_output
-from config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
 
 CIPHERED_FILE = ''
 
@@ -14,10 +13,7 @@ class Opera(ModuleInfo):
 		options = {'command': '-o', 'action': 'store_true', 'dest': 'opera', 'help': 'opera'}
 		ModuleInfo.__init__(self, 'opera', 'browsers', options)
 	
-	def run(self):
-		# print the title
-		Header().title_info('Opera')
-	
+	def run(self, software_name = None):
 		# retrieve opera folder
 		path = self.get_path()
 		
@@ -143,7 +139,7 @@ class Opera(ModuleInfo):
 			if cpt == 2:
 				tmp_cpt += 1
 				if tmp_cpt == 2:
-					values['Username'] = password
+					values['Login'] = password
 				elif tmp_cpt == 4:
 					values['Password'] = password
 					pwdFound.append(values)
@@ -157,7 +153,6 @@ class Opera(ModuleInfo):
 				elif cpt == 2:
 					values['URL'] = tmp_url
 		
-		# print the results
-		print_output('Opera', pwdFound)
+		return pwdFound
 
 

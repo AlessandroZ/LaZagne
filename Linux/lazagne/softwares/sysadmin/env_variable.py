@@ -1,20 +1,16 @@
 #!/usr/bin/env python
 import os
-from config.header import Header
-from config.write_output import  print_debug, print_output
-from config.moduleInfo import ModuleInfo
+from lazagne.config.write_output import  print_debug
+from lazagne.config.moduleInfo import ModuleInfo
 
 class Env_variable(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-e', 'action': 'store_true', 'dest': 'env', 'help': 'environment variables'}
 		ModuleInfo.__init__(self, 'Environment variables', 'sysadmin', options)
 
-	def run(self):
+	def run(self, software_name = None):
 		values = {}
 		pwdFound = []
-		
-		# print the title
-		Header().title_info('Environment variables')
 		
 		# --------- http_proxy --------
 		tmp = ''
@@ -24,7 +20,7 @@ class Env_variable(ModuleInfo):
 			tmp = 'HTTP_Proxy'
 		
 		if tmp:
-			values["Variable"] = tmp
+			values["Login"] = tmp
 			values["Password"] = os.environ[tmp]
 			pwdFound.append(values)
 			
@@ -36,7 +32,7 @@ class Env_variable(ModuleInfo):
 			tmp = 'HTTPS_Proxy'
 		
 		if tmp:
-			values["Variable"] = tmp
+			values["Login"] = tmp
 			values["Password"] = os.environ[tmp]
 			pwdFound.append(values)
 		
@@ -44,14 +40,13 @@ class Env_variable(ModuleInfo):
 		for i in os.environ:
 			for t in tab:
 				if (t.upper() in i.upper()) and (i.upper() != 'PWD') and (i.upper() != 'OLDPWD'):
-					values["Variable"] = i
+					values["Login"] = i
 					values["Password"] = os.environ[i]
 		pwdFound.append(values)
 		
 		# write credentials into a text file
 		if len(values) != 0:
-			# print the results
-			print_output('Environment variables', pwdFound)
+			return pwdFound
 		
 		else:
 			print_debug('INFO', 'No passwords stored in the environment variables.')
