@@ -15,7 +15,6 @@ class Wifi(ModuleInfo):
 				print_debug('INFO', 'You need more privileges (run it with sudo)\n')
 			
 			wireless_ssid = [ f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory,f))]
-			
 			pwdFound = []
 			for w in wireless_ssid:
 				cp = RawConfigParser()
@@ -23,9 +22,10 @@ class Wifi(ModuleInfo):
 				values = {'SSID': w}
 				try:
 					values['Password'] = cp.get('wifi-security', 'psk')
+					pwdFound.append(values)
 				except:
 					pass
-				pwdFound.append(values)
+			
 			return pwdFound
 		else:
 			print_debug('WARNING', 'the path "%s" does not exist' %(directory))
