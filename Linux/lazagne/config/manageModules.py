@@ -1,6 +1,7 @@
 # keyring
 from lazagne.softwares.wallet.gnome import Gnome
 from lazagne.softwares.wallet.kde import kde
+from lazagne.softwares.wallet.libsecret import libsecret
 # browsers
 from lazagne.softwares.browsers.mozilla import Mozilla
 from lazagne.softwares.browsers.opera import Opera
@@ -32,7 +33,7 @@ def get_categories():
 		'wallet': {'help': 'Windows credentials (credential manager, etc.)'}
 	}
 	return category
-	
+
 def get_modules():
 	moduleNames = [
 		ClawsMail(),
@@ -49,6 +50,7 @@ def get_modules():
 		Squirrel(),
 		Wifi(),
 		Wpa_supplicant(),
-		kde()
+		kde(),
+		libsecret()
 	]
 	return moduleNames
