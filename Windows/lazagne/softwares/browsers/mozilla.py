@@ -463,11 +463,11 @@ class Mozilla(ModuleInfo):
 				print_debug('INFO', 'Profile path found: %s' % profile)
 				if not os.path.exists(profile + os.sep + 'key3.db'):
 					print_debug('WARNING', 'key3 file not found: %s' % self.key3)
-					return
+					continue
 
 				self.key3 = self.readBsddb(profile + os.sep + 'key3.db')
 				if not self.key3:
-					return
+					continue
 
 				# check if passwords are stored on the Json format
 				try:
@@ -491,12 +491,12 @@ class Mozilla(ModuleInfo):
 						print_debug('WARNING', 'Master Password is used !') 
 						masterPassword = self.found_masterpassword()
 						if not masterPassword:
-							return 
+							continue
 					
 					# get user secret key
 					key = self.extractSecretKey(globalSalt, masterPassword, entrySalt)
 					if not key:
-						return 
+						continue
 
 					# everything is ready to decrypt password
 					for host, user, passw in credentials:
