@@ -40,13 +40,6 @@ def write_credentials(pwdFound, category):
 	open(constant.folder_name + os.sep + 'credentials.txt',"a+b").write(tmp)
 	
 def checks_write(values, category):
-	# if values:
-	# 	if constant.output == 'txt':
-	# 		try:
-	# 			write_credentials(values, category)
-	# 			logging.info('[+] Credentials stored successfully on the file: %s\\credentials.txt\n' % constant.folder_name)
-	# 		except:
-	# 			logging.info('Couldn\'t write the results file\n')
 	if values:
 		if "Passwords" not in constant.finalResults:
 			constant.finalResults["Passwords"] = []
@@ -152,15 +145,14 @@ def parseJsonResultToBuffer(jsonString):
 				buffer += 'No passwords found for this user !'
 			else:
 				for all_passwords in jsonString['Passwords']:
-					# print '- Category: %s' % all_passwords[0]['Category']
 					buffer += '------------------- %s -----------------\r\n' % all_passwords[0]['Category']
 					for password_by_category in all_passwords[1]:
 						buffer += '\r\nPassword found !!!\r\n'
 						for dic in password_by_category.keys():
 							try:
-								buffer += '%s: %s\r\n' % (dic, password_by_category[dic])
-							except:
 								buffer += '%s: %s\r\n' % (dic, password_by_category[dic].encode('utf-8'))
+							except:
+								buffer += '%s: %s\r\n' % (dic, password_by_category[dic].encode(encoding='utf-8',errors='replace'))
 					buffer += '\r\n'
 
 	except Exception as e:
