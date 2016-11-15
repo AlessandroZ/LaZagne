@@ -1,3 +1,12 @@
+LaZagne 1.7 (15/11/2016)
+- Only Windows:
+	* Lots of minor bugs fixed
+		* Firefox
+			* when many profiles used (thanks to Aorimn) or when profiles.ini is corrupted
+		* IE: retrieving historic list or windows vault
+		* Writing json file
+		* etc...
+
 LaZagne 1.7 (11/09/2016)
 - Only Windows:
 	* New modules (thanks to righettod => https://github.com/righettod): 
