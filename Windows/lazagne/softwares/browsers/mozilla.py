@@ -287,7 +287,11 @@ class Mozilla(ModuleInfo):
 	# Get the path list of the firefox profiles
 	def get_firefox_profiles(self, directory):
 		cp = RawConfigParser()
-		cp.read(os.path.join(directory, 'profiles.ini'))
+		try:
+			cp.read(os.path.join(directory, 'profiles.ini'))
+		except:
+			return []
+
 		profile_list = []
 		for section in cp.sections():
 			if section.startswith('Profile'):
