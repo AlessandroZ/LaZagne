@@ -1,5 +1,6 @@
 import win32con, win32api, win32cred
 import subprocess
+import _subprocess as sub
 import struct, hashlib, os, base64
 from ctypes import *
 from ctypes.wintypes import DWORD
@@ -108,13 +109,14 @@ class IE(ModuleInfo):
 		'''
 		command=['powershell.exe', '/c', cmdline]
 
-		info=subprocess.STARTUPINFO()
-		info.dwFlags=subprocess.STARTF_USESHOWWINDOW | subprocess.CREATE_NEW_PROCESS_GROUP
-		info.wShowWindow=subprocess.SW_HIDE
-		p=subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
-		res, _=p.communicate()
+		info = subprocess.STARTUPINFO()
+		info.dwFlags = sub.STARTF_USESHOWWINDOW | sub.CREATE_NEW_PROCESS_GROUP
+		info.wShowWindow = sub.SW_HIDE
+		p = subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
+		results, _ = p.communicate()
+
 		urls = []
-		for r in res.split('\n'):
+		for r in results.split('\n'):
 			if r.startswith('http'):
 				urls.append(r.strip())
 		return urls 
@@ -222,11 +224,11 @@ class IE(ModuleInfo):
 
 		command=['powershell.exe', '/c', cmdline]
 
-		info=subprocess.STARTUPINFO()
-		info.dwFlags=subprocess.STARTF_USESHOWWINDOW | subprocess.CREATE_NEW_PROCESS_GROUP
-		info.wShowWindow=subprocess.SW_HIDE
-		p=subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
-		results, _=p.communicate()
+		info = subprocess.STARTUPINFO()
+		info.dwFlags = sub.STARTF_USESHOWWINDOW | sub.CREATE_NEW_PROCESS_GROUP
+		info.wShowWindow = sub.SW_HIDE
+		p = subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
+		results, _ = p.communicate()
 
 		passwords = []
 		for result in results.replace('\n', '').split('_________'):
