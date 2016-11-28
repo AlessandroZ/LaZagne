@@ -1,4 +1,14 @@
-LaZagne 1.7 (15/11/2016)
+LaZagne 1.9 (28/11/2016)
+- Only Windows:
+	* better interprocesses communication for impersonation mechanism (using rpyc)
+	* better way to catch errors
+	* json output to be more "human readable"
+	* cleaning code
+	* New category added called "memory": used to retrieve password on memory
+		* KeeThief added (thanks to adaptivethreat) - retrieve keepass (version 2.x) password from memory
+			* Powershell code used from https://github.com/adaptivethreat/KeeThief/
+
+LaZagne 1.8 (15/11/2016)
 - Only Windows:
 	* Lots of minor bugs fixed
 		* Firefox
