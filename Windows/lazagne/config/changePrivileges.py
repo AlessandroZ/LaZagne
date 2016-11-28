@@ -3,6 +3,7 @@ import sys, os
 from ctypes import *
 import subprocess
 import psutil
+import _subprocess as sub
 from lazagne.config.write_output import print_debug
 
 LPVOID = c_void_p
@@ -322,8 +323,8 @@ def start_proc_with_token(args, hTokendupe, hidden=True):
     lpProcessInformation = PROCESS_INFORMATION()
     lpStartupInfo = STARTUPINFO()
     if hidden:
-        lpStartupInfo.dwFlags = subprocess.STARTF_USESHOWWINDOW|subprocess.CREATE_NEW_PROCESS_GROUP
-        lpStartupInfo.wShowWindow = subprocess.SW_HIDE
+        lpStartupInfo.dwFlags = sub.STARTF_USESHOWWINDOW | sub.CREATE_NEW_PROCESS_GROUP
+        lpStartupInfo.wShowWindow = sub.SW_HIDE
     
     CREATE_NEW_CONSOLE = 0x00000010
     CREATE_UNICODE_ENVIRONMENT = 0x00000400
@@ -358,15 +359,3 @@ def rev2self():
     global_ref=None
     print_debug('INFO', 'Running as: ' + GetUserName())
 
-# check if this process has been launched from another lazagne.exe
-def isChildProcess(current_filepath):
-    if 'ALLUSERSPROFILE' in os.environ:
-        if os.environ['ALLUSERSPROFILE'] in current_filepath:
-            return True
-    return False
-
-def isProcessStillAlive(pid):
-    try:
-        return psutil.Process(pid)
-    except:
-        return None
