@@ -40,6 +40,8 @@ from lazagne.softwares.games.roguestale import RoguesTale
 from lazagne.softwares.games.kalypsomedia import KalypsoMedia
 from lazagne.softwares.games.galconfusion import GalconFusion
 from lazagne.softwares.games.turba import Turba
+# memory
+from lazagne.softwares.memory.keepass import Keepass
 
 def get_categories():
 	category = {
@@ -50,6 +52,7 @@ def get_categories():
 		'git': {'help': 'GIT clients supported'},
 		'maven': {'help': 'Maven java build tool'},
 		'mails': {'help': 'Email clients supported'},
+		'memory': {'help': 'Retrieve passwords from memory'},
 		'wifi': {'help': 'Wifi'},
 		'browsers': {'help': 'Web browsers supported'},
 		'windows': {'help': 'Windows credentials (credential manager, etc.)'},
@@ -67,11 +70,12 @@ def get_modules():
 		Cyberduck(),
 		Filezilla(), 
 		FtpNavigator(), 
-		IE(),
 		GalconFusion(),
 		GitForWindows(),
+		IE(),
 		Jitsi(),
 		KalypsoMedia(),
+		Keepass(),
 		MavenRepositories(),
 		Mozilla(),
 		Network(),

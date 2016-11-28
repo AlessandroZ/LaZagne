@@ -9,7 +9,7 @@ from lazagne.config.moduleInfo import ModuleInfo
 class SQLDeveloper(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-s', 'action': 'store_true', 'dest': 'sqldeveloper', 'help': 'sqldeveloper'}
-		ModuleInfo.__init__(self, 'sqldeveloper', 'database', options)
+		ModuleInfo.__init__(self, 'sqldeveloper', 'database', options, need_to_be_in_env=False)
 	
 	def get_salt(self):
 		salt_array = [5, 19, -103, 66, -109, 114, -24, -83]
