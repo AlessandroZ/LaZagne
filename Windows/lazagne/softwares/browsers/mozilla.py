@@ -103,10 +103,10 @@ class Mozilla(ModuleInfo):
 		
 		if not isThunderbird:
 			options = {'command': '-f', 'action': 'store_true', 'dest': 'firefox', 'help': 'firefox'}
-			ModuleInfo.__init__(self, 'firefox', 'browsers', options, suboptions)
+			ModuleInfo.__init__(self, 'firefox', 'browsers', options, suboptions, need_to_be_in_env=False)
 		else:
 			options = {'command': '-t', 'action': 'store_true', 'dest': 'thunderbird', 'help': 'thunderbird'}
-			ModuleInfo.__init__(self, 'thunderbird', 'browsers', options, suboptions)
+			ModuleInfo.__init__(self, 'thunderbird', 'browsers', options, suboptions, need_to_be_in_env=False)
 	
 	def get_path(self, software_name):
 		path = ''
@@ -438,8 +438,6 @@ class Mozilla(ModuleInfo):
 
 		self.manage_advanced_options()
 		
-		if constant.mozilla_software:
-			software_name = constant.mozilla_software
 		specific_path = constant.specific_path
 		
 		# get the installation path

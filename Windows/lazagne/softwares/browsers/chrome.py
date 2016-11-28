@@ -10,7 +10,7 @@ import getpass
 class Chrome(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-c', 'action': 'store_true', 'dest': 'chrome', 'help': 'chrome'}
-		ModuleInfo.__init__(self, 'chroaaaame', 'browsers', options)
+		ModuleInfo.__init__(self, 'chrome', 'browsers', options)
 
 	# main function
 	def run(self, software_name = None):		
