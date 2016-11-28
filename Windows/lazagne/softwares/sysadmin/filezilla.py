@@ -7,7 +7,7 @@ from lazagne.config.moduleInfo import ModuleInfo
 class Filezilla(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-f', 'action': 'store_true', 'dest': 'filezilla', 'help': 'filezilla'}
-		ModuleInfo.__init__(self, 'filezilla', 'sysadmin', options)
+		ModuleInfo.__init__(self, 'filezilla', 'sysadmin', options, need_to_be_in_env=False)
 
 	def run(self, software_name = None):		
 		if constant.appdata:
