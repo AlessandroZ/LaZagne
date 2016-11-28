@@ -106,6 +106,7 @@ To compile the source code, some external libraries are required.
 	* Impacket (for Windows hashes + LSA Secrets): https://github.com/CoreSecurity/impacket
 	* Pyasn1 (for ASN1 decoding): https://pypi.python.org/pypi/pyasn1/
 	* Microsoft Visual C++ 2010 Redistributable Package (x86): https://www.microsoft.com/en-us/download/details.aspx?id=5555
+	* RPYC (for interprocesses communication): https://pypi.python.org/pypi/rpyc
 
 * For Linux	
 	* Python 2.7

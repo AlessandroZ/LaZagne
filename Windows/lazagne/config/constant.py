@@ -1,13 +1,14 @@
+import time
+
+date = time.strftime("%d%m%Y_%H%M%S")
 
 class constant():
-	folder_name = 'results'
+	folder_name = 'results_{current_time}'.format(current_time=date)
 	file_name_results = 'credentials' # the extention is added depending on the user output choice
 	MAX_HELP_POSITION = 27
-	CURRENT_VERSION = '1.8'
+	CURRENT_VERSION = '1.9'
 	output = None
 	file_logger = None
-
-	# tmpFile
 
 	# jitsi options
 	jitsi_masterpass = None
@@ -17,7 +18,6 @@ class constant():
 	path = None
 	bruteforce = None
 	specific_path = None
-	mozilla_software = ''
 	
 	# ie options
 	ie_historic = None
