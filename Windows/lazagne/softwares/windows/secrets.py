@@ -10,13 +10,13 @@ from lazagne.config.moduleInfo import ModuleInfo
 class Secrets(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-s', 'action': 'store_true', 'dest': 'secrets', 'help': 'Windows secrets (hashes, lsa secrets, etc.)'}
-		ModuleInfo.__init__(self, 'Windows secrets', 'windows', options)
+		ModuleInfo.__init__(self, 'Windows_secrets', 'windows', options, need_high_privileges=True)
 		
 		self.sysFile = ['sam', 'security', 'system']
 		self.address = 'LOCAL'
-		self.ntds = os.environ['systemroot'] + os.sep + 'ntds' + os.sep + 'ntds.dit'
-		if not os.path.exists(self.ntds):
-			self.ntds = None
+		# self.ntds = os.environ['systemroot'] + os.sep + 'ntds' + os.sep + 'ntds.dit'
+		# if not os.path.exists(self.ntds):
+		self.ntds = None
 		self.history = True
 		
 	# check if files have been saved

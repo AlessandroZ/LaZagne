@@ -9,7 +9,7 @@ from lazagne.config.write_output import print_debug
 class Wifi(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-wi', 'action': 'store_true', 'dest': 'wifi', 'help': 'Vista and higher - Need System Privileges'}
-		ModuleInfo.__init__(self, 'Wifi', 'wifi', options)
+		ModuleInfo.__init__(self, 'Wifi', 'wifi', options, need_high_privileges=True)
 	
 	# used when launched with a system account 
 	def run(self, software_name = None):
