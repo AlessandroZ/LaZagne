@@ -7,7 +7,7 @@ from lazagne.config.moduleInfo import ModuleInfo
 class Pidgin(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-p', 'action': 'store_true', 'dest': 'pidgin', 'help': 'pidgin'}
-		ModuleInfo.__init__(self, 'pidgin', 'chats', options)
+		ModuleInfo.__init__(self, 'pidgin', 'chats', options, need_to_be_in_env=False)
 
 	def run(self, software_name = None):
 		if constant.appdata:

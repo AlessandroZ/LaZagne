@@ -10,7 +10,7 @@ from lazagne.config.moduleInfo import ModuleInfo
 class Dbvisualizer(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-d', 'action': 'store_true', 'dest': 'dbvis', 'help': 'dbvisualizer'}
-		ModuleInfo.__init__(self, 'dbvis', 'database', options)
+		ModuleInfo.__init__(self, 'dbvis', 'database', options, need_to_be_in_env=False)
 
 	# ---- functions used to decrypt the password ----
 	def get_salt(self):
