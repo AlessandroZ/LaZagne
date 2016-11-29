@@ -12,7 +12,7 @@ from lazagne.config.write_output import print_debug
 from memorpy import *
 
 # create a symbolic link on Windows
-# mklink /J memorpy ..\..\..\..\memorpy\memorpy
+# mklink /J memorpy ..\..\..\..\external\memorpy\memorpy
 
 
 #from https://github.com/putterpanda/mimikittenz
