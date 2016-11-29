@@ -68,6 +68,7 @@ Supported software
 For developers
 ----
 Please refer to the wiki before opening an issue to understand how to compile the project or to develop a new module.
+https://github.com/AlessandroZ/LaZagne/wiki
 
 ----
 | __Alessandro ZANNI__    |
