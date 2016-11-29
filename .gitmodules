@@ -1,0 +1,3 @@
+[submodule "external/memorpy"]
+	path = external/memorpy
+	url = https://github.com/n1nj4sec/memorpy.git
