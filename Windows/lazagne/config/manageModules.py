@@ -42,6 +42,7 @@ from lazagne.softwares.games.galconfusion import GalconFusion
 from lazagne.softwares.games.turba import Turba
 # memory
 from lazagne.softwares.memory.keepass import Keepass
+from lazagne.softwares.memory.memorydump import MemoryDump
 
 def get_categories():
 	category = {
@@ -77,6 +78,7 @@ def get_modules():
 		KalypsoMedia(),
 		Keepass(),
 		MavenRepositories(),
+		MemoryDump(),
 		Mozilla(),
 		Network(),
 		OpenSSHForWindows(), 
