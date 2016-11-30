@@ -7,6 +7,7 @@ from lazagne.softwares.browsers.ie import IE
 from lazagne.softwares.windows.network import Network
 from lazagne.softwares.windows.dot_net import Dot_net
 from lazagne.softwares.windows.secrets import Secrets
+from lazagne.softwares.windows.passwords_hints import PasswordsHint
 # sysadmin
 from lazagne.softwares.sysadmin.filezilla import Filezilla
 from lazagne.softwares.sysadmin.cyberduck import Cyberduck
@@ -84,6 +85,7 @@ def get_modules():
 		OpenSSHForWindows(), 
 		Opera(),
 		Outlook(),
+		PasswordsHint(),
 		Pidgin(),
 		Puttycm(),
 		Robomongo(),
