@@ -17,10 +17,7 @@ class Opera(ModuleInfo):
 		# retrieve opera folder
 		path = self.get_path()
 		
-		if path == 'env_variable_error':
-			print_debug('ERROR', 'The APPDATA environment variable is not defined.')
-			return
-		elif not path:
+		if not path:
 			print_debug('INFO', 'Opera is not installed.')
 			return
 		
@@ -49,26 +46,21 @@ class Opera(ModuleInfo):
 	
 	def get_path(self):
 		global CIPHERED_FILE
-		if 'APPDATA' in os.environ:
-			# version less than 10
-			if os.path.exists(os.environ['APPDATA'] + '\Opera\Opera\profile'):
-				CIPHERED_FILE = 'wand.dat'
-				return os.environ['APPDATA'] + '\Opera\Opera\profile'
-			
-			# version more than 10
-			if os.path.exists(os.environ['APPDATA'] + '\Opera\Opera'):
-				CIPHERED_FILE = 'wand.dat'
-				return os.environ['APPDATA'] + '\Opera\Opera'
-			
-			# new versions
-			elif os.path.exists(os.environ['APPDATA'] + '\Opera Software\Opera Stable'):
-				CIPHERED_FILE = 'Login Data'
-				return os.environ['APPDATA'] + '\Opera Software\Opera Stable'
+		# version less than 10
+		if os.path.exists(constant.profile['APPDATA'] + '\Opera\Opera\profile'):
+			CIPHERED_FILE = 'wand.dat'
+			return constant.profile['APPDATA'] + '\Opera\Opera\profile'
 		
-			else:
-				return None
-		else: 
-			return 'env_variable_error'
+		# version more than 10
+		if os.path.exists(constant.profile['APPDATA'] + '\Opera\Opera'):
+			CIPHERED_FILE = 'wand.dat'
+			return constant.profile['APPDATA'] + '\Opera\Opera'
+		
+		# new versions
+		elif os.path.exists(constant.profile['APPDATA'] + '\Opera Software\Opera Stable'):
+			CIPHERED_FILE = 'Login Data'
+			return constant.profile['APPDATA'] + '\Opera Software\Opera Stable'
+		
 	
 	def decipher_old_version(self, path):
 		salt = '837DFC0F8EB3E86973AFFF'

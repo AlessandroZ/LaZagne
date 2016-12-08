@@ -7,7 +7,7 @@ from lazagne.config.moduleInfo import ModuleInfo
 class GalconFusion(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-g', 'action': 'store_true', 'dest': 'galconfusion', 'help': 'galconfusion'}
-		ModuleInfo.__init__(self, 'galconfusion', 'games', options)
+		ModuleInfo.__init__(self, 'galconfusion', 'games', options, cannot_be_impersonate_using_tokens=True)
 		
 	def run(self, software_name = None):
 		creds = []

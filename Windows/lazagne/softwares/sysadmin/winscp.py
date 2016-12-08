@@ -10,7 +10,7 @@ class WinSCP(ModuleInfo):
 		self.hostname = ''
 		
 		options = {'command': '-scp', 'action': 'store_true', 'dest': 'winscp', 'help': 'winscp'}
-		ModuleInfo.__init__(self, 'winscp', 'sysadmin', options)
+		ModuleInfo.__init__(self, 'winscp', 'sysadmin', options, cannot_be_impersonate_using_tokens=True)
 	
 	# ------------------------------ Getters and Setters ------------------------------
 	def get_hash(self):

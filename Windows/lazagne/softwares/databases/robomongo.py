@@ -1,4 +1,4 @@
-from os import environ, walk
+from os import walk
 from os.path import isdir, isfile, join
 from lazagne.config.write_output import print_output, print_debug
 from lazagne.config.constant import *
@@ -11,7 +11,7 @@ class Robomongo(ModuleInfo):
     def __init__(self):
         options = {'command': '-rbm', 'action': 'store_true', 'dest': 'robomongo', 'help': 'robomongo'}
         ModuleInfo.__init__(self, 'robomongo', 'database', options)
-        self.connections_file_location = environ.get("USERPROFILE") + "\\.config\\robomongo"
+        self.connections_file_location = constant.profile['USERPROFILE'] + "\\.config\\robomongo"
         self.connections_file_name = "robomongo.json"
 
     def read_file_content(self, file_path):

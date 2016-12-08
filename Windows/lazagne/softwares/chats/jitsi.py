@@ -29,20 +29,11 @@ class Jitsi(ModuleInfo):
 		return binascii.unhexlify(hexsalt)
 	
 	def get_path(self):
-		if constant.appdata:
-			directory =  '%s\Jitsi\sip-communicator.properties' % constant.appdata
-			if os.path.exists(directory):
-				return directory
-			return 'JITSI_NOT_EXISTS'
-
-		elif 'APPDATA' in os.environ:
-			directory = os.environ.get('APPDATA') + os.sep + 'Jitsi' + os.sep + 'sip-communicator.properties'
-			if os.path.exists(directory):
-				return directory
-			else:
-				return 'JITSI_NOT_EXISTS'
+		directory = constant.profile['APPDATA'] + os.sep + 'Jitsi' + os.sep + 'sip-communicator.properties'
+		if os.path.exists(directory):
+			return directory
 		else:
-			return 'Error'
+			return 'JITSI_NOT_EXISTS'
 		
 	def get_info(self, file_properties):
 		values = {}
@@ -106,10 +97,7 @@ class Jitsi(ModuleInfo):
 	# main function
 	def run(self, software_name = None):		
 		file_properties = self.get_path()
-		if file_properties == 'Error':
-			print_debug('ERROR', 'The APPDATA environment variable is not defined')
-		
-		elif file_properties == 'JITSI_NOT_EXISTS':
+		if file_properties == 'JITSI_NOT_EXISTS':
 			print_debug('INFO', 'Jitsi not installed.')
 		
 		else:

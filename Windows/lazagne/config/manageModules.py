@@ -4,10 +4,9 @@ from lazagne.softwares.browsers.chrome import Chrome
 from lazagne.softwares.browsers.opera import Opera
 from lazagne.softwares.browsers.ie import IE
 # windows
+from lazagne.softwares.windows.system_hash import Hashes
 from lazagne.softwares.windows.network import Network
 from lazagne.softwares.windows.dot_net import Dot_net
-from lazagne.softwares.windows.secrets import Secrets
-from lazagne.softwares.windows.passwords_hints import PasswordsHint
 # sysadmin
 from lazagne.softwares.sysadmin.filezilla import Filezilla
 from lazagne.softwares.sysadmin.cyberduck import Cyberduck
@@ -74,6 +73,7 @@ def get_modules():
 		FtpNavigator(), 
 		GalconFusion(),
 		GitForWindows(),
+		Hashes(),
 		IE(),
 		Jitsi(),
 		KalypsoMedia(),
@@ -85,13 +85,11 @@ def get_modules():
 		OpenSSHForWindows(), 
 		Opera(),
 		Outlook(),
-		PasswordsHint(),
 		Pidgin(),
 		Puttycm(),
 		Robomongo(),
       	RoguesTale(),
 		Tortoise(), 
-		Secrets(), 
 		Skype(), 
 		SQLDeveloper(), 
 		Squirrel(),

@@ -41,8 +41,8 @@ class GitForWindows(ModuleInfo):
         # According to the "git-credential-store" documentation:
         # Build a list of locations in which git credentials can be stored
         locations = []
-        locations.append(os.environ.get("USERPROFILE") + "\\.git-credentials")
-        locations.append(os.environ.get("USERPROFILE") + "\\.config\\git\\credentials")
+        locations.append(constant.profile["USERPROFILE"] + "\\.git-credentials")
+        locations.append(constant.profile["USERPROFILE"] + "\\.config\\git\\credentials")
         if "XDG_CONFIG_HOME" in os.environ:
             locations.append(os.environ.get("XDG_CONFIG_HOME") + "\\git\\credentials")
 

@@ -105,45 +105,42 @@ class Skype(ModuleInfo):
 	
 	# main function
 	def run(self, software_name = None):
-		if 'APPDATA' in os.environ:
-			directory = os.environ['APPDATA'] + '\Skype'
-			
-			if os.path.exists(directory):
-				# retrieve the key used to build the salt
-				key = self.get_regkey()
-				if key == 'failed':
-					print_debug('ERROR', 'The salt has not been retrieved')
-				else:
-					pwdFound = []
-					for d in os.listdir(directory):
-						if os.path.exists(directory + os.sep + d + os.sep + 'config.xml'):
-							values = {}
-							
-							try:
-								values['Login'] = d
-								
-								# get encrypted hash from the config file
-								enc_hex = self.get_hash_credential(directory + os.sep + d + os.sep + 'config.xml')
-								
-								if enc_hex == 'failed':
-									print_debug('WARNING', 'No credential stored on the config.xml file.')
-								else:
-									# decrypt the hash to get the md5 to brue force
-									values['Hash'] = self.get_md5_hash(enc_hex, key)
-									values['shema to bruteforce using md5'] = values['Login'] + '\\nskyper\\n<password>'
-									
-									# Try a dictionary attack on the hash
-									password = self.dictionary_attack(values['Login'], values['Hash'])
-									if password:
-										values['Password'] = password
-
-									pwdFound.append(values)
-							except Exception,e:
-								print_debug('DEBUG', '{0}'.format(e))
-
-					return pwdFound
+		directory = constant.profile['APPDATA'] + '\Skype'
+		
+		if os.path.exists(directory):
+			# retrieve the key used to build the salt
+			key = self.get_regkey()
+			if key == 'failed':
+				print_debug('ERROR', 'The salt has not been retrieved')
 			else:
-				print_debug('INFO', 'Skype not installed.')
+				pwdFound = []
+				for d in os.listdir(directory):
+					if os.path.exists(directory + os.sep + d + os.sep + 'config.xml'):
+						values = {}
+						
+						try:
+							values['Login'] = d
+							
+							# get encrypted hash from the config file
+							enc_hex = self.get_hash_credential(directory + os.sep + d + os.sep + 'config.xml')
+							
+							if enc_hex == 'failed':
+								print_debug('WARNING', 'No credential stored on the config.xml file.')
+							else:
+								# decrypt the hash to get the md5 to brue force
+								values['Hash'] = self.get_md5_hash(enc_hex, key)
+								values['shema to bruteforce using md5'] = values['Login'] + '\\nskyper\\n<password>'
+								
+								# Try a dictionary attack on the hash
+								password = self.dictionary_attack(values['Login'], values['Hash'])
+								if password:
+									values['Password'] = password
+
+								pwdFound.append(values)
+						except Exception,e:
+							print_debug('DEBUG', '{0}'.format(e))
+
+				return pwdFound
 		else:
-			print_debug('ERROR', 'The APPDATA environment variable is not defined.')
+			print_debug('INFO', 'Skype not installed.')
 			
