@@ -20,7 +20,7 @@ class DATA_BLOB(Structure):
 class Dot_net(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-d', 'action': 'store_true', 'dest': 'dotnet', 'help': 'domain visible network (.Net Passport) Passwords'}
-		ModuleInfo.__init__(self, 'Dot Net', 'windows', options)
+		ModuleInfo.__init__(self, 'Dot Net', 'windows', options, cannot_be_impersonate_using_tokens=True)
 
 	def getData(self, blobOut):
 		cbData = int(blobOut.cbData)

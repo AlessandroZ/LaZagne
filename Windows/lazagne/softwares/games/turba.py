@@ -8,7 +8,7 @@ from lazagne.config.moduleInfo import ModuleInfo
 class Turba(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-t', 'action': 'store_true', 'dest': 'turba', 'help': 'turba'}
-		ModuleInfo.__init__(self, 'turba', 'games', options)
+		ModuleInfo.__init__(self, 'turba', 'games', options, cannot_be_impersonate_using_tokens=True)
 		
 	def run(self, software_name = None):
 		creds = []

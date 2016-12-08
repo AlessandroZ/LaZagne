@@ -11,15 +11,10 @@ class Tortoise(ModuleInfo):
 
 	# main function
 	def run(self, software_name = None):	
-		file_path = ''
-		if 'APPDATA' in os.environ:
-			file_path = os.environ.get('APPDATA') + '\\Subversion\\auth\\svn.simple'
-		else:
-			print_debug('ERROR', 'The APPDATA environment variable is not definded.')
-			return
-		
 		values = {}
 		pwdFound = []
+
+		file_path = constant.profile["APPDATA"] + '\\Subversion\\auth\\svn.simple'
 		if os.path.exists(file_path):
 			for root, dirs, files in os.walk(file_path + os.sep):
 				for name_file in files:

@@ -17,15 +17,7 @@ class KalypsoMedia(ModuleInfo):
 	def run(self, software_name = None):
 		creds = []
 		key = 'lwSDFSG34WE8znDSmvtwGSDF438nvtzVnt4IUv89'
-		
-		if constant.appdata:
-			inifile =  '%s\\Kalypso Media\\Launcher\\launcher.ini' % constant.appdata
-
-		elif 'APPDATA' in os.environ:
-			inifile = os.environ['APPDATA'] + '\\Kalypso Media\\Launcher\\launcher.ini'
-		else:
-			print_debug('ERROR', 'The APPDATA environment variable is not defined.')
-			return
+		inifile = constant.profile['APPDATA'] + '\\Kalypso Media\\Launcher\\launcher.ini'
 		
 		# The actual user details are stored in *.userdata files
 		if not os.path.exists(inifile):

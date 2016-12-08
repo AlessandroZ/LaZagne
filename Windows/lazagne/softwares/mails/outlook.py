@@ -6,7 +6,7 @@ from lazagne.config.moduleInfo import ModuleInfo
 class Outlook(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-o', 'action': 'store_true', 'dest': 'outlook', 'help': 'outlook - IMAP, POP3, HTTP, SMTP, LDPAP (not Exchange)'}
-		ModuleInfo.__init__(self, 'outlook', 'mails', options)
+		ModuleInfo.__init__(self, 'outlook', 'mails', options, cannot_be_impersonate_using_tokens=True)
 
 	def run(self, software_name = None):
 		accessRead = win32con.KEY_READ | win32con.KEY_ENUMERATE_SUB_KEYS | win32con.KEY_QUERY_VALUE
@@ -16,7 +16,7 @@ class Outlook(ModuleInfo):
 			hkey = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, keyPath, 0, accessRead)
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
-			print_debug('WARNING', 'Outlook not installed.\nAn error occurs retrieving the registry key.\nKey = %s' % keyPath)
+			print_debug('INFO', 'Outlook not installed.\nAn error occurs retrieving the registry key.\nKey = %s' % keyPath)
 			return
 
 		num = win32api.RegQueryInfoKey(hkey)[0]

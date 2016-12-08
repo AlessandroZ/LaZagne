@@ -10,13 +10,7 @@ class Filezilla(ModuleInfo):
 		ModuleInfo.__init__(self, 'filezilla', 'sysadmin', options, need_to_be_in_env=False)
 
 	def run(self, software_name = None):		
-		if constant.appdata:
-			directory =  '%s\FileZilla' % constant.appdata
-		elif 'APPDATA' in os.environ:
-			directory = os.environ['APPDATA'] + '\FileZilla'
-		else:
-			print_debug('ERROR', 'The APPDATA environment variable is not defined.')
-			return
+		directory = constant.profile['APPDATA'] + '\FileZilla'
 		
 		interesting_xml_file = []
 		info_xml_file = []

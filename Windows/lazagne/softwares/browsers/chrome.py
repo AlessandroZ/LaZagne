@@ -14,32 +14,26 @@ class Chrome(ModuleInfo):
 
 	# main function
 	def run(self, software_name = None):		
-		database_path = ''
-		homedrive = ''
-		homepath = ''
-		if 'HOMEDRIVE' in os.environ and 'HOMEPATH' in os.environ:
-			homedrive = os.environ.get('HOMEDRIVE')
-			homepath = os.environ.get('HOMEPATH')
+		homedrive = constant.profile['HOMEDRIVE']
+		homepath = constant.profile['HOMEPATH']
 		
 		# All possible path
 		pathTab = [
-			homedrive + homepath + '\Local Settings\Application Data\Google\Chrome\User Data\Default\Login Data', 
-			homedrive + homepath + '\AppData\Local\Google\Chrome\User Data\Default\Login Data', 
-			homedrive + '\Users\\' + getpass.getuser() + '\Local Settings\Application Data\Google\Chrome\User Data\Default\Login Data',
-			homedrive + '\Users\\' + getpass.getuser() + '\AppData\Local\Google\Chrome\User Data\Default\Login Data',
-			'C:\Users\\' + getpass.getuser() + '\Local Settings\Application Data\Google\Chrome\User Data\Default\Login Data',
-			'C:\Users\\' + getpass.getuser() + '\AppData\Local\Google\Chrome\User Data\Default\Login Data'
+			homedrive + homepath + '\\Local Settings\\Application Data\\Google\\Chrome\\User Data\\Default\\Login Data', 
+			homedrive + homepath + '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data', 
+			homedrive + '\\Users\\' + constant.username + '\\Local Settings\\Application Data\\Google\\Chrome\\User Data\\Default\\Login Data',
+			homedrive + '\\Users\\' + constant.username + '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data',
+			'C:\\Users\\' + constant.username + '\\Local Settings\\Application Data\\Google\\Chrome\\User Data\\Default\\Login Data',
+			'C:\\Users\\' + constant.username + '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data'
 		]
 
 		database_path = [p for p in pathTab if os.path.exists(p)]
 		if not database_path:
 			print_debug('INFO', 'Google Chrome not installed.')
 			return
-
-		# if many path are valid
-		if len(database_path) !=1:
-			database_path = database_path[0]
 		
+		database_path = database_path[0]
+
 		# Copy database before to query it (bypass lock errors)
 		try:
 			shutil.copy(database_path, os.getcwd() + os.sep + 'tmp_db')

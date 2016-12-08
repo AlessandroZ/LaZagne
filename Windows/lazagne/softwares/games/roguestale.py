@@ -11,14 +11,7 @@ class RoguesTale(ModuleInfo):
 		
 	def run(self, software_name = None):
 		creds = []
-		
-		if constant.userprofile:
-			directory =  '%s\\Documents\\Rogue\'s Tale\\users' % constant.userprofile
-		if 'USERPROFILE' in os.environ:
-			directory = os.environ['USERPROFILE'] + '\\Documents\\Rogue\'s Tale\\users'
-		else:
-			print_debug('ERROR', 'The USERPROFILE environment variable is not defined.')
-			return
+		directory = constant.profile['USERPROFILE'] + '\\Documents\\Rogue\'s Tale\\users'
 		
 		# The actual user details are stored in *.userdata files
 		if not os.path.exists(directory):

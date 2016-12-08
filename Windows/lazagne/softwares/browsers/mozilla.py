@@ -110,20 +110,10 @@ class Mozilla(ModuleInfo):
 	
 	def get_path(self, software_name):
 		path = ''
-		if constant.appdata:
-			if software_name == 'Firefox':
-				path =  '%s\Mozilla\Firefox' % constant.appdata
-			elif software_name == 'Thunderbird':
-				path = '%s\Thunderbird' % constant.appdata
-
-		elif 'APPDATA' in os.environ:
-			if software_name == 'Firefox':
-				path =  '%s\Mozilla\Firefox' % str(os.environ['APPDATA'])
-			elif software_name == 'Thunderbird':
-				path = '%s\Thunderbird' % str(os.environ['APPDATA'])
-		else:
-			print_debug('DEBUG', 'The APPDATA environment variable is not definded.\nUse the -s option and specify the folder path of the victim\nPath: <HOMEPATH>\Application Data\Mozilla\Firefox\Profiles\<PROFILE_NAME>')
-
+		if software_name == 'Firefox':
+			path =  '%s\Mozilla\Firefox' % str(constant.profile['APPDATA'])
+		elif software_name == 'Thunderbird':
+			path = '%s\Thunderbird' % str(constant.profile['APPDATA'])
 		return path
 	
 	def manage_advanced_options(self):
@@ -442,12 +432,9 @@ class Mozilla(ModuleInfo):
 		
 		# get the installation path
 		path = self.get_path(software_name)
-		if not path:
-			print_debug('WARNING', 'Installation path not found')
-			return
 		
 		#Check if mozilla folder has been found
-		elif not os.path.exists(path):
+		if not os.path.exists(path):
 			print_debug('INFO', software_name + ' not installed.')
 			return
 		else:

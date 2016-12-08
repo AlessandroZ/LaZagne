@@ -9,17 +9,9 @@ class Pidgin(ModuleInfo):
 		options = {'command': '-p', 'action': 'store_true', 'dest': 'pidgin', 'help': 'pidgin'}
 		ModuleInfo.__init__(self, 'pidgin', 'chats', options, need_to_be_in_env=False)
 
-	def run(self, software_name = None):
-		if constant.appdata:
-			directory =  '%s\.purple' % constant.appdata
-			path = os.path.join(directory, 'accounts.xml')
-		
-		elif 'APPDATA' in os.environ:
-			directory = os.environ['APPDATA'] + '\.purple'
-			path = os.path.join(directory, 'accounts.xml')
-		else:
-			print_debug('ERROR', 'The APPDATA environment variable is not defined.')
-			return
+	def run(self, software_name = None):		
+		directory = constant.profile['APPDATA'] + '\.purple'
+		path = os.path.join(directory, 'accounts.xml')
 		
 		if os.path.exists(path):
 			tree = ET.ElementTree(file=path)

@@ -3,13 +3,14 @@ import os, win32crypt
 import binascii
 import tempfile, socket
 from ctypes import *
+from lazagne.config.constant import *
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.write_output import print_debug
 
 class Wifi(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-wi', 'action': 'store_true', 'dest': 'wifi', 'help': 'Vista and higher - Need System Privileges'}
-		ModuleInfo.__init__(self, 'Wifi', 'wifi', options, need_high_privileges=True)
+		ModuleInfo.__init__(self, 'Wifi', 'wifi', options, need_system_privileges=True)
 	
 	# used when launched with a system account 
 	def run(self, software_name = None):
@@ -18,9 +19,8 @@ class Wifi(ModuleInfo):
 			print_debug('WARNING', '[!] This script should be run as admin!')
 			return
 		else:
-			directory = ''
-			if 'ALLUSERSPROFILE' in os.environ:
-				directory = os.environ['ALLUSERSPROFILE'] + os.sep + 'Microsoft\Wlansvc\Profiles\Interfaces'
+			directory = constant.profile['ALLUSERSPROFILE'] + os.sep + 'Microsoft\Wlansvc\Profiles\Interfaces'
+
 			# for windows Vista or higher
 			if os.path.exists(directory):
 				passwordFound = False

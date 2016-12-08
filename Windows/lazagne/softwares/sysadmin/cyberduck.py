@@ -13,22 +13,18 @@ class Cyberduck(ModuleInfo):
 
 	# find the user.config file containing passwords
 	def get_path(self):
-		if 'APPDATA' in os.environ:
-			directory = os.environ['APPDATA'] + '\Cyberduck'
+		directory = constant.profile['APPDATA'] + '\Cyberduck'
+		if os.path.exists(directory):
+			for dir in os.listdir(directory):
+				if dir.startswith('Cyberduck'):
+					for d in os.listdir(directory + os.sep + dir):
+						path = directory + os.sep + dir + os.sep + d + os.sep + 'user.config'
+						if os.path.exists(path):
+							return path
 			
-			if os.path.exists(directory):
-				for dir in os.listdir(directory):
-					if dir.startswith('Cyberduck'):
-						for d in os.listdir(directory + os.sep + dir):
-							path = directory + os.sep + dir + os.sep + d + os.sep + 'user.config'
-							if os.path.exists(path):
-								return path
-				
-				return 'User_profil_not_found'
-			else:
-				return 'CYBERDUCK_NOT_EXISTS'
+			return 'User_profil_not_found'
 		else:
-			return 'APPDATA_NOT_FOUND'
+			return 'CYBERDUCK_NOT_EXISTS'
 			
 	# parse the xml file
 	def parse_xml(self, xml_file):
@@ -57,8 +53,6 @@ class Cyberduck(ModuleInfo):
 			print_debug('INFO', 'Cyberduck not installed.')
 		elif path == 'User_profil_not_found':
 			print_debug('INFO', 'User profil has not been found.')
-		elif path == 'APPDATA_NOT_FOUND': 
-			print_debug('ERROR', 'The APPDATA environment variable is not defined.')
 		else:
 			return self.parse_xml(path)
 			

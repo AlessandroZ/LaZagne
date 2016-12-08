@@ -4,13 +4,10 @@
 # Thanks for the great work of libkeepass (used to decrypt keepass file)
 # https://github.com/phpwutz/libkeepass
 
-import _subprocess as sub
-import subprocess
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.write_output import print_debug
-import base64
+from lazagne.config.powershell_execute import powershell_execute
 import libkeepass
-import re
 
 class Keepass(ModuleInfo):
 	def __init__(self):
@@ -94,38 +91,8 @@ class Keepass(ModuleInfo):
 		}
 	}
 		'''
-		script = re.sub("Write-Verbose ","Write-Output ", script, flags=re.I) 
-		script = re.sub("Write-Error ","Write-Output ", script, flags=re.I)
-		script = re.sub("Write-Warning ","Write-Output ", script, flags=re.I)
-
-		fullargs=["powershell.exe", "-C", "-"]
-
-		info = subprocess.STARTUPINFO()
-		info.dwFlags = sub.STARTF_USESHOWWINDOW | sub.CREATE_NEW_PROCESS_GROUP
-		info.wShowWindow = sub.SW_HIDE
-		p = subprocess.Popen(fullargs, startupinfo=info, stdin=subprocess.PIPE, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True, shell=True)
-
-		p.stdin.write("$base64=\"\""+"\n")
-		n = 25000
-		b64_script = base64.b64encode(script)
-		tab = [b64_script[i:i+n] for i in range(0, len(b64_script), n)]
-		for t in tab:
-			p.stdin.write("$base64+=\"%s\"\n" % t)
-			p.stdin.flush()
-
-		p.stdin.write("$d=[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($base64))\n")
-		p.stdin.write("Invoke-Expression $d\n")
-	 
-		p.stdin.write("\n$a=Invoke-Expression \"%s\" | Out-String\n" % function)
-		p.stdin.write("$b=[System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(\"$a\"))\n")
-		p.stdin.write("Write-Host $b\n")
-
-		# Get the result in base64
-		output = ""
-		for i in p.stdout.readline():
-			output += i
-		output = base64.b64decode(output)
-		return output
+		
+		return powershell_execute(script, function)
 
 	def run(self, software_name = None):
 		values = {}
@@ -152,7 +119,6 @@ class Keepass(ModuleInfo):
 					return
 
 		if values:
-			print values
 			pwdFound = [values]
 			try:
 				with libkeepass.open(values['Database'], password=values['Password'], keyfile=values['KeyFilePath']) as kdb:

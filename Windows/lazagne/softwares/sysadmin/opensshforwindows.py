@@ -11,7 +11,7 @@ class OpenSSHForWindows(ModuleInfo):
     def __init__(self):
         options = {'command': '-winssh', 'action': 'store_true', 'dest': 'opensshforwindows', 'help': 'OpenSSH for Windows'}
         ModuleInfo.__init__(self, 'opensshforwindows', 'sysadmin', options)
-        self.key_files_location = environ.get("USERPROFILE") + "\\.ssh"
+        self.key_files_location = constant.profile["USERPROFILE"] + "\\.ssh"
 
     def is_private_key_unprotected(self, key_content_encoded, key_algorithm):
         """
