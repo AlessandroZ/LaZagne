@@ -19,7 +19,7 @@ class DATA_BLOB(Structure):
 class Network(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-n', 'action': 'store_true', 'dest': 'network', 'help': 'generic network credentials'}
-		ModuleInfo.__init__(self, 'Generic Network', 'windows', options)
+		ModuleInfo.__init__(self, 'Generic Network', 'windows', options, cannot_be_impersonate_using_tokens=True)
 	
 	def getData(self, blobOut):
 		cbData = int(blobOut.cbData)

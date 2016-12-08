@@ -20,7 +20,7 @@ class ApacheDirectoryStudio(ModuleInfo):
         :return: List of dict in which one dict contains all information for a connection.
         """
         repos_creds = []
-        connection_file_location = os.environ.get("USERPROFILE") + "\\.ApacheDirectoryStudio\\.metadata\\.plugins\\org.apache.directory.studio.connection.core\\connections.xml"
+        connection_file_location = constant.profile["USERPROFILE"] + "\\.ApacheDirectoryStudio\\.metadata\\.plugins\\org.apache.directory.studio.connection.core\\connections.xml"
         if os.path.isfile(connection_file_location):
             try:
                 connections = ET.parse(connection_file_location).getroot()

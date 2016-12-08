@@ -8,7 +8,7 @@ from lazagne.config.moduleInfo import ModuleInfo
 class Puttycm(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-p', 'action': 'store_true', 'dest': 'puttycm', 'help': 'puttycm'}
-		ModuleInfo.__init__(self, 'puttycm', 'sysadmin', options)
+		ModuleInfo.__init__(self, 'puttycm', 'sysadmin', options, cannot_be_impersonate_using_tokens=True)
 		
 	def run(self, software_name = None):	
 		try:

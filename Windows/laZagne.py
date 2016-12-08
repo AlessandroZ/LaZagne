@@ -10,40 +10,24 @@
 import argparse
 import time, sys, os
 import logging
-import tempfile
 import shutil
-import random
 import json
-import psutil
 import getpass
 import traceback
-
-# used for inteprocesses communication (for impersonation)
-import rpyc
-from rpyc.utils.server import ThreadedServer
+import ctypes
 
 # Softwares that passwords can be retrieved without needed to be in the user environmment
 from lazagne.softwares.browsers.mozilla import Mozilla
-from lazagne.softwares.wifi.wifi import Wifi
-from lazagne.softwares.windows.secrets import Secrets
-from lazagne.softwares.chats.jitsi import Jitsi
-from lazagne.softwares.chats.pidgin import Pidgin
-from lazagne.softwares.databases.dbvis import Dbvisualizer
-from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
-from lazagne.softwares.games.kalypsomedia import KalypsoMedia
-from lazagne.softwares.games.roguestale import RoguesTale
-from lazagne.softwares.sysadmin.filezilla import Filezilla
 
 # Configuration
 from lazagne.config.header import Header
 from lazagne.config.write_output import write_header, write_footer, print_footer, print_debug, parseJsonResultToBuffer, print_output
 from lazagne.config.constant import *
 from lazagne.config.manageModules import get_categories, get_modules
-from lazagne.config.changePrivileges import ListSids, GetUserName, create_proc_as_sid, rev2self, getsystem
+from lazagne.config.changePrivileges import ListSids, rev2self, impersonate_sid_long_handle
 
-# Tab containing all children passwords
+# Tab containing all passwords
 stdoutRes = []
-pids = []
 
 category = get_categories()
 moduleNames = get_modules()
@@ -99,12 +83,12 @@ def verbosity():
 	root.addHandler(stream)
 	del args['verbose']
 
-def launch_module(b, need_high_privileges=False, need_to_be_in_env=True):
+def launch_module(module, need_high_privileges=False, need_system_privileges=False, not_need_to_be_in_env=False, cannot_be_impersonate_using_tokens=False):
 	modulesToLaunch = []
 	try:
 		# Launch only a specific module
 		for i in args:
-			if args[i] and i in b:
+			if args[i] and i in module:
 				modulesToLaunch.append(i)
 	except:
 		# if no args
@@ -112,21 +96,25 @@ def launch_module(b, need_high_privileges=False, need_to_be_in_env=True):
 
 	# Launch all modules
 	if not modulesToLaunch:
-		modulesToLaunch = b
+		modulesToLaunch = module
 	
 	for i in modulesToLaunch:
-		# Retrieve modules that needs or not to be in the environment user
-		if not ((not need_to_be_in_env and need_to_be_in_env == b[i].need_to_be_in_env) or need_to_be_in_env):
+		if not_need_to_be_in_env and module[i].need_to_be_in_env:
 			continue
 
-		# Retrieve modules that needs high privileges 
-		if need_high_privileges ^ b[i].need_high_privileges:
+		if need_high_privileges ^ module[i].need_high_privileges:
 			continue
 
+		if need_system_privileges ^ module[i].need_system_privileges:
+			continue
+
+		if cannot_be_impersonate_using_tokens and module[i].cannot_be_impersonate_using_tokens:
+			continue
+		
 		try:
-			Header().title_info(i.capitalize()) 	# print title
-			pwdFound = b[i].run(i.capitalize())		# run the module
-			print_output(i.capitalize(), pwdFound) 	# print the results
+			Header().title_info(i.capitalize()) 		# print title
+			pwdFound = module[i].run(i.capitalize())	# run the module
+			print_output(i.capitalize(), pwdFound) 		# print the results
 			
 			# return value - not used but needed 
 			yield True, i.capitalize(), pwdFound
@@ -149,11 +137,6 @@ def manage_advanced_options():
 	if 'specific_path' in args:
 		constant.specific_path = args['specific_path']
 	
-	if 'mails' in args['auditType']:
-		constant.mozilla_software = 'Thunderbird'
-	elif 'browsers' in args['auditType']:
-		constant.mozilla_software = 'Firefox'
-	
 	# Jitsi advanced options
 	if 'master_pwd' in args:
 		constant.jitsi_masterpass = args['master_pwd']
@@ -163,53 +146,15 @@ def manage_advanced_options():
 		constant.ie_historic = args['historic']
 
 # Run only one module
-def runModule(category=None, need_high_privileges=False, need_to_be_in_env=True):
-	if not category:
-		try:
-			category = args['auditType']
-			manage_advanced_options()
-		except:
-			pass
+def runModule(category_choosed, need_high_privileges=False, need_system_privileges=False, not_need_to_be_in_env=False, cannot_be_impersonate_using_tokens=False):
+	global category
 
-	for r in launch_module(modules[category], need_high_privileges, need_to_be_in_env):
-		yield r
+	if category_choosed != 'all':
+		category = [category_choosed]
 
-# Run all
-def runAllModules(need_high_privileges=False, need_to_be_in_env=True):
-	try:
-		manage_advanced_options()
-	except:
-		pass
 	for categoryName in category:
-		for r in launch_module(modules[categoryName], need_high_privileges, need_to_be_in_env):
+		for r in launch_module(modules[categoryName], need_high_privileges, need_system_privileges, not_need_to_be_in_env, cannot_be_impersonate_using_tokens):
 			yield r
-
-# Functions used to manage rpyc server (listening and receiving data)
-global_cpt = 0
-class MyServer(rpyc.Service):
-
-	def exposed_echo(self, output):
-		global stdoutRes
-		try:
-			stdoutRes += json.loads(output)
-		except:
-			pass
-
-	def on_disconnect(self):
-		global global_cpt
-		global_cpt += 1
-		if global_cpt >= len(pids):
-			global server
-			server.close()
-
-def send_data(data, port):
-	time.sleep(2)
-	c = rpyc.connect("localhost", port)
-	try:
-		toSend = json.dumps(data)
-	except:
-		toSend = ''
-	c.root.echo(toSend)
 
 # write output to file (json and txt files)
 def write_in_file(result):
@@ -247,6 +192,19 @@ def get_user_list_on_filesystem(impersonated_user=[]):
 
 	return all_users
 
+def set_env_variables(user = getpass.getuser(), toImpersonate = False):
+	constant.username = user
+	if not toImpersonate:
+		constant.profile['APPDATA'] = os.environ.get('APPDATA', 'C:\\Users\\%s\\AppData\\Roaming\\' % user)
+		constant.profile['USERPROFILE'] = os.environ.get('USERPROFILE', 'C:\\Users\\%s\\' % user)
+		constant.profile['HOMEDRIVE'] = os.environ.get('HOMEDRIVE', 'C:')
+		constant.profile['HOMEPATH'] = os.environ.get('HOMEPATH', 'C:\\Users\\%s' % user)
+		constant.profile['ALLUSERSPROFILE'] = os.environ.get('ALLUSERSPROFILE', 'C:\\ProgramData')
+	else:
+		constant.profile['APPDATA'] = 'C:\\Users\\%s\\AppData\\Roaming\\' % user
+		constant.profile['USERPROFILE'] = 'C:\\Users\\%s\\' % user
+		constant.profile['HOMEPATH'] = 'C:\\Users\\%s' % user 
+
 # Used to print help menu when an error occurs
 class MyParser(argparse.ArgumentParser):
 	def error(self, message):
@@ -254,236 +212,167 @@ class MyParser(argparse.ArgumentParser):
 		self.print_help()
 		sys.exit(2)
 
-# Print the title
-Header().first_title()
+def runLaZagne():
 
-parser = MyParser()
-parser.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION), help='laZagne version')
+	# ------ Part used for user impersonation ------ 
 
-# ------------------------------------------- Permanent options -------------------------------------------
-# Version and verbosity 
-PPoptional = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PPoptional._optionals.title = 'optional arguments'
-PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='increase verbosity level')
-PPoptional.add_argument('-path', dest='path', action= 'store', help = 'path of a file used for dictionary file')
-PPoptional.add_argument('-b', dest='bruteforce', action= 'store', help = 'number of character to brute force')
-PPoptional.add_argument('--child', action= 'store_true', help=argparse.SUPPRESS)
-PPoptional.add_argument('--rpyc_port', action= 'store', default=18829, help=argparse.SUPPRESS)
-
-# Output 
-PWrite = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-PWrite._optionals.title = 'Output'
-PWrite.add_argument('-oN', dest='write_normal',  action='store_true', help = 'output file in a readable format')
-PWrite.add_argument('-oJ', dest='write_json',  action='store_true', help = 'output file in a json format')
-PWrite.add_argument('-oA', dest='write_all',  action='store_true', help = 'output file in all format')
-
-# ------------------------------------------- Add options and suboptions to all modules -------------------------------------------
-all_subparser = []
-for c in category:
-	category[c]['parser'] = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-	category[c]['parser']._optionals.title = category[c]['help']
-	
-	# Manage options
-	category[c]['subparser'] = []
-	for module in modules[c].keys():
-		m = modules[c][module]
-		category[c]['parser'].add_argument(m.options['command'], action=m.options['action'], dest=m.options['dest'], help=m.options['help'])
-		
-		# Manage all suboptions by modules
-		if m.suboptions and m.name != 'thunderbird':
-			tmp = []
-			for sub in m.suboptions:
-				tmp_subparser = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
-				tmp_subparser._optionals.title = sub['title']
-				if 'type' in sub:
-					tmp_subparser.add_argument(sub['command'], type=sub['type'], action=sub['action'], dest=sub['dest'], help=sub['help'])
-				else:
-					tmp_subparser.add_argument(sub['command'], action=sub['action'], dest=sub['dest'], help=sub['help'])
-				tmp.append(tmp_subparser)
-				all_subparser.append(tmp_subparser)
-			category[c]['subparser'] += tmp
-
-# ------------------------------------------- Print all -------------------------------------------
-parents = [PPoptional] + all_subparser + [PWrite]
-dic = {'all':{'parents':parents, 'help':'Run all modules', 'func': runAllModules}}
-for c in category:
-	parser_tab = [PPoptional, category[c]['parser']]
-	if 'subparser' in category[c]:
-		if category[c]['subparser']:
-			parser_tab += category[c]['subparser']
-	parser_tab += [PWrite]
-	dic_tmp = {c: {'parents': parser_tab, 'help':'Run %s module' % c, 'func': runModule}}
-	dic = dict(dic.items() + dic_tmp.items())
-
-#2- Main commands
-subparsers = parser.add_subparsers(help='Choose a main command')
-for d in dic:
-	subparsers.add_parser(d,parents=dic[d]['parents'],help=dic[d]['help']).set_defaults(func=dic[d]['func'],auditType=d)
-
-# ------------------------------------------- Parse arguments -------------------------------------------
-args = dict(parser.parse_args()._get_kwargs())
-arguments = parser.parse_args()
-start_time = time.time()
-output()
-verbosity()
-
-# ------ Part used for user impersonation ------ 
-
-currentUser = getpass.getuser()
-argv = vars(arguments)['auditType']
-current_filepath = sys.argv[0]
-sids = ListSids()
-isSystem = False
-dataToSend = False
-isChild = args.get('child', False)
-rpyc_port = int(args.get('rpyc_port'))
-rpyc_port_system = rpyc_port + 1
-
-# Check if we have system privileges
-for sid in sids:
-	if sid[0] == os.getpid():
-		if sid[2] == "S-1-5-18":
-			isSystem = True
-
-# System privileges
-if isSystem:
-	while True:
-		try:
-			server = ThreadedServer(MyServer, port=rpyc_port_system)
-			break
-		except:
-			rpyc_port_system += 1
-
-	# Get a list of user we could impersonate from token
-	impersonateUsers = {}
-	impersonated_user = []
-	for sid in sids:
-		if ' NT' not in sid[3].split('\\')[0] and 'NT ' not in sid[3].split('\\')[0] and 'Window' not in sid[3].split('\\')[0]:
-			impersonateUsers.setdefault(sid[3], []).append(sid[2])
-
-	# Impersonate an user
-	for users in impersonateUsers:
-		print_debug('INFO', '[!] Impersonate token user of %s' % users.encode('utf-8'))
-		for sid in impersonateUsers[users]:
-			try:
-				pids.append(int(create_proc_as_sid(sid, "cmd.exe /c %s %s --child --rpyc_port %s" % (current_filepath, argv, str(rpyc_port_system)))))
-				rev2self()
-				try:
-					# Store user when the impersonation succeed
-					impersonated_user.append(users.split('\\')[1])
-				except:
-					pass
-				
-				break
-			except Exception,e:
-				print_debug('ERROR', str(e))
-				pass
-
-	# check if all process have been started
-	time.sleep(4)
-	for pid in pids:
-		try:
-			p = psutil.Process(pid) 
-		except:
-			# the process has not been started, the server should not wait for its result
-			global_cpt += 1
-
-	# start server until getting children results
-	# childreen output stored in the stdoutRes tab
-	server.start()
-
-	all_users = get_user_list_on_filesystem(impersonated_user)
-
-	# Ready to check for all users remaining
-	for user_selected in all_users:
-		print_debug('INFO', '[!] Trying to impersonate user: %s' % user_selected)
-		print '\n\n########## User: %s ##########\n' % user_selected
-		
-		# Fix value by default for user environnment (appdata and userprofile)
-		constant.userprofile = 'C:\\Users\\%s\\' % user_selected
-		constant.appdata = 'C:\\Users\\%s\\AppData\\Roaming\\' % user_selected
-		constant.finalResults = {'User': user_selected}
-	
-		# Retrieve passwords that need high privileges
-		for r in arguments.func(need_to_be_in_env=False):
-			pass
+	current_user = getpass.getuser().encode('utf-8', errors='ignore')
+	if not current_user.endswith('$'):
+		constant.finalResults = {'User': current_user}
+		print '\n\n########## User: %s ##########\n' % current_user
+		set_env_variables()
+		for r in runModule(category_choosed):
+			yield r
 		stdoutRes.append(constant.finalResults)
-	
-	constant.finalResults = {}
-	constant.finalResults['User'] = "SYSTEM"
-	
-	if not isChild:
-		print '\n\n########## User: SYSTEM ##########\n' 
 
-	# Retrieve passwords that need high privileges
-	for r in arguments.func(need_high_privileges=True):
-		pass
+	# Check if admin to impersonate
+	if ctypes.windll.shell32.IsUserAnAdmin() != 0:
 
-	if not isChild:
-		# Print the entire output of children results
-		print parseJsonResultToBuffer(stdoutRes, color=True)
-
-	stdoutRes.append(constant.finalResults)
-	if not isChild:
-		write_in_file(stdoutRes)
-	else:
-		send_data(stdoutRes, rpyc_port)
-
-# Not System
-else:
-	if isChild:
-		# - Normal execution
-		# - Send output to the local listenning server
-		# - Quit
-		dataToSend = True
-	else:
-		print_debug('INFO', 'We do not have system privileges')
+		# --------- Impersonation using tokens ---------
 		
-		while True:
-			try:
-				server = ThreadedServer(MyServer, port=rpyc_port)
-				break
-			except:
-				rpyc_port += 1
+		sids = ListSids()
+		impersonateUsers = {}
+		impersonated_user = [current_user]
+		for sid in sids:
+			# Not save the current user's SIDs
+			if current_user != sid[3].split('\\', 1)[1]:
+				impersonateUsers.setdefault(sid[3].split('\\', 1)[1], []).append(sid[2])
+				
+		for user in impersonateUsers:
+			if 'service ' in user.lower() or ' service' in user.lower():
+				continue
 
-		try:
-			# Trying to get system
-			print_debug('INFO', 'Trying to get system')
+			print '\n\n########## User: %s ##########\n' % user.encode('utf-8', errors='ignore')
+			constant.finalResults = {'User': user}
+			for sid in impersonateUsers[user]:
+				try:
+					set_env_variables(user, toImpersonate=True)
+					if not impersonate_sid_long_handle(sid, close=False):
+						continue
+					# time.sleep(3)
 
-			pid = int(getsystem("cmd.exe /c %s %s --child --rpyc_port %s" % (current_filepath, argv, str(rpyc_port))))
-			print_debug('INFO', 'Get system privileges, waiting for impersonation process')
+					_cannot_be_impersonate_using_tokens = False
+					_need_system_privileges = False
+					
+					if sid == "S-1-5-18":
+						_need_system_privileges = True
+					else:
+						impersonated_user.append(user)
+						_cannot_be_impersonate_using_tokens = True
+					
+					# Launch module wanted
+					for r in runModule(category_choosed, need_system_privileges=_need_system_privileges, cannot_be_impersonate_using_tokens=_cannot_be_impersonate_using_tokens):
+						pass
+					
+					rev2self()
+					stdoutRes.append(constant.finalResults)
+					break
+				except Exception, e:
+					print e
+					pass
+
+		# --------- Impersonation browsing file system
+
+		# Ready to check for all users remaining
+		all_users = get_user_list_on_filesystem(impersonated_user)
+		for user in all_users:
+			set_env_variables(user, toImpersonate = True)
+			print_debug('INFO', '[!] Trying to impersonate user: %s' % user.encode('utf-8', errors='ignore'))
+			print '\n\n########## User: %s ##########\n' % user.encode('utf-8', errors='ignore')
 			
-			# start server until getting children results
-			# childreen output stored in the stdoutRes tab
-			server.start()
-
-		 	# Print final result with color
-		 	print parseJsonResultToBuffer(stdoutRes, color=True)
-			write_in_file(stdoutRes)
+			# Fix value by default for user environnment (appdata and userprofile)
+			constant.finalResults = {'User': user}
+		
+			# Retrieve passwords that need high privileges
+			for r in runModule(category_choosed, not_need_to_be_in_env=True):
+				yield r
 			
-			# Everything was ok, we can exit
-			sys.exit()
+			stdoutRes.append(constant.finalResults)
 
-		except Exception as e:
-			print_debug('WARNING', 'Not enough privileges to get system rights: %s' % e)
-			# Is not system and is not elevated
-			# Realize a normal execution
- 
-# ------ End of user impersonation ------ 
+if __name__ == '__main__':
 
-	constant.finalResults['User'] = currentUser
-	print '\n\n########## User: %s ##########\n' % currentUser
-	for return_code, software, pwdFounds  in arguments.func():
+	# Print the title
+	Header().first_title()
+
+	parser = MyParser()
+	parser.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION), help='laZagne version')
+
+	# ------------------------------------------- Permanent options -------------------------------------------
+	# Version and verbosity 
+	PPoptional = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
+	PPoptional._optionals.title = 'optional arguments'
+	PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='increase verbosity level')
+	PPoptional.add_argument('-path', dest='path', action= 'store', help = 'path of a file used for dictionary file')
+	PPoptional.add_argument('-b', dest='bruteforce', action= 'store', help = 'number of character to brute force')
+
+	# Output 
+	PWrite = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
+	PWrite._optionals.title = 'Output'
+	PWrite.add_argument('-oN', dest='write_normal',  action='store_true', help = 'output file in a readable format')
+	PWrite.add_argument('-oJ', dest='write_json',  action='store_true', help = 'output file in a json format')
+	PWrite.add_argument('-oA', dest='write_all',  action='store_true', help = 'output file in all format')
+
+	# ------------------------------------------- Add options and suboptions to all modules -------------------------------------------
+	all_subparser = []
+	for c in category:
+		category[c]['parser'] = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
+		category[c]['parser']._optionals.title = category[c]['help']
+		
+		# Manage options
+		category[c]['subparser'] = []
+		for module in modules[c].keys():
+			m = modules[c][module]
+			category[c]['parser'].add_argument(m.options['command'], action=m.options['action'], dest=m.options['dest'], help=m.options['help'])
+			
+			# Manage all suboptions by modules
+			if m.suboptions and m.name != 'thunderbird':
+				tmp = []
+				for sub in m.suboptions:
+					tmp_subparser = argparse.ArgumentParser(add_help=False, formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
+					tmp_subparser._optionals.title = sub['title']
+					if 'type' in sub:
+						tmp_subparser.add_argument(sub['command'], type=sub['type'], action=sub['action'], dest=sub['dest'], help=sub['help'])
+					else:
+						tmp_subparser.add_argument(sub['command'], action=sub['action'], dest=sub['dest'], help=sub['help'])
+					tmp.append(tmp_subparser)
+					all_subparser.append(tmp_subparser)
+				category[c]['subparser'] += tmp
+
+	# ------------------------------------------- Print all -------------------------------------------
+	parents = [PPoptional] + all_subparser + [PWrite]
+	dic = {'all':{'parents':parents, 'help':'Run all modules', 'func': runModule}}
+	for c in category:
+		parser_tab = [PPoptional, category[c]['parser']]
+		if 'subparser' in category[c]:
+			if category[c]['subparser']:
+				parser_tab += category[c]['subparser']
+		parser_tab += [PWrite]
+		dic_tmp = {c: {'parents': parser_tab, 'help':'Run %s module' % c, 'func': runModule}}
+		dic = dict(dic.items() + dic_tmp.items())
+
+	#2- Main commands
+	subparsers = parser.add_subparsers(help='Choose a main command')
+	for d in dic:
+		subparsers.add_parser(d, parents=dic[d]['parents'], help=dic[d]['help']).set_defaults(func=dic[d]['func'], auditType=d)
+
+	# ------------------------------------------- Parse arguments -------------------------------------------
+
+	args = dict(parser.parse_args()._get_kwargs())
+	arguments = parser.parse_args()
+	category_choosed = args['auditType']
+
+	# Define constant variables
+	output()
+	verbosity()
+	manage_advanced_options()
+
+	start_time = time.time()
+
+	for r in runLaZagne():
 		pass
 
-	# Output retrieved from a child process and sent to the local server
-	if dataToSend:
-		send_data([constant.finalResults], rpyc_port)
-	
-	# Output retrieved from a normal user (no admin privileges required)
-	else:
-		write_in_file([constant.finalResults])
-		print_footer()
+	write_in_file(stdoutRes)
+	print_footer()
 
-		elapsed_time = time.time() - start_time
-		print '\nelapsed time = ' + str(elapsed_time)
+	elapsed_time = time.time() - start_time
+	print '\nelapsed time = ' + str(elapsed_time)

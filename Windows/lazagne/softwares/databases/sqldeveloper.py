@@ -35,14 +35,7 @@ class SQLDeveloper(ModuleInfo):
 		return re.sub(r'[\x01-\x08]','',text)
 	
 	def get_mainPath(self):
-		directory = ''
-		if constant.appdata:
-			directory =  '%s\SQL Developer' % constant.appdata
-		elif 'APPDATA' in os.environ:
-			directory = os.environ.get('APPDATA') + os.sep + 'SQL Developer'
-		else:
-			return 'Error'
-
+		directory = constant.profile['APPDATA'] + os.sep + 'SQL Developer'
 		if os.path.exists(directory):
 			for d in os.listdir(directory):
 				if d.startswith('system'):
@@ -130,11 +123,8 @@ class SQLDeveloper(ModuleInfo):
 	
 	def run(self, software_name = None):
 
-		mainPath = self.get_mainPath()
-		if mainPath == 'Error':
-			print_debug('ERROR', 'The APPDATA environment variable is not defined.')
-		
-		elif mainPath == 'SQL_NOT_EXISTS':
+		mainPath = self.get_mainPath()	
+		if mainPath == 'SQL_NOT_EXISTS':
 			print_debug('INFO','SQL Developer not installed.')
 		
 		elif mainPath == 'SQL_NO_PASSWD':

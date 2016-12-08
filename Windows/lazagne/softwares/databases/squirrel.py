@@ -10,15 +10,7 @@ class Squirrel(ModuleInfo):
 		ModuleInfo.__init__(self, 'squirrel', 'database', options)
 
 	def get_path(self):
-		path = ''
-		if constant.userprofile:
-			path =  '%s\.squirrel-sql' % constant.userprofile
-
-		elif 'HOMEPATH' in os.environ:
-			path = os.environ['HOMEPATH'] + os.sep + '.squirrel-sql'
-		else:
-			return 'var_Env_Not_Found'
-		
+		path = constant.profile['USERPROFILE'] + os.sep + '.squirrel-sql'
 		if os.path.exists(path):
 			return path
 		else:
@@ -52,8 +44,6 @@ class Squirrel(ModuleInfo):
 		path = self.get_path()
 		if path == 'Not_Found':
 			print_debug('INFO', 'Squirrel not installed')
-		elif path == 'var_Env_Not_Found':
-			print_debug('ERROR', 'The HOMEPATH environment variable is not defined.')
 		else:
 			path += os.sep + 'SQLAliases23.xml'
 			if os.path.exists(path):

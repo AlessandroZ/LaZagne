@@ -27,5 +27,12 @@ class constant():
 	passwordFound = []
 
 	finalResults = {}
-	userprofile = ''
-	appdata = ''
+
+	profile = {
+		'APPDATA': '',
+		'USERPROFILE': '', 
+		'HOMEDRIVE': '',
+		'HOMEPATH': '',
+		'ALLUSERSPROFILE': ''
+	}
+	username = ''
