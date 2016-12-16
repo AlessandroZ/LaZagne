@@ -43,6 +43,8 @@ from lazagne.softwares.games.turba import Turba
 # memory
 from lazagne.softwares.memory.keepass import Keepass
 from lazagne.softwares.memory.memorydump import MemoryDump
+# php
+from lazagne.softwares.php.composer import Composer
 
 def get_categories():
 	category = {
@@ -52,6 +54,7 @@ def get_categories():
 		'svn': {'help': 'SVN clients supported'},
 		'git': {'help': 'GIT clients supported'},
 		'maven': {'help': 'Maven java build tool'},
+		'php': {'help': 'PHP build tool'},
 		'mails': {'help': 'Email clients supported'},
 		'memory': {'help': 'Retrieve passwords from memory'},
 		'wifi': {'help': 'Wifi'},
@@ -95,6 +98,7 @@ def get_modules():
 		Squirrel(),
 		Turba(),
 		Wifi(), 
-		WinSCP()
+		WinSCP(),
+		Composer()
 	]
 	return moduleNames
