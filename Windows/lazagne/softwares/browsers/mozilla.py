@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # Required files (key3.db, signongs.sqlite, cert8.db)
 # Inspired from https://github.com/Unode/firefox_decrypt/blob/master/firefox_decrypt.py
+# portable decryption functions and BSD DB parsing by Laurent Clevy (@lorenzo2472) from https://github.com/lclevy/firepwd/blob/master/firepwd.py 
 
 from ctypes import *
 import sys, os, re, glob
