@@ -16,8 +16,8 @@ class libsecret(ModuleInfo):
             import datetime
             for item in secretstorage.Collection(dbus.SessionBus()).get_all_items():
                 values = {
-                    'created': datetime.datetime.fromtimestamp(item.get_created()),
-                    'modified': datetime.datetime.fromtimestamp(item.get_modified()),
+                    'created': str(datetime.datetime.fromtimestamp(item.get_created())),
+                    'modified': str(datetime.datetime.fromtimestamp(item.get_modified())),
                     'content-type': item.get_secret_content_type(),
                     'label': item.get_label(),
                     'Password': item.get_secret(),

@@ -136,24 +136,34 @@ def print_debug(error_level, message):
 
 # --------------------------- End of output functions ---------------------------
 
-def parseJsonResultToBuffer(jsonString):
+def parseJsonResultToBuffer(jsonString, color=False):
+	green = ''
+	reset = ''
+	title = ''
+	if color:
+		green = Fore.GREEN
+		title = Style.BRIGHT + Fore.WHITE
+		reset = Style.RESET_ALL
+
 	buffer = ''
 	try:
-		if jsonString:
-			buffer += '\r\n\r\n########## User: %s ##########\r\n' % jsonString['User']
-			if 'Passwords' not in jsonString:
-				buffer += 'No passwords found for this user !'
-			else:
-				for all_passwords in jsonString['Passwords']:
-					buffer += '------------------- %s -----------------\r\n' % all_passwords[0]['Category']
-					for password_by_category in all_passwords[1]:
-						buffer += '\r\nPassword found !!!\r\n'
-						for dic in password_by_category.keys():
-							try:
-								buffer += '%s: %s\r\n' % (dic, password_by_category[dic].encode('utf-8'))
-							except:
-								buffer += '%s: %s\r\n' % (dic, password_by_category[dic].encode(encoding='utf-8',errors='replace'))
-					buffer += '\r\n'
+		for json in jsonString:
+			if json:
+				buffer += '\r\n\r\n{title_color}########## User: {username} ##########{reset_color}\r\n\r\n'.format(title_color=title, username=json['User'], reset_color=reset)
+				if 'Passwords' not in json:
+					buffer += 'No passwords found for this user !'
+				else:
+					for all_passwords in json['Passwords']:
+						buffer += '{title_color}------------------- {password_category} -----------------{reset_color}\r\n'.format(title_color=title, password_category=all_passwords[0]['Category'], reset_color=reset)
+						for password_by_category in all_passwords[1]:
+							buffer += '\r\n{green_color}Password found !!!{reset_color}\r\n'.format(green_color=green, reset_color=reset)
+							constant.nbPasswordFound += 1
+							for dic in password_by_category.keys():
+								try:
+									buffer += '%s: %s\r\n' % (dic, password_by_category[dic].encode('utf-8'))
+								except:
+									buffer += '%s: %s\r\n' % (dic, password_by_category[dic].encode(encoding='utf-8',errors='replace'))
+						buffer += '\r\n'
 
 	except Exception as e:
 		print_debug('ERROR', 'Error parsing the json results: %s' % e)
