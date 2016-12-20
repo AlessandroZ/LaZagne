@@ -33,6 +33,7 @@ class constant():
 		'USERPROFILE': '', 
 		'HOMEDRIVE': '',
 		'HOMEPATH': '',
-		'ALLUSERSPROFILE': ''
+		'ALLUSERSPROFILE': '', 
+		'COMPOSER_HOME': ''
 	}
 	username = ''
