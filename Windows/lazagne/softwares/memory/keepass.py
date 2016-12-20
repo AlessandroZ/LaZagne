@@ -120,10 +120,10 @@ class Keepass(ModuleInfo):
 
 		if values:
 			pwdFound = [values]
-			# try:
-			with libkeepass.open(values['Database'], password=values['Password'], keyfile=values['KeyFilePath']) as kdb:
-				pwdFound += kdb.to_dic()
-			# except:
-				# pass
+			try:
+				with libkeepass.open(values['Database'], password=values['Password'], keyfile=values['KeyFilePath']) as kdb:
+					pwdFound += kdb.to_dic()
+			except:
+				pass
 
 		return pwdFound
