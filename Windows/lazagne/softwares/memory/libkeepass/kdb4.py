@@ -117,53 +117,53 @@ class KDB4File(KDBFile):
                 self.header_length = stream.tell()
                 break
 
-    def _write_header(self, stream):
-        """Serialize the header fields from self.header into a byte stream, prefix
-        with file signature and version before writing header and out-buffer
-        to `stream`.
+    # def _write_header(self, stream):
+    #     """Serialize the header fields from self.header into a byte stream, prefix
+    #     with file signature and version before writing header and out-buffer
+    #     to `stream`.
         
-        Note, that `stream` is flushed, but not closed!"""
-        # serialize header to stream
-        header = bytearray()
-        # write file signature
-        header.extend(struct.pack('<II', *KDB4_SIGNATURE))
-        # and version
-        header.extend(struct.pack('<hh', 0, 3))
+    #     Note, that `stream` is flushed, but not closed!"""
+    #     # serialize header to stream
+    #     header = bytearray()
+    #     # write file signature
+    #     header.extend(struct.pack('<II', *KDB4_SIGNATURE))
+    #     # and version
+    #     header.extend(struct.pack('<hh', 0, 3))
         
-        field_ids = self.header.keys()
-        field_ids.sort()
-        field_ids.reverse() # field_id 0 must be last
-        for field_id in field_ids:
-            value = self.header.b[field_id]
-            length = len(value)
-            header.extend(struct.pack('<b', field_id))
-            header.extend(struct.pack('<h', length))
-            header.extend(struct.pack('{}s'.format(length), value))
+    #     field_ids = self.header.keys()
+    #     field_ids.sort()
+    #     field_ids.reverse() # field_id 0 must be last
+    #     for field_id in field_ids:
+    #         value = self.header.b[field_id]
+    #         length = len(value)
+    #         header.extend(struct.pack('<b', field_id))
+    #         header.extend(struct.pack('<h', length))
+    #         header.extend(struct.pack('{}s'.format(length), value))
         
 
-        # write header to stream
-        stream.write(header)
+    #     # write header to stream
+    #     stream.write(header)
         
-        headerHash = base64.b64encode(sha256(header))
-        self.obj_root.Meta.HeaderHash = headerHash
+    #     headerHash = base64.b64encode(sha256(header))
+    #     self.obj_root.Meta.HeaderHash = headerHash
         
-        # create HeaderHash if it does not exist
-        if len(self.obj_root.Meta.xpath("HeaderHash")) < 1:
-            etree.SubElement(self.obj_root.Meta, "HeaderHash")
+    #     # create HeaderHash if it does not exist
+    #     if len(self.obj_root.Meta.xpath("HeaderHash")) < 1:
+    #         etree.SubElement(self.obj_root.Meta, "HeaderHash")
 
-        # reload out_buffer because we just changed the HeaderHash
-        self.protect()
-        self.out_buffer = io.BytesIO(self.pretty_print())
+    #     # reload out_buffer because we just changed the HeaderHash
+    #     self.protect()
+    #     self.out_buffer = io.BytesIO(self.pretty_print())
 
-        # zip or not according to header setting
-        if self.header.CompressionFlags == 1:
-            self._zip()
+    #     # zip or not according to header setting
+    #     if self.header.CompressionFlags == 1:
+    #         self._zip()
 
-        self._encrypt();
+    #     self._encrypt();
         
-        # write encrypted block to stream
-        stream.write(self.out_buffer)
-        stream.flush()
+    #     # write encrypted block to stream
+    #     stream.write(self.out_buffer)
+    #     stream.flush()
 
     def _decrypt(self, stream):
         """
@@ -250,8 +250,9 @@ class KDB4File(KDBFile):
         self.master_key = sha256(self.header.MasterSeed + tkey)
 
 
-from lxml import etree
-from lxml import objectify
+# from lxml import etree
+import xml.etree.ElementTree as etree
+# from lxml import objectify
 from crypto import Salsa20
 
 class KDBXmlExtension:
@@ -270,8 +271,9 @@ class KDBXmlExtension:
             KDB4_SALSA20_IV)
         
         self.in_buffer.seek(0)
-        self.tree = objectify.parse(self.in_buffer)
-        self.obj_root = self.tree.getroot()
+        # self.tree = objectify.parse(self.in_buffer)
+        # self.obj_root = self.tree.getroot()
+        self.obj_root = etree.fromstring(self.in_buffer.read())
         
         if unprotect:
             self.unprotect()
@@ -285,41 +287,41 @@ class KDBXmlExtension:
         set to 'False'.
         """
         self._reset_salsa()
-        self.obj_root.Meta.MemoryProtection.ProtectPassword._setText('False')
         for elem in self.obj_root.iterfind('.//Value[@Protected="True"]'):
             if elem.text is not None:
                 elem.set('ProtectedValue', elem.text)
                 elem.set('Protected', 'False')
-                elem._setText(self._unprotect(elem.text))
+                elem.text = self._unprotect(elem.text)
 
-    def protect(self):
-        """
-        Find all elements with a 'Protected=False' attribute and replace the
-        text with a protected value in the XML element tree. If there was a
-        'ProtectedValue' attribute, it is deleted and the 'Protected' attribute
-        is set to 'True'. The 'ProtectPassword' element in the 'Meta' section is
-        also set to 'True'.
+    # def protect(self):
+    #     """
+    #     Find all elements with a 'Protected=False' attribute and replace the
+    #     text with a protected value in the XML element tree. If there was a
+    #     'ProtectedValue' attribute, it is deleted and the 'Protected' attribute
+    #     is set to 'True'. The 'ProtectPassword' element in the 'Meta' section is
+    #     also set to 'True'.
         
-        This does not just restore the previous protected value, but reencrypts
-        all text values of elements with 'Protected=False'. So you could use
-        this after modifying a password, adding a completely new entry or
-        deleting entry history items.
-        """
-        self._reset_salsa()
-        self.obj_root.Meta.MemoryProtection.ProtectPassword._setText('True')
-        for elem in self.obj_root.iterfind('.//Value[@Protected="False"]'):
-            etree.strip_attributes(elem, 'ProtectedValue')
-            elem.set('Protected', 'True')
-            elem._setText(self._protect(elem.text))
+    #     This does not just restore the previous protected value, but reencrypts
+    #     all text values of elements with 'Protected=False'. So you could use
+    #     this after modifying a password, adding a completely new entry or
+    #     deleting entry history items.
+    #     """
+    #     self._reset_salsa()
+    #     self.obj_root.Meta.MemoryProtection.ProtectPassword._setText('True')
+    #     for elem in self.obj_root.iterfind('.//Value[@Protected="False"]'):
+    #         etree.strip_attributes(elem, 'ProtectedValue')
+    #         elem.set('Protected', 'True')
+    #         elem._setText(self._protect(elem.text))
 
-    def pretty_print(self):
-        """Return a serialization of the element tree."""
-        return etree.tostring(self.obj_root, pretty_print=True, 
-            encoding='utf-8', standalone=True)
+    # def pretty_print(self):
+    #     """Return a serialization of the element tree."""
+    #     return etree.tostring(self.obj_root, pretty_print=True, 
+    #         encoding='utf-8', standalone=True)
 
     def to_dic(self):
         """Return a dictionnary of the element tree."""
         pwdFounds = []
+        # print etree.tostring(self.obj_root)
         root = etree.fromstring(etree.tostring(self.obj_root))
         for r in root[1][0]:
             for entries in r.findall('Entry'):
@@ -338,11 +340,11 @@ class KDBXmlExtension:
                 pwdFounds.append(dic)
         return pwdFounds
 
-    def write_to(self, stream):
-        """Serialize the element tree to the out-buffer."""
-        if self.out_buffer is None:
-            self.protect()
-            self.out_buffer = io.BytesIO(self.pretty_print())
+    # def write_to(self, stream):
+    #     """Serialize the element tree to the out-buffer."""
+    #     if self.out_buffer is None:
+    #         self.protect()
+    #         self.out_buffer = io.BytesIO(self.pretty_print())
 
     def _reset_salsa(self):
         """Clear the salsa buffer and reset algorithm counter to 0."""
@@ -404,16 +406,16 @@ class KDB4Reader(KDB4File, KDBXmlExtension):
         # initialize only here
         KDBXmlExtension.__init__(self, unprotect)
 
-    def write_to(self, stream, use_etree=True):
-        """
-        Write the KeePass database back to a KeePass2 compatible file.
+    # def write_to(self, stream, use_etree=True):
+    #     """
+    #     Write the KeePass database back to a KeePass2 compatible file.
         
-        :arg stream: A file-like object or IO buffer.
-        :arg use_tree: Serialize the element tree to XML to save (default:
-            True), Set to False to write the data currently in the in-buffer
-            instead.
-        """
-        if use_etree:
-            KDBXmlExtension.write_to(self, stream)
-        KDB4File.write_to(self, stream)
+    #     :arg stream: A file-like object or IO buffer.
+    #     :arg use_tree: Serialize the element tree to XML to save (default:
+    #         True), Set to False to write the data currently in the in-buffer
+    #         instead.
+    #     """
+    #     if use_etree:
+    #         KDBXmlExtension.write_to(self, stream)
+    #     KDB4File.write_to(self, stream)
 

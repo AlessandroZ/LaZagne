@@ -110,7 +110,7 @@ class IE(ModuleInfo):
 		command=['powershell.exe', '/c', cmdline]
 
 		info = subprocess.STARTUPINFO()
-		info.dwFlags = sub.STARTF_USESHOWWINDOW | sub.CREATE_NEW_PROCESS_GROUP
+		info.dwFlags = sub.STARTF_USESHOWWINDOW
 		info.wShowWindow = sub.SW_HIDE
 		p = subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
 		results, _ = p.communicate()
@@ -225,7 +225,7 @@ class IE(ModuleInfo):
 		command=['powershell.exe', '/c', cmdline]
 
 		info = subprocess.STARTUPINFO()
-		info.dwFlags = sub.STARTF_USESHOWWINDOW | sub.CREATE_NEW_PROCESS_GROUP
+		info.dwFlags = sub.STARTF_USESHOWWINDOW
 		info.wShowWindow = sub.SW_HIDE
 		p = subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
 		results, _ = p.communicate()

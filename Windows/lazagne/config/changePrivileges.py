@@ -246,6 +246,7 @@ def getSidToken(token_sid):
                     windll.advapi32.OpenProcessToken(hProcess, tokenprivs, byref(hToken))
                     if hToken:
                         if GetTokenSid( hToken ) == token_sid:
+                            print
                             print_debug('INFO', 'Using PID: ' + str(pid))
                             windll.kernel32.CloseHandle(hProcess)
                             return hToken
