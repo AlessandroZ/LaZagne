@@ -209,7 +209,7 @@ class KDBFile(object):
 
 import base64
 import hashlib
-from lxml import etree
+from xml import etree
 
 def load_keyfile(filename):
     try:

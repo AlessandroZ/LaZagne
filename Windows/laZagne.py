@@ -163,7 +163,7 @@ def write_in_file(result):
 			# Human readable Json format 
 			prettyJson = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '))
 			with open(constant.folder_name + os.sep + constant.file_name_results + '.json', 'w+') as f:
-				f.write(prettyJson)
+				f.write(prettyJson.encode('utf-8', errors='replace'))
 			print '[+] File written: ' + constant.folder_name + os.sep + constant.file_name_results + '.json'
 
 		if constant.output == 'txt' or constant.output == 'all':
@@ -212,7 +212,7 @@ class MyParser(argparse.ArgumentParser):
 		self.print_help()
 		sys.exit(2)
 
-def runLaZagne():
+def runLaZagne(category_choosed='all'):
 
 	# ------ Part used for user impersonation ------ 
 
@@ -220,6 +220,7 @@ def runLaZagne():
 	if not current_user.endswith('$'):
 		constant.finalResults = {'User': current_user}
 		print '\n\n########## User: %s ##########\n' % current_user
+		yield 'User', current_user
 		set_env_variables()
 		for r in runModule(category_choosed):
 			yield r
@@ -227,7 +228,6 @@ def runLaZagne():
 
 	# Check if admin to impersonate
 	if ctypes.windll.shell32.IsUserAnAdmin() != 0:
-
 		# --------- Impersonation using tokens ---------
 		
 		sids = ListSids()
@@ -243,6 +243,8 @@ def runLaZagne():
 				continue
 
 			print '\n\n########## User: %s ##########\n' % user.encode('utf-8', errors='ignore')
+			yield 'User', user
+			
 			constant.finalResults = {'User': user}
 			for sid in impersonateUsers[user]:
 				try:
@@ -262,7 +264,7 @@ def runLaZagne():
 					
 					# Launch module wanted
 					for r in runModule(category_choosed, need_system_privileges=_need_system_privileges, cannot_be_impersonate_using_tokens=_cannot_be_impersonate_using_tokens):
-						pass
+						yield r
 					
 					rev2self()
 					stdoutRes.append(constant.finalResults)
