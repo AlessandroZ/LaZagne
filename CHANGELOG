@@ -1,10 +1,10 @@
-LaZagne 2.0 (09/12/2016)
+LaZagne 2.0 (20/12/2016)
 - Only Windows:
 	* only one process is launched (impersonnation is done using "ImpersonateLoggedOnUser" and no more "CreateProcessAsUser")
 	* no more temporary file written on the disk
 		* uses of powerdump from empire (thanks to adaptivethreat) to avoid writing hives on the disk (avoid "reg save ...")
 	* better way to catch errors
-	* json output to be more "human readable"
+	* json fixes (output to be more "human readable" + error encoding)
 	* cleaning code
 	* New category added called "memory": used to retrieve password on memory
 		* KeeThief added (thanks to adaptivethreat) - retrieve keepass (version 2.x) password from memory
@@ -12,6 +12,8 @@ LaZagne 2.0 (09/12/2016)
 		* Browser passwords present in memory could be retrieved
 			* Thanks to n1nj4sec for his awesome project "memorpy"
 				* https://github.com/n1nj4sec/memorpy
+	* New category added called "php":
+		* New module "PHP Composer" (thanks to righettod => https://github.com/righettod)
 
 LaZagne 1.8 (15/11/2016)
 - Only Windows:
