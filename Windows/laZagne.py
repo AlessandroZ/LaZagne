@@ -251,9 +251,7 @@ def runLaZagne(category_choosed='all'):
 			for sid in impersonateUsers[user]:
 				try:
 					set_env_variables(user, toImpersonate=True)
-					if not impersonate_sid_long_handle(sid, close=False):
-						continue
-					# time.sleep(3)
+					impersonate_sid_long_handle(sid, close=False)
 
 					_cannot_be_impersonate_using_tokens = False
 					_need_system_privileges = False
