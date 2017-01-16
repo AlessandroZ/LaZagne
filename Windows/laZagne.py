@@ -214,7 +214,7 @@ class MyParser(argparse.ArgumentParser):
 		self.print_help()
 		sys.exit(2)
 
-def runLaZagne(category_choosed='all'):
+def runLaZagne(category_choosed=str(sys.argv[1])):
 
 	# ------ Part used for user impersonation ------ 
 
