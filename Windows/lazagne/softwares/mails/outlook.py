@@ -48,10 +48,10 @@ class Outlook(ModuleInfo):
 			if 'password' in k[0].lower():
 				try:
 					password = win32crypt.CryptUnprotectData(k[1][1:], None, None, None, 0)[1]
-					values['Password'] = password.decode('utf16')
+					values[k[0]] = password.decode('utf16')
 				except Exception,e:
 					print_debug('DEBUG', '{0}'.format(e))
-					values['Password'] = 'N/A'
+					values[k[0]] = 'N/A'
 			else:
 				try:
 					values[k[0]] = str(k[1]).decode('utf16')
