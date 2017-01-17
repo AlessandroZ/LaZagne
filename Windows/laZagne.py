@@ -214,7 +214,7 @@ class MyParser(argparse.ArgumentParser):
 		self.print_help()
 		sys.exit(2)
 
-def runLaZagne(category_choosed=str(sys.argv[1])):
+def runLaZagne(category_choosed='all'):
 
 	# ------ Part used for user impersonation ------ 
 
@@ -370,7 +370,7 @@ if __name__ == '__main__':
 
 	start_time = time.time()
 
-	for r in runLaZagne():
+	for r in runLaZagne(category_choosed):
 		pass
 
 	write_in_file(stdoutRes)
