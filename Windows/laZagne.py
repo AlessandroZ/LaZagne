@@ -370,7 +370,7 @@ if __name__ == '__main__':
 
 	start_time = time.time()
 
-	for r in runLaZagne():
+	for r in runLaZagne(category_choosed):
 		pass
 
 	write_in_file(stdoutRes)
