@@ -588,22 +588,26 @@ namespace PowerDump
 			if line and line != '\n':
 				_pwd_hint = False
 
-				_login, _hash = line.split(':', 1)
-				_rid, _hash = _hash.split(':', 1)
+				try:
+					_login, _hash = line.split(':', 1)
+					_rid, _hash = _hash.split(':', 1)
 
-				values = {'Login': _login, 'Hash': _hash, 'Rid': _rid}
+					values = {'Login': _login, 'Hash': _hash, 'Rid': _rid}
+					
+					for hint in password_hint:
+						if _login == hint['Login']:
+							_pwd_hint = hint['pwdHint']
+
+					if _pwd_hint:
+						values['Hint'] = _pwd_hint
+
+					password = self.dictionaryAttack_Hash(_hash.split(':')[1])
+					if password:
+						values['Password'] = password
+
+					pwdFound.append(values)
 				
-				for hint in password_hint:
-					if _login == hint['Login']:
-						_pwd_hint = hint['pwdHint']
-
-				if _pwd_hint:
-					values['Hint'] = _pwd_hint
-
-				password = self.dictionaryAttack_Hash(_hash.split(':')[1])
-				if password:
-					values['Password'] = password
-
-				pwdFound.append(values)	
+				except Exception, e:
+					print_debug('ERROR', 'Error parsing hash: %s' % str(e))
 
 		return pwdFound
