@@ -8,10 +8,15 @@ class Filezilla(ModuleInfo):
 		options = {'command': '-f', 'action': 'store_true', 'dest': 'filezilla', 'help': 'filezilla'}
 		ModuleInfo.__init__(self, 'filezilla', 'sysadmin', options)
 	
-	def run(self, software_name = None):		
-		directory = '~/.filezilla'
-		directory = os.path.expanduser(directory)
-		
+	def run(self, software_name = None):
+		directories = ['~/.filezilla', '~/.config/filezilla']
+		for directory in directories:
+			directory = os.path.expanduser(directory)
+			if os.path.isdir(directory):
+				break
+		else:
+			print_debug('INFO', 'Filezilla not installed.')
+
 		interesting_xml_file = []
 		info_xml_file = []
 		if os.path.exists(os.path.join(directory, 'sitemanager.xml')):
@@ -71,7 +76,4 @@ class Filezilla(ModuleInfo):
 						if len(values) != 0:
 							pwdFound.append(values)
 			return pwdFound
-		else:
-			print_debug('INFO', 'Filezilla not installed.')
-		
 		
