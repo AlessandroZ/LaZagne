@@ -207,7 +207,7 @@ class IE(ModuleInfo):
 				{
 					&{
 						$Script:vault.RetrieveAll()
-					} | foreach-Object {  $_.RetrievePassword() ; "Username......";$_.UserName;"######";"Password......";$_.Password;"######";"Website......";$_.Resource;"_________" }
+					} | foreach-Object {  $_.RetrievePassword() ; "[BEGIN]Username......";$_.UserName;"######";"Password......";$_.Password;"######";"Website......";$_.Resource;"_________" }
 				}
 				catch
 				{
@@ -234,6 +234,7 @@ class IE(ModuleInfo):
 		for result in results.replace('\n', '').split('_________'):
 			values = {}
 			if result:
+				result = result.split('[BEGIN]')[1]
 				for res in result.split('######'):
 					values[res.split('......')[0]] = res.split('......')[1]
 				passwords.append(values)
