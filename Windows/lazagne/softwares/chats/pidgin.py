@@ -1,8 +1,8 @@
-import xml.etree.cElementTree as ET
-import os
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+import xml.etree.cElementTree as ET
+import os
 
 class Pidgin(ModuleInfo):
 	def __init__(self):
@@ -10,14 +10,14 @@ class Pidgin(ModuleInfo):
 		ModuleInfo.__init__(self, 'pidgin', 'chats', options, need_to_be_in_env=False)
 
 	def run(self, software_name = None):		
-		directory = constant.profile['APPDATA'] + '\.purple'
-		path = os.path.join(directory, 'accounts.xml')
+		path = os.path.join(constant.profile['APPDATA'], '.purple', 'accounts.xml')
 		
 		if os.path.exists(path):
 			tree = ET.ElementTree(file=path)
 			
 			root = tree.getroot()
 			accounts = root.getchildren()
+			
 			pwdFound = []
 			for a in accounts:
 				values = {}

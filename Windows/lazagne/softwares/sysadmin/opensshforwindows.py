@@ -1,10 +1,10 @@
-from os import environ, walk
-from os.path import isdir, isfile, join
 from lazagne.config.write_output import print_debug
-from lazagne.config.constant import *
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
 from Crypto.PublicKey import RSA
 from Crypto.PublicKey import DSA
+from os.path import isdir, isfile, join
+from os import environ, walk
 
 class OpenSSHForWindows(ModuleInfo):
 

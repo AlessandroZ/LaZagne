@@ -1,8 +1,8 @@
-import os
 from lazagne.config.write_output import print_debug
-from lazagne.config.constant import *
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
 from urlparse import urlparse
+import os
 
 class GitForWindows(ModuleInfo):
 
@@ -18,7 +18,6 @@ class GitForWindows(ModuleInfo):
         :return: List of credentials founds
         """
         pwd_found = []
-        values = {}
         if os.path.isfile(location):
             with open(location) as f:
                 creds = f.readlines()
@@ -26,10 +25,13 @@ class GitForWindows(ModuleInfo):
                 for cred in creds:
                     if len(cred) > 0:
                         parts = urlparse(cred)
-                        values["Login"] = parts.username
-                        values["Password"] = parts.password
-                        values["URL"] = parts.geturl().replace(parts.username + ":" + parts.password + "@", "").strip()
-                        pwd_found.append(values)
+                        pwd_found.append(
+                            {
+                                'Login'     :   parts.username, 
+                                'Password'  :   parts.password, 
+                                'URL'       :   parts.geturl().replace(parts.username + ":" + parts.password + "@", "").strip()
+                            }
+                        )
 
         return pwd_found
 
@@ -40,9 +42,10 @@ class GitForWindows(ModuleInfo):
        
         # According to the "git-credential-store" documentation:
         # Build a list of locations in which git credentials can be stored
-        locations = []
-        locations.append(constant.profile["USERPROFILE"] + "\\.git-credentials")
-        locations.append(constant.profile["USERPROFILE"] + "\\.config\\git\\credentials")
+        locations = [
+            constant.profile["USERPROFILE"] + "\\.git-credentials", 
+            constant.profile["USERPROFILE"] + "\\.config\\git\\credentials"
+        ]
         if "XDG_CONFIG_HOME" in os.environ:
             locations.append(os.environ.get("XDG_CONFIG_HOME") + "\\git\\credentials")
 

@@ -1,8 +1,9 @@
-import os
-from _winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.WinStructure import *
+from lazagne.config.constant import *
+import _winreg
+import os
 
 class GalconFusion(ModuleInfo):
 	def __init__(self):
@@ -15,8 +16,8 @@ class GalconFusion(ModuleInfo):
 		# Find the location of steam - to make it easier we're going to use a try block
 		# 'cos I'm lazy
 		try:
-			with OpenKey(HKEY_CURRENT_USER, 'Software\Valve\Steam') as key:
-				results=QueryValueEx(key, 'SteamPath')
+			with _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\Valve\Steam') as key:
+				results = _winreg.QueryValueEx(key, 'SteamPath')
 		except:
 			print_debug('INFO', 'Steam does not appear to be installed.')
 			return
@@ -25,7 +26,7 @@ class GalconFusion(ModuleInfo):
 			print_debug('INFO', 'Steam does not appear to be installed.')
 			return
 			
-		steampath=results[0]
+		steampath = results[0]
 		userdata = steampath + '\\userdata'
 		
 		# Check that we have a userdata directory
@@ -45,12 +46,11 @@ class GalconFusion(ModuleInfo):
 			with open(filepath, mode='rb') as cfgfile: 
 				# We've found a config file, now extract the creds
 				data = cfgfile.read()
-				values = {}
-				
-				values['Login'] = data[4:0x23]
-				values['Password'] = data[0x24:0x43]
-				creds.append(values)
+				creds.append(
+					{
+						'Login'		: 	data[4:0x23],
+						'Password'	: 	data[0x24:0x43]
+					}
+				)
 		
 		return creds
-					
-				

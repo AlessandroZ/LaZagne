@@ -1,13 +1,15 @@
-import hashlib, os, re
-from base64 import b64decode
-import binascii, array
-from Crypto.Cipher import AES
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-
+from lazagne.config.constant import *
+from Crypto.Cipher import AES
 # From https://github.com/mitsuhiko/python-pbkdf2
 from pbkdf2 import pbkdf2_bin
+from base64 import b64decode
+import binascii
+import hashlib
+import array
+import os
+import re
 
 class Jitsi(ModuleInfo):
 	def __init__(self):
@@ -29,11 +31,11 @@ class Jitsi(ModuleInfo):
 		return binascii.unhexlify(hexsalt)
 	
 	def get_path(self):
-		directory = constant.profile['APPDATA'] + os.sep + 'Jitsi' + os.sep + 'sip-communicator.properties'
+		directory = os.path.join(constant.profile['APPDATA'], 'Jitsi', 'sip-communicator.properties')
 		if os.path.exists(directory):
 			return directory
 		else:
-			return 'JITSI_NOT_EXISTS'
+			return False
 		
 	def get_info(self, file_properties):
 		values = {}
@@ -70,7 +72,7 @@ class Jitsi(ModuleInfo):
 			
 			line = f.readline()
 		
-		if len(values) != 0:
+		if values:
 			pwdFound.append(values)
 		
 		f.close()
@@ -97,9 +99,8 @@ class Jitsi(ModuleInfo):
 	# main function
 	def run(self, software_name = None):		
 		file_properties = self.get_path()
-		if file_properties == 'JITSI_NOT_EXISTS':
+		if not file_properties:
 			print_debug('INFO', 'Jitsi not installed.')
-		
 		else:
 			return self.get_info(file_properties)
 		

@@ -1,7 +1,8 @@
-import win32con, win32api
 from lazagne.config.write_output import print_debug
-from lazagne.config.constant import *
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.WinStructure import *
+from lazagne.config.constant import *
+import _winreg
 
 class WinSCP(ModuleInfo):
 	def __init__(self):
@@ -13,92 +14,67 @@ class WinSCP(ModuleInfo):
 		ModuleInfo.__init__(self, 'winscp', 'sysadmin', options, cannot_be_impersonate_using_tokens=True)
 	
 	# ------------------------------ Getters and Setters ------------------------------
-	def get_hash(self):
-		return self.hash
-	
-	def set_hash(self, _hash):
-		self.hash = _hash
-	
-	def get_username(self):
-		return self.username
-	
-	def set_username(self, _username):
-		self.username = _username
-	
-	def get_hostname(self):
-		return self.hostname
-	
-	def set_hostname(self, _hostname):
-		self.hostname = _hostname
-	
-	def decrypt_char(self):
-		hash = self.get_hash()
-		
+	def decrypt_char(self):	
 		hex_flag = 0xA3
 		charset = '0123456789ABCDEF'
 		
-		if len(hash) > 0:
-			unpack1 = charset.find(hash[0])
+		if len(self.hash) > 0:
+			unpack1 = charset.find(self.hash[0])
 			unpack1 = unpack1 << 4
 			
-			unpack2 = charset.find(hash[1])
+			unpack2 = charset.find(self.hash[1])
 			result = ~((unpack1 + unpack2) ^ hex_flag) & 0xff
 			
 			# store the new hash
-			self.set_hash(hash[2:])
+			self.hash = self.hash[2:]
 			
 			return result
 	
 	def check_winscp_installed(self):
-		accessRead = win32con.KEY_READ | win32con.KEY_ENUMERATE_SUB_KEYS | win32con.KEY_QUERY_VALUE
 		try:
-			key = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Configuration\Security', 0, accessRead)
-			return True
+			key = _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Configuration\Security')
+			return key
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return False
 	
-	def check_masterPassword(self):
-		accessRead = win32con.KEY_READ | win32con.KEY_ENUMERATE_SUB_KEYS | win32con.KEY_QUERY_VALUE
-		key = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Configuration\Security', 0, accessRead)
-		thisName = str(win32api.RegQueryValueEx(key, 'UseMasterPassword')[0])
-		
-		if thisName == '0':
+	def check_masterPassword(self, key):
+		isMasterPwdUsed = _winreg.QueryValueEx(key, 'UseMasterPassword')[0]
+		_winreg.CloseKey(key)
+		if str(isMasterPwdUsed) == '0':
 			return False
 		else:
 			return True
 	
 	def get_logins_info(self):
-		accessRead = win32con.KEY_READ | win32con.KEY_ENUMERATE_SUB_KEYS | win32con.KEY_QUERY_VALUE
 		try:
-			key = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Sessions', 0, accessRead)
+			key = _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Sessions')
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return False
 		
-		num_profiles = win32api.RegQueryInfoKey(key)[0]
-		
 		pwdFound = []
+		num_profiles = _winreg.QueryInfoKey(key)[0]
 		for n in range(num_profiles):
-			name_skey = win32api.RegEnumKey(key, n)
+			name_skey = _winreg.EnumKey(key, n)		# with win32api.RegEnumKey => color is present / with _winreg.EnumKey not wtf ????
 			
-			skey = win32api.RegOpenKey(key, name_skey, 0, accessRead)
-			num = win32api.RegQueryInfoKey(skey)[1]
+			skey = _winreg.OpenKey(key, name_skey)
+			num = _winreg.QueryInfoKey(skey)[1]
 			
 			port = ''
 			values = {}
 			
 			for nn in range(num):
-				k = win32api.RegEnumValue(skey, nn)
+				k = _winreg.EnumValue(skey, nn)
 				
 				if k[0] == 'HostName':
-					self.set_hostname(k[1])
+					self.hostname = k[1]
 				
 				if k[0] == 'UserName':
-					self.set_username(k[1])
+					self.username = k[1]
 				
 				if k[0] == 'Password':
-					self.set_hash(k[1])
+					self.hash = k[1]
 				
 				if k[0] == 'PortNumber':
 					port = str(k[1])
@@ -112,12 +88,15 @@ class WinSCP(ModuleInfo):
 				except Exception,e:
 					print_debug('DEBUG', '{0}'.format(e))
 				
-				values['URL'] = self.get_hostname()
+				values['URL'] = self.hostname
 				values['Port'] = port
-				values['Login'] = self.get_username()
+				values['Login'] = self.username
 				
 				pwdFound.append(values)
-		
+
+			_winreg.CloseKey(skey)
+		_winreg.CloseKey(key)
+
 		return pwdFound
 		
 	def decrypt_password(self):
@@ -131,9 +110,7 @@ class WinSCP(ModuleInfo):
 			length = flag
 		
 		ldel = (self.decrypt_char())*2
-		
-		hash = self.get_hash()
-		self.set_hash(hash[ldel: len(hash)])
+		self.hash = self.hash[ldel: len(self.hash)]
 		
 		result = ''
 		for ss in range(length):
@@ -145,16 +122,16 @@ class WinSCP(ModuleInfo):
 				pass
 		
 		if flag == hex_flag:
-			key = self.get_username() + self.get_hostname()
+			key = self.username + self.hostname
 			result = result[len(key): len(result)]
 		
 		return result
 	
 	# --------- Main function ---------
 	def run(self, software_name = None):
-
-		if self.check_winscp_installed():
-			if not self.check_masterPassword():
+		k = self.check_winscp_installed()
+		if k:
+			if not self.check_masterPassword(k):
 				r = self.get_logins_info()
 				if r == False:
 					print_debug('INFO', 'WinSCP not installed.')

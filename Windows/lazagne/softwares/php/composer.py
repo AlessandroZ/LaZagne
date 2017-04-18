@@ -1,7 +1,7 @@
-import os
-import json
-from lazagne.config.constant import *
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+import json
+import os
 
 class Composer(ModuleInfo):
 

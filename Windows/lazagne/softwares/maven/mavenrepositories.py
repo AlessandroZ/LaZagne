@@ -1,8 +1,8 @@
-import os
 from lazagne.config.write_output import print_debug
 from lazagne.config.constant import *
 from lazagne.config.moduleInfo import ModuleInfo
 import xml.etree.ElementTree as ET
+import os
 
 class MavenRepositories(ModuleInfo):
 
