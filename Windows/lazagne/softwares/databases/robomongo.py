@@ -1,9 +1,8 @@
-from os import walk
-from os.path import isdir, isfile, join
-from lazagne.config.write_output import print_output, print_debug
-from lazagne.config.constant import *
-from lazagne.config.header import Header
+from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+from os.path import isdir, isfile, join
+from os import walk
 import json
 
 class Robomongo(ModuleInfo):

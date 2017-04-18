@@ -1,11 +1,10 @@
-import sqlite3
-import shutil
-import win32crypt
-import sys, os, platform
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-import getpass
+from lazagne.config.WinStructure import *
+from lazagne.config.constant import *
+import sqlite3
+import shutil
+import os
 
 class Chrome(ModuleInfo):
 	def __init__(self):
@@ -36,9 +35,8 @@ class Chrome(ModuleInfo):
 
 		# Copy database before to query it (bypass lock errors)
 		try:
-			shutil.copy(database_path, os.getcwd() + os.sep + 'tmp_db')
-			database_path = os.getcwd() + os.sep + 'tmp_db'
-
+			shutil.copy(database_path, os.path.join(os.getcwd(), 'tmp_db'))
+			database_path = os.path.join(os.getcwd(), 'tmp_db')
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('ERROR', 'An error occured copying the database file')
@@ -56,26 +54,23 @@ class Chrome(ModuleInfo):
 		try:
 			cursor.execute('SELECT action_url, username_value, password_value FROM logins')
 		except:
-			
 			print_debug('ERROR', 'Google Chrome seems to be used, the database is locked. Kill the process and try again !')
 			return
 		
 		pwdFound = []
 		for result in cursor.fetchall():
-			values = {}
-			
 			try:
 				# Decrypt the Password
-				password = win32crypt.CryptUnprotectData(result[2], None, None, None, 0)[1]
+				password = Win32CryptUnprotectData(result[2])
+				pwdFound.append(
+					{
+						'URL'		: result[0], 
+						'Login'		: result[1], 
+						'Password'	: password
+					}
+				)
 			except Exception,e:
-				password = ''
 				print_debug('DEBUG', '{0}'.format(e))
-			
-			if password:
-				values['URL'] = result[0]
-				values['Login'] = result[1]
-				values['Password'] = password
-				pwdFound.append(values)
 		
 		conn.close()
 		if database_path.endswith('tmp_db'):

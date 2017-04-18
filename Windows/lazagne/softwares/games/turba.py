@@ -1,9 +1,9 @@
-import os
-from _winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
-from lazagne.config.header import Header
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.WinStructure import *
+from lazagne.config.constant import *
+import _winreg
+import os
 
 class Turba(ModuleInfo):
 	def __init__(self):
@@ -16,8 +16,8 @@ class Turba(ModuleInfo):
 		# Find the location of steam - to make it easier we're going to use a try block
 		# 'cos I'm lazy
 		try:
-			with OpenKey(HKEY_CURRENT_USER, 'Software\Valve\Steam') as key:
-				results=QueryValueEx(key, 'SteamPath')
+			with _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\Valve\Steam') as key:
+				results = _winreg.QueryValueEx(key, 'SteamPath')
 		except:
 			print_debug('INFO', 'Steam does not appear to be installed.')
 			return
@@ -26,7 +26,7 @@ class Turba(ModuleInfo):
 			print_debug('INFO', 'Steam does not appear to be installed.')
 			return
 			
-		steampath=results[0]
+		steampath = results[0]
 		steamapps = steampath + '\\SteamApps\common'
 		
 		# Check that we have a SteamApps directory
@@ -44,13 +44,11 @@ class Turba(ModuleInfo):
 		with open(filepath, mode='rb') as filepath: 
 			# We've found a config file, now extract the creds
 			data = filepath.read()
-			values = {}
-			
 			chunk=data[0x1b:].split('\x0a')
-			values['Login'] = chunk[0]
-			values['Password'] = chunk[1]
-			creds.append(values)
-		
+			creds.append(
+				{
+					'Login'		: chunk[0], 
+					'Password'	: chunk[1]
+				}
+			)		
 		return creds
-					
-				

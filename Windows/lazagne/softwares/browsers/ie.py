@@ -1,50 +1,18 @@
-import win32con, win32api, win32cred
-import subprocess
-import _subprocess as sub
-import struct, hashlib, os, base64
-from ctypes import *
-from ctypes.wintypes import DWORD
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-
-memcpy = cdll.msvcrt.memcpy
-LocalFree = windll.kernel32.LocalFree
-CryptUnprotectData = windll.crypt32.CryptUnprotectData
-CRYPTPROTECT_UI_FORBIDDEN = 0x01
-pwdFound = []
-
-class DATA_BLOB(Structure):
-	_fields_ = [
-		('cbData', DWORD),
-		('pbData', POINTER(c_char))
-	]
+from lazagne.config.WinStructure import *
+from lazagne.config.constant import *
+import subprocess
+import _subprocess as sub
+import hashlib
+import _winreg
+import os
 
 class IE(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-e', 'action': 'store_true', 'dest': 'Internet Explorer', 'help': 'internet explorer (stored in registry and using the credential manager)'}
 		suboptions = [{'command': '-l', 'action': 'store', 'dest': 'historic', 'help': 'text file with a list of websites', 'title': 'Advanced ie option'}]
 		ModuleInfo.__init__(self, 'ie', 'browsers', options, suboptions, cannot_be_impersonate_using_tokens=True)
-
-	def getData(self, blobOut):
-		cbData = int(blobOut.cbData)
-		pbData = blobOut.pbData
-		buffer = c_buffer(cbData)
-		
-		memcpy(buffer, pbData, cbData)
-		LocalFree(pbData);
-		return buffer.raw
-
-	def Win32CryptUnprotectData(self, cipherText, entropy):
-		bufferIn = c_buffer(cipherText, len(cipherText))
-		blobIn = DATA_BLOB(len(cipherText), bufferIn)
-		bufferEntropy = c_buffer(entropy, len(entropy))
-		blobEntropy = DATA_BLOB(len(entropy), bufferEntropy)
-		blobOut = DATA_BLOB()
-		if CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, 0, byref(blobOut)):
-			return self.getData(blobOut)
-		else:
-			return 'failed'
 
 	def get_hash_table(self, lists):
 		# get the url list
@@ -123,37 +91,32 @@ class IE(ModuleInfo):
 
 	def history_from_regedit(self):
 		urls = []
-		
-		# open the registry
-		accessRead = win32con.KEY_READ | win32con.KEY_ENUMERATE_SUB_KEYS | win32con.KEY_QUERY_VALUE
-		keyPath = 'Software\\Microsoft\\Internet Explorer\\TypedURLs'
-		
 		try:
-			hkey = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, keyPath, 0, accessRead)
+			hkey = _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\TypedURLs')
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return []
 		
-		num = win32api.RegQueryInfoKey(hkey)[1]
+		num = _winreg.QueryInfoKey(hkey)[1]
 		for x in range(0, num):
-			k = win32api.RegEnumValue(hkey, x)
+			k = _winreg.EnumValue(hkey, x)
 			if k:
 				urls.append(k[1])
+		_winreg.CloseKey(hkey)
 		return urls
 		
 	def decipher_password(self, cipher_text, u):
 		pfound = []
 		# deciper the password
-		pwd = self.Win32CryptUnprotectData(cipher_text, u)
-		a = None
-		for i in range(len(pwd)):
-			try:
-				a = pwd[i:].decode('UTF-16LE')
-				a = a.decode('utf-8')
-				break
-			except Exception,e:
-				pass
-				result = ''
+		pwd = Win32CryptUnprotectData(cipher_text, u)
+		if pwd:
+			for i in range(len(pwd)):
+				try:
+					a = pwd[i:].decode('UTF-16LE')
+					a = a.decode('utf-8')
+					break
+				except Exception, e:
+					result = ''
 		
 		# the last one is always equal to 0
 		secret = a.split('\x00')
@@ -244,13 +207,9 @@ class IE(ModuleInfo):
 		pwdFound = []
 		
 		# ----------------- For Win7 and before (passwords stored on registry) -----------------
-		# open the registry
-		accessRead = win32con.KEY_READ | win32con.KEY_ENUMERATE_SUB_KEYS | win32con.KEY_QUERY_VALUE
-		keyPath = 'Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2'
-		
 		failed = False
 		try:
-			hkey = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, keyPath, 0, accessRead)
+			hkey = _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2')
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 			failed = True
@@ -270,9 +229,9 @@ class IE(ModuleInfo):
 			# retrieve the urls from the history
 			hash_tables = self.get_hash_table(lists)
 			
-			num = win32api.RegQueryInfoKey(hkey)[1]
+			num = _winreg.QueryInfoKey(hkey)[1]
 			for x in range(0, num):
-				k = win32api.RegEnumValue(hkey, x)
+				k =_winreg.EnumValue(hkey, x)
 				if k:
 					nb_site +=1
 					for h in hash_tables:
@@ -282,10 +241,12 @@ class IE(ModuleInfo):
 							cipher_text = k[1]
 							pwdFound += self.decipher_password(cipher_text, h[0])
 							break
-				
-				# manage errors
-				if nb_site > nb_pass_found:
-					print_debug('ERROR', '%s hashes have not been decrypted, the associate website used to decrypt the passwords has not been found' % str(nb_site - nb_pass_found))
+			
+			_winreg.CloseKey(hkey)
+			
+			# manage errors
+			if nb_site > nb_pass_found:
+				print_debug('ERROR', '%s hashes have not been decrypted, the associate website used to decrypt the passwords has not been found' % str(nb_site - nb_pass_found))
 		
 		# ----------------- For Win8 and after (passwords stored on the credential manager) -----------------
 		try:

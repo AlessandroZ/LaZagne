@@ -1,8 +1,9 @@
-import xml.etree.cElementTree as ET
-import os, base64
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+import xml.etree.cElementTree as ET
+import base64
+import os
 
 class Filezilla(ModuleInfo):
 	def __init__(self):
@@ -10,7 +11,7 @@ class Filezilla(ModuleInfo):
 		ModuleInfo.__init__(self, 'filezilla', 'sysadmin', options, need_to_be_in_env=False)
 
 	def run(self, software_name = None):		
-		directory = constant.profile['APPDATA'] + '\FileZilla'
+		directory = os.path.join(constant.profile['APPDATA'], '\FileZilla')
 		
 		interesting_xml_file = []
 		info_xml_file = []
@@ -67,8 +68,7 @@ class Filezilla(ModuleInfo):
 								except:
 									values['Password'] = s11.text
 						
-						# password found 
-						if len(values) != 0:
+						if values:
 							pwdFound.append(values)
 			return pwdFound
 		else:

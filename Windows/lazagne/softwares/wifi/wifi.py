@@ -1,9 +1,10 @@
 import xml.etree.cElementTree as ET
-import os, win32crypt
+import os
 import binascii
 import tempfile, socket
 from ctypes import *
 from lazagne.config.constant import *
+from lazagne.config.WinStructure import *
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.write_output import print_debug
 
@@ -55,13 +56,12 @@ class Wifi(ModuleInfo):
 										key = elem.text
 										try:
 											binary_string = binascii.unhexlify(key)
-											password = win32crypt.CryptUnprotectData(binary_string, None, None, None, 0)[1]
+											password = Win32CryptUnprotectData(binary_string)
 											values['Password'] = password
 											passwordFound = True
 										except:
 											values['INFO'] = '[!] Password not found.'
 								
-								# store credentials
-								if len(values) != 0:
+								if values:
 									pwdFound.append(values)	
 				return pwdFound

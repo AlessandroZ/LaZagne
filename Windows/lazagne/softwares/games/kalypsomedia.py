@@ -1,8 +1,9 @@
-import os, re, base64
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
 import ConfigParser
+import base64
+import os
 
 class KalypsoMedia(ModuleInfo):
 	def __init__(self):
@@ -26,17 +27,14 @@ class KalypsoMedia(ModuleInfo):
 		
 		config = ConfigParser.ConfigParser()
 		config.read(inifile)
-		values = {}
-		
-		values['Login'] = config.get('styx user','login')
 		
 		# get the encoded password
 		cookedpw = base64.b64decode(config.get('styx user','password'));
-		values['Password'] = self.xorstring(cookedpw, key)
-		
-		creds.append(values)
-		
-		return creds
 
-					
-				
+		creds.append(
+			{
+				'Login'		: 	config.get('styx user','login'),
+				'Password'	:	self.xorstring(cookedpw, key)
+			}
+		)
+		return creds

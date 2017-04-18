@@ -1,12 +1,15 @@
-from Crypto.Cipher import AES
-import xml.etree.cElementTree as ET
-import win32con, win32api, win32crypt
-import base64, hashlib, os
-import binascii, struct
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.dico import get_dico
+from lazagne.config.WinStructure import *
+from lazagne.config.constant import *
+import xml.etree.cElementTree as ET
+from Crypto.Cipher import AES
+import _winreg
+import hashlib
+import binascii
+import struct
+import os
 
 class Skype(ModuleInfo):
 	def __init__(self):
@@ -21,34 +24,28 @@ class Skype(ModuleInfo):
 	# get value used to build the salt
 	def get_regkey(self):
 		try:
-			accessRead = win32con.KEY_READ | win32con.KEY_ENUMERATE_SUB_KEYS | win32con.KEY_QUERY_VALUE
 			keyPath = 'Software\\Skype\\ProtectedStorage'
-			
 			try:
-				hkey = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, keyPath, 0, accessRead)
-			except Exception,e:
+				hkey = _winreg.OpenKey(HKEY_CURRENT_USER, keyPath)
+			except Exception, e:
 				print_debug('DEBUG', '{0}'.format(e))
-				return ''
+				return False
 			
-			num = win32api.RegQueryInfoKey(hkey)[1]
-			k = win32api.RegEnumValue(hkey, 0)
-			
-			if k:
-				key = k[1]
-				return win32crypt.CryptUnprotectData(key, None, None, None, 0)[1] 
+			num = _winreg.QueryInfoKey(hkey)[1]
+			k = _winreg.EnumValue(hkey, 0)[1]
+			return Win32CryptUnprotectData(k)
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
-			return 'failed'
+			return False
 			
 	# get hash from lazagne.configuration file
 	def get_hash_credential(self, xml_file):
 		tree = ET.ElementTree(file=xml_file)
 		encrypted_hash = tree.find('Lib/Account/Credentials3')
-		
 		if encrypted_hash != None:
 			return encrypted_hash.text
 		else:
-			return 'failed'
+			return False
 	
 	# decrypt hash to get the md5 to bruteforce
 	def get_md5_hash(self, enc_hex, key):
@@ -110,21 +107,21 @@ class Skype(ModuleInfo):
 		if os.path.exists(directory):
 			# retrieve the key used to build the salt
 			key = self.get_regkey()
-			if key == 'failed':
+			if not key:
 				print_debug('ERROR', 'The salt has not been retrieved')
 			else:
 				pwdFound = []
 				for d in os.listdir(directory):
-					if os.path.exists(directory + os.sep + d + os.sep + 'config.xml'):
+					if os.path.exists(os.path.join(directory, d, 'config.xml')):
 						values = {}
 						
 						try:
 							values['Login'] = d
 							
 							# get encrypted hash from the config file
-							enc_hex = self.get_hash_credential(directory + os.sep + d + os.sep + 'config.xml')
+							enc_hex = self.get_hash_credential(os.path.join(directory, d, 'config.xml'))
 							
-							if enc_hex == 'failed':
+							if not enc_hex:
 								print_debug('WARNING', 'No credential stored on the config.xml file.')
 							else:
 								# decrypt the hash to get the md5 to brue force

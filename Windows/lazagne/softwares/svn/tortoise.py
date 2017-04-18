@@ -1,8 +1,9 @@
-import sqlite3, win32crypt
-import sys, os, platform, base64
 from lazagne.config.write_output import print_debug
-from lazagne.config.constant import *
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.WinStructure import *
+from lazagne.config.constant import *
+import base64
+import os 
 
 class Tortoise(ModuleInfo):
 	def __init__(self):
@@ -11,14 +12,12 @@ class Tortoise(ModuleInfo):
 
 	# main function
 	def run(self, software_name = None):	
-		values = {}
 		pwdFound = []
-
-		file_path = constant.profile["APPDATA"] + '\\Subversion\\auth\\svn.simple'
+		
+		file_path = os.path.join(constant.profile["APPDATA"], 'Subversion\\auth\\svn.simple')
 		if os.path.exists(file_path):
 			for root, dirs, files in os.walk(file_path + os.sep):
 				for name_file in files:
-					values = {}
 					f = open(file_path + os.sep + name_file, 'r')
 					
 					url = ''
@@ -46,6 +45,7 @@ class Tortoise(ModuleInfo):
 						i+=1
 
 					i = 0
+					
 					# username
 					for line in f:
 						if i == -1:
@@ -55,22 +55,19 @@ class Tortoise(ModuleInfo):
 							i = -3
 						i+=1
 					
-					# unccrypt the password
+					# encrypted the password
 					if result:
-						
 						try:
-							password = win32crypt.CryptUnprotectData(base64.b64decode(result), None, None, None, 0)[1]
+							password = Win32CryptUnprotectData(base64.b64decode(result))
+							pwdFound.append(
+								{
+									'URL'		: 	url, 
+									'Login'		: 	username, 
+									'Password'	: 	str(password)
+								}
+							)
 						except:
-							password = ''
-						
-						if password:
-							values['URL'] = url
-							values['Login'] = username
-							values['Password'] = password
-							
-							pwdFound.append(values)
-			
+							pass
 			return pwdFound
 		else:
 			print_debug('INFO', 'Tortoise not installed.')
-

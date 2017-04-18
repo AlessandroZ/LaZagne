@@ -1,20 +1,20 @@
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
 import xml.etree.cElementTree as ET
 import os
-from lazagne.config.write_output import print_debug
-from lazagne.config.constant import *
-from lazagne.config.moduleInfo import ModuleInfo
 
 class Squirrel(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-q', 'action': 'store_true', 'dest': 'squirrel', 'help': 'squirrel'}
 		ModuleInfo.__init__(self, 'squirrel', 'database', options)
 
-	def get_path(self):
-		path = constant.profile['USERPROFILE'] + os.sep + '.squirrel-sql'
+	def get_application_path(self):
+		path = os.path.join(constant.profile['USERPROFILE'], '.squirrel-sql')
 		if os.path.exists(path):
 			return path
 		else:
-			return 'Not_Found'
+			return False
 	
 	def parse_xml(self, xml_file):
 		tree = ET.ElementTree(file=xml_file)
@@ -34,18 +34,18 @@ class Squirrel(ModuleInfo):
 				elif e.tag == 'password':
 					values['Password'] = e.text
 			
-			if len(values):
+			if values:
 				pwdFound.append(values)
 			
 		return pwdFound
 		
 	# Main function
 	def run(self, software_name = None):
-		path = self.get_path()
-		if path == 'Not_Found':
+		path = self.get_application_path()
+		if not path:
 			print_debug('INFO', 'Squirrel not installed')
 		else:
-			path += os.sep + 'SQLAliases23.xml'
+			path = os.path.join(path, 'SQLAliases23.xml')
 			if os.path.exists(path):
 				return self.parse_xml(path)
 			else:
