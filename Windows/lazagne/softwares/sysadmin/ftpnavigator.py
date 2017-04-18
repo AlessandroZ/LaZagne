@@ -1,7 +1,8 @@
-import struct, os
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.constant import *
+import struct
+import os
 
 class FtpNavigator(ModuleInfo):
 	def __init__(self):
@@ -43,7 +44,7 @@ class FtpNavigator(ModuleInfo):
 		return pwdFound
 		
 	def run(self, software_name = None):
-		path = constant.profile['HOMEDRIVE'] + os.sep + 'FTP Navigator\\Ftplist.txt'
+		path = os.path.join(constant.profile['HOMEDRIVE'], 'FTP Navigator\\Ftplist.txt')
 		if os.path.exists(path):
 			return self.read_file(path)
 		else:

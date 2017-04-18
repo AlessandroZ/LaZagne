@@ -5,8 +5,7 @@ from lazagne.softwares.browsers.opera import Opera
 from lazagne.softwares.browsers.ie import IE
 # windows
 from lazagne.softwares.windows.system_hash import Hashes
-from lazagne.softwares.windows.network import Network
-from lazagne.softwares.windows.dot_net import Dot_net
+from lazagne.softwares.windows.credman import Credman
 # sysadmin
 from lazagne.softwares.sysadmin.filezilla import Filezilla
 from lazagne.softwares.sysadmin.cyberduck import Cyberduck
@@ -68,7 +67,6 @@ def get_modules():
 	moduleNames = [
 		ApacheDirectoryStudio(),
 		Dbvisualizer(), 
-		Dot_net(),
 		Chrome(), 
 		CoreFTP(), 
 		Cyberduck(),
@@ -84,7 +82,7 @@ def get_modules():
 		MavenRepositories(),
 		MemoryDump(),
 		Mozilla(),
-		Network(),
+		Credman(),
 		OpenSSHForWindows(), 
 		Opera(),
 		Outlook(),

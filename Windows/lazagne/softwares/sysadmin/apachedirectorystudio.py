@@ -1,8 +1,8 @@
-import os
 from lazagne.config.write_output import print_debug
-from lazagne.config.constant import *
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
 import xml.etree.ElementTree as ET
+import os
 
 class ApacheDirectoryStudio(ModuleInfo):
 
@@ -20,7 +20,7 @@ class ApacheDirectoryStudio(ModuleInfo):
         :return: List of dict in which one dict contains all information for a connection.
         """
         repos_creds = []
-        connection_file_location = constant.profile["USERPROFILE"] + "\\.ApacheDirectoryStudio\\.metadata\\.plugins\\org.apache.directory.studio.connection.core\\connections.xml"
+        connection_file_location = os.path.join(constant.profile["USERPROFILE"], ".ApacheDirectoryStudio\\.metadata\\.plugins\\org.apache.directory.studio.connection.core\\connections.xml")
         if os.path.isfile(connection_file_location):
             try:
                 connections = ET.parse(connection_file_location).getroot()
@@ -30,7 +30,7 @@ class ApacheDirectoryStudio(ModuleInfo):
                     for connection_attr_name in connection_node.attrib:
                         if connection_attr_name in self.attr_to_extract:
                             creds[connection_attr_name] = connection_node.attrib[connection_attr_name].strip()
-                    if len(creds) > 0:
+                    if creds:
                         repos_creds.append(creds)
             except Exception as e:
                 print_debug("ERROR", "Cannot retrieve connections credentials '%s'" % e)
@@ -49,12 +49,14 @@ class ApacheDirectoryStudio(ModuleInfo):
         # Parse and process the list of connections credentials
         pwd_found = []
         for creds in repos_creds:
-            values = {}
-            values["Host"] = creds["host"]
-            values["Port"] = creds["port"]
-            values["Login"] = creds["bindPrincipal"]
-            values["Password"] = creds["bindPassword"]
-            values["AuthenticationMethod"] = creds["authMethod"]
-            pwd_found.append(values)
+            pwd_found.append(
+                {
+                    "Host"                  : creds["host"], 
+                    "Port"                  : creds["port"], 
+                    "Login"                 : creds["bindPrincipal"], 
+                    "Password"              : creds["bindPassword"], 
+                    "AuthenticationMethod"  : creds["authMethod"] 
+                }
+            )
 
         return pwd_found

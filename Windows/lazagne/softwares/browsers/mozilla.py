@@ -3,26 +3,25 @@
 # Inspired from https://github.com/Unode/firefox_decrypt/blob/master/firefox_decrypt.py
 # portable decryption functions and BSD DB parsing by Laurent Clevy (@lorenzo2472) from https://github.com/lclevy/firepwd/blob/master/firepwd.py 
 
-from ctypes import *
-import sys, os, re, glob
-from base64 import b64decode
-from ConfigParser import RawConfigParser
-import sqlite3
-import json
-import shutil
-from lazagne.config.dico import get_dico
-from itertools import product
-#https://pypi.python.org/pypi/pyasn1/
-from pyasn1.codec.der import decoder
-from struct import unpack
-from binascii import hexlify, unhexlify
-from hashlib import sha1
-import hmac
-from Crypto.Util.number import long_to_bytes 
-from Crypto.Cipher import DES3
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+from ConfigParser import RawConfigParser
+from Crypto.Util.number import long_to_bytes 
+from lazagne.config.dico import get_dico
+from pyasn1.codec.der import decoder
+from Crypto.Cipher import DES3
+from binascii import unhexlify
+from itertools import product
+from base64 import b64decode
+from struct import unpack
+from hashlib import sha1
+from ctypes import *
+import sqlite3
+import shutil
+import json
+import hmac
+import os
 
 # Database classes
 database_find = False
@@ -517,7 +516,6 @@ class Mozilla(ModuleInfo):
 						except:
 							values["Password"] =  password
 
-						if len(values):
-							pwdFound.append(values)
+						pwdFound.append(values)
 
 			return pwdFound

@@ -1,8 +1,9 @@
-import xml.etree.cElementTree as ET
-import os, re
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+import xml.etree.cElementTree as ET
+import os
+import re
 
 class RoguesTale(ModuleInfo):
 	def __init__(self):
@@ -22,23 +23,23 @@ class RoguesTale(ModuleInfo):
 		
 		for file in files:
 			if re.match('.*\.userdata',file):
-				# We've found a user file, now extract the hash and username
-				values = {}
+				# We've found a user file, now extract the hash and username				
 				
 				xmlfile = directory + '\\' + file
-				tree=ET.ElementTree(file=xmlfile)
-				root=tree.getroot()
+				tree = ET.ElementTree(file=xmlfile)
+				root = tree.getroot()
 				
 				# Double check to make sure that the file is valid
 				if root.tag != 'user':
-					print_debug('Profile ' + file + ' does not appear to be valid')
+					print_debug('Profile %s does not appear to be valid' % file)
 					continue
 				
 				# Now save it to credentials
-				values['Login'] = root.attrib['username']
-				values['Hash'] = root.attrib['password']
-				creds.append(values)
+				creds.append(
+					{
+						'Login'	: root.attrib['username'], 
+						'Hash'	: root.attrib['password']
+					}
+				)
 		
 		return creds
-					
-				

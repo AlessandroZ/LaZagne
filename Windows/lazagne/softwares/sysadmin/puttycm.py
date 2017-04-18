@@ -1,9 +1,10 @@
-import xml.etree.cElementTree as ET
-import win32con, win32api
-import os
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+from lazagne.config.WinStructure import *
+import xml.etree.cElementTree as ET
+import _winreg
+import os
 
 class Puttycm(ModuleInfo):
 	def __init__(self):
@@ -23,13 +24,12 @@ class Puttycm(ModuleInfo):
 		else:
 			print_debug('WARNING', 'Default database does not exist: %s' % database_path)
 
-
 	def get_default_database(self):
-		accessRead = win32con.KEY_READ | win32con.KEY_ENUMERATE_SUB_KEYS | win32con.KEY_QUERY_VALUE
-		key = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, 'Software\\ACS\\PuTTY Connection Manager', 0, accessRead)
-		thisName = str(win32api.RegQueryValueEx(key, 'DefaultDatabase')[0])
-		if thisName :
-			return thisName
+		key = _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\\ACS\\PuTTY Connection Manager')
+		db = str(_winreg.QueryValueEx(key, 'DefaultDatabase')[0])
+		_winreg.CloseKey(key)
+		if db:
+			return db
 		else:
 			return ' '
 	
@@ -65,7 +65,7 @@ class Puttycm(ModuleInfo):
 						values[str(c.tag).capitalize()] = str(c.text)
 			
 			# password found 
-			if len(values) != 0:
+			if values:
 				pwdFound.append(values)
 		
 		return pwdFound

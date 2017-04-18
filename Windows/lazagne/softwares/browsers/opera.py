@@ -1,31 +1,35 @@
-import sys, struct, hashlib, binascii, re, os
-from Crypto.Cipher import DES3
-from ConfigParser import RawConfigParser
-import sqlite3, win32crypt
-from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-
-CIPHERED_FILE = ''
+from lazagne.config.WinStructure import *
+from lazagne.config.constant import *
+from ConfigParser import RawConfigParser
+from Crypto.Cipher import DES3
+import binascii
+import sqlite3
+import struct
+import hashlib
+import re
+import os
 
 class Opera(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-o', 'action': 'store_true', 'dest': 'opera', 'help': 'opera'}
 		ModuleInfo.__init__(self, 'opera', 'browsers', options)
+
+		self.CIPHERED_FILE = ''
 	
 	def run(self, software_name = None):	
 		# retrieve opera folder
 		path = self.get_path()
-		
 		if not path:
 			print_debug('INFO', 'Opera is not installed.')
 			return
 		
 		passwords = ''
 		# old versions
-		if CIPHERED_FILE == 'wand.dat':
+		if self.CIPHERED_FILE == 'wand.dat':
 			# check the use of master password 
-			if not os.path.exists(path + os.sep + 'operaprefs.ini'):
+			if not os.path.exists(os.path.join(path, 'operaprefs.ini')):
 				print_debug('WARNING', 'The preference file operaprefs.ini has not been found.')
 				return
 			else:
@@ -45,20 +49,19 @@ class Opera(ModuleInfo):
 			return self.decipher_new_version(path)
 	
 	def get_path(self):
-		global CIPHERED_FILE
 		# version less than 10
 		if os.path.exists(constant.profile['APPDATA'] + '\Opera\Opera\profile'):
-			CIPHERED_FILE = 'wand.dat'
+			self.CIPHERED_FILE = 'wand.dat'
 			return constant.profile['APPDATA'] + '\Opera\Opera\profile'
 		
 		# version more than 10
 		if os.path.exists(constant.profile['APPDATA'] + '\Opera\Opera'):
-			CIPHERED_FILE = 'wand.dat'
+			self.CIPHERED_FILE = 'wand.dat'
 			return constant.profile['APPDATA'] + '\Opera\Opera'
 		
 		# new versions
 		elif os.path.exists(constant.profile['APPDATA'] + '\Opera Software\Opera Stable'):
-			CIPHERED_FILE = 'Login Data'
+			self.CIPHERED_FILE = 'Login Data'
 			return constant.profile['APPDATA'] + '\Opera Software\Opera Stable'
 		
 	
@@ -134,7 +137,7 @@ class Opera(ModuleInfo):
 				values = {}
 				
 				# Decrypt the Password
-				password = win32crypt.CryptUnprotectData(result[2], None, None, None, 0)[1]
+				password = Win32CryptUnprotectData(result[2])
 				if password:
 					values['URL'] = result[0]
 					values['Login'] = result[1]
@@ -149,7 +152,7 @@ class Opera(ModuleInfo):
 		
 		# the init file is not well defined so lines have to be removed before to parse it
 		cp = RawConfigParser()
-		f = open(path + os.sep + 'operaprefs.ini', 'rb')
+		f = open(os.path.join(path, 'operaprefs.ini', 'rb'))
 		
 		f.readline() # discard first line
 		while 1:
@@ -165,7 +168,6 @@ class Opera(ModuleInfo):
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return False
-			
 		
 	def parse_results(self, passwords):
 		
