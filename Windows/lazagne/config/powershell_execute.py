@@ -16,9 +16,10 @@ def powershell_execute(script, function):
 		info = subprocess.STARTUPINFO()
 		info.dwFlags = sub.STARTF_USESHOWWINDOW
 		info.wShowWindow = sub.SW_HIDE
+		
 		p = subprocess.Popen(fullargs, startupinfo=info, stdin=subprocess.PIPE, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True, shell=True)
-
 		p.stdin.write("$base64=\"\""+"\n")
+		
 		n = 25000
 		b64_script = base64.b64encode(script)
 		tab = [b64_script[i:i+n] for i in range(0, len(b64_script), n)]
@@ -31,13 +32,19 @@ def powershell_execute(script, function):
 	 
 		p.stdin.write("\n$a=Invoke-Expression \"%s\" | Out-String\n" % function)
 		p.stdin.write("$b=[System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(\"$a\"))\n")
+		p.stdin.write("Write-Host \"[BEGIN]\"\n")
 		p.stdin.write("Write-Host $b\n")
 
-		# Get the result in base64
-		for i in p.stdout.readline():
-			output += i
+		while True:
+			# begin flag used to remove possible bullshit output print before the function is launched
+			if '[BEGIN]' in p.stdout.readline():
+				# Get the result in base64
+				for i in p.stdout.readline():
+						output += i
+				break
+
 		output = base64.b64decode(output)
-	except:
+	except Exception, e:
 		pass
 	
 	return output

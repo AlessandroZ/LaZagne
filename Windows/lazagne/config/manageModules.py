@@ -78,9 +78,9 @@ def get_modules():
 		IE(),
 		Jitsi(),
 		KalypsoMedia(),
-		Keepass(),
 		MavenRepositories(),
-		MemoryDump(),
+		MemoryDump(),			# retrieve browers and keepass passwords
+		Keepass(),				# should be launched after memory dump
 		Mozilla(),
 		Credman(),
 		OpenSSHForWindows(), 

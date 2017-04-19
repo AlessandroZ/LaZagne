@@ -37,3 +37,5 @@ class constant():
 		'COMPOSER_HOME': ''
 	}
 	username = ''
+
+	keepass = {}
