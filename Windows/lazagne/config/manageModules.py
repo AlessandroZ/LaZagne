@@ -6,6 +6,7 @@ from lazagne.softwares.browsers.ie import IE
 # windows
 from lazagne.softwares.windows.system_hash import Hashes
 from lazagne.softwares.windows.credman import Credman
+from lazagne.softwares.windows.vault import Vault
 # sysadmin
 from lazagne.softwares.sysadmin.filezilla import Filezilla
 from lazagne.softwares.sysadmin.cyberduck import Cyberduck
@@ -95,6 +96,7 @@ def get_modules():
 		SQLDeveloper(), 
 		Squirrel(),
 		Turba(),
+		Vault(),
 		Wifi(), 
 		WinSCP(),
 		Composer()
