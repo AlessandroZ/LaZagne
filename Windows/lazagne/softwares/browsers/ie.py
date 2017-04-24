@@ -146,67 +146,12 @@ class IE(ModuleInfo):
 
 		return pfound
 	
-	# get credential manager passwords
-	def windows_vault_ie(self):
-		# From :  https://gallery.technet.microsoft.com/Manipulate-credentials-in-58e0f761
-		cmdline = '''
-		try
-		{
-			#Load the WinRT projection for the PasswordVault
-			$Script:vaultType = [Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime]
-			$Script:vault	  = new-object Windows.Security.Credentials.PasswordVault -ErrorAction silentlycontinue
-		}
-		catch
-		{
-			throw "This module relies on functionality provided in Windows 8 or Windows 2012 and above."
-		}
-		#endregion
-
-		function Get-VaultCredential
-		{
-			process
-			{
-				try
-				{
-					&{
-						$Script:vault.RetrieveAll()
-					} | foreach-Object {  $_.RetrievePassword() ; "[BEGIN]Username......";$_.UserName;"######";"Password......";$_.Password;"######";"Website......";$_.Resource;"_________" }
-				}
-				catch
-				{
-					Write-Error -ErrorRecord $_ -RecommendedAction "Check your search input - user: $UserName resource: $Resource"
-				}
-			}
-			end
-			{
-				Write-Debug "[$cmdName] Exiting function"
-			}
-		}
-		Get-VaultCredential
-		'''
-
-		command=['powershell.exe', '/c', cmdline]
-
-		info = subprocess.STARTUPINFO()
-		info.dwFlags = sub.STARTF_USESHOWWINDOW
-		info.wShowWindow = sub.SW_HIDE
-		p = subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
-		results, _ = p.communicate()
-
-		passwords = []
-		for result in results.replace('\n', '').split('_________'):
-			values = {}
-			if result:
-				result = result.split('[BEGIN]')[1]
-				for res in result.split('######'):
-					values[res.split('......')[0]] = res.split('......')[1]
-				passwords.append(values)
-		return passwords
-
 	def run(self, historic=''):
+		if float(get_os_version()) > 6.1:
+			print_debug('INFO', 'Internet Explorer passwords are stored in Vault (check vault module)')
+			return
+
 		pwdFound = []
-		
-		# ----------------- For Win7 and before (passwords stored on registry) -----------------
 		failed = False
 		try:
 			hkey = _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2')
@@ -248,10 +193,4 @@ class IE(ModuleInfo):
 			if nb_site > nb_pass_found:
 				print_debug('ERROR', '%s hashes have not been decrypted, the associate website used to decrypt the passwords has not been found' % str(nb_site - nb_pass_found))
 		
-		# ----------------- For Win8 and after (passwords stored on the credential manager) -----------------
-		try:
-			pwdFound += self.windows_vault_ie()
-		except Exception,e:
-			print_debug('DEBUG', '{0}'.format(e))
-
 		return pwdFound
