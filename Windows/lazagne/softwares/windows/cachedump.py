@@ -66,7 +66,7 @@ class Cachedump(ModuleInfo):
 		password = dump_file_hashes(constant.hives['system'], constant.hives['security'], isVistaOrHigher)
 
 		# remove hives files
-		# self.delete_existing_system_hives()
+		self.delete_existing_system_hives()
 
 		pwdFound = ['__MSCache__', password]
 		return pwdFound
