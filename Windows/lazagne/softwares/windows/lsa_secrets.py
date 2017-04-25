@@ -70,10 +70,6 @@ class LSASecrets(ModuleInfo):
 			print_debug('DEBUG', 'Unable to read LSA secrets')
 			return
 
-		# for k in secrets:
-		# 	print k
-		# 	print self.dump(secrets[k], length=16)
-
 		# remove hives files
 		# self.delete_existing_system_hives()
 
