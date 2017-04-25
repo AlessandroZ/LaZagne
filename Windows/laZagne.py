@@ -221,7 +221,6 @@ def runLaZagne(category_choosed='all'):
 	current_user = getpass.getuser().encode('utf-8', errors='ignore')
 	if not current_user.endswith('$'):
 		constant.finalResults = {'User': current_user}
-		print '\n\n########## User: %s ##########\n' % current_user
 		yield 'User', current_user
 		set_env_variables()
 		for r in runModule(category_choosed):
@@ -244,9 +243,8 @@ def runLaZagne(category_choosed='all'):
 			if 'service ' in user.lower() or ' service' in user.lower():
 				continue
 
-			print '\n\n########## User: %s ##########\n' % user.encode('utf-8', errors='ignore')
 			yield 'User', user
-			
+
 			constant.finalResults = {'User': user}
 			for sid in impersonateUsers[user]:
 				try:
@@ -280,7 +278,6 @@ def runLaZagne(category_choosed='all'):
 		for user in all_users:
 			set_env_variables(user, toImpersonate = True)
 			print_debug('INFO', '[!] Trying to impersonate user: %s' % user.encode('utf-8', errors='ignore'))
-			print '\n\n########## User: %s ##########\n' % user.encode('utf-8', errors='ignore')
 			
 			# Fix value by default for user environnment (appdata and userprofile)
 			constant.finalResults = {'User': user}
