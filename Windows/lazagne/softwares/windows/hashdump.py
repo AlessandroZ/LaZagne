@@ -36,12 +36,12 @@ class Hashdump(ModuleInfo):
 		return True
 
 	# try to remove all temporary files
-	def delete_existing_system_hives(self):
-		for h in constant.hives:
-			try:
-				os.remove(constant.hives[h])
-			except:
-				pass
+	# def delete_existing_system_hives(self):
+	# 	for h in constant.hives:
+	# 		try:
+	# 			os.remove(constant.hives[h])
+	# 		except:
+	# 			pass
 
 	def run_cmd(self, cmdline):
 		command=['cmd.exe', '/c', cmdline]
