@@ -39,3 +39,4 @@ class constant():
 	username = ''
 
 	keepass = {}
+	hives = []

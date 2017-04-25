@@ -4,7 +4,7 @@ from lazagne.config.WinStructure import *
 
 class Credman(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-c', 'action': 'store_true', 'dest': 'credential manager', 'help': 'credential manager'}
+		options = {'command': '--cred', 'action': 'store_true', 'dest': 'credential manager', 'help': 'credential manager'}
 		ModuleInfo.__init__(self, 'Generic Network and Dot Net', 'windows', options, cannot_be_impersonate_using_tokens=False)
 	
 	# FOR XP
