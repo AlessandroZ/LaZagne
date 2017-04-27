@@ -214,6 +214,14 @@ class MyParser(argparse.ArgumentParser):
 		self.print_help()
 		sys.exit(2)
 
+# print user when verbose mode is enabled (without verbose mode the user is printed on the write_output python file)
+def print_user(user):
+	if logging.getLogger().isEnabledFor(logging.INFO) == True:
+		try:
+			print '\n\n########## User: %s ##########\n' % user
+		except:
+			print '\n\n########## User: %s ##########\n' % user.encode('utf-8', errors='replace')
+
 def runLaZagne(category_choosed='all'):
 
 	# ------ Part used for user impersonation ------ 
@@ -221,6 +229,7 @@ def runLaZagne(category_choosed='all'):
 	current_user = getpass.getuser().encode('utf-8', errors='ignore')
 	if not current_user.endswith('$'):
 		constant.finalResults = {'User': current_user}
+		print_user(current_user)
 		yield 'User', current_user
 		set_env_variables()
 		for r in runModule(category_choosed):
@@ -242,7 +251,8 @@ def runLaZagne(category_choosed='all'):
 		for user in impersonateUsers:
 			if 'service ' in user.lower() or ' service' in user.lower():
 				continue
-
+			
+			print_user(user)
 			yield 'User', user
 
 			constant.finalResults = {'User': user}
@@ -277,7 +287,7 @@ def runLaZagne(category_choosed='all'):
 		all_users = get_user_list_on_filesystem(impersonated_user)
 		for user in all_users:
 			set_env_variables(user, toImpersonate = True)
-			print_debug('INFO', '[!] Trying to impersonate user: %s' % user.encode('utf-8', errors='ignore'))
+			print_user(user)
 			
 			# Fix value by default for user environnment (appdata and userprofile)
 			constant.finalResults = {'User': user}

@@ -4,7 +4,7 @@ from lazagne.softwares.browsers.chrome import Chrome
 from lazagne.softwares.browsers.opera import Opera
 from lazagne.softwares.browsers.ie import IE
 # windows
-# from lazagne.softwares.windows.system import System
+from lazagne.softwares.windows.autologon import Autologon
 from lazagne.softwares.windows.credman import Credman
 from lazagne.softwares.windows.vault import Vault
 from lazagne.softwares.windows.cachedump import Cachedump
@@ -71,6 +71,7 @@ def get_categories():
 def get_modules():
 	moduleNames = [
 		ApacheDirectoryStudio(),
+		Autologon(),
 		Dbvisualizer(), 
 		Chrome(), 
 		CoreFTP(), 
