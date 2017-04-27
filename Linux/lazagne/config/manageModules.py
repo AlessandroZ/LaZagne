@@ -23,6 +23,7 @@ from lazagne.softwares.databases.dbvis import DbVisualizer
 from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
 # memory
 from lazagne.softwares.memory.mimipy import Mimipy
+from lazagne.softwares.memory.memorydump import MemoryDump
 
 def get_categories():
 	category = {
@@ -46,6 +47,7 @@ def get_modules():
 		Gnome(),
 		Jitsi(),
 		Mozilla(),
+		# MemoryDump(),	 # very long to execute
 		Mimipy(),
 		Opera(),
 		Pidgin(),
