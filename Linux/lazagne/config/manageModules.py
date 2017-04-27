@@ -21,6 +21,8 @@ from lazagne.softwares.wifi.wpa_supplicant import Wpa_supplicant
 from lazagne.softwares.databases.squirrel import Squirrel
 from lazagne.softwares.databases.dbvis import DbVisualizer
 from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
+# memory
+from lazagne.softwares.memory.mimipy import Mimipy
 
 def get_categories():
 	category = {
@@ -28,6 +30,7 @@ def get_categories():
 		'sysadmin': {'help': 'SCP/SSH/FTP/FTPS clients supported'},
 		'database': {'help': 'SQL clients supported'},
 		'mails': {'help': 'Email clients supported'},
+		'memory': {'help': 'Retrieve passwords from memory'},
 		'wifi': {'help': 'Wifi'},
 		'browsers': {'help': 'Web browsers supported'},
 		'wallet': {'help': 'Windows credentials (credential manager, etc.)'}
@@ -43,6 +46,7 @@ def get_modules():
 		Gnome(),
 		Jitsi(),
 		Mozilla(),
+		Mimipy(),
 		Opera(),
 		Pidgin(),
 		Shadow(),
