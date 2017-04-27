@@ -43,11 +43,7 @@ class Header():
 		setColor(color='white', intensity=True)
 		print '------------------- ' + title + ' passwords -----------------\n'
 		setColor()
-		
-	# Subtitle
-	# def title1(self, title1):
-	# 	print self.BRIGHT + self.WHITE + '[*] ' + title1 + '\n' + self.RESET_COLOR
-
+	
 	# debug option for the logging
 	def title_info(self, title):
 		setColor(color='white', intensity=True)

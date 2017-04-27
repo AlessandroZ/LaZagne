@@ -6,7 +6,7 @@ from ctypes.wintypes import *
 
 class Vault(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-vault', 'action': 'store_true', 'dest': 'Vault', 'help': 'Vault manager (Win8 or higher)'}
+		options = {'command': '--vault', 'action': 'store_true', 'dest': 'Vault', 'help': 'Vault manager (Win8 or higher)'}
 		ModuleInfo.__init__(self, 'Vault passwords (Internet Explorer, etc.)', 'windows', options, cannot_be_impersonate_using_tokens=False)
 
 	def run(self, software_name = None):
