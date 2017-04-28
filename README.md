@@ -9,6 +9,8 @@ Each software stores its passwords using different techniques (plaintext, APIs, 
 
 <p align="center"><img src="./pictures/lazagne.png" alt="The LaZagne project"></p>
 
+This project has been added to [pupy](https://github.com/n1nj4sec/pupy/) as a post-exploitation module. Python code will be interpreted in memory without touching the disk and it works on Windows and Linux host. The last Linux release is not up to date so I recommend to use pupy to use it. 
+
 Standalones
 ----
 Standalones are now available here: https://github.com/AlessandroZ/LaZagne/releases/
@@ -69,6 +71,15 @@ For developers
 ----
 Please refer to the wiki before opening an issue to understand how to compile the project or to develop a new module.
 https://github.com/AlessandroZ/LaZagne/wiki
+
+
+Special thanks
+----
+* Harmjoy for [KeeThief](https://github.com/HarmJ0y/KeeThief/)
+* n1nj4sec for his [mimipy](https://github.com/n1nj4sec/mimipy) module
+* Benjamin DELPY for [mimikatz](https://github.com/gentilkiwi/mimikatz), which helps me to understand some Windows API.
+* [Creddump](https://github.com/moyix/creddump)
+* All [contributors](https://github.com/AlessandroZ/LaZagne/graphs/contributors) who help me on this project
 
 ----
 | __Alessandro ZANNI__    |
