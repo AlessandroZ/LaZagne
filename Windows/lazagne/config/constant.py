@@ -40,3 +40,5 @@ class constant():
 
 	keepass = {}
 	hives = []
+
+	checkUnattended = False

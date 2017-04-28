@@ -20,6 +20,7 @@ from lazagne.softwares.sysadmin.coreftp import CoreFTP
 from lazagne.softwares.sysadmin.ftpnavigator import FtpNavigator
 from lazagne.softwares.sysadmin.apachedirectorystudio import ApacheDirectoryStudio
 from lazagne.softwares.sysadmin.opensshforwindows import OpenSSHForWindows
+from lazagne.softwares.sysadmin.unattended import Unattended
 # svn
 from lazagne.softwares.svn.tortoise import Tortoise
 # git
@@ -101,6 +102,7 @@ def get_modules():
 		SQLDeveloper(), 
 		Squirrel(),
 		Turba(),
+		Unattended(),
 		Vault(),
 		Wifi(), 
 		WinSCP(),
