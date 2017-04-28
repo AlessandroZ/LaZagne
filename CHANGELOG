@@ -1,3 +1,15 @@
+LaZagne 2.1 (28/04/2017)
+- Only Windows
+	* removing many dependencies (win32api, win32crypt, win32xxx, colorama, etc.) using ctypes
+	* adding little modules
+		* retrieve passwords when autologon is enabled
+		* retrieve passwords stored in unattended files
+	* using creddump to retrieve system hashes + LSA secrets
+	* little bugs fixed + some code review
+
+- Linux
+	* adding mimipy module from n1nj4sec (https://github.com/n1nj4sec/mimipy) to retrieve the system password from memory (need root privileges)
+
 LaZagne 2.0 (20/12/2016)
 - Only Windows:
 	* only one process is launched (impersonnation is done using "ImpersonateLoggedOnUser" and no more "CreateProcessAsUser")
