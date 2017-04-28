@@ -5,6 +5,7 @@ LaZagne 2.1 (28/04/2017)
 		* retrieve passwords when autologon is enabled
 		* retrieve passwords stored in unattended files
 	* using creddump to retrieve system hashes + LSA secrets
+	* retrieve chrome passwords from multiple profiles
 	* little bugs fixed + some code review
 
 - Linux
