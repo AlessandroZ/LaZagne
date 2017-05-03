@@ -92,7 +92,7 @@ class IE(ModuleInfo):
 	def history_from_regedit(self):
 		urls = []
 		try:
-			hkey = _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\TypedURLs')
+			hkey = OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\TypedURLs')
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return []
@@ -154,7 +154,7 @@ class IE(ModuleInfo):
 		pwdFound = []
 		failed = False
 		try:
-			hkey = _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2')
+			hkey = OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2')
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 			failed = True

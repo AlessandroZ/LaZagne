@@ -7,6 +7,17 @@
 ##############################################################################
 
 # Disclaimer: Do Not Use this program for illegal purposes ;)
+
+
+# Softwares that passwords can be retrieved without needed to be in the user environmment
+from lazagne.softwares.browsers.mozilla import Mozilla
+
+# Configuration
+from lazagne.config.write_output import write_header, write_footer, print_footer, print_debug, parseJsonResultToBuffer, print_output
+from lazagne.config.changePrivileges import ListSids, rev2self, impersonate_sid_long_handle
+from lazagne.config.manageModules import get_categories, get_modules
+from lazagne.config.header import Header
+from lazagne.config.constant import *
 import argparse
 import time, sys, os
 import logging
@@ -15,16 +26,6 @@ import json
 import getpass
 import traceback
 import ctypes
-
-# Softwares that passwords can be retrieved without needed to be in the user environmment
-from lazagne.softwares.browsers.mozilla import Mozilla
-
-# Configuration
-from lazagne.config.header import Header
-from lazagne.config.write_output import write_header, write_footer, print_footer, print_debug, parseJsonResultToBuffer, print_output
-from lazagne.config.constant import *
-from lazagne.config.manageModules import get_categories, get_modules
-from lazagne.config.changePrivileges import ListSids, rev2self, impersonate_sid_long_handle
 
 # Tab containing all passwords
 stdoutRes = []
@@ -222,6 +223,15 @@ def print_user(user):
 		except:
 			print '\n\n########## User: %s ##########\n' % user.encode('utf-8', errors='replace')
 
+def clean_temporary_files():
+	# try to remove all temporary files
+	for h in constant.hives:
+		try:
+			os.remove(constant.hives[h])
+			print_debug('DEBUG', 'Temporary file removed: %s' % constant.hives[h])
+		except:
+			pass
+
 def runLaZagne(category_choosed='all'):
 
 	# ------ Part used for user impersonation ------ 
@@ -380,6 +390,7 @@ if __name__ == '__main__':
 	for r in runLaZagne(category_choosed):
 		pass
 
+	clean_temporary_files()
 	write_in_file(stdoutRes)
 	print_footer()
 

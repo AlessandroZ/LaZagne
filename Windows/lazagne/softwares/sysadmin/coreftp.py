@@ -22,7 +22,7 @@ class CoreFTP(ModuleInfo):
 	
 	def get_key_info(self):
 		try:
-			key = _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\\FTPware\\CoreFTP\\Sites')
+			key = OpenKey(HKEY_CURRENT_USER, 'Software\\FTPware\\CoreFTP\\Sites')
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return False
@@ -32,7 +32,7 @@ class CoreFTP(ModuleInfo):
 		for n in range(num_profiles):
 			name_skey = _winreg.EnumKey(key, n)
 			
-			skey = _winreg.OpenKey(key, name_skey)
+			skey = OpenKey(key, name_skey)
 			num = _winreg.QueryInfoKey(skey)[1]
 			
 			values = {}
