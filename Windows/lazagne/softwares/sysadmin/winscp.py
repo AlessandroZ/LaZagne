@@ -32,7 +32,7 @@ class WinSCP(ModuleInfo):
 	
 	def check_winscp_installed(self):
 		try:
-			key = _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Configuration\Security')
+			key = OpenKey(HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Configuration\Security')
 			return key
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
@@ -48,7 +48,7 @@ class WinSCP(ModuleInfo):
 	
 	def get_logins_info(self):
 		try:
-			key = _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Sessions')
+			key = OpenKey(HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Sessions')
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return False
@@ -58,7 +58,7 @@ class WinSCP(ModuleInfo):
 		for n in range(num_profiles):
 			name_skey = _winreg.EnumKey(key, n)		# with win32api.RegEnumKey => color is present / with _winreg.EnumKey not wtf ????
 			
-			skey = _winreg.OpenKey(key, name_skey)
+			skey = OpenKey(key, name_skey)
 			num = _winreg.QueryInfoKey(skey)[1]
 			
 			port = ''

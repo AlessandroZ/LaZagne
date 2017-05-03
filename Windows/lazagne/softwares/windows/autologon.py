@@ -14,7 +14,7 @@ class Autologon(ModuleInfo):
 	def run(self, software_name = None):		
 		pwdFound = []
 		try:
-			hkey = _winreg.OpenKey(HKEY_LOCAL_MACHINE, 'SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon')
+			hkey = OpenKey(HKEY_LOCAL_MACHINE, 'SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon')
 			if int(_winreg.QueryValueEx(hkey, 'AutoAdminLogon')[0]) == 1:
 				print_debug('INFO', 'Autologin enabled')
 

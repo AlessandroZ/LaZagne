@@ -16,7 +16,7 @@ class Turba(ModuleInfo):
 		# Find the location of steam - to make it easier we're going to use a try block
 		# 'cos I'm lazy
 		try:
-			with _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\Valve\Steam') as key:
+			with OpenKey(HKEY_CURRENT_USER, 'Software\Valve\Steam') as key:
 				results = _winreg.QueryValueEx(key, 'SteamPath')
 		except:
 			print_debug('INFO', 'Steam does not appear to be installed.')

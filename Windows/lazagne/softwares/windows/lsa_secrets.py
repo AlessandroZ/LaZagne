@@ -70,8 +70,5 @@ class LSASecrets(ModuleInfo):
 			print_debug('DEBUG', 'Unable to read LSA secrets')
 			return
 
-		# remove hives files
-		# self.delete_existing_system_hives()
-
 		pwdFound = ['__LSASecrets__', secrets]
 		return pwdFound
