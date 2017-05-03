@@ -12,7 +12,7 @@ class Outlook(ModuleInfo):
 	def run(self, software_name = None):
 		keyPath = 'Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows Messaging Subsystem\\Profiles\\Outlook'
 		try:
-			hkey = _winreg.OpenKey(HKEY_CURRENT_USER, keyPath)
+			hkey = OpenKey(HKEY_CURRENT_USER, keyPath)
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('INFO', 'Outlook not installed or not profile saved')
@@ -22,13 +22,13 @@ class Outlook(ModuleInfo):
 		pwdFound = []
 		for x in range(0, num):
 			name = _winreg.EnumKey(hkey, x)
-			skey = _winreg.OpenKey(hkey, name, 0, ACCESS_READ)
+			skey = OpenKey(hkey, name, 0, ACCESS_READ)
 			
 			num_skey = _winreg.QueryInfoKey(skey)[0]
 			if num_skey != 0:
 				for y in range(0, num_skey):
 					name_skey = _winreg.EnumKey(skey, y)
-					sskey = _winreg.OpenKey(skey, name_skey)
+					sskey = OpenKey(skey, name_skey)
 					num_sskey = _winreg.QueryInfoKey(sskey)[1]
 					
 					for z in range(0, num_sskey):

@@ -25,7 +25,7 @@ class Puttycm(ModuleInfo):
 			print_debug('WARNING', 'Default database does not exist: %s' % database_path)
 
 	def get_default_database(self):
-		key = _winreg.OpenKey(HKEY_CURRENT_USER, 'Software\\ACS\\PuTTY Connection Manager')
+		key = OpenKey(HKEY_CURRENT_USER, 'Software\\ACS\\PuTTY Connection Manager')
 		db = str(_winreg.QueryValueEx(key, 'DefaultDatabase')[0])
 		_winreg.CloseKey(key)
 		if db:

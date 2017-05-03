@@ -26,7 +26,7 @@ class Skype(ModuleInfo):
 		try:
 			keyPath = 'Software\\Skype\\ProtectedStorage'
 			try:
-				hkey = _winreg.OpenKey(HKEY_CURRENT_USER, keyPath)
+				hkey = OpenKey(HKEY_CURRENT_USER, keyPath)
 			except Exception, e:
 				print_debug('DEBUG', '{0}'.format(e))
 				return False

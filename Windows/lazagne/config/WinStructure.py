@@ -1,22 +1,24 @@
 # Vault Structure has been taken from mimikatz
 from ctypes.wintypes import *
 from ctypes import *
+import _winreg
+import os
 
 LPTSTR 					= LPSTR
 LPCTSTR 				= LPSTR
 PHANDLE 				= POINTER(HANDLE)
 HANDLE      			= LPVOID
 LPDWORD   				= POINTER(DWORD)
+PVOID					= c_void_p
 INVALID_HANDLE_VALUE 	= c_void_p(-1).value
 NTSTATUS 				= ULONG()
 PWSTR					= c_wchar_p
 LPWSTR 					= c_wchar_p
 PBYTE 					= POINTER(BYTE)
 LPBYTE 					= POINTER(BYTE)
-
-
-vaultcli = windll.vaultcli
-kernel32 = windll.kernel32
+PSID                    = PVOID
+LONG                    = c_long
+WORD                    = c_uint16
 
 ##############################- Constants ##############################
 
@@ -34,6 +36,27 @@ KEY_QUERY_VALUE						= 1
 
 # custom key to read registry (not from msdn)
 ACCESS_READ = KEY_READ | KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE 
+
+# Token manipulation
+PROCESS_QUERY_INFORMATION   = 0x0400
+STANDARD_RIGHTS_REQUIRED    = 0x000F0000L
+READ_CONTROL                = 0x00020000L
+STANDARD_RIGHTS_READ        = READ_CONTROL
+TOKEN_ASSIGN_PRIMARY        = 0x0001
+TOKEN_DUPLICATE             = 0x0002
+TOKEN_IMPERSONATE           = 0x0004
+TOKEN_QUERY                 = 0x0008
+TOKEN_QUERY_SOURCE          = 0x0010
+TOKEN_ADJUST_PRIVILEGES     = 0x0020
+TOKEN_ADJUST_GROUPS         = 0x0040
+TOKEN_ADJUST_DEFAULT        = 0x0080
+TOKEN_ADJUST_SESSIONID      = 0x0100
+TOKEN_READ                  = (STANDARD_RIGHTS_READ | TOKEN_QUERY)
+tokenprivs                  = (TOKEN_QUERY | TOKEN_READ | TOKEN_IMPERSONATE | TOKEN_QUERY_SOURCE | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY | (131072L | 4))
+TOKEN_ALL_ACCESS            = (STANDARD_RIGHTS_REQUIRED | TOKEN_ASSIGN_PRIMARY |
+        TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_QUERY_SOURCE |
+        TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT |
+        TOKEN_ADJUST_SESSIONID)
 
 ############################## Structures ##############################
 
@@ -186,20 +209,122 @@ class OSVERSIONINFOEXW(Structure):
 		('wReserved', c_byte)
 	]
 
+class CRYPTPROTECT_PROMPTSTRUCT(Structure):
+	_fields_ = [
+		('cbSize', 			DWORD),
+		('dwPromptFlags', 	DWORD),
+		('hwndApp', 		HWND),
+		('szPrompt', 		LPCWSTR),
+	]
+PCRYPTPROTECT_PROMPTSTRUCT = POINTER(CRYPTPROTECT_PROMPTSTRUCT)
+
+class LUID(Structure):
+    _fields_ = [
+        ("LowPart",     DWORD),
+        ("HighPart",    LONG),
+    ]
+PLUID = POINTER(LUID)
+
+class SID_AND_ATTRIBUTES(Structure):
+    _fields_ = [
+        ("Sid",         PSID),
+        ("Attributes",  DWORD),
+    ]
+
+class TOKEN_USER(Structure):
+    _fields_ = [
+        ("User", SID_AND_ATTRIBUTES),]
+
+class LUID_AND_ATTRIBUTES(Structure):
+    _fields_ = [
+        ("Luid",        LUID),
+        ("Attributes",  DWORD),
+    ]
+
+class TOKEN_PRIVILEGES(Structure):
+    _fields_ = [
+        ("PrivilegeCount",  DWORD),
+        ("Privileges",      LUID_AND_ATTRIBUTES),
+    ]
+PTOKEN_PRIVILEGES = POINTER(TOKEN_PRIVILEGES)
+
+class SECURITY_ATTRIBUTES(Structure):
+    _fields_ = [
+        ("nLength",  					DWORD),
+        ("lpSecurityDescriptor",      	LPVOID),
+        ("bInheritHandle",      		BOOL),
+    ]
+PSECURITY_ATTRIBUTES = POINTER(SECURITY_ATTRIBUTES)
+
 ############################## Functions ##############################
 
-CredEnumerate 			= windll.advapi32.CredEnumerateA
-CredEnumerate.restype 	= BOOL
-CredEnumerate.argtypes 	= [LPCTSTR, DWORD, POINTER(DWORD), POINTER(POINTER(PCREDENTIAL))]
+RevertToSelf 					= windll.advapi32.RevertToSelf
+RevertToSelf.restype 			= BOOL
+RevertToSelf.argtypes 			= []
+
+ImpersonateLoggedOnUser 		= windll.advapi32.ImpersonateLoggedOnUser
+ImpersonateLoggedOnUser.restype	= BOOL
+ImpersonateLoggedOnUser.argtypes= [HANDLE]
+
+DuplicateTokenEx 				= windll.advapi32.DuplicateTokenEx
+DuplicateTokenEx.restype 		= BOOL
+DuplicateTokenEx.argtypes 		= [HANDLE, DWORD, PSECURITY_ATTRIBUTES, DWORD, DWORD, POINTER(HANDLE)]
+
+AdjustTokenPrivileges 			= windll.advapi32.AdjustTokenPrivileges
+AdjustTokenPrivileges.restype 	= BOOL
+AdjustTokenPrivileges.argtypes 	= [HANDLE, BOOL, PTOKEN_PRIVILEGES, DWORD, PTOKEN_PRIVILEGES, POINTER(DWORD)]
+
+LookupPrivilegeValueA			= windll.advapi32.LookupPrivilegeValueA
+LookupPrivilegeValueA.restype 	= BOOL
+LookupPrivilegeValueA.argtypes 	= [LPCTSTR, LPCTSTR, PLUID]
+
+ConvertSidToStringSidA			= windll.advapi32.ConvertSidToStringSidA
+ConvertSidToStringSidA.restype 	= BOOL
+ConvertSidToStringSidA.argtypes = [DWORD, POINTER(LPTSTR)]
+
+LocalAlloc 						= windll.kernel32.LocalAlloc
+LocalAlloc.restype 				= HANDLE
+LocalAlloc.argtypes    			= [PSID, DWORD]
+
+GetTokenInformation 			= windll.advapi32.GetTokenInformation
+GetTokenInformation.restype     = BOOL
+GetTokenInformation.argtypes    = [HANDLE, DWORD, LPVOID, DWORD, POINTER(DWORD)]
+
+OpenProcess             		= windll.kernel32.OpenProcess
+OpenProcess.restype     		= HANDLE
+OpenProcess.argtypes    		= [DWORD, BOOL, DWORD]
+
+GetCurrentProcessId             = windll.kernel32.GetCurrentProcessId
+GetCurrentProcessId.restype     = DWORD
+GetCurrentProcessId.argtypes    = [PVOID]
+
+OpenProcessToken             	= windll.advapi32.OpenProcessToken
+OpenProcessToken.restype     	= BOOL
+OpenProcessToken.argtypes    	= [HANDLE, DWORD, POINTER(HANDLE)]
+
+CloseHandle             		= windll.kernel32.CloseHandle
+CloseHandle.restype     		= BOOL
+CloseHandle.argtypes    		= [HANDLE]
+
+CredEnumerate 					= windll.advapi32.CredEnumerateA
+CredEnumerate.restype 			= BOOL
+CredEnumerate.argtypes 			= [LPCTSTR, DWORD, POINTER(DWORD), POINTER(POINTER(PCREDENTIAL))]
  
-CredFree 				= windll.advapi32.CredFree
-CredFree.restype 		= c_void_p
-CredFree.argtypes 		= [c_void_p]
+CredFree 						= windll.advapi32.CredFree
+CredFree.restype 				= PVOID
+CredFree.argtypes 				= [PVOID]
 
-memcpy 					= cdll.msvcrt.memcpy
-LocalFree 				= windll.kernel32.LocalFree
-CryptUnprotectData 		= windll.crypt32.CryptUnprotectData
+memcpy 							= cdll.msvcrt.memcpy
+memcpy.restype 					= PVOID
+memcpy.argtypes 				= [PVOID]
 
+LocalFree 						= windll.kernel32.LocalFree
+LocalFree.restype 				= HANDLE
+LocalFree.argtypes				= [HANDLE]
+
+CryptUnprotectData 				= windll.crypt32.CryptUnprotectData
+CryptUnprotectData.restype 		= BOOL
+CryptUnprotectData.argtypes		= [POINTER(DATA_BLOB), POINTER(LPWSTR), POINTER(DATA_BLOB), PVOID, PCRYPTPROTECT_PROMPTSTRUCT, DWORD, POINTER(DATA_BLOB)]
 
 prototype = WINFUNCTYPE(ULONG, DWORD, LPDWORD, POINTER(LPGUID))
 vaultEnumerateVaults = prototype(("VaultEnumerateVaults", windll.vaultcli))
@@ -221,7 +346,6 @@ vaultFree = prototype(("VaultFree", windll.vaultcli))
 
 prototype = WINFUNCTYPE(ULONG, PHANDLE)
 vaultCloseVault = prototype(("VaultCloseVault", windll.vaultcli))
-
 
 ############################## Custom functions ##############################
 
@@ -264,3 +388,23 @@ def get_os_version():
 		return False
 
 	return '%s.%s' % (str(os_version.dwMajorVersion.real), str(os_version.dwMinorVersion.real))
+
+
+def isx64machine():
+	archi = os.environ.get("PROCESSOR_ARCHITEW6432", '')
+	if '64' in archi:
+		return True
+
+	archi = os.environ.get("PROCESSOR_ARCHITECTURE", '')
+	if '64' in archi:
+		return True
+
+	return False
+
+isx64 = isx64machine()
+
+def OpenKey(key, path, index=0, access=KEY_READ):
+	if sx64:
+		return _winreg.OpenKey(key, path, index, access | _winreg.KEY_WOW64_64KEY)
+	else:
+		return _winreg.OpenKey(key, path, index, access)

@@ -35,14 +35,6 @@ class Hashdump(ModuleInfo):
 					return False
 		return True
 
-	# try to remove all temporary files
-	# def delete_existing_system_hives(self):
-	# 	for h in constant.hives:
-	# 		try:
-	# 			os.remove(constant.hives[h])
-	# 		except:
-	# 			pass
-
 	def run_cmd(self, cmdline):
 		command=['cmd.exe', '/c', cmdline]
 		info = subprocess.STARTUPINFO()
@@ -58,9 +50,6 @@ class Hashdump(ModuleInfo):
 			return 
 
 		password = dump_file_hashes(constant.hives['system'], constant.hives['sam'])
-
-		# remove hives files
-		# self.delete_existing_system_hives()
 
 		pwdFound = ['__Hashdump__', password]
 		return pwdFound
