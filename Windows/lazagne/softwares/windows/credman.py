@@ -15,14 +15,25 @@ class Credman(ModuleInfo):
 		pwdFound = []
 		creds = POINTER(PCREDENTIAL)()
 		count = c_ulong()
-		if CredEnumerate(None, 0, byref(count), byref(creds)):
+		print_debug('DEBUG', 'Run Credential manager function')
+		if CredEnumerate(None, 0, byref(count), byref(creds)) == 1:
+			print_debug('DEBUG', 'CredEnumerate executed successfully')
+			print_debug('DEBUG', 'cound variable: %s' % str(count))
+			print_debug('DEBUG', 'Number of value: %s' % str(count.value))
 			for i in range(count.value):
+				print_debug('DEBUG', 'cred[i] variable: %s' % str(creds[i]))
 				c = creds[i].contents
+				print_debug('DEBUG', 'c variable: %s' % str(c))
 				if c.Type == CRED_TYPE_GENERIC or c.Type == CRED_TYPE_DOMAIN_VISIBLE_PASSWORD:
+					print_debug('DEBUG', 'value to decrypt found')
 					# For XP:
 					# - password are encrypted with specific salt depending on its Type
 					# - call CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, CRYPTPROTECT_UI_FORBIDDEN, byref(blobOut))
 
+					print_debug('DEBUG', 'target: %s' % str(c.TargetName))
+					print_debug('DEBUG', 'username: %s' % str(c.UserName))
+					print_debug('DEBUG', 'password: %s' % str(c.CredentialBlob[:c.CredentialBlobSize.real:2]))
+					print_debug('DEBUG', 'everything ok')
 					pwdFound.append(
 						{
 							'URL'		:	c.TargetName, 
@@ -30,6 +41,7 @@ class Credman(ModuleInfo):
 							'Password'	:	c.CredentialBlob[:c.CredentialBlobSize.real:2]
 						}
 					)
+			print_debug('DEBUG', 'trying to free the handle')
 			CredFree(creds)
 		return pwdFound
 
