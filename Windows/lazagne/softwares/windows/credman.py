@@ -32,13 +32,14 @@ class Credman(ModuleInfo):
 
 					print_debug('DEBUG', 'target: %s' % str(c.TargetName))
 					print_debug('DEBUG', 'username: %s' % str(c.UserName))
-					print_debug('DEBUG', 'password: %s' % str(c.CredentialBlob[:c.CredentialBlobSize.real:2]))
+					print_debug('DEBUG', 'password: %s' % str(c.CredentialBlob))
+					print_debug('DEBUG', 'size of the password: %s' % str(c.CredentialBlobSize.real))
 					print_debug('DEBUG', 'everything ok')
 					pwdFound.append(
 						{
 							'URL'		:	c.TargetName, 
 							'Login'		: 	c.UserName, 
-							'Password'	:	c.CredentialBlob[:c.CredentialBlobSize.real:2]
+							'Password'	:	c.CredentialBlob[:c.CredentialBlobSize.real].replace('\x00', '')
 						}
 					)
 			print_debug('DEBUG', 'trying to free the handle')
