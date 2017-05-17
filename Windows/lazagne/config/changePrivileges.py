@@ -9,16 +9,18 @@ def GetTokenSid(hToken):
     dwSize      = DWORD(0)
     pStringSid  = LPSTR()
     TokenUser   = 1
+    
     if GetTokenInformation(hToken, TokenUser, byref(TOKEN_USER()), 0, byref(dwSize)) == 0:    
         address = LocalAlloc(0x0040, dwSize)
         if address:
             GetTokenInformation(hToken, TokenUser, address, dwSize, byref(dwSize))
             pToken_User = cast(address, POINTER(TOKEN_USER))
-            ConvertSidToStringSidA(pToken_User.contents.User.Sid, byref(pStringSid))
-            if pStringSid:
-                sid = pStringSid.value
-                LocalFree(address)
-                return sid
+            if pToken_User.contents.User.Sid:
+                ConvertSidToStringSidA(pToken_User.contents.User.Sid, byref(pStringSid))
+                if pStringSid:
+                    sid = pStringSid.value
+                    LocalFree(address)
+                    return sid
     return False
 
 def EnablePrivilege(privilegeStr, hToken=None):
@@ -28,7 +30,7 @@ def EnablePrivilege(privilegeStr, hToken=None):
         if not hToken:
             return False
         
-        hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, False, GetCurrentProcessId())
+        hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, False, os.getpid())
         if not hProcess:
             return False
         
@@ -43,7 +45,7 @@ def EnablePrivilege(privilegeStr, hToken=None):
     e = GetLastError()
     if e != 0:
         return False
-
+    
     SE_PRIVILEGE_ENABLED = 0x00000002
     laa = LUID_AND_ATTRIBUTES(privilege_id, SE_PRIVILEGE_ENABLED)
     tp  = TOKEN_PRIVILEGES(1, laa)
@@ -75,11 +77,11 @@ def ListSids():
             hToken = HANDLE(INVALID_HANDLE_VALUE)
             if not hToken:
                 continue
-            
+    
             OpenProcessToken(hProcess, tokenprivs, byref(hToken))
             if not hToken:
                 continue
-
+            
             token_sid = GetTokenSid(hToken)
             if not token_sid:
                 continue
@@ -160,7 +162,6 @@ def impersonate_sid(sid, close=True):
 global_ref = None
 def impersonate_sid_long_handle(*args, **kwargs):
     global global_ref
-    
     hTokendupe = impersonate_sid(*args, **kwargs)
     if not hTokendupe:
         return False
