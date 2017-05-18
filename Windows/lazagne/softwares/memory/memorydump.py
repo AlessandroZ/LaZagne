@@ -67,18 +67,22 @@ class MemoryDump(ModuleInfo):
 	def run(self, software_name = None):
 		pwdFound = []
 		for process in Process.list():
-			if process.get('name', '') in browser_list:
+			if process.get('name', '').lower() in browser_list:
 				# Get only child process
-				p = psutil.Process(process.get('pid'))
-				if process.get('name') != p.parent().name():
+				try:
+					p = psutil.Process(process.get('pid'))
+					if p.parent():
+						if process.get('name', '').lower() != str(p.parent().name().lower()):
+							continue
+				except:
 					continue
-
+				
 				try:
 					mw = MemWorker(pid=process.get('pid'))
 				except ProcessException:
 					continue
 				
-				print_debug('INFO', 'dumping passwords from %s (pid: %s) ...' % (process.get('name'), str(process.get('pid'))))
+				print_debug('INFO', 'dumping passwords from %s (pid: %s) ...' % (process.get('name', ''), str(process.get('pid', ''))))
 				for _, x in mw.mem_search(password_regex, ftype='groups'):
 					login, password = x[-2:]
 					pwdFound.append(
