@@ -34,7 +34,8 @@ class constant():
 		'HOMEDRIVE': '',
 		'HOMEPATH': '',
 		'ALLUSERSPROFILE': '', 
-		'COMPOSER_HOME': ''
+		'COMPOSER_HOME': '', 
+		'LOCALAPPDATA': ''
 	}
 	username = ''
 
