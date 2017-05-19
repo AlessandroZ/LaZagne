@@ -202,11 +202,13 @@ def set_env_variables(user = getpass.getuser(), toImpersonate = False):
 		constant.profile['HOMEPATH'] = os.environ.get('HOMEPATH', 'C:\\Users\\%s' % user)
 		constant.profile['ALLUSERSPROFILE'] = os.environ.get('ALLUSERSPROFILE', 'C:\\ProgramData')
 		constant.profile['COMPOSER_HOME'] = os.environ.get('COMPOSER_HOME', 'C:\\Users\\%s\\AppData\\Roaming\\Composer\\' % user)
+		constant.profile['LOCALAPPDATA'] = os.environ.get('LOCALAPPDATA', 'C:\\Users\\%s\\AppData\\Local' % user)
 	else:
 		constant.profile['APPDATA'] = 'C:\\Users\\%s\\AppData\\Roaming\\' % user
 		constant.profile['USERPROFILE'] = 'C:\\Users\\%s\\' % user
 		constant.profile['HOMEPATH'] = 'C:\\Users\\%s' % user 
 		constant.profile['COMPOSER_HOME'] = 'C:\\Users\\%s\\AppData\\Roaming\\Composer\\' % user
+		constant.profile['LOCALAPPDATA'] = 'C:\\Users\\%s\\AppData\\Local' % user
 
 # Used to print help menu when an error occurs
 class MyParser(argparse.ArgumentParser):
