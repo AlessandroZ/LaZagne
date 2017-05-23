@@ -525,4 +525,4 @@ class Mozilla(ModuleInfo):
 					if len(values):
 						pwdFound.append(values)
 
-			return pwdFound
+		return pwdFound
