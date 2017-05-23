@@ -62,6 +62,7 @@ def get_modules():
 		Shadow(),
         Aws(),
         Docker(),
+		Ssh(),
 		SQLDeveloper(),
 		Squirrel(),
 		Wifi(),
