@@ -10,6 +10,7 @@ from lazagne.softwares.sysadmin.filezilla import Filezilla
 from lazagne.softwares.sysadmin.env_variable import Env_variable
 from lazagne.softwares.sysadmin.shadow import Shadow
 from lazagne.softwares.sysadmin.aws import Aws
+from lazagne.softwares.sysadmin.ssh import Ssh
 from lazagne.softwares.sysadmin.docker import Docker
 # chats
 from lazagne.softwares.chats.pidgin import Pidgin
@@ -24,8 +25,15 @@ from lazagne.softwares.databases.squirrel import Squirrel
 from lazagne.softwares.databases.dbvis import DbVisualizer
 from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
 # memory
-from lazagne.softwares.memory.mimipy import Mimipy
-from lazagne.softwares.memory.memorydump import MemoryDump
+try:
+	from lazagne.softwares.memory.mimipy import Mimipy
+except:
+	pass
+
+try:
+	from lazagne.softwares.memory.memorydump import MemoryDump
+except:
+	pass
 
 def get_categories():
 	category = {
@@ -49,8 +57,6 @@ def get_modules():
 		Gnome(),
 		Jitsi(),
 		Mozilla(),
-		# MemoryDump(),	 # very long to execute
-		Mimipy(),
 		Opera(),
 		Pidgin(),
 		Shadow(),
@@ -63,4 +69,16 @@ def get_modules():
 		kde(),
 		libsecret()
 	]
+
+	try:
+		moduleNames.append(Mimipy())
+	except:
+		pass
+
+	# very long to execute
+	# try:
+	# 	moduleNames.append(MemoryDump())
+	# except:
+	# 	pass
+
 	return moduleNames
