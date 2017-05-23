@@ -10,6 +10,7 @@ from lazagne.softwares.sysadmin.filezilla import Filezilla
 from lazagne.softwares.sysadmin.env_variable import Env_variable
 from lazagne.softwares.sysadmin.shadow import Shadow
 from lazagne.softwares.sysadmin.aws import Aws
+from lazagne.softwares.sysadmin.docker import Docker
 # chats
 from lazagne.softwares.chats.pidgin import Pidgin
 from lazagne.softwares.chats.jitsi import Jitsi
@@ -54,6 +55,7 @@ def get_modules():
 		Pidgin(),
 		Shadow(),
         Aws(),
+        Docker(),
 		SQLDeveloper(),
 		Squirrel(),
 		Wifi(),
