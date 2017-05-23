@@ -15,6 +15,7 @@ class Env_variable(ModuleInfo):
         pwdFound = []
 
         known_proxies = set()
+        known_tokens = set()
 
         blacklist = (
             'PWD', 'OLDPWD', 'SYSTEMD_NSS_BYPASS_BUS'
@@ -24,6 +25,37 @@ class Env_variable(ModuleInfo):
             'http_proxy', 'https_proxy',
             'HTTP_Proxy', 'HTTPS_Proxy',
             'HTTP_PROXY', 'HTTPS_PROXY'
+        )
+
+        tokens = (
+            ('DigitalOcean', {
+                'ID': None,
+                'KEY': 'DIGITALOCEAN_ACCESS_TOKEN',
+            }),
+            ('DigitalOcean', {
+                'ID': None,
+                'KEY': 'DIGITALOCEAN_API_KEY'
+            }),
+            ('AWS', {
+                'ID': 'AWS_ACCESS_KEY_ID',
+                'KEY': 'AWS_SECRET_ACCESS_KEY',
+            }),
+            ('AWS', {
+                'ID': 'EC2_ACCESS_KEY',
+                'KEY': 'EC2_SECRET_KEY'
+            }),
+            ('GitHub', {
+                'ID': 'GITHUB_CLIENT',
+                'KEY': 'GITHUB_SECRET'
+            }),
+            ('GitHub', {
+                'ID': None,
+                'KEY': 'GITHUB_TOKEN',
+            }),
+            ('OpenStack', {
+                'ID': 'OS_USERNAME',
+                'KEY': 'OS_PASSWORD'
+            })
         )
 
         for process in psutil.process_iter():
@@ -45,12 +77,38 @@ class Env_variable(ModuleInfo):
                     continue
 
                 if parsed.username and parsed.password:
-                    pwdFound.append({
+                    pw = {
                         'Login': parsed.username,
                         'Password': parsed.password,
                         'Host': parsed.hostname,
-                        'Port': parsed.port
-                    })
+                    }
+                    if parsed.port:
+                        pw.update({
+                            'Port': parsed.port
+                        })
+
+                    pwdFound.append(pw)
+
+            for token, kvars in tokens:
+                if not kvars['KEY'] in environ:
+                    continue
+
+                secret = environ[kvars['KEY']]
+
+                if secret in known_tokens:
+                    continue
+
+                pw = {
+                    'Service': token,
+                    'KEY': secret
+                }
+
+                if kvars['ID'] and kvars['ID'] in environ:
+                    pw.update({'ID': environ[kvars['ID']]})
+
+                pwdFound.append(pw)
+
+                known_tokens.add(secret)
 
             for i in environ:
                 for t in ['passwd', 'pwd', 'pass', 'password']:
