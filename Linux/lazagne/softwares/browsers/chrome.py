@@ -8,16 +8,24 @@ from lazagne.config import homes
 import sqlite3
 import tempfile
 
+import os
+
 class Chrome(ModuleInfo):
     def __init__(self):
 		options = {'command': '-C', 'action': 'store_true', 'dest': 'chrome', 'help': 'chrome'}
 		ModuleInfo.__init__(self, 'chrome', 'browsers', options)
 
     def get_paths(self):
-        return homes.get(file=[
-            '.config/google-chrome/Default/Login Data',
-            '.config/chromium/Default/Login Data'
-        ])
+        for profile_dir in homes.get(dir=['.config/google-chrome', '.config/chromium']):
+            try:
+                subdirs = os.listdir(profile_dir)
+            except:
+                continue
+
+            for subdir in subdirs:
+                logins = os.path.join(profile_dir, subdir, 'Login Data')
+                if os.path.isfile(logins):
+                    yield logins
 
     def get_logins(self, path):
         try:
