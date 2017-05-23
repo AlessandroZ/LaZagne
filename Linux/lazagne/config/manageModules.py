@@ -13,6 +13,7 @@ from lazagne.softwares.sysadmin.shadow import Shadow
 from lazagne.softwares.sysadmin.aws import Aws
 from lazagne.softwares.sysadmin.ssh import Ssh
 from lazagne.softwares.sysadmin.docker import Docker
+from lazagne.softwares.sysadmin.cli import Cli
 # chats
 from lazagne.softwares.chats.pidgin import Pidgin
 from lazagne.softwares.chats.jitsi import Jitsi
@@ -53,8 +54,8 @@ def get_modules():
 	moduleNames = [
 		ClawsMail(),
 		DbVisualizer(),
-		Env_variable(),
-		Filezilla(),
+		# Env_variable(),
+		# Filezilla(),
 		Gnome(),
 		Jitsi(),
 		Mozilla(),
@@ -65,6 +66,7 @@ def get_modules():
         Aws(),
         Docker(),
 		Ssh(),
+		Cli(),
 		SQLDeveloper(),
 		Squirrel(),
 		Wifi(),
