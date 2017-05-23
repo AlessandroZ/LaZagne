@@ -9,6 +9,7 @@ from lazagne.softwares.browsers.opera import Opera
 from lazagne.softwares.sysadmin.filezilla import Filezilla
 from lazagne.softwares.sysadmin.env_variable import Env_variable
 from lazagne.softwares.sysadmin.shadow import Shadow
+from lazagne.softwares.sysadmin.aws import Aws
 # chats
 from lazagne.softwares.chats.pidgin import Pidgin
 from lazagne.softwares.chats.jitsi import Jitsi
@@ -52,6 +53,7 @@ def get_modules():
 		Opera(),
 		Pidgin(),
 		Shadow(),
+        Aws(),
 		SQLDeveloper(),
 		Squirrel(),
 		Wifi(),
