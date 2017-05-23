@@ -5,10 +5,15 @@ from lazagne.softwares.wallet.libsecret import libsecret
 # browsers
 from lazagne.softwares.browsers.mozilla import Mozilla
 from lazagne.softwares.browsers.opera import Opera
+from lazagne.softwares.browsers.chrome import Chrome
 # sysadmin
 from lazagne.softwares.sysadmin.filezilla import Filezilla
 from lazagne.softwares.sysadmin.env_variable import Env_variable
 from lazagne.softwares.sysadmin.shadow import Shadow
+from lazagne.softwares.sysadmin.aws import Aws
+from lazagne.softwares.sysadmin.ssh import Ssh
+from lazagne.softwares.sysadmin.docker import Docker
+from lazagne.softwares.sysadmin.cli import Cli
 # chats
 from lazagne.softwares.chats.pidgin import Pidgin
 from lazagne.softwares.chats.jitsi import Jitsi
@@ -22,8 +27,15 @@ from lazagne.softwares.databases.squirrel import Squirrel
 from lazagne.softwares.databases.dbvis import DbVisualizer
 from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
 # memory
-from lazagne.softwares.memory.mimipy import Mimipy
-from lazagne.softwares.memory.memorydump import MemoryDump
+try:
+	from lazagne.softwares.memory.mimipy import Mimipy
+except:
+	pass
+
+try:
+	from lazagne.softwares.memory.memorydump import MemoryDump
+except:
+	pass
 
 def get_categories():
 	category = {
@@ -42,16 +54,19 @@ def get_modules():
 	moduleNames = [
 		ClawsMail(),
 		DbVisualizer(),
-		Env_variable(),
-		Filezilla(),
+		# Env_variable(),
+		# Filezilla(),
 		Gnome(),
 		Jitsi(),
 		Mozilla(),
-		# MemoryDump(),	 # very long to execute
-		Mimipy(),
 		Opera(),
+		Chrome(),
 		Pidgin(),
 		Shadow(),
+        Aws(),
+        Docker(),
+		Ssh(),
+		Cli(),
 		SQLDeveloper(),
 		Squirrel(),
 		Wifi(),
@@ -59,4 +74,16 @@ def get_modules():
 		kde(),
 		libsecret()
 	]
+
+	try:
+		moduleNames.append(Mimipy())
+	except:
+		pass
+
+	# very long to execute
+	# try:
+	# 	moduleNames.append(MemoryDump())
+	# except:
+	# 	pass
+
 	return moduleNames

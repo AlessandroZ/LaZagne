@@ -6,6 +6,7 @@ import xml.etree.cElementTree as ET
 from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config import homes
 
 class SQLDeveloper(ModuleInfo):
 	def __init__(self):
@@ -35,8 +36,7 @@ class SQLDeveloper(ModuleInfo):
 		text = crypter.decrypt(enc_text)
 		return re.sub(r'[\x01-\x08]','',text)
 
-	def get_mainPath(self):
-		directory = '~/.sqldeveloper'
+	def get_mainPath(self, directory):
 		directory = os.path.expanduser(directory)
 		if os.path.exists(directory):
 			for d in os.listdir(directory):
@@ -46,10 +46,9 @@ class SQLDeveloper(ModuleInfo):
 			return 'SQL_NO_PASSWD'
 		else:
 			return 'SQL_NOT_EXISTS'
-	
+
 
 	def get_passphrase(self, path):
-		print path
 		for p in os.listdir(path):
 			if p.startswith('o.sqldeveloper.12'):
 				path += os.sep + p
@@ -116,12 +115,6 @@ class SQLDeveloper(ModuleInfo):
 					elif elem.attrib['addrType'] == 'driver':
 						for e in elem.getchildren():
 							values['Driver'] = e.text
-
-							print_debug('OK', 'Password found !!!')
-							for v in values.keys():
-								print v + ': ' + values[v]
-							print
-
 							pwdFound.append(values)
 
 							values = {}
@@ -131,21 +124,32 @@ class SQLDeveloper(ModuleInfo):
 			print_debug('WARNING', 'The xml file containing the passwords has not been found.')
 
 	def run(self, software_name = None):
-		mainPath = self.get_mainPath()
+		all_passwords = []
+		salt = self.get_salt()
 
-		if mainPath == 'SQL_NOT_EXISTS':
-			print_debug('INFO', 'SQL Developer not installed.')
-		elif mainPath == 'SQL_NO_PASSWD':
-			print_debug('INFO', 'No passwords found.')
-		else:
-			passphrase = self.get_passphrase(mainPath)
+		for path in homes.get(dir='.sqldeveloper'):
+			mainPath = self.get_mainPath(path)
+
+			if mainPath == 'SQL_NOT_EXISTS':
+				print_debug('INFO', 'SQL Developer not installed.')
+				continue
+
+			elif mainPath == 'SQL_NO_PASSWD':
+				print_debug('INFO', 'No passwords found.')
+
+				continue
+			else:
+				passphrase = self.get_passphrase(mainPath)
 
 			if passphrase == 'Not_Found':
 				print_debug('WARNING', 'The passphrase used to encrypt has not been found.')
+				continue
 
 			elif passphrase == 'xml_Not_Found':
 				print_debug('WARNING', 'The xml file containing the passphrase has not been found.')
+				continue
 
 			else:
-				salt = self.get_salt()
-				return self.get_infos(mainPath, passphrase, salt)
+				all_passwords += self.get_infos(mainPath, passphrase, salt)
+
+		return all_passwords
