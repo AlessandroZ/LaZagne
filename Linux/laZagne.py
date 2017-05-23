@@ -40,7 +40,7 @@ modules['mails']['thunderbird'] = Mozilla(True) # For thunderbird (firefox and t
 def output():
 	if args['write_normal']:
 		constant.output = 'txt'
-	
+
 	if args['write_json']:
 		constant.output = 'json'
 
@@ -51,7 +51,7 @@ def output():
 		if not os.path.exists(constant.folder_name):
 			os.makedirs(constant.folder_name)
 			# constant.file_name_results = 'credentials' # let the choice of the name to the user
-		
+
 		if constant.output != 'json':
 			write_header()
 
@@ -65,7 +65,7 @@ def verbosity():
 	if args['verbose']==0: level=logging.CRITICAL
 	elif args['verbose'] == 1: level=logging.INFO
 	elif args['verbose']>=2: level=logging.DEBUG
-	
+
 	FORMAT = "%(message)s"
 	formatter = logging.Formatter(fmt=FORMAT)
 	stream = logging.StreamHandler()
@@ -83,7 +83,7 @@ def manage_advanced_options():
 	# File used for dictionary attacks
 	if 'path' in args:
 		constant.path = args['path']
-	if 'bruteforce' in args: 
+	if 'bruteforce' in args:
 		constant.bruteforce = args['bruteforce']
 
 	# Mozilla advanced options
@@ -91,16 +91,16 @@ def manage_advanced_options():
 		constant.manually = args['manually']
 	if 'specific_path' in args:
 		constant.specific_path = args['specific_path']
-	
+
 	if 'mails' in args['auditType']:
 		constant.mozilla_software = 'Thunderbird'
 	elif 'browsers' in args['auditType']:
 		constant.mozilla_software = 'Firefox'
-	
+
 	# Jitsi advanced options
 	if 'master_pwd' in args:
 		constant.jitsi_masterpass = args['master_pwd']
-	
+
 	# i.e advanced options
 	if 'historic' in args:
 		constant.ie_historic = args['historic']
@@ -109,7 +109,7 @@ def manage_advanced_options():
 def write_in_file(result):
 	try:
 		if constant.output == 'json' or constant.output == 'all':
-			# Human readable Json format 
+			# Human readable Json format
 			prettyJson = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '))
 			with open(constant.folder_name + os.sep + constant.file_name_results + '.json', 'w+') as f:
 				f.write(prettyJson.encode('utf-8', errors='replace'))
@@ -146,7 +146,7 @@ def launch_module(module):
 			pwdFound = module[i].run(i.capitalize())	# run the module
 			print_output(i.capitalize(), pwdFound) 		# print the results
 
-			# return value - not used but needed 
+			# return value - not used but needed
 			yield True, i.capitalize(), pwdFound
 		except:
 			traceback.print_exc()
@@ -176,9 +176,6 @@ def runLaZagne(category_choosed='all'):
 	user = getpass.getuser()
 	constant.finalResults = {}
 	constant.finalResults['User'] = user
-	
-	print '\n\n########## User: %s ##########\n' % user.encode('utf-8', errors='ignore')
-	yield 'User', user
 
 	for r in runModule(category_choosed):
 		yield r
@@ -194,14 +191,14 @@ if __name__ == '__main__':
 	parser.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION), help='laZagne version')
 
 	# ------------------------------------------- Permanent options -------------------------------------------
-	# Version and verbosity 
+	# Version and verbosity
 	PPoptional = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 	PPoptional._optionals.title = 'optional arguments'
 	PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='increase verbosity level')
 	PPoptional.add_argument('-path', dest='path',  action= 'store', help = 'path of a file used for dictionary file')
 	PPoptional.add_argument('-b', dest='bruteforce',  action= 'store', help = 'number of character to brute force')
 
-	# Output 
+	# Output
 	PWrite = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 	PWrite._optionals.title = 'Output'
 	PWrite.add_argument('-oN', dest='write_normal',  action='store_true', help = 'output file in a readable format')
@@ -213,13 +210,13 @@ if __name__ == '__main__':
 	for c in category:
 		category[c]['parser'] = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 		category[c]['parser']._optionals.title = category[c]['help']
-		
+
 		# Manage options
 		category[c]['subparser'] = []
 		for module in modules[c]:
 			m = modules[c][module]
 			category[c]['parser'].add_argument(m.options['command'], action=m.options['action'], dest=m.options['dest'], help=m.options['help'])
-			
+
 			# Manage all suboptions by modules
 			if m.suboptions and m.name != 'thunderbird':
 				tmp = []
@@ -255,7 +252,7 @@ if __name__ == '__main__':
 	args = dict(parser.parse_args()._get_kwargs())
 	arguments = parser.parse_args()
 	category_choosed = args['auditType']
-	
+
 	# Define constant variables
 	output()
 	verbosity()
@@ -267,7 +264,7 @@ if __name__ == '__main__':
 		pass
 
 	# if constant.output == 'json' or constant.output == 'all':
-	# 	# Human readable Json format 
+	# 	# Human readable Json format
 	# 	prettyJson = json.dumps(constant.finalResults, sort_keys=True, indent=4, separators=(',', ': '))
 	# 	with open(constant.folder_name + os.sep + constant.file_name_results + '.json', 'w+') as f:
 	# 		json.dump(prettyJson, f)
