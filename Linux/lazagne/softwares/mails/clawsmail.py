@@ -17,14 +17,14 @@ class ClawsMail(ModuleInfo):
 
 	def run(self, software_name = None):
 		all_passwords = []
-		for path in self.get_homes():
+		for path in self.get_paths():
 			mode = DES.MODE_CFB
 			if 'FreeBSD' in platform.system():
 				mode = DES.MODE_ECB
 
 			all_passwords += self.accountrc_decrypt(path, self.get_passcrypt_key(), mode)
 
-		return pwdFound
+		return all_passwords
 
 	def get_paths(self):
 		return homes.get(file='.claws-mail/accountrc')
