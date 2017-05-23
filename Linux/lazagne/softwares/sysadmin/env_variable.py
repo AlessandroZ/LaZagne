@@ -1,53 +1,63 @@
 #!/usr/bin/env python
 import os
-from lazagne.config.write_output import  print_debug
+from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 
-class Env_variable(ModuleInfo):
-	def __init__(self):
-		options = {'command': '-e', 'action': 'store_true', 'dest': 'env', 'help': 'environment variables'}
-		ModuleInfo.__init__(self, 'Environment variables', 'sysadmin', options)
+import psutil
+import urlparse
 
-	def run(self, software_name = None):
-		values = {}
-		pwdFound = []
-		
-		# --------- http_proxy --------
-		tmp = ''
-		if 'http_proxy' in os.environ:
-			tmp = 'http_proxy'
-		elif 'HTTP_Proxy' in os.environ:
-			tmp = 'HTTP_Proxy'
-		
-		if tmp:
-			values["Login"] = tmp
-			values["Password"] = os.environ[tmp]
-			pwdFound.append(values)
-			
-		# --------- https_proxy --------
-		tmp = ''
-		if 'https_proxy' in os.environ:
-			tmp = 'https_proxy'
-		elif 'HTTPS_Proxy' in os.environ:
-			tmp = 'HTTPS_Proxy'
-		
-		if tmp:
-			values["Login"] = tmp
-			values["Password"] = os.environ[tmp]
-			pwdFound.append(values)
-		
-		tab = ['passwd', 'pwd', 'pass', 'password']
-		for i in os.environ:
-			for t in tab:
-				if (t.upper() in i.upper()) and (i.upper() != 'PWD') and (i.upper() != 'OLDPWD'):
-					values["Login"] = i
-					values["Password"] = os.environ[i]
-		pwdFound.append(values)
-		
-		# write credentials into a text file
-		if len(values) != 0:
-			return pwdFound
-		
-		else:
-			print_debug('INFO', 'No passwords stored in the environment variables.')
-		
+class Env_variable(ModuleInfo):
+    def __init__(self):
+        options = {'command': '-e', 'action': 'store_true', 'dest': 'env', 'help': 'environment variables'}
+        ModuleInfo.__init__(self, 'Environment variables', 'sysadmin', options)
+
+    def run(self, software_name = None):
+        pwdFound = []
+
+        known_proxies = set()
+
+        blacklist = (
+            'PWD', 'OLDPWD', 'SYSTEMD_NSS_BYPASS_BUS'
+        )
+
+        proxies = (
+            'http_proxy', 'https_proxy',
+            'HTTP_Proxy', 'HTTPS_Proxy',
+            'HTTP_PROXY', 'HTTPS_PROXY'
+        )
+
+        for process in psutil.process_iter():
+            try:
+                environ = process.environ()
+            except:
+                continue
+
+            for var in proxies:
+                if not var in environ or environ[var] in known_proxies:
+                    continue
+
+                proxy = environ[var]
+                known_proxies.add(proxy)
+
+                try:
+                    parsed = urlparse.urlparse(proxy)
+                except:
+                    continue
+
+                if parsed.username and parsed.password:
+                    pwdFound.append({
+                        'Login': parsed.username,
+                        'Password': parsed.password,
+                        'Host': parsed.hostname,
+                        'Port': parsed.port
+                    })
+
+            for i in environ:
+                for t in ['passwd', 'pwd', 'pass', 'password']:
+                    if (t.upper() in i.upper()) and (i.upper() not in blacklist):
+                        pwdFound.append({
+                            'Login': i,
+                            'Password': environ[i]
+                        })
+
+        return pwdFound
