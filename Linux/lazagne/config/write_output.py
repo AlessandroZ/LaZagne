@@ -78,6 +78,10 @@ def print_output(software_name, pwdFound):
 					hash = [s for s in lower_list if "hash" in s]
 					if hash:
 						password_category = hash
+					else:
+						cmd = [s for s in lower_list if "cmd" in s]
+						if cmd:
+							password_category = cmd
 
 			# No password found
 			if not password_category:
