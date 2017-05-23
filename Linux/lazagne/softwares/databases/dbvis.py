@@ -5,6 +5,7 @@ import base64, re, os
 import xml.etree.cElementTree as ET
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config import homes
 
 class DbVisualizer(ModuleInfo):
 	def __init__(self):
@@ -17,7 +18,7 @@ class DbVisualizer(ModuleInfo):
 		salt = array.array('b', salt_array)
 		hexsalt = binascii.hexlify(salt)
 		return binascii.unhexlify(hexsalt)
-	
+
 	def get_iteration(self):
 		return 10
 
@@ -45,7 +46,7 @@ class DbVisualizer(ModuleInfo):
 
 	def get_infos(self, path, passphrase, salt):
 		xml_file = path + os.sep + 'config70/dbvis.xml'
-		
+
 		if os.path.exists(xml_file):
 			tree = ET.ElementTree(file=xml_file)
 
@@ -90,23 +91,12 @@ class DbVisualizer(ModuleInfo):
 
 			return pwdFound
 
-	def get_mainPath(self):
-		directory = '~/.dbvis'
-		directory = os.path.expanduser(directory)
-
-		if os.path.exists(directory):
-			return directory
-		else:
-			return 'DBVIS_NOT_EXISTS'
-
 	def run(self, software_name = None):
-		mainPath = self.get_mainPath()
+		all_passwords = []
+		salt = self.get_salt()
+		passphrase = self.get_passphrase()
 
-		if mainPath == 'DBVIS_NOT_EXISTS':
-			print_debug('INFO', 'DbVisualizer not installed.')
+		for path in homes.get(dir='.dbvis'):
+			all_passwords += self.get_infos(path, passphrase, salt)
 
-		else:
-			passphrase = self.get_passphrase()
-
-			salt = self.get_salt()
-			return self.get_infos(mainPath, passphrase, salt)
+		return all_passwords

@@ -38,7 +38,7 @@ def write_credentials(pwdFound, category):
 			tmp = str(tmp) + str(p) + ": " + str(pwd[p]) + "\r\n"
 		tmp = str(tmp) + "\r\n"
 	open(constant.folder_name + os.sep + 'credentials.txt',"a+b").write(tmp)
-	
+
 def checks_write(values, category):
 	if values:
 		if "Passwords" not in constant.finalResults:
@@ -61,14 +61,14 @@ def print_output(software_name, pwdFound):
 		# if the debug logging level is not apply => print the title
 		if logging.getLogger().isEnabledFor(logging.INFO) == False:
 			Header().title(software_name)
-		
+
 		toWrite = []
 		for pwd in pwdFound:
 			password_category = False
 			# detect which kinds of password has been found
 			lower_list = [s.lower() for s in pwd.keys()]
 			password = [s for s in lower_list if "password" in s]
-			if password: 
+			if password:
 				password_category = password
 			else:
 				key = [s for s in lower_list if "key" in s] # for the wifi
@@ -78,25 +78,25 @@ def print_output(software_name, pwdFound):
 					hash = [s for s in lower_list if "hash" in s]
 					if hash:
 						password_category = hash
-			
+
 			# No password found
 			if not password_category:
 				print_debug("FAILED", "Password not found !!!")
 			else:
 				print_debug("OK", '%s found !!!' % password_category[0].title())
 				toWrite.append(pwd)
-				
+
 				# Store all passwords found on a table => for dictionary attack if master password set
 				constant.nbPasswordFound += 1
 				try:
 					constant.passwordFound.append(pwd[password_category[0]])
 				except:
 					pass
-			
+
 			for p in pwd.keys():
 				print '%s: %s' % (p, pwd[p])
 			print
-		
+
 		# write credentials into a text file
 		checks_write(toWrite, software_name)
 	else:
@@ -104,7 +104,7 @@ def print_output(software_name, pwdFound):
 
 
 def print_debug(error_level, message):
-	
+
 	b = bcolors()
 
 	# print when password is found
@@ -121,16 +121,16 @@ def print_debug(error_level, message):
 
 	elif error_level == 'ERROR':
 		logging.error(b.FAIL + '[ERROR] ' + message + '\n' + b.ENDC)
-	
+
 	elif error_level == 'WARNING':
 		logging.warning(b.WARNING + message + '\n' + b.ENDC)
-	
+
 	elif error_level == 'DEBUG':
 		logging.debug(message + '\n')
 
 	elif error_level == 'INFO':
 		logging.info(message + '\n')
-	
+
 	else:
 		logging.info('[%s] %s' % (error_level, message))
 
@@ -149,7 +149,6 @@ def parseJsonResultToBuffer(jsonString, color=False):
 	try:
 		for json in jsonString:
 			if json:
-				buffer += '\r\n\r\n{title_color}########## User: {username} ##########{reset_color}\r\n\r\n'.format(title_color=title, username=json['User'], reset_color=reset)
 				if 'Passwords' not in json:
 					buffer += 'No passwords found for this user !'
 				else:
@@ -169,4 +168,4 @@ def parseJsonResultToBuffer(jsonString, color=False):
 		print_debug('ERROR', 'Error parsing the json results: %s' % e)
 		print_debug('ERROR', 'json content: %s' % jsonString)
 
-	return buffer 
+	return buffer

