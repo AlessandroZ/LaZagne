@@ -5,6 +5,7 @@ from lazagne.softwares.wallet.libsecret import libsecret
 # browsers
 from lazagne.softwares.browsers.mozilla import Mozilla
 from lazagne.softwares.browsers.opera import Opera
+from lazagne.softwares.browsers.chrome import Chrome
 # sysadmin
 from lazagne.softwares.sysadmin.filezilla import Filezilla
 from lazagne.softwares.sysadmin.env_variable import Env_variable
@@ -58,6 +59,7 @@ def get_modules():
 		Jitsi(),
 		Mozilla(),
 		Opera(),
+		Chrome(),
 		Pidgin(),
 		Shadow(),
         Aws(),
