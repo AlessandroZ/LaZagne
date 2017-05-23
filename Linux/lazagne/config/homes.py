@@ -36,6 +36,24 @@ def get(file=[], dir=[]):
         if not files and not dirs and os.path.isdir(p):
             yield p
 
+def users(file=[], dir=[]):
+    files = file if (type(file) in (tuple, list)) else [file]
+    dirs = dir if (type(dir) in (tuple, list)) else [dir]
+
+    for pw in pwd.getpwall():
+        if files:
+            for file in files:
+                if os.path.isfile(os.path.join(pw.pw_dir, file)):
+                    yield pw.pw_name, os.path.join(pw.pw_dir, file)
+
+        if dirs:
+            for dir in dirs:
+                if os.path.isdir(os.path.join(pw.pw_dir, dir)):
+                    yield pw.pw_name, os.path.join(pw.pw_dir, dir)
+
+        if not files and not dirs and os.path.isdir(pw.pw_dir):
+            yield pw.pw_name, pw.pw_dir
+
 def sessions(setenv=True):
     visited = set()
 
