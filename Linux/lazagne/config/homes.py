@@ -70,21 +70,27 @@ def sessions(setenv=True):
 
                 if setenv:
                     previous_uid = os.geteuid()
+                    previous = None
                     if not uid == previous_uid:
                         try:
                             os.seteuid(uid)
                         except:
                             continue
 
-                    previous = os.environ['DBUS_SESSION_BUS_ADDRESS']
+                    if 'DBUS_SESSION_BUS_ADDRESS' is os.environ:
+                        previous = os.environ['DBUS_SESSION_BUS_ADDRESS']
+
                     os.environ['DBUS_SESSION_BUS_ADDRESS'] = address
 
                 try:
                     yield (uid, address)
                 finally:
                     if setenv:
-                        os.environ['DBUS_SESSION_BUS_ADDRESS'] = previous
-
+                        if previous:
+                            os.environ['DBUS_SESSION_BUS_ADDRESS'] = previous
+                        else:
+                            del os.environ['DBUS_SESSION_BUS_ADDRESS']
+                        
                         if previous_uid != uid:
                             try:
                                 os.seteuid(previous_uid)
