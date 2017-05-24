@@ -15,7 +15,7 @@ class kde(ModuleInfo):
 	
 	def run(self, software_name = None):		
 		if os.getuid() == 0:
-			print_debug('INFO', 'Do not run with root privileges)\n')
+			print_debug('INFO', 'Do not run with root privileges\n')
 			return
 		try:
 		    from PyKDE4.kdeui import KWallet
