@@ -16,7 +16,7 @@ class Ssh(ModuleInfo):
         known = set()
         for user, identity in homes.users(file=[
             os.path.join('.ssh', item) for item in (
-                'id_rsa', 'id_rsa', 'id_ecdsa', 'id_ed25519'
+                'id_rsa', 'id_dsa', 'id_ecdsa', 'id_ed25519'
             )
         ]):
             if os.path.isfile(identity):
