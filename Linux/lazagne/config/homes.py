@@ -1,6 +1,5 @@
 import pwd
 import os
-import psutil
 
 def directories():
     visited = set()
@@ -54,48 +53,72 @@ def users(file=[], dir=[]):
         if not files and not dirs and os.path.isdir(pw.pw_dir):
             yield pw.pw_name, pw.pw_dir
 
+def get_linux_env(pid):
+    try:
+        with open('/proc/%d/environ'%(int(pid))) as env:
+            records = [
+                record.split('=', 1) for record in env.read().split('\x00')
+            ]
+
+            return {
+                record[0]:record[1] for record in records if len(record) == 2
+            }
+    except:
+        return {}
+
 def sessions(setenv=True):
+    import psutil
+
     visited = set()
 
     for process in psutil.process_iter():
         try:
-            environ = process.environ()
+            if hasattr(process, 'environ'):
+                environ = process.environ()
+            else:
+                # Fallback to manual linux-only method
+                # if psutils is very old
+                environ = get_linux_env(process.pid)
         except:
             continue
 
-        if 'DBUS_SESSION_BUS_ADDRESS' in environ:
-            address = environ['DBUS_SESSION_BUS_ADDRESS']
-            if not address in visited:
-                uid = process.uids().effective
+        if not 'DBUS_SESSION_BUS_ADDRESS' in environ:
+            continue
 
+        address = environ['DBUS_SESSION_BUS_ADDRESS']
+        if not address in visited:
+            uid = process.uids().effective
+
+            if setenv:
+                previous_uid = os.geteuid()
+                previous = None
+                if not uid == previous_uid:
+                    try:
+                        os.seteuid(uid)
+                    except:
+                        continue
+
+                if 'DBUS_SESSION_BUS_ADDRESS' is os.environ:
+                    previous = os.environ['DBUS_SESSION_BUS_ADDRESS']
+
+                os.environ['DBUS_SESSION_BUS_ADDRESS'] = address
+
+            try:
+                yield (uid, address)
+            except Exception, e:
+                pass
+            finally:
                 if setenv:
-                    previous_uid = os.geteuid()
-                    previous = None
-                    if not uid == previous_uid:
+                    if previous:
+                        os.environ['DBUS_SESSION_BUS_ADDRESS'] = previous
+                    else:
+                        del os.environ['DBUS_SESSION_BUS_ADDRESS']
+
+                    if previous_uid != uid:
                         try:
-                            os.seteuid(uid)
+                            os.seteuid(previous_uid)
                         except:
-                            continue
-
-                    if 'DBUS_SESSION_BUS_ADDRESS' is os.environ:
-                        previous = os.environ['DBUS_SESSION_BUS_ADDRESS']
-
-                    os.environ['DBUS_SESSION_BUS_ADDRESS'] = address
-
-                try:
-                    yield (uid, address)
-                finally:
-                    if setenv:
-                        if previous:
-                            os.environ['DBUS_SESSION_BUS_ADDRESS'] = previous
-                        else:
-                            del os.environ['DBUS_SESSION_BUS_ADDRESS']
-                        
-                        if previous_uid != uid:
-                            try:
-                                os.seteuid(previous_uid)
-                            except:
-                                pass
+                            pass
 
                 visited.add(address)
 
