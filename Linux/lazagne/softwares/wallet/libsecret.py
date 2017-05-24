@@ -6,7 +6,7 @@ from lazagne.config import homes
 
 class libsecret(ModuleInfo):
     def __init__(self):
-        options = {'command': '-k', 'action': 'store_true', 'dest': 'kwallet', 'help': 'KWallet'}
+        options = {'command': '-l', 'action': 'store_true', 'dest': 'libsecret', 'help': 'libsecret'}
         ModuleInfo.__init__(self, 'libsecret', 'wallet', options)
 
     def run(self, software_name = None):
