@@ -454,7 +454,6 @@ class Mozilla(ModuleInfo):
 		pwdFound = []
 
 		for profile in profile_list:
-			print(profile)
 			print_debug('INFO', 'Profile path found: %s' % profile)
 			if not os.path.exists(profile + os.sep + 'key3.db'):
 				print_debug('WARNING', 'key3 file not found: %s' % self.key3)
