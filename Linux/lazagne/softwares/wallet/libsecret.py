@@ -23,7 +23,12 @@ class libsecret(ModuleInfo):
         for _, session in homes.sessions():
             try:
                 bus = dbus.bus.BusConnection(session)
+
+                if not 'org.freedesktop.secrets' in [ str(x) for x in bus.list_names() ]:
+                    continue
+
                 collections = list(secretstorage.collection.get_all_collections(bus))
+
             except Exception, e:
                 print e
                 continue
