@@ -16,6 +16,8 @@ class Skype(ModuleInfo):
 		options = {'command': '-s', 'action': 'store_true', 'dest': 'skype', 'help': 'skype'}
 		ModuleInfo.__init__(self, 'skype', 'chats', options)
 
+		self.pwdFound = []
+
 	def aes_encrypt(self, message, passphrase):
 		IV = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
 		aes = AES.new(passphrase, AES.MODE_CBC, IV)
@@ -100,6 +102,43 @@ class Skype(ModuleInfo):
 				return word
 		return False
 	
+	def get_username(self, path):
+		xml_file = os.path.join(path, 'shared.xml')
+		if os.path.exists(xml_file):
+			tree = ET.ElementTree(file=xml_file)
+			username = tree.find('Lib/Account/Default')
+			try:
+				return username.text
+			except:
+				pass
+		return False
+
+	def get_info(self, key, username, path):
+		if os.path.exists(os.path.join(path, 'config.xml')):
+			values = {}
+			
+			try:
+				values['Login'] = username
+				
+				# get encrypted hash from the config file
+				enc_hex = self.get_hash_credential(os.path.join(path, 'config.xml'))
+				
+				if not enc_hex:
+					print_debug('WARNING', 'No credential stored on the config.xml file.')
+				else:
+					# decrypt the hash to get the md5 to brue force
+					values['Hash'] = self.get_md5_hash(enc_hex, key)
+					values['shema to bruteforce using md5'] = values['Login'] + '\\nskyper\\n<password>'
+					
+					# Try a dictionary attack on the hash
+					password = self.dictionary_attack(values['Login'], values['Hash'])
+					if password:
+						values['Password'] = password
+
+					self.pwdFound.append(values)
+			except Exception,e:
+				print_debug('DEBUG', '{0}'.format(e))
+
 	# main function
 	def run(self, software_name = None):
 		directory = constant.profile['APPDATA'] + '\Skype'
@@ -110,34 +149,17 @@ class Skype(ModuleInfo):
 			if not key:
 				print_debug('ERROR', 'The salt has not been retrieved')
 			else:
-				pwdFound = []
-				for d in os.listdir(directory):
-					if os.path.exists(os.path.join(directory, d, 'config.xml')):
-						values = {}
-						
-						try:
-							values['Login'] = d
-							
-							# get encrypted hash from the config file
-							enc_hex = self.get_hash_credential(os.path.join(directory, d, 'config.xml'))
-							
-							if not enc_hex:
-								print_debug('WARNING', 'No credential stored on the config.xml file.')
-							else:
-								# decrypt the hash to get the md5 to brue force
-								values['Hash'] = self.get_md5_hash(enc_hex, key)
-								values['shema to bruteforce using md5'] = values['Login'] + '\\nskyper\\n<password>'
-								
-								# Try a dictionary attack on the hash
-								password = self.dictionary_attack(values['Login'], values['Hash'])
-								if password:
-									values['Password'] = password
+				username = self.get_username(directory)
+				if username: 
+					d = os.path.join(directory, username)
+					if os.path.exists(d): 
+						self.get_info(key, username, d)
 
-								pwdFound.append(values)
-						except Exception,e:
-							print_debug('DEBUG', '{0}'.format(e))
+				if not self.pwdFound:
+					for d in os.listdir(directory):
+						self.get_info(key, d, os.path.join(directory, d))
 
-				return pwdFound
+				return self.pwdFound
 		else:
 			print_debug('INFO', 'Skype not installed.')
 			
