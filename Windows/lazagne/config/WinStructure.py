@@ -404,7 +404,7 @@ def isx64machine():
 isx64 = isx64machine()
 
 def OpenKey(key, path, index=0, access=KEY_READ):
-	if sx64:
+	if isx64:
 		return _winreg.OpenKey(key, path, index, access | _winreg.KEY_WOW64_64KEY)
 	else:
 		return _winreg.OpenKey(key, path, index, access)
