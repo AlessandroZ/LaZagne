@@ -63,7 +63,7 @@ class FileAddressSpace:
     def is_valid_address(self, addr):
         return addr < self.fsize - 1
 
-    def close():
+    def close(self):
         self.fhandle.close()
 
 # Code below written by Brendan Dolan-Gavitt
