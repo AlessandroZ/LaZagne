@@ -200,7 +200,7 @@ class Salsa20(object):
             ctx[ 1],ctx[ 2],ctx[ 3],ctx[ 4] = little4_i32.unpack(key[0:16])
             ctx[11],ctx[12],ctx[13],ctx[14] = little4_i32.unpack(key[0:16])
         else:
-            raise exception( "key length isn't 32 or 16 bytes." )
+            raise Exception( "key length isn't 32 or 16 bytes." )
         ctx[0],ctx[5],ctx[10],ctx[15] = little4_i32.unpack( constants )
 
         
