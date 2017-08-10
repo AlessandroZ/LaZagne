@@ -145,9 +145,10 @@ def parseJsonResultToBuffer(jsonString, color=False):
 	reset = ''
 	title = ''
 	if color:
-		green = Fore.GREEN
-		title = Style.BRIGHT + Fore.WHITE
-		reset = Style.RESET_ALL
+		b = bcolors()
+		green = b.OK
+		title = b.TITLE
+		reset = b.ENDC
 
 	buffer = ''
 	try:
