@@ -129,10 +129,13 @@ def get_obj_offset(types, member_list):
     current_type = member_list.pop()
 
     offset = 0
+    current_member = 0
+    member_dict = None
 
     while (len(member_list) > 0):
         if current_type == 'array':
-            current_type = member_dict[current_member][1][2][0]
+            if member_dict:
+                current_type = member_dict[current_member][1][2][0]
             if current_type in builtin_types:
                 current_type_size = builtin_size(current_type)
             else:
