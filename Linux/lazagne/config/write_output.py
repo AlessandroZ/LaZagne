@@ -8,6 +8,7 @@ from lazagne.config.color import bcolors
 from lazagne.config.constant import constant
 import logging
 import json
+from colorama import Fore, Style
 
 # --------------------------- Functions used to write ---------------------------
 
