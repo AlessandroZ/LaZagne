@@ -58,6 +58,16 @@ laZagne.exe all -path file.txt
 laZagne.exe all -vv
 ```
 
+* Quiet mode (nothing will be printed on the standard output)
+```
+laZagne.exe all -quiet -oA
+```
+
+* Retrieve passwords on another drive (default: C) 
+```
+laZagne.exe all -drive D
+```
+
 __Note: For wifi passwords \ Windows Secrets, launch it with administrator privileges (UAC Authentication / sudo)__
 
 Supported software
