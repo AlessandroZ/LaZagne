@@ -10,7 +10,7 @@ import os
 
 class IE(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-e', 'action': 'store_true', 'dest': 'Internet Explorer', 'help': 'internet explorer (stored in registry and using the credential manager)'}
+		options = {'command': '-e', 'action': 'store_true', 'dest': 'Internet Explorer', 'help': 'internet explorer (check in registry and in the credential manager)'}
 		suboptions = [{'command': '-l', 'action': 'store', 'dest': 'historic', 'help': 'text file with a list of websites', 'title': 'Advanced ie option'}]
 		ModuleInfo.__init__(self, 'ie', 'browsers', options, suboptions, cannot_be_impersonate_using_tokens=True)
 
