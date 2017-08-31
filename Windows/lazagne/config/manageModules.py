@@ -1,6 +1,7 @@
 # browsers
 from lazagne.softwares.browsers.mozilla import Mozilla
 from lazagne.softwares.browsers.chrome import Chrome
+from lazagne.softwares.browsers.coccoc import CocCoc
 from lazagne.softwares.browsers.opera import Opera
 from lazagne.softwares.browsers.ie import IE
 # windows
@@ -76,6 +77,7 @@ def get_modules():
 		Autologon(),
 		Dbvisualizer(), 
 		Chrome(), 
+		CocCoc(),
 		CoreFTP(), 
 		Cyberduck(),
 		Filezilla(), 
