@@ -1,24 +1,39 @@
+LaZagne 2.3 (31/08/2017)
+- Only Windows
+	* Bug "UnicodeDecodeError" resolved (#134) 
+		* Support many alphabets (for chinese, russian, ... passwords)
+			* Well managed when password are written to files (Lazagne.exe all -oA), not always correct when printed on the console (depend on the system encoding)
+	* New module added 
+		* CocCoc browser supported (#141)
+	* Quiet mode added to not print anything on the console (#140) => lazagne.exe all -quiet 
+	* Retrieve passwords from another drive (#142) => lazagne all -drive D
+	* lsa secrets are well written on files (when -oA, -oJ or -oN options are used)
+
+LaZagne 2.2 (17/05/2017)
+- Only Windows
+	* Bug correction: #118
+
 LaZagne 2.1 (28/04/2017)
 - Only Windows
-	* removing many dependencies (win32api, win32crypt, win32xxx, colorama, etc.) using ctypes
-	* adding little modules
-		* retrieve passwords when autologon is enabled
-		* retrieve passwords stored in unattended files
-	* using creddump to retrieve system hashes + LSA secrets
-	* retrieve chrome passwords from multiple profiles
-	* little bugs fixed + some code review
+	* Removing many dependencies (win32api, win32crypt, win32xxx, colorama, etc.) using ctypes
+	* Adding little modules
+		* Retrieve passwords when autologon is enabled
+		* Retrieve passwords stored in unattended files
+	* Using creddump to retrieve system hashes + LSA secrets
+	* Retrieve chrome passwords from multiple profiles
+	* Little bugs fixed + some code review
 
 - Linux
-	* adding mimipy module from n1nj4sec (https://github.com/n1nj4sec/mimipy) to retrieve the system password from memory (need root privileges)
+	* Adding mimipy module from n1nj4sec (https://github.com/n1nj4sec/mimipy) to retrieve the system password from memory (need root privileges)
 
 LaZagne 2.0 (20/12/2016)
 - Only Windows:
-	* only one process is launched (impersonnation is done using "ImpersonateLoggedOnUser" and no more "CreateProcessAsUser")
-	* no more temporary files written on the disk
-		* uses of powerdump from empire (thanks to adaptivethreat) to avoid writing hives on the disk (avoid "reg save ...")
-	* better way to catch errors
-	* json fixes (output to be more "human readable" + error encoding)
-	* code cleaned
+	* Only one process is launched (impersonnation is done using "ImpersonateLoggedOnUser" and no more "CreateProcessAsUser")
+	* No more temporary files written on the disk
+		* Uses of powerdump from empire (thanks to adaptivethreat) to avoid writing hives on the disk (avoid "reg save ...")
+	* Better way to catch errors
+	* Json fixes (output to be more "human readable" + error encoding)
+	* Code cleaned
 	* New category added called "memory": used to retrieve password in memory
 		* KeeThief added (thanks to adaptivethreat) - retrieve keepass (version 2.x) password from memory
 			* Powershell code used from https://github.com/adaptivethreat/KeeThief/
