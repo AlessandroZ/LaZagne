@@ -26,6 +26,10 @@ import getpass
 import traceback
 import ctypes
 
+
+# Useful for the pupy project
+sys.setrecursionlimit(10000) # workaround to this error: RuntimeError: maximum recursion depth exceeded while calling a Python object
+
 # object used to manage the output / write functions (cf write_output file)
 constant.st = StandartOutput()
 
