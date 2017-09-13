@@ -82,6 +82,12 @@ For developers
 Please refer to the wiki before opening an issue to understand how to compile the project or to develop a new module.
 https://github.com/AlessandroZ/LaZagne/wiki
 
+Donation
+----
+If you want to support my work doing a donation, I will appreciate a lot:
+* Via BTC: 16zJ9wTXU4f1qfMLiWvdY3woUHtEBxyriu
+
+* Via pledgie :  <a href='https://pledgie.com/campaigns/34745'><img alt='Click here to lend your support to: The LaZagne Project and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/34745.png?skin_name=chrome' border='0' ></a>
 
 Special thanks
 ----
