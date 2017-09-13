@@ -159,10 +159,11 @@ def manage_advanced_options():
 	if 'drive' in args:
 		drive = args['drive'].upper()
 		# drive letter between A and Z
-		if drive != constant.drive and len(drive) == 1 and (ord(drive) >= 50 and ord(drive) <= 90):
-			constant.drive = drive
-		else:
-			print_debug('ERROR', 'Drive letter should be a letter between A and Z')
+		if drive != constant.drive:
+			if len(drive) == 1 and (ord(drive) >= 50 and ord(drive) <= 90):
+				constant.drive = drive
+			else:
+				print_debug('ERROR', 'Drive letter should be a letter between A and Z')
 
 # Run only one module
 def runModule(category_choosed, need_high_privileges=False, need_system_privileges=False, not_need_to_be_in_env=False, cannot_be_impersonate_using_tokens=False):
