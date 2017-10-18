@@ -82,9 +82,9 @@ class KeeThief():
 
 	def check_if_version_2x(self):
 		p = psutil.Process(self._pid)
-		dirname = os.path.dirname(p.exe())
+		dirname = os.path.dirname(unicode(p.exe()))
 		# version 1 use an ini configuration file
-		if os.path.exists(os.path.join(dirname, 'KeePass.config.xml')):
+		if os.path.exists(os.path.join(dirname, u'KeePass.config.xml')):
 			return True
 		else:
 			return False

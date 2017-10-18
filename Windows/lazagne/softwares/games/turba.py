@@ -26,15 +26,15 @@ class Turba(ModuleInfo):
 			print_debug('INFO', 'Steam does not appear to be installed.')
 			return
 			
-		steampath = results[0]
-		steamapps = steampath + '\\SteamApps\common'
+		steampath = unicode(results[0])
+		steamapps = steampath + u'\\SteamApps\common'
 		
 		# Check that we have a SteamApps directory
 		if not os.path.exists(steamapps):
 			print_debug('ERROR', 'Steam doesn\'t have a SteamApps directory.')
 			return
 		
-		filepath = steamapps + '\\Turba\\Assets\\Settings.bin'
+		filepath = steamapps + u'\\Turba\\Assets\\Settings.bin'
 		
 		if not os.path.exists(filepath):
 			print_debug('INFO', 'Turba doesn\'t appear to be installed.')

@@ -13,12 +13,12 @@ class Cyberduck(ModuleInfo):
 
 	# find the user.config file containing passwords
 	def get_application_path(self):
-		directory = os.path.join(constant.profile['APPDATA'], '\Cyberduck')
+		directory = os.path.join(constant.profile['APPDATA'], u'\Cyberduck')
 		if os.path.exists(directory):
-			for dir in os.listdir(directory):
-				if dir.startswith('Cyberduck'):
-					for d in os.listdir(directory + os.sep + dir):
-						path = directory + os.sep + dir + os.sep + d + os.sep + 'user.config'
+			for dr in os.listdir(directory):
+				if dr.startswith(u'Cyberduck'):
+					for d in os.listdir(os.path.join(directory, unicode(dr))):
+						path = os.path.join(directory, unicode(dr), unicode(d), u'user.config')
 						if os.path.exists(path):
 							return path
 			

@@ -10,8 +10,8 @@ class Robomongo(ModuleInfo):
     def __init__(self):
         options = {'command': '-rbm', 'action': 'store_true', 'dest': 'robomongo', 'help': 'robomongo'}
         ModuleInfo.__init__(self, 'robomongo', 'database', options)
-        self.connections_file_location = constant.profile['USERPROFILE'] + "\\.config\\robomongo"
-        self.connections_file_name = "robomongo.json"
+        self.connections_file_location  = constant.profile['USERPROFILE'] + u'\\.config\\robomongo'
+        self.connections_file_name      = u'robomongo.json'
 
     def read_file_content(self, file_path):
         """
@@ -23,7 +23,7 @@ class Robomongo(ModuleInfo):
         """
         content = ""
         if isfile(file_path):
-            with open(file_path, "r") as file_handle:
+            with open(file_path, 'r') as file_handle:
                 content = file_handle.read()
 
         return content

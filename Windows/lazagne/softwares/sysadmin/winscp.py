@@ -88,8 +88,8 @@ class WinSCP(ModuleInfo):
 				except Exception,e:
 					print_debug('DEBUG', '{0}'.format(e))
 				
-				values['URL'] = self.hostname
-				values['Port'] = port
+				values['URL'] 	= self.hostname
+				values['Port'] 	= port
 				values['Login'] = self.username
 				
 				pwdFound.append(values)

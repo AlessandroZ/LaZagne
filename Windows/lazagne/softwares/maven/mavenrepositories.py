@@ -22,7 +22,7 @@ class MavenRepositories(ModuleInfo):
         :return: The master password value or None if no master password exists.
         """
         master_password = None
-        master_password_file_location = constant.profile["USERPROFILE"] + "\\.m2\\settings-security.xml"
+        master_password_file_location = constant.profile["USERPROFILE"] + u'\\.m2\\settings-security.xml'
         if os.path.isfile(master_password_file_location):
             try:
                 config = ET.parse(master_password_file_location).getroot()
@@ -45,7 +45,7 @@ class MavenRepositories(ModuleInfo):
         :return: List of dict in which one dict contains all information for a repository.
         """
         repos_creds = []
-        maven_settings_file_location = constant.profile["USERPROFILE"] + "\\.m2\\settings.xml"
+        maven_settings_file_location = constant.profile["USERPROFILE"] + u'\\.m2\\settings.xml'
         if os.path.isfile(maven_settings_file_location):
             try:
                 settings = ET.parse(maven_settings_file_location).getroot()

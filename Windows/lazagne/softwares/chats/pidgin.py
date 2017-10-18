@@ -10,7 +10,7 @@ class Pidgin(ModuleInfo):
 		ModuleInfo.__init__(self, 'pidgin', 'chats', options, need_to_be_in_env=False)
 
 	def run(self, software_name = None):		
-		path = os.path.join(constant.profile['APPDATA'], '.purple', 'accounts.xml')
+		path = os.path.join(constant.profile['APPDATA'], u'.purple', u'accounts.xml')
 		
 		if os.path.exists(path):
 			tree = ET.ElementTree(file=path)

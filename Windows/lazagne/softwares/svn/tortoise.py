@@ -14,7 +14,7 @@ class Tortoise(ModuleInfo):
 	def run(self, software_name = None):	
 		pwdFound = []
 		
-		file_path = os.path.join(constant.profile["APPDATA"], 'Subversion\\auth\\svn.simple')
+		file_path = os.path.join(constant.profile["APPDATA"], u'Subversion\\auth\\svn.simple')
 		if os.path.exists(file_path):
 			for root, dirs, files in os.walk(file_path + os.sep):
 				for name_file in files:

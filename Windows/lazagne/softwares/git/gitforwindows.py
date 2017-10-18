@@ -43,11 +43,11 @@ class GitForWindows(ModuleInfo):
         # According to the "git-credential-store" documentation:
         # Build a list of locations in which git credentials can be stored
         locations = [
-            constant.profile["USERPROFILE"] + "\\.git-credentials", 
-            constant.profile["USERPROFILE"] + "\\.config\\git\\credentials"
+            constant.profile["USERPROFILE"] + u'\\.git-credentials', 
+            constant.profile["USERPROFILE"] + u'\\.config\\git\\credentials'
         ]
         if "XDG_CONFIG_HOME" in os.environ:
-            locations.append(os.environ.get("XDG_CONFIG_HOME") + "\\git\\credentials")
+            locations.append(unicode(os.environ.get('XDG_CONFIG_HOME')) + u'\\git\\credentials')
 
         # Apply the password extraction on the defined locations
         pwd_found = []

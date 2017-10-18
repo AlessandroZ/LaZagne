@@ -14,13 +14,13 @@ class Chrome(ModuleInfo):
 
 	# main function
 	def run(self, software_name = None):		
-		homedrive = constant.profile['HOMEDRIVE']
-		homepath = constant.profile['HOMEPATH']
+		homedrive 	= constant.profile['HOMEDRIVE']
+		homepath 	= constant.profile['HOMEPATH']
 		
 		# all possible path
 		pathTab = [
-			homedrive + homepath + '\\Local Settings\\Application Data\\Google\\Chrome\\User Data', 
-			homedrive + homepath + '\\AppData\\Local\\Google\\Chrome\\User Data', 
+			homedrive + homepath + u'\\Local Settings\\Application Data\\Google\\Chrome\\User Data', 
+			homedrive + homepath + u'\\AppData\\Local\\Google\\Chrome\\User Data', 
 		]
 
 		application_path = [p for p in pathTab if os.path.exists(p)]
@@ -33,8 +33,8 @@ class Chrome(ModuleInfo):
 
 		# try to list all users profile
 		profiles = []
-		if os.path.exists(os.path.join(application_path, 'Local State')):
-			with open(os.path.join(application_path, 'Local State')) as file: 
+		if os.path.exists(os.path.join(application_path, u'Local State')):
+			with open(os.path.join(application_path, u'Local State')) as file: 
 				try:
 					data = json.load(file)
 					for profile in data['profile']['info_cache']:
@@ -47,15 +47,15 @@ class Chrome(ModuleInfo):
 
 		pwdFound = []
 		for profile in profiles:
-			database_path = os.path.join(application_path, profile, 'Login Data')
+			database_path = os.path.join(application_path, profile, u'Login Data')
 			if not os.path.exists(database_path):
 				print_debug('INFO', 'User database not found')
 				continue
 
 			# Copy database before to query it (bypass lock errors)
 			try:
-				shutil.copy(database_path, os.path.join(os.getcwd(), 'tmp_db'))
-				database_path = os.path.join(os.getcwd(), 'tmp_db')
+				shutil.copy(database_path, os.path.join(unicode(os.getcwd()), u'tmp_db'))
+				database_path = os.path.join(unicode(os.getcwd()), u'tmp_db')
 			except Exception,e:
 				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', 'An error occured copying the database file')
@@ -91,7 +91,7 @@ class Chrome(ModuleInfo):
 					print_debug('DEBUG', '{0}'.format(e))
 			
 			conn.close()
-			if database_path.endswith('tmp_db'):
+			if database_path.endswith(u'tmp_db'):
 				os.remove(database_path)
 
 		return pwdFound
