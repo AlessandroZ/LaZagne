@@ -23,20 +23,20 @@ class Unattended(ModuleInfo):
 			return 
 
 		constant.checkUnattended = True
-		windir = os.path.join(constant.profile['HOMEDRIVE'], '\Windows')
+		windir = os.path.join(constant.profile['HOMEDRIVE'], unicode(os.sep), u'Windows')
 		files = [
-			"\Panther\Unattend.xml",
-			"\Panther\Unattended.xml", 
-			"\Panther\Unattend\Unattended.xml", 
-			"\Panther\Unattend\Unattend.xml", 
-			"\System32\Sysprep\unattend.xml", 
-			"\System32\Sysprep\Panther\unattend.xml"
+			'Panther\Unattend.xml',
+			'Panther\Unattended.xml', 
+			'Panther\Unattend\Unattended.xml', 
+			'Panther\Unattend\Unattend.xml', 
+			'System32\Sysprep\unattend.xml', 
+			'System32\Sysprep\Panther\unattend.xml'
 		]
 
 		pwdFound = []
 		xmlns = '{urn:schemas-microsoft-com:unattend}'
 		for file in files:
-			path = '%s%s' % (windir, file)
+			path = os.path.join(windir, unicode(file))
 			if os.path.exists(path):
 				print_debug('INFO', 'Unattended file found: %s' % path)
 				tree = ET.ElementTree(file=path)

@@ -26,7 +26,7 @@ class Puttycm(ModuleInfo):
 
 	def get_default_database(self):
 		key = OpenKey(HKEY_CURRENT_USER, 'Software\\ACS\\PuTTY Connection Manager')
-		db = str(_winreg.QueryValueEx(key, 'DefaultDatabase')[0])
+		db = unicode(_winreg.QueryValueEx(key, 'DefaultDatabase')[0])
 		_winreg.CloseKey(key)
 		if db:
 			return db

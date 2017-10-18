@@ -20,7 +20,7 @@ class Wifi(ModuleInfo):
 			print_debug('WARNING', '[!] This script should be run as admin!')
 			return
 		else:
-			directory = constant.profile['ALLUSERSPROFILE'] + os.sep + 'Microsoft\Wlansvc\Profiles\Interfaces'
+			directory = os.path.join(constant.profile['ALLUSERSPROFILE'], u'Microsoft\Wlansvc\Profiles\Interfaces')
 
 			# for windows Vista or higher
 			if os.path.exists(directory):

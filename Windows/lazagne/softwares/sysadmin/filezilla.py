@@ -11,19 +11,19 @@ class Filezilla(ModuleInfo):
 		ModuleInfo.__init__(self, 'filezilla', 'sysadmin', options, need_to_be_in_env=False)
 
 	def run(self, software_name = None):		
-		directory = os.path.join(constant.profile['APPDATA'], '\FileZilla')
+		directory = os.path.join(constant.profile['APPDATA'], u'\FileZilla')
 		
 		interesting_xml_file = []
 		info_xml_file = []
-		if os.path.exists(os.path.join(directory, 'sitemanager.xml')):
+		if os.path.exists(os.path.join(directory, u'sitemanager.xml')):
 			interesting_xml_file.append('sitemanager.xml')
 			info_xml_file.append('Stores all saved sites server info including password in plaintext')
 		
-		if os.path.exists(os.path.join(directory, 'recentservers.xml')):
+		if os.path.exists(os.path.join(directory, u'recentservers.xml')):
 			interesting_xml_file.append('recentservers.xml')
 			info_xml_file.append('Stores all recent server info including password in plaintext')
 		
-		if os.path.exists(os.path.join(directory, 'filezilla.xml')):
+		if os.path.exists(os.path.join(directory, u'filezilla.xml')):
 			interesting_xml_file.append('filezilla.xml')
 			info_xml_file.append('Stores most recent server info including password in plaintext')
 		
@@ -34,7 +34,7 @@ class Filezilla(ModuleInfo):
 			for i in range(len(interesting_xml_file)):
 				print_debug('INFO', '%s: %s' % (interesting_xml_file[i], info_xml_file[i]))
 				
-				xml_file = os.path.expanduser(directory + os.sep + interesting_xml_file[i])
+				xml_file = os.path.expanduser(os.path.join(directory, interesting_xml_file[i]))
 				
 				tree = ET.ElementTree(file=xml_file)
 				root = tree.getroot()

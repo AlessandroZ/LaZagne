@@ -45,7 +45,7 @@ class Credentials(object):
 
 class JsonDatabase(Credentials):
 	def __init__(self, profile):
-		db = profile + os.sep + "logins.json"
+		db = os.path.join(profile, u'logins.json')
 		super(JsonDatabase, self).__init__(db)
 	
 	def __iter__(self):
@@ -53,22 +53,22 @@ class JsonDatabase(Credentials):
 			with open(self.db) as fh:
 				data = json.load(fh)
 				try:
-					logins = data["logins"]
+					logins = data['logins']
 				except:
-					raise Exception("Unrecognized format in {0}".format(self.db))
+					raise Exception('Unrecognized format in {0}'.format(self.db))
 				
 				for i in logins:
-					yield (i["hostname"], i["encryptedUsername"],	i["encryptedPassword"])
+					yield (i['hostname'], i['encryptedUsername'], i['encryptedPassword'])
 
 class SqliteDatabase(Credentials):
 	def __init__(self, profile):
-		db = profile + os.sep + "signons.sqlite"
+		db = os.path.join(profile, u'signons.sqlite')
 		super(SqliteDatabase, self).__init__(db)
 		self.conn = sqlite3.connect(db)
 		self.c = self.conn.cursor()
 	
 	def __iter__(self):
-		self.c.execute("SELECT hostname, encryptedUsername, encryptedPassword FROM moz_logins")
+		self.c.execute('SELECT hostname, encryptedUsername, encryptedPassword FROM moz_logins')
 		for i in self.c:
 			yield i
 	
@@ -111,9 +111,9 @@ class Mozilla(ModuleInfo):
 	def get_path(self, software_name):
 		path = ''
 		if software_name == 'Firefox':
-			path =  '%s\Mozilla\Firefox' % str(constant.profile['APPDATA'])
+			path =  u'%s\Mozilla\Firefox' % constant.profile['APPDATA']
 		elif software_name == 'Thunderbird':
-			path = '%s\Thunderbird' % str(constant.profile['APPDATA'])
+			path = u'%s\Thunderbird' % constant.profile['APPDATA']
 		return path
 	
 	def manage_advanced_options(self):
@@ -288,43 +288,6 @@ class Mozilla(ModuleInfo):
 				if cp.has_option(section, 'Path'):
 					profile_list.append(os.path.join(directory, cp.get(section, 'Path').strip()))
 		return profile_list
-	
-	def save_db(self, userpath):
-		
-		# create the folder to save it by profile
-		relative_path = constant.folder_name + os.sep + 'firefox'
-		if not os.path.exists(relative_path):
-			os.makedirs(relative_path)
-		
-		relative_path += os.sep + os.path.basename(userpath)
-		if not os.path.exists(relative_path):
-			os.makedirs(relative_path)
-		
-		# Get the database name
-		if os.path.exists(userpath + os.sep + 'logins.json'):
-			dbname = 'logins.json'
-		elif os.path.exists(userpath + os.sep + 'signons.sqlite'):
-			dbname = 'signons.sqlite'
-		
-		# copy the files (database + key3.db)
-		try:
-			ori_db = userpath + os.sep + dbname
-			dst_db = relative_path + os.sep + dbname
-			shutil.copyfile(ori_db, dst_db)
-			print_debug('INFO', '%s has been copied here: %s' % (dbname, dst_db))
-		except Exception,e:
-			print_debug('DEBUG', '{0}'.format(e))
-			print_debug('ERROR', '%s has not been copied' % dbname)
-		
-		try:
-			dbname = 'key3.db'
-			ori_db = userpath + os.sep + dbname
-			dst_db = relative_path + os.sep + dbname
-			shutil.copyfile(ori_db, dst_db)
-			print_debug('INFO', '%s has been copied here: %s' % (dbname, dst_db))
-		except Exception,e:
-			print_debug('DEBUG', '{0}'.format(e))
-			print_debug('ERROR', '%s has not been copied' % dbname)
 
 	# ------------------------------ Master Password Functions ------------------------------
 	
@@ -454,7 +417,7 @@ class Mozilla(ModuleInfo):
 					print_debug('WARNING', 'key3 file not found: %s' % self.key3)
 					continue
 
-				self.key3 = self.readBsddb(profile + os.sep + 'key3.db')
+				self.key3 = self.readBsddb(os.path.join(profile, u'key3.db'))
 				if not self.key3:
 					continue
 

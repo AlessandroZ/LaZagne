@@ -78,7 +78,7 @@ class Skype(ModuleInfo):
 		words = []
 		if dictionary_path:
 			try:
-				dicFile = open (dictionary_path,'r')
+				dicFile = open (dictionary_path, 'r')
 			except Exception,e:
 				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', 'Unable to open passwords file: %s' % str(dictionary_path))
@@ -103,32 +103,32 @@ class Skype(ModuleInfo):
 		return False
 	
 	def get_username(self, path):
-		xml_file = os.path.join(path, 'shared.xml')
+		xml_file = os.path.join(path, u'shared.xml')
 		if os.path.exists(xml_file):
 			tree = ET.ElementTree(file=xml_file)
 			username = tree.find('Lib/Account/Default')
 			try:
-				return username.text
+				return unicode(username.text)
 			except:
 				pass
 		return False
 
 	def get_info(self, key, username, path):
-		if os.path.exists(os.path.join(path, 'config.xml')):
+		if os.path.exists(os.path.join(path, u'config.xml')):
 			values = {}
 			
 			try:
 				values['Login'] = username
 				
 				# get encrypted hash from the config file
-				enc_hex = self.get_hash_credential(os.path.join(path, 'config.xml'))
+				enc_hex = self.get_hash_credential(os.path.join(path, u'config.xml'))
 				
 				if not enc_hex:
 					print_debug('WARNING', 'No credential stored on the config.xml file.')
 				else:
 					# decrypt the hash to get the md5 to brue force
 					values['Hash'] = self.get_md5_hash(enc_hex, key)
-					values['shema to bruteforce using md5'] = values['Login'] + '\\nskyper\\n<password>'
+					values['Pattern to bruteforce using md5'] = unicode(values['Login']) + u'\\nskyper\\n<password>'
 					
 					# Try a dictionary attack on the hash
 					password = self.dictionary_attack(values['Login'], values['Hash'])
@@ -141,7 +141,7 @@ class Skype(ModuleInfo):
 
 	# main function
 	def run(self, software_name = None):
-		directory = constant.profile['APPDATA'] + '\Skype'
+		directory = constant.profile['APPDATA'] + u'\Skype'
 		
 		if os.path.exists(directory):
 			# retrieve the key used to build the salt

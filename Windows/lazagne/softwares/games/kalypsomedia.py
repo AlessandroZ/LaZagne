@@ -16,9 +16,9 @@ class KalypsoMedia(ModuleInfo):
 		return "".join(chr(ord(x) ^ ord(y)) for x, y in zip(s,k))
 		
 	def run(self, software_name = None):
-		creds = []
-		key = 'lwSDFSG34WE8znDSmvtwGSDF438nvtzVnt4IUv89'
-		inifile = constant.profile['APPDATA'] + '\\Kalypso Media\\Launcher\\launcher.ini'
+		creds 	= []
+		key 	= 'lwSDFSG34WE8znDSmvtwGSDF438nvtzVnt4IUv89'
+		inifile = constant.profile['APPDATA'] + u'\\Kalypso Media\\Launcher\\launcher.ini'
 		
 		# The actual user details are stored in *.userdata files
 		if not os.path.exists(inifile):

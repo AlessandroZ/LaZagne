@@ -11,8 +11,8 @@ class RoguesTale(ModuleInfo):
 		ModuleInfo.__init__(self, 'roguestale', 'games', options, need_to_be_in_env=False)
 		
 	def run(self, software_name = None):
-		creds = []
-		directory = constant.profile['USERPROFILE'] + '\\Documents\\Rogue\'s Tale\\users'
+		creds 		= []
+		directory 	= constant.profile['USERPROFILE'] + u'\\Documents\\Rogue\'s Tale\\users'
 		
 		# The actual user details are stored in *.userdata files
 		if not os.path.exists(directory):
