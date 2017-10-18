@@ -15,14 +15,14 @@ class SQLDeveloper(ModuleInfo):
 		options = {'command': '-s', 'action': 'store_true', 'dest': 'sqldeveloper', 'help': 'sqldeveloper'}
 		ModuleInfo.__init__(self, 'sqldeveloper', 'database', options, need_to_be_in_env=False)
 		
-		self._salt = self.get_salt()
-		self._passphrase = None
-		self._iteration = 42
+		self._salt 			= self.get_salt()
+		self._passphrase 	= None
+		self._iteration 	= 42
 
 	def get_salt(self):
-		salt_array = [5, 19, -103, 66, -109, 114, -24, -83]
-		salt = array.array('b', salt_array)
-		hexsalt = binascii.hexlify(salt)
+		salt_array 	= [5, 19, -103, 66, -109, 114, -24, -83]
+		salt 		= array.array('b', salt_array)
+		hexsalt 	= binascii.hexlify(salt)
 		return binascii.unhexlify(hexsalt)
 	
 	def get_iteration(self):
@@ -36,17 +36,17 @@ class SQLDeveloper(ModuleInfo):
 		return (key[:8], key[8:])
 	
 	def decrypt(self, msg):
-		enc_text = base64.b64decode(msg)
-		(dk, iv) = self.get_derived_key(self._passphrase, self._salt, self._iteration)
-		crypter = DES.new(dk, DES.MODE_CBC, iv)
-		text = crypter.decrypt(enc_text)
+		enc_text 	= base64.b64decode(msg)
+		(dk, iv) 	= self.get_derived_key(self._passphrase, self._salt, self._iteration)
+		crypter 	= DES.new(dk, DES.MODE_CBC, iv)
+		text 		= crypter.decrypt(enc_text)
 		return re.sub(r'[\x01-\x08]','',text)
 	
 	def get_application_path(self):
-		directory = os.path.join(constant.profile['APPDATA'], 'SQL Developer')
+		directory = os.path.join(constant.profile['APPDATA'], u'SQL Developer')
 		if os.path.exists(directory):
 			for d in os.listdir(directory):
-				if d.startswith('system'):
+				if d.startswith(u'system'):
 					directory += os.sep + d
 					return directory
 			return 'SQL_NO_PASSWD'
@@ -56,11 +56,11 @@ class SQLDeveloper(ModuleInfo):
 	
 	def get_passphrase(self, path):
 		for p in os.listdir(path):
-			if p.startswith('o.sqldeveloper.12'):
+			if p.startswith(u'o.sqldeveloper.12'):
 				path += os.sep + p
 				break
 		
-		xml_file = path + os.sep + 'product-preferences.xml'
+		xml_file = os.path.join(path, u'product-preferences.xml')
 		if os.path.exists(xml_file):
 			tree = ET.ElementTree(file=xml_file)
 			for elem in tree.iter():
@@ -73,11 +73,11 @@ class SQLDeveloper(ModuleInfo):
 
 	def get_infos(self, path):
 		for p in os.listdir(path):
-			if p.startswith('o.jdeveloper.db.connection'):
+			if p.startswith(u'o.jdeveloper.db.connection'):
 				path += os.sep + p
 				break
 		
-		xml_file = os.path.join(path, 'connections.xml')
+		xml_file = os.path.join(path, u'connections.xml')
 		if os.path.exists(xml_file):
 			tree = ET.ElementTree(file=xml_file)
 			pwdFound = []

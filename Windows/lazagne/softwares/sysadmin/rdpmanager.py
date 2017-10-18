@@ -84,8 +84,8 @@ class RDPManager(ModuleInfo):
 
     def run(self, software_name = None):
         settings = [
-            '%s\\Microsoft Corporation\\Remote Desktop Connection Manager\\RDCMan.settings' % constant.profile['LOCALAPPDATA'], 
-            '%s\\Microsoft\\Remote Desktop Connection Manager\\RDCMan.settings' % constant.profile['LOCALAPPDATA']
+            os.path.join(constant.profile['LOCALAPPDATA'], u'Microsoft Corporation\\Remote Desktop Connection Manager\\RDCMan.settings'),
+            os.path.join(constant.profile['LOCALAPPDATA'], u'Microsoft\\Remote Desktop Connection Manager\\RDCMan.settings')
         ]
 
         for setting in settings:

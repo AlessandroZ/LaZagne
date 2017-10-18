@@ -16,7 +16,7 @@ class Opera(ModuleInfo):
 		options = {'command': '-o', 'action': 'store_true', 'dest': 'opera', 'help': 'opera'}
 		ModuleInfo.__init__(self, 'opera', 'browsers', options)
 
-		self.CIPHERED_FILE = ''
+		self.CIPHERED_FILE = u''
 	
 	def run(self, software_name = None):	
 		# retrieve opera folder
@@ -27,9 +27,9 @@ class Opera(ModuleInfo):
 		
 		passwords = ''
 		# old versions
-		if self.CIPHERED_FILE == 'wand.dat':
+		if self.CIPHERED_FILE == u'wand.dat':
 			# check the use of master password 
-			if not os.path.exists(os.path.join(path, 'operaprefs.ini')):
+			if not os.path.exists(os.path.join(path, u'operaprefs.ini')):
 				print_debug('WARNING', 'The preference file operaprefs.ini has not been found.')
 				return
 			else:
@@ -50,31 +50,30 @@ class Opera(ModuleInfo):
 	
 	def get_path(self):
 		# version less than 10
-		if os.path.exists(constant.profile['APPDATA'] + '\Opera\Opera\profile'):
-			self.CIPHERED_FILE = 'wand.dat'
-			return constant.profile['APPDATA'] + '\Opera\Opera\profile'
+		if os.path.exists(constant.profile['APPDATA'] + u'\Opera\Opera\profile'):
+			self.CIPHERED_FILE = u'wand.dat'
+			return constant.profile['APPDATA'] + u'\Opera\Opera\profile'
 		
 		# version more than 10
-		if os.path.exists(constant.profile['APPDATA'] + '\Opera\Opera'):
-			self.CIPHERED_FILE = 'wand.dat'
-			return constant.profile['APPDATA'] + '\Opera\Opera'
+		if os.path.exists(constant.profile['APPDATA'] + u'\Opera\Opera'):
+			self.CIPHERED_FILE = u'wand.dat'
+			return constant.profile['APPDATA'] + u'\Opera\Opera'
 		
 		# new versions
-		elif os.path.exists(constant.profile['APPDATA'] + '\Opera Software\Opera Stable'):
-			self.CIPHERED_FILE = 'Login Data'
-			return constant.profile['APPDATA'] + '\Opera Software\Opera Stable'
-		
+		elif os.path.exists(constant.profile['APPDATA'] + u'\Opera Software\Opera Stable'):
+			self.CIPHERED_FILE = u'Login Data'
+			return constant.profile['APPDATA'] + u'\Opera Software\Opera Stable'
 	
 	def decipher_old_version(self, path):
 		salt = '837DFC0F8EB3E86973AFFF'
 		
 		# retrieve wand.dat file
-		if not os.path.exists(path + os.sep + 'wand.dat'):
+		if not os.path.exists(os.path.join(path, u'wand.dat')):
 			print_debug('WARNING', 'wand.dat file has not been found.')
 			return 
 		
 		# read wand.dat
-		f = open(path + os.sep + 'wand.dat', 'rb') 
+		f = open(os.path.join(path, u'wand.dat'), 'rb') 
 		file =  f.read()
 		fileSize = len(file)
 		
@@ -117,7 +116,7 @@ class Opera(ModuleInfo):
 		return passwords
 		
 	def decipher_new_version(self, path):
-		database_path = path + os.sep + 'Login Data'
+		database_path = os.path.join(path, u'Login Data')
 		if os.path.exists(database_path):
 			
 			# Connect to the Database
@@ -139,9 +138,9 @@ class Opera(ModuleInfo):
 				# Decrypt the Password
 				password = Win32CryptUnprotectData(result[2])
 				if password:
-					values['URL'] = result[0]
-					values['Login'] = result[1]
-					values['Password'] = password
+					values['URL'] 		= result[0]
+					values['Login'] 	= result[1]
+					values['Password'] 	= password
 					pwdFound.append(values)
 
 			return pwdFound
@@ -152,7 +151,7 @@ class Opera(ModuleInfo):
 		
 		# the init file is not well defined so lines have to be removed before to parse it
 		cp = RawConfigParser()
-		f = open(os.path.join(path, 'operaprefs.ini', 'rb'))
+		f = open(os.path.join(path, u'operaprefs.ini', 'rb'))
 		
 		f.readline() # discard first line
 		while 1:

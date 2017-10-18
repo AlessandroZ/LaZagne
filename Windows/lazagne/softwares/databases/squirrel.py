@@ -10,7 +10,7 @@ class Squirrel(ModuleInfo):
 		ModuleInfo.__init__(self, 'squirrel', 'database', options)
 
 	def get_application_path(self):
-		path = os.path.join(constant.profile['USERPROFILE'], '.squirrel-sql')
+		path = os.path.join(constant.profile['USERPROFILE'], u'.squirrel-sql')
 		if os.path.exists(path):
 			return path
 		else:
@@ -45,7 +45,7 @@ class Squirrel(ModuleInfo):
 		if not path:
 			print_debug('INFO', 'Squirrel not installed')
 		else:
-			path = os.path.join(path, 'SQLAliases23.xml')
+			path = os.path.join(path, u'SQLAliases23.xml')
 			if os.path.exists(path):
 				return self.parse_xml(path)
 			else:

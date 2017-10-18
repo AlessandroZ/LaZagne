@@ -17,12 +17,12 @@ class Jitsi(ModuleInfo):
 		suboptions = [{'command': '-ma', 'action': 'store', 'dest': 'master_pwd', 'help': 'enter the master password manually', 'title': 'Advanced jitsi option'}]
 		ModuleInfo.__init__(self, 'jitsi', 'chats', options, suboptions, need_to_be_in_env=False)
 	
-		self.keylen = 16
-		self.iterations = 1024
-		self.padding = '\f'
-		self.account_id = ''
-		self.master_password_used = False
-		self.masterpass = ' '
+		self.keylen 				= 16
+		self.iterations 			= 1024
+		self.padding 				= '\f'
+		self.account_id 			= ''
+		self.master_password_used 	= False
+		self.masterpass 			= ' '
 	
 	def get_salt(self):
 		salt_array = [12, 10, 15, 14, 11, 14, 14, 15]
@@ -31,7 +31,7 @@ class Jitsi(ModuleInfo):
 		return binascii.unhexlify(hexsalt)
 	
 	def get_path(self):
-		directory = os.path.join(constant.profile['APPDATA'], 'Jitsi', 'sip-communicator.properties')
+		directory = os.path.join(constant.profile['APPDATA'], u'Jitsi', u'sip-communicator.properties')
 		if os.path.exists(directory):
 			return directory
 		else:
@@ -40,7 +40,7 @@ class Jitsi(ModuleInfo):
 	def get_info(self, file_properties):
 		values = {}
 		
-		f = open(file_properties,'r')
+		f = open(file_properties, 'r')
 		line = f.readline()
 		
 		cpt = 0

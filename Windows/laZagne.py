@@ -156,7 +156,7 @@ def manage_advanced_options():
 	if 'historic' in args:
 		constant.ie_historic = args['historic']
 
-	if 'drive' in args:
+	if args['drive']:
 		drive = args['drive'].upper()
 		# drive letter between A and Z
 		if drive != constant.drive:
@@ -201,37 +201,41 @@ def write_in_file(result):
 
 # Get user list to retrieve  their passwords
 def get_user_list_on_filesystem(impersonated_user=[]):
+	
 	# Check users existing on the system (get only directories)
-	all_users = os.walk('%s:\\Users' % constant.drive).next()[1]
+	user_path = u'%s:\\Users' % constant.drive
+	all_users = []
+	if os.path.exists(user_path):
+		all_users = os.listdir(user_path)
+	
+		# Remove default users
+		for user in ['All Users', 'Default User', 'Default', 'Public', 'desktop.ini']:
+			if user in all_users:
+				all_users.remove(user)
 
-	# Remove default users
-	for user in ['All Users', 'Default User', 'Default', 'Public']:
-		if user in all_users:
-			all_users.remove(user)
-
-	# Removing user that have already been impersonated
-	for imper_user in impersonated_user:
-		if imper_user in all_users:
-			all_users.remove(imper_user)
+		# Removing user that have already been impersonated
+		for imper_user in impersonated_user:
+			if imper_user in all_users:
+				all_users.remove(imper_user)
 
 	return all_users
 
 def set_env_variables(user=getpass.getuser(), toImpersonate=False):
 	constant.username = user
 	if not toImpersonate:
-		constant.profile['APPDATA'] 		= os.environ.get('APPDATA', '%s:\\Users\\%s\\AppData\\Roaming\\' % (constant.drive, user))
-		constant.profile['USERPROFILE'] 	= os.environ.get('USERPROFILE', '%s:\\Users\\%s\\' % (constant.drive, user))
-		constant.profile['HOMEDRIVE'] 		= os.environ.get('HOMEDRIVE', '%s:' % constant.drive)
-		constant.profile['HOMEPATH'] 		= os.environ.get('HOMEPATH', '%s:\\Users\\%s' % (constant.drive, user))
-		constant.profile['ALLUSERSPROFILE'] = os.environ.get('ALLUSERSPROFILE', '%s:\\ProgramData' % constant.drive)
-		constant.profile['COMPOSER_HOME'] 	= os.environ.get('COMPOSER_HOME', '%s:\\Users\\%s\\AppData\\Roaming\\Composer\\' % (constant.drive, user))
-		constant.profile['LOCALAPPDATA'] 	= os.environ.get('LOCALAPPDATA', '%s:\\Users\\%s\\AppData\\Local' % (constant.drive, user))
+		constant.profile['APPDATA'] 		= unicode(os.environ.get('APPDATA', u'%s:\\Users\\%s\\AppData\\Roaming\\' % (constant.drive, user)))
+		constant.profile['USERPROFILE'] 	= unicode(os.environ.get('USERPROFILE', u'%s:\\Users\\%s\\' % (constant.drive, user)))
+		constant.profile['HOMEDRIVE'] 		= unicode(os.environ.get('HOMEDRIVE', u'%s:' % constant.drive))
+		constant.profile['HOMEPATH'] 		= unicode(os.environ.get('HOMEPATH', u'%s:\\Users\\%s' % (constant.drive, user)))
+		constant.profile['ALLUSERSPROFILE'] = unicode(os.environ.get('ALLUSERSPROFILE', u'%s:\\ProgramData' % constant.drive))
+		constant.profile['COMPOSER_HOME'] 	= unicode(os.environ.get('COMPOSER_HOME', u'%s:\\Users\\%s\\AppData\\Roaming\\Composer\\' % (constant.drive, user)))
+		constant.profile['LOCALAPPDATA'] 	= unicode(os.environ.get('LOCALAPPDATA', u'%s:\\Users\\%s\\AppData\\Local' % (constant.drive, user)))
 	else:
-		constant.profile['APPDATA'] 		= '%s:\\Users\\%s\\AppData\\Roaming\\' % (constant.drive, user)
-		constant.profile['USERPROFILE'] 	= '%s:\\Users\\%s\\' % (constant.drive, user)
-		constant.profile['HOMEPATH'] 		= '%s:\\Users\\%s' % (constant.drive, user)
-		constant.profile['COMPOSER_HOME'] 	= '%s:\\Users\\%s\\AppData\\Roaming\\Composer\\' % (constant.drive, user)
-		constant.profile['LOCALAPPDATA'] 	= '%s:\\Users\\%s\\AppData\\Local' % (constant.drive, user)
+		constant.profile['APPDATA'] 		= u'%s:\\Users\\%s\\AppData\\Roaming\\' % (constant.drive, user)
+		constant.profile['USERPROFILE'] 	= u'%s:\\Users\\%s\\' % (constant.drive, user)
+		constant.profile['HOMEPATH'] 		= u'%s:\\Users\\%s' % (constant.drive, user)
+		constant.profile['COMPOSER_HOME'] 	= u'%s:\\Users\\%s\\AppData\\Roaming\\Composer\\' % (constant.drive, user)
+		constant.profile['LOCALAPPDATA'] 	= u'%s:\\Users\\%s\\AppData\\Local' % (constant.drive, user)
 
 # print user when verbose mode is enabled (without verbose mode the user is printed on the write_output python file)
 def print_user(user):
@@ -247,7 +251,7 @@ def clean_temporary_files():
 		except:
 			pass
 
-def runLaZagne(category_choosed='all'):
+def runLaZagne(category_choosed='all', check_specific_drive=False):
 
 	# ------ Part used for user impersonation ------ 
 
@@ -256,7 +260,12 @@ def runLaZagne(category_choosed='all'):
 		constant.finalResults = {'User': current_user}
 		print_user(current_user)
 		yield 'User', current_user
-		set_env_variables()
+		
+		if check_specific_drive:
+			set_env_variables(toImpersonate=True)
+		else:
+			set_env_variables()
+
 		for r in runModule(category_choosed):
 			yield r
 		stdoutRes.append(constant.finalResults)
@@ -272,7 +281,7 @@ def runLaZagne(category_choosed='all'):
 			# Not save the current user's SIDs
 			if current_user != sid[3].split('\\', 1)[1]:
 				impersonateUsers.setdefault(sid[3].split('\\', 1)[1], []).append(sid[2])
-				
+
 		for user in impersonateUsers:
 			if 'service ' in user.lower() or ' service' in user.lower():
 				continue
@@ -333,18 +342,18 @@ if __name__ == '__main__':
 	PPoptional = argparse.ArgumentParser(add_help=False, formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 	PPoptional._optionals.title = 'optional arguments'
 	PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='increase verbosity level')
-	PPoptional.add_argument('-quiet', dest='quiet', action= 'store_true', default=False, help = 'quiet mode: nothing is printed to the output')
-	PPoptional.add_argument('-drive', dest='drive', action= 'store', default='C', help = 'drive to perform the test (default: C)')
-	PPoptional.add_argument('-path', dest='path', action= 'store', help = 'path of a file used for dictionary file')
-	PPoptional.add_argument('-b', dest='bruteforce', action= 'store', help = 'number of character to brute force')
+	PPoptional.add_argument('-quiet', dest='quiet', action='store_true', default=False, help='quiet mode: nothing is printed to the output')
+	PPoptional.add_argument('-drive', dest='drive', action='store', default=False, help='drive to perform the test (default: C)')
+	PPoptional.add_argument('-path', dest='path', action='store', help='path of a file used for dictionary file')
+	PPoptional.add_argument('-b', dest='bruteforce', action='store', help='number of character to brute force')
 
 
 	# Output 
 	PWrite = argparse.ArgumentParser(add_help=False, formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 	PWrite._optionals.title = 'Output'
-	PWrite.add_argument('-oN', dest='write_normal',  action='store_true', help = 'output file in a readable format')
-	PWrite.add_argument('-oJ', dest='write_json',  action='store_true', help = 'output file in a json format')
-	PWrite.add_argument('-oA', dest='write_all',  action='store_true', help = 'output file in all format')
+	PWrite.add_argument('-oN', dest='write_normal', action='store_true', help='output file in a readable format')
+	PWrite.add_argument('-oJ', dest='write_json', action='store_true', help='output file in a json format')
+	PWrite.add_argument('-oA', dest='write_all', action='store_true', help='output file in all format')
 
 	# ------------------------------------------- Add options and suboptions to all modules -------------------------------------------
 	all_subparser = []
@@ -395,6 +404,10 @@ if __name__ == '__main__':
 	arguments = parser.parse_args()
 	category_choosed = args['auditType']
 
+	check_specific_drive = False
+	if args['drive']:
+		check_specific_drive = True
+
 	quiet_mode()
 
 	# Print the title
@@ -407,7 +420,7 @@ if __name__ == '__main__':
 
 	start_time = time.time()
 
-	for r in runLaZagne(category_choosed):
+	for r in runLaZagne(category_choosed, check_specific_drive=check_specific_drive):
 		pass
 
 	clean_temporary_files()

@@ -44,7 +44,7 @@ class FtpNavigator(ModuleInfo):
 		return pwdFound
 		
 	def run(self, software_name = None):
-		path = os.path.join(constant.profile['HOMEDRIVE'], 'FTP Navigator\\Ftplist.txt')
+		path = os.path.join(constant.profile['HOMEDRIVE'], u'FTP Navigator\\Ftplist.txt')
 		if os.path.exists(path):
 			return self.read_file(path)
 		else:

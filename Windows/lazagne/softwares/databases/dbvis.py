@@ -16,15 +16,15 @@ class Dbvisualizer(ModuleInfo):
 		options = {'command': '-d', 'action': 'store_true', 'dest': 'dbvis', 'help': 'dbvisualizer'}
 		ModuleInfo.__init__(self, 'dbvis', 'database', options, need_to_be_in_env=False)
 
-		self._salt = self.get_salt()
-		self._passphrase = 'qinda'
-		self._iteration = 10
+		self._salt 			= self.get_salt()
+		self._passphrase 	= 'qinda'
+		self._iteration 	= 10
 
 	# ---- functions used to decrypt the password ----
 	def get_salt(self):
-		salt_array = [-114,18,57,-100,7,114,111,90]
-		salt = array.array('b', salt_array)
-		hexsalt = binascii.hexlify(salt)
+		salt_array 	= [-114,18,57,-100,7,114,111,90]
+		salt 		= array.array('b', salt_array)
+		hexsalt 	= binascii.hexlify(salt)
 		return binascii.unhexlify(hexsalt)
 
 	def get_derived_key(self, password, salt, count):
@@ -45,7 +45,7 @@ class Dbvisualizer(ModuleInfo):
 	# ---- end of the functions block ----
 
 	def get_infos(self, path):
-		xml_file = os.path.join(path, 'config70/dbvis.xml')
+		xml_file = os.path.join(path, u'config70/dbvis.xml')
 
 		if os.path.exists(xml_file):
 			tree = ET.ElementTree(file=xml_file)
@@ -64,10 +64,10 @@ class Dbvisualizer(ModuleInfo):
 				pass
 			
 			try:
-				ciphered_password = e.find('Password').text
-				password = self.decrypt(ciphered_password)
-				values['Password'] = password
-				passwordFound = True
+				ciphered_password 	= e.find('Password').text
+				password 			= self.decrypt(ciphered_password)
+				values['Password'] 	= password
+				passwordFound 		= True
 			except:
 				pass
 			
@@ -95,7 +95,7 @@ class Dbvisualizer(ModuleInfo):
 		return pwdFound
 
 	def get_application_path(self):
-		path = os.path.join(constant.profile['HOMEPATH'], '.dbvis')
+		path = os.path.join(constant.profile['HOMEPATH'], u'.dbvis')
 		if os.path.exists(path):
 			return path
 		else:

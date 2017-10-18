@@ -26,8 +26,8 @@ class GalconFusion(ModuleInfo):
 			print_debug('INFO', 'Steam does not appear to be installed.')
 			return
 			
-		steampath = results[0]
-		userdata = steampath + '\\userdata'
+		steampath = unicode(results[0])
+		userdata = steampath + u'\\userdata'
 		
 		# Check that we have a userdata directory
 		if not os.path.exists(userdata):
@@ -38,7 +38,7 @@ class GalconFusion(ModuleInfo):
 		files = os.listdir(userdata)
 		
 		for file in files:
-			filepath = userdata + '\\' + file + '\\44200\\remote\\galcon.cfg'
+			filepath = userdata + u'\\' + unicode(file) + u'\\44200\\remote\\galcon.cfg'
 			if not os.path.exists(filepath):
 				continue
 			

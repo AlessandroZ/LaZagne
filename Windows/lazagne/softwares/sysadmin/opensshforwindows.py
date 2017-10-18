@@ -3,15 +3,14 @@ from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.constant import *
 from Crypto.PublicKey import RSA
 from Crypto.PublicKey import DSA
-from os.path import isdir, isfile, join
-from os import environ, walk
+import os
 
 class OpenSSHForWindows(ModuleInfo):
 
     def __init__(self):
         options = {'command': '-winssh', 'action': 'store_true', 'dest': 'opensshforwindows', 'help': 'OpenSSH for Windows'}
         ModuleInfo.__init__(self, 'opensshforwindows', 'sysadmin', options)
-        self.key_files_location = constant.profile["USERPROFILE"] + "\\.ssh"
+        self.key_files_location = os.path.join(constant.profile["USERPROFILE"], u'.ssh')
 
     def is_private_key_unprotected(self, key_content_encoded, key_algorithm):
         """
@@ -46,11 +45,11 @@ class OpenSSHForWindows(ModuleInfo):
         :return: List of encoded key (key file content)
         """
         keys = []
-        if isdir(self.key_files_location):
-            for (dirpath, dirnames, filenames) in walk(self.key_files_location, followlinks=True):
+        if os.path.isdir(self.key_files_location):
+            for (dirpath, dirnames, filenames) in os.walk(self.key_files_location, followlinks=True):
                 for f in filenames:
-                    key_file_path = join(dirpath, f)
-                    if isfile(key_file_path):
+                    key_file_path = os.path.join(dirpath, f)
+                    if os.path.isfile(key_file_path):
                         try:
                             # Read encoded content of the key
                             with open(key_file_path, "r") as key_file:

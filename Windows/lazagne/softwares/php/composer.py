@@ -45,8 +45,8 @@ class Composer(ModuleInfo):
         # See "https://seld.be/notes/authentication-management-in-composer"
         location = ''
         tmp_location = [
-            constant.profile["COMPOSER_HOME"] + "\\auth.json", 
-            constant.profile["APPDATA"] + "\\Composer\\auth.json"
+            constant.profile["COMPOSER_HOME"] + u'\\auth.json', 
+            constant.profile["APPDATA"] + u'\\Composer\\auth.json'
         ]
         for tmp in tmp_location:
             if os.path.isfile(tmp):
