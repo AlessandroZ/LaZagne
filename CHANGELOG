@@ -1,3 +1,8 @@
+LaZagne 2.3.1 (18/10/2017)
+- Only Windows
+	* Fix unicode issue (#154)
+	* Print less local output when a specific drive has been choosed (#156)
+
 LaZagne 2.3 (31/08/2017)
 - Only Windows
 	* Bug "UnicodeDecodeError" resolved (#134) 
