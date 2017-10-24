@@ -9,7 +9,7 @@ Each software stores its passwords using different techniques (plaintext, APIs, 
 
 <p align="center"><img src="./pictures/lazagne.png" alt="The LaZagne project"></p>
 
-This project has been added to [pupy](https://github.com/n1nj4sec/pupy/) as a post-exploitation module. Python code will be interpreted in memory without touching the disk and it works on Windows and Linux host. The last Linux release is not up to date so I recommend to use pupy to use it. 
+This project has been added to [pupy](https://github.com/n1nj4sec/pupy/) as a post-exploitation module. Python code will be interpreted in memory without touching the disk and it works on Windows and Linux host. The last Linux release is not up to date so I recommend using pupy to use it. 
 
 Standalones
 ----
@@ -34,7 +34,7 @@ laZagne.exe browsers
 
 * Launch only a specific software script
 ```
-laZagne.exe browsers -f (for firefox)
+laZagne.exe browsers -f (for Firefox)
 ```
 
 * Write all passwords found into a file (-oN for Normal txt, -oJ for Json, -oA for All)
@@ -48,7 +48,7 @@ laZagne.exe -h
 laZagne.exe browsers -h
 ```
 
-* Use a file for dictionary attacks (used only when it's necessary: mozilla masterpassword, system hahes, etc.). The file has to be a wordlist in cleartext (no rainbow), it has not been optmized to be fast but could useful for basic passwords.
+* Use a file for dictionary attacks (used only when it's necessary: Mozilla Master Password, system hashes, etc.). The file has to be a wordlist in cleartext (no rainbow), it has not been optimized to be fast but could be useful for basic passwords.
 ```
 laZagne.exe all -path file.txt
 ```
@@ -87,7 +87,7 @@ Donation
 If you want to support my work doing a donation, I will appreciate a lot:
 * Via BTC: 16zJ9wTXU4f1qfMLiWvdY3woUHtEBxyriu
 
-* Via pledgie :  <a href='https://pledgie.com/campaigns/34745'><img alt='Click here to lend your support to: The LaZagne Project and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/34745.png?skin_name=chrome' border='0' ></a>
+* Via pledgie:  <a href='https://pledgie.com/campaigns/34745'><img alt='Click here to lend your support to The LaZagne Project and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/34745.png?skin_name=chrome' border='0' ></a>
 
 Special thanks
 ----
