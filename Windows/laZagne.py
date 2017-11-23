@@ -325,7 +325,8 @@ def runLaZagne(category_choosed='all', check_specific_drive=False):
 			
 			# Fix value by default for user environnment (appdata and userprofile)
 			constant.finalResults = {'User': user}
-		
+			yield 'User', user
+			
 			# Retrieve passwords that need high privileges
 			for r in runModule(category_choosed, not_need_to_be_in_env=True):
 				yield r
