@@ -7,21 +7,25 @@
 ##############################################################################
 
 # Disclaimer: Do Not Use this program for illegal purposes ;)
+
+from lazagne.softwares.browsers.mozilla import Mozilla
+from lazagne.softwares.browsers.chrome import Chrome
 import argparse
 import time, sys, os
 import logging
 import json
 import getpass
 import traceback
-from lazagne.softwares.browsers.mozilla import Mozilla
 
 # Configuration
-from lazagne.config.header import Header
-from lazagne.config.write_output import write_header, write_footer, print_footer, parseJsonResultToBuffer, print_debug, print_output
-from lazagne.config.constant import *
+from lazagne.config.write_output import parseJsonResultToBuffer, print_debug, StandartOutput
 from lazagne.config.manageModules import get_categories, get_modules
+from lazagne.config.constant import *
 
-category = get_categories()
+# object used to manage the output / write functions (cf write_output file)
+constant.st = StandartOutput()
+
+category 	= get_categories()
 moduleNames = get_modules()
 
 # Tab containing all passwords
@@ -47,13 +51,9 @@ def output():
 	if args['write_all']:
 		constant.output = 'all'
 
-	if constant.output:
-		if not os.path.exists(constant.folder_name):
-			os.makedirs(constant.folder_name)
-			# constant.file_name_results = 'credentials' # let the choice of the name to the user
-		
+	if constant.output:	
 		if constant.output != 'json':
-			write_header()
+			constant.st.write_header()
 
 	# Remove all unecessary variables
 	del args['write_normal']
@@ -62,14 +62,15 @@ def output():
 
 def verbosity():
 	# Write on the console + debug file
-	if args['verbose']==0: level=logging.CRITICAL
-	elif args['verbose'] == 1: level=logging.INFO
-	elif args['verbose']>=2: level=logging.DEBUG
+	if args['verbose'] == 0: 	level=logging.CRITICAL
+	elif args['verbose'] == 1:	level=logging.INFO
+	elif args['verbose'] >= 2: 	level=logging.DEBUG
 	
-	FORMAT = "%(message)s"
-	formatter = logging.Formatter(fmt=FORMAT)
-	stream = logging.StreamHandler()
+	FORMAT 		= "%(message)s"
+	formatter 	= logging.Formatter(fmt=FORMAT)
+	stream 		= logging.StreamHandler()
 	stream.setFormatter(formatter)
+	
 	root = logging.getLogger()
 	root.setLevel(level)
 	# If other logging are set
@@ -78,8 +79,13 @@ def verbosity():
 	root.addHandler(stream)
 	del args['verbose']
 
-
 def manage_advanced_options():
+	if 'password' in args:
+		constant.user_password = args['password']
+
+	if 'attack' in args:
+		constant.dictionary_attack = args['attack']
+
 	# File used for dictionary attacks
 	if 'path' in args:
 		constant.path = args['path']
@@ -96,33 +102,6 @@ def manage_advanced_options():
 		constant.mozilla_software = 'Thunderbird'
 	elif 'browsers' in args['auditType']:
 		constant.mozilla_software = 'Firefox'
-	
-	# Jitsi advanced options
-	if 'master_pwd' in args:
-		constant.jitsi_masterpass = args['master_pwd']
-	
-	# i.e advanced options
-	if 'historic' in args:
-		constant.ie_historic = args['historic']
-
-# write output to file (json and txt files)
-def write_in_file(result):
-	try:
-		if constant.output == 'json' or constant.output == 'all':
-			# Human readable Json format 
-			prettyJson = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '))
-			with open(constant.folder_name + os.sep + constant.file_name_results + '.json', 'w+') as f:
-				f.write(prettyJson.encode('utf-8', errors='replace'))
-			print '[+] File written: ' + constant.folder_name + os.sep + constant.file_name_results + '.json'
-
-		if constant.output == 'txt' or constant.output == 'all':
-			with open(constant.folder_name + os.sep + constant.file_name_results + '.txt', 'a+b') as f:
-				f.write(parseJsonResultToBuffer(result))
-			write_footer()
-			print '[+] File written: ' + constant.folder_name + os.sep + constant.file_name_results + '.txt'
-
-	except Exception as e:
-		print_debug('ERROR', 'Error writing the output file: %s' % e)
 
 def launch_module(module):
 	ok = False
@@ -142,9 +121,9 @@ def launch_module(module):
 
 	for i in modulesToLaunch:
 		try:
-			Header().title_info(i.capitalize()) 		# print title
-			pwdFound = module[i].run(i.capitalize())	# run the module
-			print_output(i.capitalize(), pwdFound) 		# print the results
+			constant.st.title_info(i.capitalize()) 					# print title
+			pwdFound = module[i].run(i.capitalize())				# run the module
+			constant.st.print_output(i.capitalize(), pwdFound) 		# print the results
 
 			# return value - not used but needed 
 			yield True, i.capitalize(), pwdFound
@@ -153,6 +132,28 @@ def launch_module(module):
 			print
 			error_message = traceback.format_exc()
 			yield False, i.capitalize(), error_message
+
+# write output to file (json and txt files)
+def write_in_file(result):
+	if constant.output == 'json' or constant.output == 'all':
+		try:
+			# Human readable Json format
+			prettyJson = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '))
+			with open(os.path.join(constant.folder_name, constant.file_name_results + '.json'), 'a+b') as f:
+				f.write(prettyJson.decode('unicode-escape').encode('UTF-8'))
+			constant.st.do_print('[+] File written: ' + constant.folder_name + os.sep + constant.file_name_results + '.json')
+		except Exception as e:
+			print_debug('ERROR', 'Error writing the output file: %s' % e)
+
+	if constant.output == 'txt' or constant.output == 'all':
+		try:
+			with open(os.path.join(constant.folder_name, constant.file_name_results + '.txt'), 'a+b') as f:
+				a = parseJsonResultToBuffer(result)
+				f.write(a.encode("UTF-8"))
+			constant.st.write_footer()
+			constant.st.do_print('[+] File written: ' + constant.folder_name + os.sep + constant.file_name_results + '.txt')
+		except Exception as e:
+			print_debug('ERROR', 'Error writing the output file: %s' % e)
 
 # Run module
 def runModule(category_choosed, need_high_privileges=False, need_system_privileges=False, not_need_to_be_in_env=False, cannot_be_impersonate_using_tokens=False):
@@ -165,32 +166,41 @@ def runModule(category_choosed, need_high_privileges=False, need_system_privileg
 		for r in launch_module(modules[categoryName]):
 			yield r
 
-# Prompt help if an error occurs
-class MyParser(argparse.ArgumentParser):
-	def error(self, message):
-		sys.stderr.write('error: %s\n\n' % message)
-		self.print_help()
-		sys.exit(2)
+# print user when verbose mode is enabled (without verbose mode the user is printed on the write_output python file)
+def print_user(user):
+	if logging.getLogger().isEnabledFor(logging.INFO) == True:
+		constant.st.print_user(user)
 
+
+def get_safe_storage_key(key):
+	try:
+		for passwords in constant.keychains_pwds:
+			if key in passwords['Service']:
+				return passwords['Password']
+	except:
+		pass
+
+	return False
+	
 def runLaZagne(category_choosed='all'):
 	user = getpass.getuser()
 	constant.finalResults = {}
 	constant.finalResults['User'] = user
-	
-	print '\n\n########## User: %s ##########\n' % user.encode('utf-8', errors='ignore')
-	yield 'User', user
 
 	for r in runModule(category_choosed):
 		yield r
+
+	# if keychains has been decrypted, launch again some module
+	chrome_key = get_safe_storage_key('Chrome Safe Storage')
+	if chrome_key:
+		for r in launch_module({'chrome': Chrome(safe_storage_key=chrome_key)}):
+			yield r
 
 	stdoutRes.append(constant.finalResults)
 
 if __name__ == '__main__':
 
-	# Print the title
-	Header().first_title()
-
-	parser = MyParser()
+	parser = argparse.ArgumentParser(description=constant.st.banner, formatter_class=argparse.RawTextHelpFormatter)
 	parser.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION), help='laZagne version')
 
 	# ------------------------------------------- Permanent options -------------------------------------------
@@ -198,8 +208,10 @@ if __name__ == '__main__':
 	PPoptional = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 	PPoptional._optionals.title = 'optional arguments'
 	PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='increase verbosity level')
-	PPoptional.add_argument('-path', dest='path',  action= 'store', help = 'path of a file used for dictionary file')
-	PPoptional.add_argument('-b', dest='bruteforce',  action= 'store', help = 'number of character to brute force')
+	PPoptional.add_argument('-password', dest='password', action='store', help='user password used to decrypt the keychain')
+	PPoptional.add_argument('-attack', dest='attack', action='store_true', help='500 well known passwords used to check the user hash (could take a while)')
+	PPoptional.add_argument('-path', dest='path', action='store', help='path of a file used for dictionary file')
+	PPoptional.add_argument('-b', dest='bruteforce', action='store', help='number of character to brute force')
 
 	# Output 
 	PWrite = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
@@ -261,25 +273,15 @@ if __name__ == '__main__':
 	verbosity()
 	manage_advanced_options()
 
+	# Print the title
+	constant.st.first_title()
+
 	start_time = time.time()
 
 	for r in runLaZagne(category_choosed):
 		pass
 
-	# if constant.output == 'json' or constant.output == 'all':
-	# 	# Human readable Json format 
-	# 	prettyJson = json.dumps(constant.finalResults, sort_keys=True, indent=4, separators=(',', ': '))
-	# 	with open(constant.folder_name + os.sep + constant.file_name_results + '.json', 'w+') as f:
-	# 		json.dump(prettyJson, f)
-
-	# # Print the number of passwords found
-	# if constant.output == 'txt' or constant.output == 'all':
-	# 	with open(constant.folder_name + os.sep + constant.file_name_results + '.txt', 'a+b') as f:
-	# 		f.write(parseJsonResultToBuffer(constant.finalResults).encode('utf-8'))
-	# 	write_footer()
-
 	write_in_file(stdoutRes)
-	print_footer()
 
 	elapsed_time = time.time() - start_time
 	print '\nelapsed time = ' + str(elapsed_time)

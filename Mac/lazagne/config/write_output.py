@@ -1,172 +1,257 @@
-import constant
-import os
+from lazagne.config.constant import constant
 from time import gmtime, strftime
+import logging
 import getpass
 import socket
-from lazagne.config.header import Header
-from lazagne.config.color import bcolors
-from lazagne.config.constant import constant
-import logging
 import json
+import sys
+import os
 
-# --------------------------- Functions used to write ---------------------------
+tmp_user = None
 
-def write_header():
-	time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-	header = '''|====================================================================|
+# --------------------------- Standard output functions ---------------------------
+
+class StandartOutput():
+	def __init__(self):
+		self.banner = '''
+|====================================================================|
 |                                                                    |
-|                       Credentsials discovery                       |
+|                        The LaZagne Project                         |
 |                                                                    |
 |                          ! BANG BANG !                             |
 |                                                                    |
-|====================================================================|\n
-- Date: ''' + time + '''
-- Username: ''' + getpass.getuser() + '''
-- Hostname: ''' + socket.gethostname() + ''' \n
------------------------------- Results ------------------------------\n'''
+|====================================================================|
+		'''
 
-	open(constant.folder_name + os.sep + 'credentials.txt',"a+b").write(header)
+		self.grey_color 	= '\033[90m'
+		self.red_color 		= '\033[91m'
+		self.green_color 	= '\033[92m'
+		self.cyan_color		= '\033[94m'
+		self.no_color		= '\033[0m'
 
-def write_footer():
-	footer = '\n[+] %s passwords have been found.\n\n' % str(constant.nbPasswordFound)
-	open(constant.folder_name + os.sep + 'credentials.txt',"a+b").write(footer)
-
-def write_credentials(pwdFound, category):
-	tmp = "############ %s passwords ############\r\n\r\n" % category
-	for pwd in pwdFound:
-		for p in pwd.keys():
-			tmp = str(tmp) + str(p) + ": " + str(pwd[p]) + "\r\n"
-		tmp = str(tmp) + "\r\n"
-	open(constant.folder_name + os.sep + 'credentials.txt',"a+b").write(tmp)
+	# print banner
+	def first_title(self):
+		self.do_print(message=self.banner, color='white')
 	
-def checks_write(values, category):
-	if values:
-		if "Passwords" not in constant.finalResults:
-			constant.finalResults["Passwords"] = []
-		constant.finalResults["Passwords"].append([{"Category": category}, values])
+	# info option for the logging
+	def print_title(self, title):
+		t = '------------------- ' + title + ' passwords -----------------\n'
+		self.do_print(message=t, color='white')
+	
+	# debug option for the logging
+	def title_info(self, title):
+		t = '------------------- ' + title + ' passwords -----------------\n'
+		self.print_logging(function=logging.info, category='', message=t, color='white')
 
-# --------------------------- End of functions used to write ---------------------------
+	def print_user(self, user):
+		self.do_print('########## User: %s ##########\n' % user)
 
-# --------------------------- Output functions ---------------------------
-
-def print_footer():
-	footer = '\n[+] %s passwords have been found.\n' % str(constant.nbPasswordFound)
-	if logging.getLogger().isEnabledFor(logging.INFO) == False:
-		footer += 'For more information launch it again with the -v option\n'
-	print footer
-
-# print output if passwords have been found
-def print_output(software_name, pwdFound):
-	if pwdFound:
-		# if the debug logging level is not apply => print the title
+	def print_footer(self):
+		footer = '\n[+] %s passwords have been found.\n' % str(constant.nbPasswordFound)
 		if logging.getLogger().isEnabledFor(logging.INFO) == False:
-			Header().title(software_name)
-		
-		toWrite = []
-		for pwd in pwdFound:
-			password_category = False
-			# detect which kinds of password has been found
-			lower_list = [s.lower() for s in pwd.keys()]
-			password = [s for s in lower_list if "password" in s]
-			if password: 
-				password_category = password
-			else:
-				key = [s for s in lower_list if "key" in s] # for the wifi
-				if key:
-					password_category = key
-				else:
-					hash = [s for s in lower_list if "hash" in s]
-					if hash:
-						password_category = hash
-			
-			# No password found
-			if not password_category:
-				print_debug("FAILED", "Password not found !!!")
-			else:
-				print_debug("OK", '%s found !!!' % password_category[0].title())
-				toWrite.append(pwd)
-				
-				# Store all passwords found on a table => for dictionary attack if master password set
-				constant.nbPasswordFound += 1
-				try:
-					constant.passwordFound.append(pwd[password_category[0]])
-				except:
-					pass
-			
-			for p in pwd.keys():
-				print '%s: %s' % (p, pwd[p])
-			print
-		
-		# write credentials into a text file
-		checks_write(toWrite, software_name)
-	else:
-		logging.info("[!] No passwords found\n")
+			footer += 'For more information launch it again with the -v option\n'
+		self.do_print(footer)
 
+	def try_unicode(self, obj, encoding='utf-8'):
+		try:
+			if isinstance(obj, basestring):
+				if not isinstance(obj, unicode):
+					obj = unicode(obj, encoding)
+		except:
+			pass
+		return obj
+
+	# centralize print function
+	def do_print(self, message='', color=False):
+		# quiet mode => nothing is printed
+		# if constant.quiet_mode:
+		# 	return
+		
+		message = self.try_unicode(message)
+		self.print_without_error(message, color=color)
+
+	def choose_color(self, color):
+		if color == 'white':
+			return self.grey_color
+		elif color == 'red':
+			return self.red_color
+		elif color == 'green':
+			return self.green_color
+		elif color == 'cyan':
+			return self.cyan_color
+		else:
+			return self.no_color
+
+	def print_without_error(self, message, color):
+		print '{color}{message}{restore_color}'.format(
+														color=self.choose_color(color), 
+														message=message, 
+														restore_color=self.no_color
+													)
+
+	def print_logging(self, function, category='INFO', message='', color=False):
+		# if constant.quiet_mode:
+		# 	return
+
+		if category:
+			category = '[%s]' % category
+
+		function('{color}{category} {message}{restore_color}\n'.format(
+																		color=self.choose_color(color), 
+																		category=category, 
+																		message=message, 
+																		restore_color=self.no_color)
+																	)
+
+	def print_output(self, software_name, pwdFound, title1=False):
+	
+		# manage differently hashes / and hex value
+		if pwdFound:
+			category = None
+			if '__SYSTEM__' in pwdFound:
+				pwdFound.remove('__SYSTEM__')
+				category = 'hash'
+				pwdFound = pwdFound[0]
+
+		if pwdFound:
+			# if the debug logging level is not apply => print the title
+			if logging.getLogger().isEnabledFor(logging.INFO) == False:
+				# print the username only if password have been found
+				user = constant.finalResults.get('User', '')
+				global tmp_user
+				if user != tmp_user:
+					tmp_user = user
+					self.print_user(user)
+
+				# if not title1:
+				self.print_title(software_name)
+			
+			toWrite = []
+						
+			# System Hashes
+			if category == 'hash':
+				for pwd in pwdFound:
+					self.do_print(pwd)
+					toWrite.append(pwd)
+				self.do_print()
+
+			# Other passwords
+			else:
+				for pwd in pwdFound:
+					password_category = False
+					# detect which kinds of password has been found
+					lower_list = [s.lower() for s in pwd.keys()]
+					password = [s for s in lower_list if "password" in s]
+					if password: 
+						password_category = password
+					else:
+						key = [s for s in lower_list if "key" in s] # for the wifi
+						if key: 
+							password_category = key
+						else:
+							hash = [s for s in lower_list if "hash" in s]
+							if hash:
+								password_category = hash
+					
+					# No password found
+					if not password_category:
+						print_debug("FAILED", "Password not found !!!")
+					else:
+						print_debug("OK", '%s found !!!' % password_category[0].title())
+						toWrite.append(pwd)
+						
+						# Store all passwords found on a table => for dictionary attack if master password set
+						constant.nbPasswordFound += 1
+
+						if password_category[0] in pwd:
+							constant.passwordFound.append(pwd[password_category[0]])
+
+						elif password_category[0].capitalize() in pwd:
+							constant.passwordFound.append(pwd[password_category[0].capitalize()])
+					
+					for p in pwd.keys():
+						self.do_print('%s: %s' % (p, pwd[p]))
+					self.do_print()
+				
+			# write credentials into a text file
+			self.checks_write(toWrite, software_name)
+		else:
+			logging.info("[!] No passwords found\n")
+
+
+	def write_header(self):
+		time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+		header = '{banner}\r\n- Date: {date}\r\n- Username: {username}\r\n- Hostname:{hostname}\r\n\r\n'.format(
+				banner	 = self.banner.replace('\n', '\r\n'),
+				date 	 = str(time), 
+				username = getpass.getuser(), 
+				hostname = socket.gethostname()
+			)
+		open(os.path.join(constant.folder_name, '%s.txt' % constant.file_name_results),"a+b").write(header)
+
+	def write_footer(self):
+		footer = '\n[+] %s passwords have been found.\r\n\r\n' % str(constant.nbPasswordFound)
+		open(os.path.join(constant.folder_name, '%s.txt' % constant.file_name_results),"a+b").write(footer)
+	
+	def checks_write(self, values, category):
+		if values:
+			if "Passwords" not in constant.finalResults:
+				constant.finalResults["Passwords"] = []
+			constant.finalResults["Passwords"].append([{"Category": category}, values])
 
 def print_debug(error_level, message):
-	
-	b = bcolors()
 
 	# print when password is found
 	if error_level == 'OK':
-		print b.OK + message + b.ENDC
+		constant.st.do_print(message=message, color='green')
 
 	# print when password is not found
 	elif error_level == 'FAILED':
-		print b.FAIL + message + b.ENDC
+		constant.st.do_print(message=message, color='red')
 
-	# print messages depending of their criticism
-	elif error_level == 'CRITICAL':
-		logging.error(b.FAIL + '[CRITICAL] ' + message + '\n' + b.ENDC)
+	elif error_level == 'CRITICAL' or error_level == 'ERROR':
+		constant.st.print_logging(function=logging.error, category='ERROR', message=message, color='red')
 
-	elif error_level == 'ERROR':
-		logging.error(b.FAIL + '[ERROR] ' + message + '\n' + b.ENDC)
-	
 	elif error_level == 'WARNING':
-		logging.warning(b.WARNING + message + '\n' + b.ENDC)
-	
-	elif error_level == 'DEBUG':
-		logging.debug(message + '\n')
+		constant.st.print_logging(function=logging.warning, category='WARNING', message=message, color='cyan')
 
-	elif error_level == 'INFO':
-		logging.info(message + '\n')
-	
+	elif error_level == 'DEBUG':
+		constant.st.print_logging(function=logging.debug, message=message, category='DEBUG')
+
 	else:
-		logging.info('[%s] %s' % (error_level, message))
+		constant.st.print_logging(function=logging.info, message=message, category='INFO')
 
 # --------------------------- End of output functions ---------------------------
 
 def parseJsonResultToBuffer(jsonString, color=False):
-	green = ''
-	reset = ''
-	title = ''
-	if color:
-		green = Fore.GREEN
-		title = Style.BRIGHT + Fore.WHITE
-		reset = Style.RESET_ALL
-
-	buffer = ''
+	buffer = u''
 	try:
 		for json in jsonString:
 			if json:
-				buffer += '\r\n\r\n{title_color}########## User: {username} ##########{reset_color}\r\n\r\n'.format(title_color=title, username=json['User'], reset_color=reset)
+				buffer += u'##################  User: {username} ################## \r\n'.format(username=json['User'])
 				if 'Passwords' not in json:
-					buffer += 'No passwords found for this user !'
+					buffer += u'No passwords found for this user !\r\n\r\n'
 				else:
 					for all_passwords in json['Passwords']:
-						buffer += '{title_color}------------------- {password_category} -----------------{reset_color}\r\n'.format(title_color=title, password_category=all_passwords[0]['Category'], reset_color=reset)
-						for password_by_category in all_passwords[1]:
-							buffer += '\r\n{green_color}Password found !!!{reset_color}\r\n'.format(green_color=green, reset_color=reset)
-							constant.nbPasswordFound += 1
-							for dic in password_by_category.keys():
-								try:
-									buffer += '%s: %s\r\n' % (dic, password_by_category[dic].encode('utf-8'))
-								except:
-									buffer += '%s: %s\r\n' % (dic, password_by_category[dic].encode(encoding='utf-8',errors='replace'))
-						buffer += '\r\n'
-
+						buffer += u'\r\n------------------- {password_category} -----------------\r\n'.format(password_category=all_passwords[0]['Category'])
+						if all_passwords[0]['Category'].lower() in ['lsa', 'hashdump', 'cachedump']:
+							for dic in all_passwords[1]:
+								if all_passwords[0]['Category'].lower() == 'lsa':
+									for d in dic:
+										buffer += u'%s\r\n' % (constant.st.try_unicode(d))
+								else:
+									buffer += u'%s\r\n' % (constant.st.try_unicode(dic))
+						else:
+							for password_by_category in all_passwords[1]:
+								buffer += u'\r\nPassword found !!!\r\n'
+								for dic in password_by_category.keys():
+									try:
+										buffer += u'%s: %s\r\n' % (dic, constant.st.try_unicode(password_by_category[dic]))
+									except Exception, e:
+										print_debug('ERROR', 'Error retrieving the password encoding: %s' % e)
+						buffer += u'\r\n'
 	except Exception as e:
 		print_debug('ERROR', 'Error parsing the json results: %s' % e)
 		print_debug('ERROR', 'json content: %s' % jsonString)
 
-	return buffer 
+	return buffer
