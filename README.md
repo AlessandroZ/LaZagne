@@ -70,6 +70,20 @@ laZagne.exe all -drive D
 
 __Note: For wifi passwords \ Windows Secrets, launch it with administrator privileges (UAC Authentication / sudo)__
 
+Mac Os
+----
+__Note: In Mac OS System, without the user password it is very difficult to retrieve passwords stored on the computer.__ 
+So, I recommend using one of these options
+
+* If you know the user password, add it in the command line 
+```
+laZagne all --password SuperSecurePassword
+```
+* You could use the interactive mode that will prompt a dialog box to the user until the password will be correct 
+```
+laZagne all -i
+```
+
 Supported software
 ----
 
