@@ -1,6 +1,10 @@
+# -*- coding: utf-8 -*-
+
 # Inspired from :
 # https://apple.stackexchange.com/questions/220729/what-type-of-hash-are-a-macs-password-stored-in
 # https://www.onlinehashcrack.com/how-to-extract-hashes-crack-mac-osx-passwords.php
+
+# TO DO: retrieve hash on mac os Lion without need root access: https://hackademics.fr/forum/hacking-connaissances-avancées/unhash/1098-mac-os-x-python-os-x-lion-password-cracker 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.dico import get_dico
