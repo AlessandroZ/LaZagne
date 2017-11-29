@@ -48,7 +48,7 @@ class Credentials(object):
 
 class JsonDatabase(Credentials):
     def __init__(self, profile):
-        db = profile + os.sep + "logins.json"
+        db = os.path.join(profile, u"logins.json")
         super(JsonDatabase, self).__init__(db)
 
     def __iter__(self):
@@ -68,7 +68,7 @@ class JsonDatabase(Credentials):
 
 class SqliteDatabase(Credentials):
     def __init__(self, profile):
-        db = profile + os.sep + "signons.sqlite"
+        db = os.path.join(profile, "signons.sqlite")
         super(SqliteDatabase, self).__init__(db)
         self.conn = sqlite3.connect(db)
         self.c = self.conn.cursor()
@@ -103,30 +103,24 @@ class Mozilla(ModuleInfo):
         self.key3 = ''
 
         # Manage options
-        suboptions = [{'command': '-m', 'action': 'store', 'dest': 'manually',
-                       'help': 'enter the master password manually',
-                       'title': 'Advanced Mozilla master password options'},
-            {'command': '-s', 'action': 'store', 'dest': 'specific_path',
-             'help': 'enter the specific path to a profile you want to crack',
-             'title': 'Advanced Mozilla master password options'}]
+        suboptions = [
+                        {'command': '-m', 'action': 'store', 'dest': 'manually', 'help': 'enter the master password manually', 'title': 'Advanced Mozilla master password options'},
+                        {'command': '-s', 'action': 'store', 'dest': 'specific_path', 'help': 'enter the specific path to a profile you want to crack', 'title': 'Advanced Mozilla master password options'}
+                    ]
 
         if not isThunderbird:
-            options = {'command': '-f', 'action': 'store_true',
-                       'dest': 'firefox', 'help': 'firefox'}
-            ModuleInfo.__init__(self, 'firefox', 'browsers', options,
-                                suboptions)
+            options = {'command': '-firefox', 'action': 'store_true', 'dest': 'firefox', 'help': 'firefox'}
+            ModuleInfo.__init__(self, 'firefox', 'browsers', options, suboptions)
         else:
-            options = {'command': '-t', 'action': 'store_true',
-                       'dest': 'thunderbird', 'help': 'thunderbird'}
-            ModuleInfo.__init__(self, 'thunderbird', 'browsers', options,
-                                suboptions)
+            options = {'command': '-thunderbird', 'action': 'store_true', 'dest': 'thunderbird', 'help': 'thunderbird'}
+            ModuleInfo.__init__(self, 'thunderbird', 'browsers', options, suboptions)
 
     def get_path(self, software_name):
-        path = ''
-        if software_name == 'Firefox':
-            path = os.path.expanduser("~/Library/Application Support/Firefox/")
-        elif software_name == 'Thunderbird':
-            path = os.path.expanduser("~/Library/Thunderbird")
+        path = u''
+        if software_name == u'Firefox':
+            path = os.path.expanduser(u"~/Library/Application Support/Firefox/")
+        elif software_name == u'Thunderbird':
+            path = os.path.expanduser(u"~/Library/Thunderbird")
         return path
 
     def manage_advanced_options(self):
@@ -295,7 +289,7 @@ class Mozilla(ModuleInfo):
     def get_firefox_profiles(self, directory):
         cp = RawConfigParser()
         try:
-            cp.read(os.path.join(directory, 'profiles.ini'))
+            cp.read(os.path.join(directory, u'profiles.ini'))
         except:
             return []
 
@@ -306,45 +300,6 @@ class Mozilla(ModuleInfo):
                     profile_list.append(os.path.join(directory, cp.get(section,
                                                                        'Path').strip()))
         return profile_list
-
-    def save_db(self, userpath):
-
-        # create the folder to save it by profile
-        relative_path = constant.folder_name + os.sep + 'firefox'
-        if not os.path.exists(relative_path):
-            os.makedirs(relative_path)
-
-        relative_path += os.sep + os.path.basename(userpath)
-        if not os.path.exists(relative_path):
-            os.makedirs(relative_path)
-
-        # Get the database name
-        if os.path.exists(userpath + os.sep + 'logins.json'):
-            dbname = 'logins.json'
-        elif os.path.exists(userpath + os.sep + 'signons.sqlite'):
-            dbname = 'signons.sqlite'
-
-        # copy the files (database + key3.db)
-        try:
-            ori_db = userpath + os.sep + dbname
-            dst_db = relative_path + os.sep + dbname
-            shutil.copyfile(ori_db, dst_db)
-            print_debug('INFO',
-                        '%s has been copied here: %s' % (dbname, dst_db))
-        except Exception, e:
-            print_debug('DEBUG', '{0}'.format(e))
-            print_debug('ERROR', '%s has not been copied' % dbname)
-
-        try:
-            dbname = 'key3.db'
-            ori_db = userpath + os.sep + dbname
-            dst_db = relative_path + os.sep + dbname
-            shutil.copyfile(ori_db, dst_db)
-            print_debug('INFO',
-                        '%s has been copied here: %s' % (dbname, dst_db))
-        except Exception, e:
-            print_debug('DEBUG', '{0}'.format(e))
-            print_debug('ERROR', '%s has not been copied' % dbname)
 
     # ------------------------------ Master Password Functions ------------------------------
 
@@ -543,9 +498,9 @@ class Mozilla(ModuleInfo):
                         # remove bad character at the end
                         try:
                             nb = unpack('B', login[-1])[0]
-                            values["Login"] = login[:-nb]
+                            values["Login"] = unicode(login[:-nb])
                         except:
-                            values["Login"] = login
+                            values["Login"] = unicode(login)
 
                         # Password
                         passwdASN1 = decoder.decode(b64decode(passw))
@@ -556,9 +511,9 @@ class Mozilla(ModuleInfo):
                         # remove bad character at the end
                         try:
                             nb = unpack('B', password[-1])[0]
-                            values["Password"] = password[:-nb]
+                            values["Password"] = unicode(password[:-nb])
                         except:
-                            values["Password"] = password
+                            values["Password"] = unicode(password)
 
                         if len(values):
                             pwdFound.append(values)
