@@ -75,6 +75,7 @@ class Chainbreaker(ModuleInfo):
 						if creds:
 							pwdFound 	+= creds
 							pwd_ok 		= True
+							constant.user_keychain_find = True
 							constant.keychains_pwd.append(
 													{
 														'keychain': keychain, 

@@ -38,3 +38,4 @@ class constant():
 	dictionary_attack 	= False
 
 	user_password		= None
+	user_keychain_find 	= False 
