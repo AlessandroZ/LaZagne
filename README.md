@@ -108,7 +108,8 @@ Special thanks
 * Harmjoy for [KeeThief](https://github.com/HarmJ0y/KeeThief/)
 * n1nj4sec for his [mimipy](https://github.com/n1nj4sec/mimipy) module
 * Benjamin DELPY for [mimikatz](https://github.com/gentilkiwi/mimikatz), which helps me to understand some Windows API.
-* [Creddump](https://github.com/moyix/creddump)
+* Moyix for [Creddump](https://github.com/moyix/creddump)
+* N0fat for [Chainbreaker](https://github.com/n0fate/chainbreaker/)
 * All [contributors](https://github.com/AlessandroZ/LaZagne/graphs/contributors) who help me on this project
 
 ----
