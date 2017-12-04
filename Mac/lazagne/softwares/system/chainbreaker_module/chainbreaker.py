@@ -709,9 +709,8 @@ def kcdecrypt(key, iv, data):
 
     return plain
 
-def dump_creds(keychain_file, password):
+def dump_creds(keychain_file, password=None, key=None):
     keychain = KeyChain(keychain_file)
-
     
     if keychain.open() is False:
         print_debug('ERROR', '%s Open Failed' % keychain_file)
@@ -730,8 +729,11 @@ def dump_creds(keychain_file, password):
     tableCount, tableEnum = keychain.getTablenametoList(RecordList, TableList)
 
     # generate database key
-    masterkey = keychain.generateMasterKey(password, TableList[tableEnum[CSSM_DL_DB_RECORD_METADATA]])
-    dbkey = keychain.findWrappingKey(masterkey, TableList[tableEnum[CSSM_DL_DB_RECORD_METADATA]])
+    if password:
+        masterkey = keychain.generateMasterKey(password, TableList[tableEnum[CSSM_DL_DB_RECORD_METADATA]])
+        dbkey = keychain.findWrappingKey(masterkey, TableList[tableEnum[CSSM_DL_DB_RECORD_METADATA]])
+    else:
+        dbkey = keychain.findWrappingKey(unhexlify(key), TableList[tableEnum[CSSM_DL_DB_RECORD_METADATA]])
 
     # DEBUG
     print_debug('DEBUG', 'DB Key: %s' % str(repr(dbkey)))
@@ -788,7 +790,6 @@ def dump_creds(keychain_file, password):
 
         for internetpw in internetpw_list:
             record = keychain.getInternetPWRecord(TableList[tableEnum[CSSM_DL_DB_RECORD_INTERNET_PASSWORD]], internetpw)
-            # print '[+] Internet Record'
             try:
                 real_key    = key_list[record[0][0:20]]
                 passwd      = keychain.DBBlobDecryption(record[0], real_key)
