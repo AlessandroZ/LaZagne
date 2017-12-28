@@ -11,7 +11,7 @@ class Filezilla(ModuleInfo):
 		ModuleInfo.__init__(self, 'filezilla', 'sysadmin', options, need_to_be_in_env=False)
 
 	def run(self, software_name = None):		
-		directory = os.path.join(constant.profile['APPDATA'], u'\FileZilla')
+		directory = os.path.join(constant.profile['APPDATA'], u'FileZilla')
 		
 		interesting_xml_file = []
 		info_xml_file = []
