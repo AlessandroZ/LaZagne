@@ -25,7 +25,7 @@ class IE(ModuleInfo):
 			try:
 				h = (urls[u] + '\0').encode('UTF-16LE')
 				hash_tables.append([h, hashlib.sha1(h).hexdigest().lower()])
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 		return hash_tables
 
@@ -33,7 +33,7 @@ class IE(ModuleInfo):
 		urls = self.history_from_regedit()
 		try:
 			urls = urls + self.history_from_powershell()
-		except Exception,e:
+		except Exception as e:
 			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('ERROR', 'Browser history failed to load, only few url will be tried')
 		
@@ -93,7 +93,7 @@ class IE(ModuleInfo):
 		urls = []
 		try:
 			hkey = OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\TypedURLs')
-		except Exception,e:
+		except Exception as e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return []
 		
@@ -115,7 +115,7 @@ class IE(ModuleInfo):
 					a = pwd[i:].decode('UTF-16LE')
 					a = a.decode('utf-8')
 					break
-				except Exception, e:
+				except Exception as e:
 					result = ''
 		
 		# the last one is always equal to 0
@@ -141,7 +141,7 @@ class IE(ModuleInfo):
 					pfound.append(values)
 				else:
 					password = secret[length - s]
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 
 		return pfound
@@ -155,7 +155,7 @@ class IE(ModuleInfo):
 		failed = False
 		try:
 			hkey = OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2')
-		except Exception,e:
+		except Exception as e:
 			print_debug('DEBUG', '{0}'.format(e))
 			failed = True
 		

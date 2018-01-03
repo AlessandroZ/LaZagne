@@ -2,6 +2,7 @@
 
 # file header
 
+from __future__ import absolute_import
 class HeaderDictionary(dict):
     """
     A dictionary on steroids for comfortable header field storage and 
@@ -110,7 +111,7 @@ class HeaderDictionary(dict):
 # file baseclass
 
 import io
-from crypto import sha256
+from .crypto import sha256
 
 class KDBFile(object):
     def __init__(self, stream=None, **credentials):
@@ -157,9 +158,9 @@ class KDBFile(object):
         raise NotImplementedError('The write_to() method was not implemented.')
 
     def add_credentials(self, **credentials):
-        if credentials.has_key('password'):
+        if 'password' in credentials:
             self.add_key_hash(sha256(credentials['password']))
-        if credentials.has_key('keyfile'):
+        if 'keyfile' in credentials:
             self.add_key_hash(load_keyfile(credentials['keyfile']))
 
     def clear_credentials(self):

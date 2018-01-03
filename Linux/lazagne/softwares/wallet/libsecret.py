@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os, sys
 
 from lazagne.config.write_output import print_debug
@@ -29,8 +30,8 @@ class libsecret(ModuleInfo):
 
                 collections = list(secretstorage.collection.get_all_collections(bus))
 
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 continue
 
             for collection in collections:
@@ -45,8 +46,8 @@ class libsecret(ModuleInfo):
 
                 try:
                     storage = collection.get_all_items()
-                except Exception, e:
-                    print e
+                except Exception as e:
+                    print(e)
                     continue
 
                 for item in storage:

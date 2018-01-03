@@ -7,6 +7,7 @@
 ##############################################################################
 
 # Disclaimer: Do Not Use this program for illegal purposes ;)
+from __future__ import print_function
 import argparse
 import time, sys, os
 import logging
@@ -113,13 +114,13 @@ def write_in_file(result):
 			prettyJson = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '))
 			with open(constant.folder_name + os.sep + constant.file_name_results + '.json', 'w+') as f:
 				f.write(prettyJson.encode('utf-8', errors='replace'))
-			print '[+] File written: ' + constant.folder_name + os.sep + constant.file_name_results + '.json'
+			print('[+] File written: ' + constant.folder_name + os.sep + constant.file_name_results + '.json')
 
 		if constant.output == 'txt' or constant.output == 'all':
 			with open(constant.folder_name + os.sep + constant.file_name_results + '.txt', 'a+b') as f:
 				f.write(parseJsonResultToBuffer(result))
 			write_footer()
-			print '[+] File written: ' + constant.folder_name + os.sep + constant.file_name_results + '.txt'
+			print('[+] File written: ' + constant.folder_name + os.sep + constant.file_name_results + '.txt')
 
 	except Exception as e:
 		print_debug('ERROR', 'Error writing the output file: %s' % e)
@@ -150,7 +151,7 @@ def launch_module(module):
 			yield True, i.capitalize(), pwdFound
 		except:
 			traceback.print_exc()
-			print
+			print()
 			error_message = traceback.format_exc()
 			yield False, i.capitalize(), error_message
 
@@ -279,4 +280,4 @@ if __name__ == '__main__':
 	print_footer()
 
 	elapsed_time = time.time() - start_time
-	print '\nelapsed time = ' + str(elapsed_time)
+	print('\nelapsed time = ' + str(elapsed_time))

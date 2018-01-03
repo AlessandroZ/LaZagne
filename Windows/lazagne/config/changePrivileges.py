@@ -1,3 +1,4 @@
+from __future__ import print_function
 #original code from https://github.com/joren485/PyWinPrivEsc/blob/master/RunAsSystem.py
 from lazagne.config.write_output import print_debug
 from lazagne.config.WinStructure import *
@@ -123,7 +124,7 @@ def getSidToken(token_sid):
                     
                     # CloseHandle(hToken)
                     CloseHandle(hProcess)
-                except Exception, e :
+                except Exception as e :
                     print_debug('ERROR', str(e))
                     break
         return False
@@ -138,13 +139,13 @@ def getSidToken(token_sid):
                     OpenProcessToken(hProcess, tokenprivs, byref(hToken))
                     if hToken:
                         if GetTokenSid( hToken ) == token_sid:
-                            print
+                            print()
                             print_debug('INFO', 'Using PID: ' + str(pid))
                             CloseHandle(hProcess)
                             return hToken
                     CloseHandle(hToken)
             CloseHandle(hProcess)
-        except Exception, e :
+        except Exception as e :
             print_debug('ERROR', str(e))
 
     return False

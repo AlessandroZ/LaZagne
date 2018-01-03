@@ -46,6 +46,6 @@ class kde(ModuleInfo):
 			      if len(values) != 0:
 				pwdFound.append(values)
 		    return pwdFound
-		except Exception,e:
+		except Exception as e:
 			print_debug('ERROR', 'An error occurs with KWallet: {0}'.format(e))
 			

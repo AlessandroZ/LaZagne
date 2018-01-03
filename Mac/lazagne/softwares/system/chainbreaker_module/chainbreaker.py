@@ -18,15 +18,17 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
+from __future__ import print_function
+from __future__ import absolute_import
 from lazagne.config.write_output import print_debug
 import os
 import struct
 from binascii import unhexlify
 import datetime
-from pbkdf2 import pbkdf2
-from pyDes import triple_des, CBC
+from .pbkdf2 import pbkdf2
+from .pyDes import triple_des, CBC
 from ctypes import *
-from Schema import *
+from .Schema import *
 
 ATOM_SIZE = 4
 SIZEOFKEYCHAINTIME = 16
@@ -359,7 +361,7 @@ class KeyChain():
 
         CipherLen = KeyBlobRecord.TotalLength - KeyBlobRecord.CipherOffset
         if CipherLen % BLOCKSIZE != 0:
-            print "Bad ciphertext len"
+            print("Bad ciphertext len")
 
         iv = record[16:24]
 
@@ -533,7 +535,7 @@ class KeyChain():
         try:
             data = struct.unpack(unpack_value, self.fbuf[BASE_ADDR + pCol + 4:BASE_ADDR + pCol + 4 + real_str_len])[0]
         except struct.error:
-            print 'Length is too long : %d'%real_str_len
+            print('Length is too long : %d'%real_str_len)
             return ''
         return data
 

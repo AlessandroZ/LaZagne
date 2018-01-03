@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import hashlib
 import struct
-from Crypto.Cipher import AES
-from pureSalsa20 import Salsa20
+from .Crypto.Cipher import AES
+from .pureSalsa20 import Salsa20
 
 AES_BLOCK_SIZE = 16
 

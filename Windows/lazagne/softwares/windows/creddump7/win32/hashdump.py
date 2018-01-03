@@ -18,8 +18,9 @@
 @license:      GNU General Public License 2.0 or later
 @contact:      bdolangavitt@wesleyan.edu
 """
+from __future__ import absolute_import
 
-from rawreg import *
+from .rawreg import *
 from ..addrspace import HiveFileAddressSpace
 from Crypto.Hash import MD5
 from Crypto.Cipher import ARC4,DES

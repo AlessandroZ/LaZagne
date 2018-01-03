@@ -54,7 +54,7 @@ class Chainbreaker(ModuleInfo):
 			# try to open it (suppose the file has bad privilege or that the tool is launched with sudo rights)
 			key 		= open('/private/var/db/SystemKey').read()
 			system_key 	= binascii.hexlify(str(key[8:32])).upper()
-		except Exception, e:
+		except Exception as e:
 			print_debug('DEBUG', 'SystemKey file could not be openned: {error}'.format(error=str(e)))
 			try:
 				# try to open the file using a password found (supposing a password is also used as a system password)

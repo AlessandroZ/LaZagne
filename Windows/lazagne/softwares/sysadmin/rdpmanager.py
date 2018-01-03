@@ -53,7 +53,7 @@ class RDPManager(ModuleInfo):
                         values = self.check_tag_content(values, child)
                 if values:
                     pwdFound.append(values)
-        except Exception, e:
+        except Exception as e:
             print_debug('DEBUG', str(e))
 
         return pwdFound

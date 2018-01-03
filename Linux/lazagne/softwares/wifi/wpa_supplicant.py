@@ -37,7 +37,7 @@ class Wpa_supplicant(ModuleInfo):
 		fd = None
 		try:
 			fd = open(self.filestr)
-		except Exception, e: 
+		except Exception as e: 
 			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('INFO', 'Could not open the file: %s ' % self.filestr)
 

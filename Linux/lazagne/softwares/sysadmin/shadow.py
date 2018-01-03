@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os,sys
 import crypt
 from lazagne.config.write_output import print_debug
@@ -23,7 +24,7 @@ class Shadow(ModuleInfo):
 		if dictionary_path:
 			try:
 				dicFile = open (dictionary_path,'r')
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', 'Unable to open passwords file: %s' % str(self.dictionary_path))
 				return []
@@ -75,7 +76,7 @@ class Shadow(ModuleInfo):
 			for word in dic:
 				try:
 					cryptWord = crypt.crypt(word, realSalt)
-				except Exception,e:
+				except Exception as e:
 					print_debug('DEBUG', '{0}'.format(e))
 					cryptWord = ''
 
@@ -85,9 +86,9 @@ class Shadow(ModuleInfo):
 					self.pwdFound.append(values)
 					return
 		except (KeyboardInterrupt, SystemExit):
-			print 'INTERRUPTED!'
+			print('INTERRUPTED!')
 			print_debug('DEBUG', 'Dictionary attack interrupted')
-		except Exception,e:
+		except Exception as e:
 			print_debug('DEBUG', '{0}'.format(e))
 
 		print_debug('INFO', 'No password found using this attack !!! ')

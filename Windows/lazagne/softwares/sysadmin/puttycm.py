@@ -14,7 +14,7 @@ class Puttycm(ModuleInfo):
 	def run(self, software_name = None):	
 		try:
 			database_path = self.get_default_database()
-		except Exception,e:
+		except Exception as e:
 			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('INFO', 'Puttycm not installed')
 			return

@@ -2,6 +2,7 @@
 # Required files (key3.db, signongs.sqlite, cert8.db)
 # Inspired from https://github.com/Unode/firefox_decrypt/blob/master/firefox_decrypt.py
 
+from __future__ import print_function
 from ctypes import *
 import sys, os, re, glob
 from base64 import b64decode
@@ -356,9 +357,9 @@ class Mozilla(ModuleInfo):
                             return p.strip()
 
             except (KeyboardInterrupt, SystemExit):
-                print 'INTERRUPTED!'
+                print('INTERRUPTED!')
                 print_debug('DEBUG', 'Dictionary attack interrupted')
-            except Exception, e:
+            except Exception as e:
                 print_debug('DEBUG', '{0}'.format(e))
 
             print_debug('WARNING',
@@ -398,9 +399,9 @@ class Mozilla(ModuleInfo):
                                         'Master password found: %s' % w.strip())
                             return w.strip()
             except (KeyboardInterrupt, SystemExit):
-                print 'INTERRUPTED!'
+                print('INTERRUPTED!')
                 print_debug('INFO', 'Dictionary attack interrupted')
-            except Exception, e:
+            except Exception as e:
                 print_debug('DEBUG', '{0}'.format(e))
 
             print_debug('WARNING',

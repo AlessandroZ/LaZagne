@@ -29,14 +29,14 @@ class Skype(ModuleInfo):
 			keyPath = 'Software\\Skype\\ProtectedStorage'
 			try:
 				hkey = OpenKey(HKEY_CURRENT_USER, keyPath)
-			except Exception, e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 				return False
 			
 			num = _winreg.QueryInfoKey(hkey)[1]
 			k = _winreg.EnumValue(hkey, 0)[1]
 			return Win32CryptUnprotectData(k)
-		except Exception,e:
+		except Exception as e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return False
 			
@@ -79,7 +79,7 @@ class Skype(ModuleInfo):
 		if dictionary_path:
 			try:
 				dicFile = open (dictionary_path, 'r')
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', 'Unable to open passwords file: %s' % str(dictionary_path))
 				return []
@@ -136,7 +136,7 @@ class Skype(ModuleInfo):
 						values['Password'] = password
 
 					self.pwdFound.append(values)
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 
 	# main function

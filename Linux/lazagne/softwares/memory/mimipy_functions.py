@@ -15,6 +15,7 @@
     You can find the bleeding edge version of mimipy here : https://github.com/n1nj4sec/mimipy
 
 """
+from __future__ import print_function
 import sys, os
 import urllib2
 import crypt
@@ -93,10 +94,10 @@ def password_found(desc, process, user, password):
     global passwords_found
     if (process, user, password) not in passwords_found:
         passwords_found.add((process, user, password))
-        print colorize("%s : "%desc, color="green")
-        print colorize("\t- Process\t: %s"%process, color="grey")
-        print colorize("\t- Username\t: %s"%user, color="grey")
-        print colorize("\t- Password\t: %s"%password, color="grey")
+        print(colorize("%s : "%desc, color="green"))
+        print(colorize("\t- Process\t: %s"%process, color="grey"))
+        print(colorize("\t- Username\t: %s"%user, color="grey"))
+        print(colorize("\t- Password\t: %s"%password, color="grey"))
 
 
 def password_list_match(password_list, near):
@@ -146,11 +147,11 @@ def search_password(optimizations='nsrx'):
                 #    if not strings_list:
                 #        x.dump(before=200, size=400)
                 for x in mw.mem_search(mypasswd, optimizations=optimizations):
-                    print colorize("[+] password found in process %s (%s) : %s !"%(name, pid, x), color="green")
+                    print(colorize("[+] password found in process %s (%s) : %s !"%(name, pid, x), color="green"))
                     x.dump(before=1000, size=2000)
-                    print "strings found around : "
+                    print("strings found around : ")
                     strings_list=get_strings_around(mw, x, mypasswd)
-                    print "strings found around : %s"%strings_list
+                    print("strings found around : %s"%strings_list)
                     #print "strings where the password's address is referenced :"
                     #for _,o in mw.search_address(x):
                     #    o.dump(before=200, size=400)

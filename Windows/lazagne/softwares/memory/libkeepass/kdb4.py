@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import io
 import uuid
 import zlib
@@ -7,13 +8,13 @@ import struct
 import hashlib
 import base64
 
-from crypto import xor, sha256, aes_cbc_decrypt, aes_cbc_encrypt
-from crypto import transform_key, pad, unpad
+from .crypto import xor, sha256, aes_cbc_decrypt, aes_cbc_encrypt
+from .crypto import transform_key, pad, unpad
 
-from common import load_keyfile, stream_unpack
-from common import KDBFile, HeaderDictionary
+from .common import load_keyfile, stream_unpack
+from .common import KDBFile, HeaderDictionary
 
-from hbio import HashedBlockIO
+from .hbio import HashedBlockIO
 
 KDB4_SALSA20_IV = bytes('e830094b97205d2a'.decode('hex'))
 KDB4_SIGNATURE = (0x9AA2D903, 0xB54BFB67)
@@ -253,7 +254,7 @@ class KDB4File(KDBFile):
 # from lxml import etree
 import xml.etree.ElementTree as etree
 # from lxml import objectify
-from crypto import Salsa20
+from .crypto import Salsa20
 
 class KDBXmlExtension:
     """
@@ -334,7 +335,7 @@ class KDBXmlExtension:
                         else:
                             # Replace new line by a point
                             dic[en[0].text] = en[1].text.replace('\n', '.')
-                    except Exception, e:
+                    except Exception as e:
                         # print e
                         pass
                 pwdFounds.append(dic)

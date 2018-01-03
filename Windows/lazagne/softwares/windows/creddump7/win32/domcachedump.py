@@ -18,11 +18,12 @@
 @license:      GNU General Public License 2.0 or later
 @contact:      bdolangavitt@wesleyan.edu
 """
+from __future__ import absolute_import
 
-from rawreg import *
+from .rawreg import *
 from ..addrspace import HiveFileAddressSpace
-from hashdump import get_bootkey
-from lsasecrets import get_secret_by_name,get_lsa_key
+from .hashdump import get_bootkey
+from .lsasecrets import get_secret_by_name,get_lsa_key
 from Crypto.Hash import HMAC
 from Crypto.Cipher import ARC4, AES
 from struct import unpack

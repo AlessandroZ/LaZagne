@@ -41,7 +41,7 @@ def powershell_execute(script, function):
 			for i in p.stdout.readline():
 				output += i
 			output = base64.b64decode(output)
-	except Exception, e:
+	except Exception as e:
 		pass
 	
 	return output

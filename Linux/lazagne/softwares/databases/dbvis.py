@@ -69,7 +69,7 @@ class DbVisualizer(ModuleInfo):
 							password = self.decrypt(salt, ciphered_password, passphrase)
 							values['Password'] = password
 							passwordFound = True
-						except Exception,e:
+						except Exception as e:
 							print_debug('ERROR', '{0}'.format(e))
 
 					if 'UrlVariables' == e.tag:
