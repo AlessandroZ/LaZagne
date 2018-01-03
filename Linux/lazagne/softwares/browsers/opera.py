@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys, struct, hashlib, binascii, re, os
 from Crypto.Cipher import DES3
 from ConfigParser import RawConfigParser
@@ -29,7 +30,7 @@ class Opera(ModuleInfo):
 					print_debug('WARNING', 'A master password is used.')
 				else:
 					print_debug('WARNING', 'An error occurs, the use of master password is not sure.')
-			print
+			print()
 
 			passwords = self.decipher_old_version(path)
 
@@ -89,7 +90,7 @@ class Opera(ModuleInfo):
 				plaintext = des3dec.decrypt(data)
 				plaintext = re.sub(r'[^\x20-\x7e]', '', plaintext)
 				passwords.append(plaintext)
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', 'Failed to decrypt password')
 

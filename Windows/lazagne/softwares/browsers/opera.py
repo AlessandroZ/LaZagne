@@ -108,7 +108,7 @@ class Opera(ModuleInfo):
 				plaintext = des3dec.decrypt(data)
 				plaintext = re.sub(r'[^\x20-\x7e]', '', plaintext)
 				passwords.append(plaintext)
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', 'Failed to decrypt password')
 			
@@ -126,7 +126,7 @@ class Opera(ModuleInfo):
 			# Get the results
 			try:
 				cursor.execute('SELECT action_url, username_value, password_value FROM logins')
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', 'Opera seems to be used, the database is locked. Kill the process and try again !')
 				return 
@@ -158,13 +158,13 @@ class Opera(ModuleInfo):
 			try:
 				cp.readfp(f)
 				break
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 				f.readline() # discard first line
 		try:
 			master_pass = cp.get('Security Prefs','Use Paranoid Mailpassword')
 			return master_pass
-		except Exception,e:
+		except Exception as e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return False
 		

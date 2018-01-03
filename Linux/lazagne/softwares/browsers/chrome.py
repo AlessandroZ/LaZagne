@@ -1,3 +1,4 @@
+from __future__ import print_function
 # For non-keyring storage
 
 from lazagne.config.constant import *
@@ -38,7 +39,7 @@ class Chrome(ModuleInfo):
         try:
             cursor.execute('SELECT origin_url,username_value,password_value FROM logins')
             for url, user, password in cursor:
-                print url, user, password
+                print(url, user, password)
                 yield {
                     'URL': url,
                     'Login': user,

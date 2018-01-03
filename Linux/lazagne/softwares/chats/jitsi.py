@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from base64 import b64decode
 import hashlib, os, re
 import binascii, array
@@ -8,7 +9,7 @@ from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config import homes
 
 # From https://github.com/mitsuhiko/python-pbkdf2
-from pbkdf2 import pbkdf2_bin
+from .pbkdf2 import pbkdf2_bin
 
 class Jitsi(ModuleInfo):
 	def __init__(self):

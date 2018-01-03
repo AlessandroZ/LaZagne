@@ -18,10 +18,11 @@
 @license:      GNU General Public License 2.0 or later
 @contact:      bdolangavitt@wesleyan.edu
 """
+from __future__ import absolute_import
 
-from rawreg import *
+from .rawreg import *
 from ..addrspace import HiveFileAddressSpace
-from hashdump import get_bootkey,str_to_key
+from .hashdump import get_bootkey,str_to_key
 from Crypto.Hash import MD5, SHA256
 from Crypto.Cipher import ARC4,DES, AES
 

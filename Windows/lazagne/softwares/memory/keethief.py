@@ -106,7 +106,7 @@ class KeeThief():
 						value, content = line.split(':', 1)
 						# Only store not empty results
 						values[value.strip()] = content.replace('\x00', '').strip()
-					except Exception, e:
+					except Exception as e:
 						pass
 
 			constant.keepass = values

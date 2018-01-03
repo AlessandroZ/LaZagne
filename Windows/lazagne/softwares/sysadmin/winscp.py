@@ -34,7 +34,7 @@ class WinSCP(ModuleInfo):
 		try:
 			key = OpenKey(HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Configuration\Security')
 			return key
-		except Exception,e:
+		except Exception as e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return False
 	
@@ -49,7 +49,7 @@ class WinSCP(ModuleInfo):
 	def get_logins_info(self):
 		try:
 			key = OpenKey(HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Sessions')
-		except Exception,e:
+		except Exception as e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return False
 		
@@ -85,7 +85,7 @@ class WinSCP(ModuleInfo):
 				try:
 					password = self.decrypt_password()
 					values['Password'] = password
-				except Exception,e:
+				except Exception as e:
 					print_debug('DEBUG', '{0}'.format(e))
 				
 				values['URL'] 	= self.hostname
@@ -117,7 +117,7 @@ class WinSCP(ModuleInfo):
 			
 			try:
 				result += chr(int(self.decrypt_char()))
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 				pass
 		

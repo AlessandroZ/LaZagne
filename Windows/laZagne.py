@@ -10,6 +10,7 @@
 
 
 # Softwares that passwords can be retrieved without needed to be in the user environmment
+from __future__ import print_function
 from lazagne.softwares.browsers.mozilla import Mozilla
 
 # Configuration
@@ -131,7 +132,7 @@ def launch_module(module, need_high_privileges=False, need_system_privileges=Fal
 			yield True, i.capitalize(), pwdFound
 		except:
 			traceback.print_exc()
-			print
+			print()
 			error_message = traceback.format_exc()
 			yield False, i.capitalize(), error_message
 
@@ -311,8 +312,8 @@ def runLaZagne(category_choosed='all', check_specific_drive=False):
 					rev2self()
 					stdoutRes.append(constant.finalResults)
 					break
-				except Exception, e:
-					print e
+				except Exception as e:
+					print(e)
 					pass
 
 		# --------- Impersonation browsing file system
@@ -430,4 +431,4 @@ if __name__ == '__main__':
 	if not constant.quiet_mode:
 		constant.st.print_footer()
 		elapsed_time = time.time() - start_time
-		print '\nelapsed time = ' + str(elapsed_time)
+		print('\nelapsed time = ' + str(elapsed_time))

@@ -56,7 +56,7 @@ class Chrome(ModuleInfo):
 			try:
 				shutil.copy(database_path, os.path.join(unicode(os.getcwd()), u'tmp_db'))
 				database_path = os.path.join(unicode(os.getcwd()), u'tmp_db')
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', 'An error occured copying the database file')
 
@@ -64,7 +64,7 @@ class Chrome(ModuleInfo):
 			try:
 				conn = sqlite3.connect(database_path)
 				cursor = conn.cursor()
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 				print_debug('ERROR', 'An error occured opening the database file')
 				continue 
@@ -87,7 +87,7 @@ class Chrome(ModuleInfo):
 							'Password'	: password
 						}
 					)
-				except Exception,e:
+				except Exception as e:
 					print_debug('DEBUG', '{0}'.format(e))
 			
 			conn.close()

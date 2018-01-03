@@ -41,7 +41,7 @@ class Cyberduck(ModuleInfo):
 					values['Password'] = password
 					
 					pwdFound.append(values)
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 
 		return pwdFound

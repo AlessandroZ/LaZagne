@@ -47,6 +47,7 @@ Note: This code was not written for high-end systems needing a fast
       implementation, but rather a handy portable solution with small usage.
 
 """
+from __future__ import print_function
 
 
 # Modes of crypting / cyphering
@@ -658,65 +659,65 @@ def example_triple_des():
     from binascii import unhexlify as unhex
 
     # example shows triple-des encryption using the des class
-    print "Example of triple DES encryption in default ECB mode (DES-EDE3)\n"
+    print("Example of triple DES encryption in default ECB mode (DES-EDE3)\n")
 
-    print "Triple des using the des class (3 times)"
+    print("Triple des using the des class (3 times)")
     t = time()
     k1 = des(unhex("133457799BBCDFF1"))
     k2 = des(unhex("1122334455667788"))
     k3 = des(unhex("77661100DD223311"))
     d = "Triple DES test string, to be encrypted and decrypted..."
-    print "Key1:      %s" % k1.getKey()
-    print "Key2:      %s" % k2.getKey()
-    print "Key3:      %s" % k3.getKey()
-    print "Data:      %s" % d
+    print("Key1:      %s" % k1.getKey())
+    print("Key2:      %s" % k2.getKey())
+    print("Key3:      %s" % k3.getKey())
+    print("Data:      %s" % d)
 
     e1 = k1.encrypt(d)
     e2 = k2.decrypt(e1)
     e3 = k3.encrypt(e2)
-    print "Encrypted: " + e3
+    print("Encrypted: " + e3)
 
     d3 = k3.decrypt(e3)
     d2 = k2.encrypt(d3)
     d1 = k1.decrypt(d2)
-    print "Decrypted: " + d1
-    print "DES time taken: %f (%d crypt operations)" % (time() - t, 6 * (len(d) / 8))
-    print ""
+    print("Decrypted: " + d1)
+    print("DES time taken: %f (%d crypt operations)" % (time() - t, 6 * (len(d) / 8)))
+    print("")
 
     # Example below uses the triple-des class to achieve the same as above
-    print "Now using triple des class"
+    print("Now using triple des class")
     t = time()
     t1 = triple_des(unhex("133457799BBCDFF1112233445566778877661100DD223311"))
-    print "Key:       %s" % t1.getKey()
-    print "Data:      %s" % d
+    print("Key:       %s" % t1.getKey())
+    print("Data:      %s" % d)
 
     td1 = t1.encrypt(d)
-    print "Encrypted: " + td1
+    print("Encrypted: " + td1)
 
     td2 = t1.decrypt(td1)
-    print "Decrypted: " + td2
+    print("Decrypted: " + td2)
 
-    print "Triple DES time taken: %f (%d crypt operations)" % (time() - t, 6 * (len(d) / 8))
+    print("Triple DES time taken: %f (%d crypt operations)" % (time() - t, 6 * (len(d) / 8)))
 
 
 def example_des():
     from time import time
 
     # example of DES encrypting in CBC mode with the IV of "\0\0\0\0\0\0\0\0"
-    print "Example of DES encryption using CBC mode\n"
+    print("Example of DES encryption using CBC mode\n")
     t = time()
     k = des("DESCRYPT", CBC, "\0\0\0\0\0\0\0\0")
     data = "DES encryption algorithm"
-    print "Key      : " + k.getKey()
-    print "Data     : " + data
+    print("Key      : " + k.getKey())
+    print("Data     : " + data)
 
     d = k.encrypt(data)
-    print "Encrypted: " + d
+    print("Encrypted: " + d)
 
     d = k.decrypt(d)
-    print "Decrypted: " + d
-    print "DES time taken: %f (6 crypt operations)" % (time() - t)
-    print ""
+    print("Decrypted: " + d)
+    print("DES time taken: %f (6 crypt operations)" % (time() - t))
+    print("")
 
 
 def __test__():
@@ -730,44 +731,44 @@ def __fulltest__():
     from binascii import hexlify as dohex
 
     __test__()
-    print ""
+    print("")
 
     k = des("\0\0\0\0\0\0\0\0", CBC, "\0\0\0\0\0\0\0\0")
     d = k.encrypt("DES encryption algorithm")
     if k.decrypt(d) != "DES encryption algorithm":
-        print "Test 1 Error: Unencypted data block does not match start data"
+        print("Test 1 Error: Unencypted data block does not match start data")
 
     k = des("\0\0\0\0\0\0\0\0", CBC, "\0\0\0\0\0\0\0\0")
     d = k.encrypt("Default string of text", '*')
     if k.decrypt(d, "*") != "Default string of text":
-        print "Test 2 Error: Unencypted data block does not match start data"
+        print("Test 2 Error: Unencypted data block does not match start data")
 
     k = des("\r\n\tABC\r\n")
     d = k.encrypt("String to Pad", '*')
     if k.decrypt(d) != "String to Pad***":
-        print "'%s'" % k.decrypt(d)
-        print "Test 3 Error: Unencypted data block does not match start data"
+        print("'%s'" % k.decrypt(d))
+        print("Test 3 Error: Unencypted data block does not match start data")
 
     k = des("\r\n\tABC\r\n")
     d = k.encrypt(unhex("000102030405060708FF8FDCB04080"), unhex("44"))
     if k.decrypt(d, unhex("44")) != unhex("000102030405060708FF8FDCB04080"):
-        print "Test 4a Error: Unencypted data block does not match start data"
+        print("Test 4a Error: Unencypted data block does not match start data")
     if k.decrypt(d) != unhex("000102030405060708FF8FDCB0408044"):
-        print "Test 4b Error: Unencypted data block does not match start data"
+        print("Test 4b Error: Unencypted data block does not match start data")
 
     k = triple_des("MyDesKey\r\n\tABC\r\n0987*543")
     d = k.encrypt(unhex(
         "000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080"))
     if k.decrypt(d) != unhex(
             "000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080"):
-        print "Test 5 Error: Unencypted data block does not match start data"
+        print("Test 5 Error: Unencypted data block does not match start data")
 
     k = triple_des("\r\n\tABC\r\n0987*543")
     d = k.encrypt(unhex(
         "000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080"))
     if k.decrypt(d) != unhex(
             "000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080000102030405060708FF8FDCB04080"):
-        print "Test 6 Error: Unencypted data block does not match start data"
+        print("Test 6 Error: Unencypted data block does not match start data")
 
 
 def __filetest__():
@@ -789,7 +790,7 @@ def __filetest__():
     f = open("pyDes.py.dec", "wb+")
     f.write(d)
     f.close()
-    print "DES file test time: %f" % (time() - t)
+    print("DES file test time: %f" % (time() - t))
 
 
 def __profile__():

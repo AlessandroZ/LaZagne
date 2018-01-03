@@ -8,6 +8,7 @@
 
 # Disclaimer: Do Not Use this program for illegal purposes ;)
 
+from __future__ import print_function
 from lazagne.softwares.browsers.mozilla import Mozilla
 from lazagne.softwares.browsers.chrome import Chrome
 import subprocess
@@ -142,7 +143,7 @@ def launch_module(module):
 			yield True, i.capitalize(), pwdFound
 		except:
 			traceback.print_exc()
-			print
+			print()
 			error_message = traceback.format_exc()
 			yield False, i.capitalize(), error_message
 
@@ -327,4 +328,4 @@ if __name__ == '__main__':
 	write_in_file(stdoutRes)
 
 	elapsed_time = time.time() - start_time
-	print '\nelapsed time = ' + str(elapsed_time)
+	print('\nelapsed time = ' + str(elapsed_time))

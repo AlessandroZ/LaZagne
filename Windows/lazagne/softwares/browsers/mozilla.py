@@ -3,6 +3,7 @@
 # Inspired from https://github.com/Unode/firefox_decrypt/blob/master/firefox_decrypt.py
 # portable decryption functions and BSD DB parsing by Laurent Clevy (@lorenzo2472) from https://github.com/lclevy/firepwd/blob/master/firepwd.py 
 
+from __future__ import print_function
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.constant import *
@@ -338,9 +339,9 @@ class Mozilla(ModuleInfo):
 							return p.strip()
 			
 			except (KeyboardInterrupt, SystemExit):
-				print 'INTERRUPTED!'
+				print('INTERRUPTED!')
 				print_debug('DEBUG', 'Dictionary attack interrupted')
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 
 			print_debug('WARNING', 'The Master password has not been found using the dictionary attack')
@@ -374,9 +375,9 @@ class Mozilla(ModuleInfo):
 							print_debug('FIND', 'Master password found: %s' % w.strip())
 							return w.strip()
 			except (KeyboardInterrupt, SystemExit):
-				print 'INTERRUPTED!'
+				print('INTERRUPTED!')
 				print_debug('INFO', 'Dictionary attack interrupted')
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', '{0}'.format(e))
 
 			print_debug('WARNING', 'No password has been found using the brute force attack')

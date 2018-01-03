@@ -13,7 +13,7 @@ class Outlook(ModuleInfo):
 		keyPath = 'Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows Messaging Subsystem\\Profiles\\Outlook'
 		try:
 			hkey = OpenKey(HKEY_CURRENT_USER, keyPath)
-		except Exception,e:
+		except Exception as e:
 			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('INFO', 'Outlook not installed or not profile saved')
 			return
@@ -52,7 +52,7 @@ class Outlook(ModuleInfo):
 				try:
 					password = Win32CryptUnprotectData(k[1][1:])
 					values[k[0]] = password.decode('utf16')
-				except Exception,e:
+				except Exception as e:
 					print_debug('DEBUG', '{0}'.format(e))
 					values[k[0]] = 'N/A'
 			else:

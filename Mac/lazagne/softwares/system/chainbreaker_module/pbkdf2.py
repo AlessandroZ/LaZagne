@@ -6,6 +6,7 @@
 # (c) 2004 Matt Johnston <matt @ ucc asn au>
 # This code may be freely used and modified for any purpose.
 
+from __future__ import print_function
 import sha
 import hmac
 
@@ -68,8 +69,8 @@ def test():
     itercount = 500
     keylen = 16
     ret = pbkdf2(password, salt, itercount, keylen)
-    print "key:      %s" % hexlify(ret)
-    print "expected: 6A 89 70 BF 68 C9 2C AE A8 4A 8D F2 85 10 85 86"
+    print("key:      %s" % hexlify(ret))
+    print("expected: 6A 89 70 BF 68 C9 2C AE A8 4A 8D F2 85 10 85 86")
 
 
 if __name__ == '__main__':

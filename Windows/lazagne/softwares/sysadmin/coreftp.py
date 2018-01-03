@@ -23,7 +23,7 @@ class CoreFTP(ModuleInfo):
 	def get_key_info(self):
 		try:
 			key = OpenKey(HKEY_CURRENT_USER, 'Software\\FTPware\\CoreFTP\\Sites')
-		except Exception,e:
+		except Exception as e:
 			print_debug('DEBUG', '{0}'.format(e))
 			return False
 			
@@ -48,7 +48,7 @@ class CoreFTP(ModuleInfo):
 				if k[0] == 'PW':
 					try:
 						values['Password'] = self.decrypt(k[1])
-					except Exception,e:
+					except Exception as e:
 						print_debug('DEBUG', '{0}'.format(e))
 						values['Password'] = 'N/A'
 

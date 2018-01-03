@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 # Special thanks to @n1nj4sec and @huntergregal for their work
 # Their code have been used to build this module
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-from mimipy_functions import mimipy_loot_passwords
+from .mimipy_functions import mimipy_loot_passwords
 import os
 
 class Mimipy(ModuleInfo):

@@ -18,9 +18,10 @@
 @license:      GNU General Public License 2.0 or later
 @contact:      bdolangavitt@wesleyan.edu
 """
+from __future__ import absolute_import
 
-from object import *
-from types import regtypes as types
+from .object import *
+from .types import regtypes as types
 from operator import itemgetter
 from struct import unpack
 

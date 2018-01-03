@@ -1,3 +1,4 @@
+from __future__ import print_function
 from lazagne.config.constant import constant
 from time import gmtime, strftime
 import logging
@@ -83,11 +84,11 @@ class StandartOutput():
 			return self.no_color
 
 	def print_without_error(self, message, color):
-		print '{color}{message}{restore_color}'.format(
+		print('{color}{message}{restore_color}'.format(
 														color=self.choose_color(color), 
 														message=message, 
 														restore_color=self.no_color
-													)
+													))
 
 	def print_logging(self, function, category='INFO', message='', color=False):
 		# if constant.quiet_mode:
@@ -247,7 +248,7 @@ def parseJsonResultToBuffer(jsonString, color=False):
 								for dic in password_by_category.keys():
 									try:
 										buffer += u'%s: %s\r\n' % (dic, constant.st.try_unicode(password_by_category[dic]))
-									except Exception, e:
+									except Exception as e:
 										print_debug('ERROR', 'Error retrieving the password encoding: %s' % e)
 						buffer += u'\r\n'
 	except Exception as e:

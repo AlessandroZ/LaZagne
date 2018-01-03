@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # Thanks to the awesome work harmjoy
 # For more information http://www.harmj0y.net/blog/redteaming/keethief-a-case-study-in-attacking-keepass-part-2/
 
@@ -8,7 +9,7 @@ from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.write_output import print_debug
 from lazagne.config.powershell_execute import powershell_execute
 from lazagne.config.constant import *
-import libkeepass
+from . import libkeepass
 
 class Keepass(ModuleInfo):
 	def __init__(self):

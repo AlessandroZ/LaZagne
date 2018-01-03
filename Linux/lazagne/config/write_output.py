@@ -1,4 +1,6 @@
-import constant
+from __future__ import print_function
+from __future__ import absolute_import
+from . import constant
 import os
 from time import gmtime, strftime
 import getpass
@@ -53,7 +55,7 @@ def print_footer():
 	footer = '\n[+] %s passwords have been found.\n' % str(constant.nbPasswordFound)
 	if logging.getLogger().isEnabledFor(logging.INFO) == False:
 		footer += 'For more information launch it again with the -v option\n'
-	print footer
+	print(footer)
 
 # print output if passwords have been found
 def print_output(software_name, pwdFound):
@@ -98,8 +100,8 @@ def print_output(software_name, pwdFound):
 					pass
 
 			for p in pwd.keys():
-				print '%s: %s' % (p, pwd[p])
-			print
+				print('%s: %s' % (p, pwd[p]))
+			print()
 
 		# write credentials into a text file
 		checks_write(toWrite, software_name)
@@ -113,11 +115,11 @@ def print_debug(error_level, message):
 
 	# print when password is found
 	if error_level == 'OK':
-		print b.OK + message + b.ENDC
+		print(b.OK + message + b.ENDC)
 
 	# print when password is not found
 	elif error_level == 'FAILED':
-		print b.FAIL + message + b.ENDC
+		print(b.FAIL + message + b.ENDC)
 
 	# print messages depending of their criticism
 	elif error_level == 'CRITICAL':

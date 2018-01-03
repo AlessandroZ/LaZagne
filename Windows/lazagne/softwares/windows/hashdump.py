@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.WinStructure import *
 from lazagne.config.constant import *
-from creddump7.win32.hashdump import dump_file_hashes
+from .creddump7.win32.hashdump import dump_file_hashes
 import subprocess
 import _subprocess as sub
 import tempfile
@@ -31,7 +32,7 @@ class Hashdump(ModuleInfo):
 				try:
 					cmd = 'reg.exe save hklm\%s %s' % (h, constant.hives[h])
 					self.run_cmd(cmd)
-				except Exception,e:
+				except Exception as e:
 					return False
 		return True
 

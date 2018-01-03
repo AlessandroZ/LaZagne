@@ -50,7 +50,7 @@ class Vault(ModuleInfo):
 
 										pwdFound.append(values)
 
-									except Exception, e:
+									except Exception as e:
 										print_debug('DEBUG', str(e))
 
 									if pItem8:

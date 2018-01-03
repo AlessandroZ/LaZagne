@@ -5,6 +5,7 @@
 # https://www.onlinehashcrack.com/how-to-extract-hashes-crack-mac-osx-passwords.php
 
 # TO DO: retrieve hash on mac os Lion without need root access: https://hackademics.fr/forum/hacking-connaissances-avancées/unhash/1098-mac-os-x-python-os-x-lion-password-cracker 
+from __future__ import print_function
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.dico import get_dico
@@ -40,7 +41,7 @@ class Hashdump(ModuleInfo):
 			v = '.'.join(v.split('.')[:2])
 			major = v.split('.')[0]
 			minor = v.split('.')[1]
-		except Exception, e:
+		except Exception as e:
 			# print e
 			pass
 		return int(major), int(minor)
@@ -160,7 +161,7 @@ class Hashdump(ModuleInfo):
 						found = True
 						break
 		except (KeyboardInterrupt, SystemExit):
-			print 'INTERRUPTED!'
+			print('INTERRUPTED!')
 			print_debug('DEBUG', 'Dictionary attack interrupted')
 
 		return found

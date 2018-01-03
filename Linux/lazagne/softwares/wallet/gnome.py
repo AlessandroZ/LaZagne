@@ -27,25 +27,25 @@ class Gnome(ModuleInfo):
 							if item.get_display_name():
 								values["Item"] = item.get_display_name()
 							
-							if attr.has_key('server'):
+							if 'server' in attr:
 								values["Host"] = attr['server']
 							
-							if attr.has_key('protocol'):
+							if 'protocol' in attr:
 								values["Protocol"] = attr['protocol']
 							
-							if attr.has_key('unique'):
+							if 'unique' in attr:
 								values["Unique"] = attr['unique']
 								
-							if attr.has_key('domain'):
+							if 'domain' in attr:
 								values["Domain"] = attr['domain']
 							
-							if attr.has_key('origin_url'):
+							if 'origin_url' in attr:
 								values["URL"] = attr['origin_url']
 							
-							if attr.has_key('username_value'):
+							if 'username_value' in attr:
 								values["Login"] = attr['username_value']
 							
-							if attr.has_key('user'):
+							if 'user' in attr:
 								values["User"] = attr['user']
 							
 							if item.get_secret():
@@ -57,6 +57,6 @@ class Gnome(ModuleInfo):
 				return pwdFound
 			else:
 				print_debug('WARNING', 'The Gnome Keyring wallet is empty')
-		except Exception,e:
+		except Exception as e:
 			print_debug('ERROR', 'An error occurs with the Gnome Keyring wallet: {0}'.format(e))
 		
