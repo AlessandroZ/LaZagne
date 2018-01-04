@@ -242,9 +242,8 @@ def set_env_variables(user=getpass.getuser(), toImpersonate=False):
 
 # print user when verbose mode is enabled (without verbose mode the user is printed on the write_output python file)
 def print_user(user):
-	pass
-	# if logging.getLogger().isEnabledFor(logging.INFO) == True:
-	# 	constant.st.print_user(user)
+	if logging.getLogger().isEnabledFor(logging.INFO) == True:
+		constant.st.print_user(user)
 
 def clean_temporary_files():
 	# try to remove all temporary files
