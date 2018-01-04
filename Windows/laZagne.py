@@ -221,26 +221,30 @@ def get_user_list_on_filesystem(impersonated_user=[]):
 	return all_users
 
 def set_env_variables(user=getpass.getuser(), toImpersonate=False):
-	constant.username = user
-	if not toImpersonate:
-		constant.profile['APPDATA'] 		= unicode(os.environ.get('APPDATA', u'%s:\\Users\\%s\\AppData\\Roaming\\' % (constant.drive, user)))
-		constant.profile['USERPROFILE'] 	= unicode(os.environ.get('USERPROFILE', u'%s:\\Users\\%s\\' % (constant.drive, user)))
-		constant.profile['HOMEDRIVE'] 		= unicode(os.environ.get('HOMEDRIVE', u'%s:' % constant.drive))
-		constant.profile['HOMEPATH'] 		= unicode(os.environ.get('HOMEPATH', u'%s:\\Users\\%s' % (constant.drive, user)))
+	try:
 		constant.profile['ALLUSERSPROFILE'] = unicode(os.environ.get('ALLUSERSPROFILE', u'%s:\\ProgramData' % constant.drive))
-		constant.profile['COMPOSER_HOME'] 	= unicode(os.environ.get('COMPOSER_HOME', u'%s:\\Users\\%s\\AppData\\Roaming\\Composer\\' % (constant.drive, user)))
-		constant.profile['LOCALAPPDATA'] 	= unicode(os.environ.get('LOCALAPPDATA', u'%s:\\Users\\%s\\AppData\\Local' % (constant.drive, user)))
-	else:
-		constant.profile['APPDATA'] 		= u'%s:\\Users\\%s\\AppData\\Roaming\\' % (constant.drive, user)
-		constant.profile['USERPROFILE'] 	= u'%s:\\Users\\%s\\' % (constant.drive, user)
-		constant.profile['HOMEPATH'] 		= u'%s:\\Users\\%s' % (constant.drive, user)
-		constant.profile['COMPOSER_HOME'] 	= u'%s:\\Users\\%s\\AppData\\Roaming\\Composer\\' % (constant.drive, user)
-		constant.profile['LOCALAPPDATA'] 	= u'%s:\\Users\\%s\\AppData\\Local' % (constant.drive, user)
+		constant.username = user
+		if not toImpersonate:
+			constant.profile['APPDATA'] 		= unicode(os.environ.get('APPDATA', u'%s:\\Users\\%s\\AppData\\Roaming\\' % (constant.drive, user)))
+			constant.profile['USERPROFILE'] 	= unicode(os.environ.get('USERPROFILE', u'%s:\\Users\\%s\\' % (constant.drive, user)))
+			constant.profile['HOMEDRIVE'] 		= unicode(os.environ.get('HOMEDRIVE', u'%s:' % constant.drive))
+			constant.profile['HOMEPATH'] 		= unicode(os.environ.get('HOMEPATH', u'%s:\\Users\\%s' % (constant.drive, user)))
+			constant.profile['COMPOSER_HOME'] 	= unicode(os.environ.get('COMPOSER_HOME', u'%s:\\Users\\%s\\AppData\\Roaming\\Composer\\' % (constant.drive, user)))
+			constant.profile['LOCALAPPDATA'] 	= unicode(os.environ.get('LOCALAPPDATA', u'%s:\\Users\\%s\\AppData\\Local' % (constant.drive, user)))
+		else:
+			constant.profile['APPDATA'] 		= u'%s:\\Users\\%s\\AppData\\Roaming\\' % (constant.drive, user)
+			constant.profile['USERPROFILE'] 	= u'%s:\\Users\\%s\\' % (constant.drive, user)
+			constant.profile['HOMEPATH'] 		= u'%s:\\Users\\%s' % (constant.drive, user)
+			constant.profile['COMPOSER_HOME'] 	= u'%s:\\Users\\%s\\AppData\\Roaming\\Composer\\' % (constant.drive, user)
+			constant.profile['LOCALAPPDATA'] 	= u'%s:\\Users\\%s\\AppData\\Local' % (constant.drive, user)
+	except:
+		pass
 
 # print user when verbose mode is enabled (without verbose mode the user is printed on the write_output python file)
 def print_user(user):
-	if logging.getLogger().isEnabledFor(logging.INFO) == True:
-		constant.st.print_user(user)
+	pass
+	# if logging.getLogger().isEnabledFor(logging.INFO) == True:
+	# 	constant.st.print_user(user)
 
 def clean_temporary_files():
 	# try to remove all temporary files
@@ -294,7 +298,7 @@ def runLaZagne(category_choosed='all', check_specific_drive=False):
 				try:
 					set_env_variables(user, toImpersonate=True)
 					impersonate_sid_long_handle(sid, close=False)
-
+					
 					_cannot_be_impersonate_using_tokens = False
 					_need_system_privileges = False
 					
@@ -303,7 +307,7 @@ def runLaZagne(category_choosed='all', check_specific_drive=False):
 					else:
 						impersonated_user.append(user)
 						_cannot_be_impersonate_using_tokens = True
-					
+
 					# Launch module wanted
 					for r in runModule(category_choosed, need_system_privileges=_need_system_privileges, cannot_be_impersonate_using_tokens=_cannot_be_impersonate_using_tokens):
 						yield r
