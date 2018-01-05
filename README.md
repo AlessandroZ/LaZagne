@@ -17,6 +17,7 @@ Standalones are now available here: https://github.com/AlessandroZ/LaZagne/relea
 
 Installation
 ----
+Requirements are available here: https://github.com/AlessandroZ/LaZagne/wiki/Requirements
 ```
 pip install -r requirement.txt
 ```
