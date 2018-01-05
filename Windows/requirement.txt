@@ -1,0 +1,4 @@
+pycrypto
+pyasn1
+psutil
+https://github.com/n1nj4sec/memorpy/archive/master.zip
