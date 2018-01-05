@@ -15,6 +15,12 @@ Standalones
 ----
 Standalones are now available here: https://github.com/AlessandroZ/LaZagne/releases/
 
+Installation
+----
+```
+pip install -r requirement.txt
+```
+
 Usage
 ----
 * Retrieve version
