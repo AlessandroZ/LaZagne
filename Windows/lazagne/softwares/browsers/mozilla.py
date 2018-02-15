@@ -401,24 +401,27 @@ class Mozilla(ModuleInfo):
 					# Everything is ready to decrypt password
 					for host, user, passw in credentials:
 
-						# Login	
-						loginASN1 	= decoder.decode(b64decode(user))
-						iv 			= loginASN1[0][1][1].asOctets()
-						ciphertext 	= loginASN1[0][2].asOctets()
-						login 		= DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext)
-						
-						# Password
-						passwdASN1 	= decoder.decode(b64decode(passw))
-						iv 			= passwdASN1[0][1][1].asOctets()
-						ciphertext 	= passwdASN1[0][2].asOctets()
-						password 	= DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext)
+						try:
+							# Login	
+							loginASN1 	= decoder.decode(b64decode(user))
+							iv 			= loginASN1[0][1][1].asOctets()
+							ciphertext 	= loginASN1[0][2].asOctets()
+							login 		= DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext)
+							
+							# Password
+							passwdASN1 	= decoder.decode(b64decode(passw))
+							iv 			= passwdASN1[0][1][1].asOctets()
+							ciphertext 	= passwdASN1[0][2].asOctets()
+							password 	= DES3.new( key, DES3.MODE_CBC, iv).decrypt(ciphertext)
 
-						pwdFound.append(
-											{
-												'URL'		: host,
-												'Login'		: self.remove_padding(login),
-												'Password'	: self.remove_padding(password),
-											}
-										)
+							pwdFound.append(
+												{
+													'URL'		: host,
+													'Login'		: self.remove_padding(login),
+													'Password'	: self.remove_padding(password),
+												}
+											)
+						except Exception, e:
+							print_debug('DEBUG', 'An error occured decrypting the password: {error}'.format(error=e))
 
 			return pwdFound
