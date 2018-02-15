@@ -1,23 +1,27 @@
+# -*- coding: utf-8 -*- 
+import tempfile
+import random
+import string
 import time
+import os
 
-date = time.strftime("%d%m%Y_%H%M%S")
+date 	= time.strftime("%d%m%Y_%H%M%S")
+tmp  	= tempfile.gettempdir()
 
 class constant():
-	# folder_name 			= 'results_{current_time}'.format(current_time=date)
 	folder_name 			= '.'
 	file_name_results 		= 'credentials_{current_time}'.format(current_time=date) # the extention is added depending on the user output choice
 	MAX_HELP_POSITION		= 27
-	CURRENT_VERSION 		= '2.3.2'
+	CURRENT_VERSION 		= '2.3.3'
 	output 					= None
 	file_logger 			= None
+	
 	# jitsi options
 	jitsi_masterpass 		= None
 
 	# mozilla options
-	manually 				= None
 	path 					= None
 	bruteforce 				= None
-	specific_path 			= None
 	
 	# ie options
 	ie_historic 			= None
@@ -25,27 +29,27 @@ class constant():
 	# total password found
 	nbPasswordFound 		= 0
 	passwordFound 			= []
-
 	finalResults			= {}
-
-	profile = {
-		'APPDATA'			: u'',
-		'USERPROFILE'		: u'', 
-		'HOMEDRIVE'			: u'',
-		'HOMEPATH'			: u'',
-		'ALLUSERSPROFILE'	: u'', 
-		'COMPOSER_HOME'		: u'', 
-		'LOCALAPPDATA'		: u''
-	}
+	profile 				= {
+								'APPDATA'			: u'{drive}:\\Users\\{user}\\AppData\\Roaming\\',
+								'USERPROFILE'		: u'{drive}:\\Users\\{user}\\',
+								'HOMEDRIVE'			: u'{drive}:',
+								'HOMEPATH'			: u'{drive}:\\Users\\{user}',
+								'ALLUSERSPROFILE'	: u'{drive}:\\ProgramData', 
+								'COMPOSER_HOME'		: u'{drive}:\\Users\\{user}\\AppData\\Roaming\\Composer\\', 
+								'LOCALAPPDATA'		: u'{drive}:\\Users\\{user}\\AppData\\Local',
+							}
 	username 				= u''
-
 	keepass 				= {}
-	hives 					= []
-
+	hives 					= {
+								'sam' 		:  	os.path.join(tmp, ''.join([random.choice(string.ascii_lowercase) for x in range(0, random.randint(6, 12))])),
+								'security'	: 	os.path.join(tmp, ''.join([random.choice(string.ascii_lowercase) for x in range(0, random.randint(6, 12))])),
+								'system'	: 	os.path.join(tmp, ''.join([random.choice(string.ascii_lowercase) for x in range(0, random.randint(6, 12))]))
+							}
 	checkUnattended 		= False
-
 	quiet_mode 				= False
-
-	# standart output
-	st 						= None
+	st 						= None  	# standart output
 	drive					= u'C'
+	dpapi 					= None
+	dpapi_hash				= None
+	user_password 			= None

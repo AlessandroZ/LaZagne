@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.constant import *
@@ -7,8 +8,7 @@ import os
 
 class Unattended(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-u', 'action': 'store_true', 'dest': 'unattended', 'help': 'unattended file'}
-		ModuleInfo.__init__(self, 'unattended', 'sysadmin', options, need_to_be_in_env=False)
+		ModuleInfo.__init__(self, 'unattended', 'sysadmin', system_module=True)
 
 	# Password should be encoded in b64
 	def try_b64_decode(self, message):
@@ -17,14 +17,14 @@ class Unattended(ModuleInfo):
 		except:
 			return message
 
-	def run(self, software_name = None):		
+	def run(self, software_name=None):		
 		# realise that check only once 
 		if constant.checkUnattended:
 			return 
 
 		constant.checkUnattended = True
-		windir = os.path.join(constant.profile['HOMEDRIVE'], unicode(os.sep), u'Windows')
-		files = [
+		windir 	= os.path.join(constant.profile['HOMEDRIVE'], unicode(os.sep), u'Windows')
+		files 	= [
 			'Panther\Unattend.xml',
 			'Panther\Unattended.xml', 
 			'Panther\Unattend\Unattended.xml', 

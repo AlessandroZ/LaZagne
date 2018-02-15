@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.powershell_execute import powershell_execute
 from lazagne.config.constant import *
 import psutil
@@ -78,7 +79,6 @@ class KeeThief():
 	}
 		'''
 		return powershell_execute(script, function)
-
 
 	def check_if_version_2x(self):
 		p = psutil.Process(self._pid)

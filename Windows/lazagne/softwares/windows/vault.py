@@ -1,25 +1,28 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.WinStructure import *
 from lazagne.config.constant import *
+from lazagne.config.dpapi_structure import *
 from ctypes.wintypes import *
 
 class Vault(ModuleInfo):
 	def __init__(self):
-		options = {'command': '--vault', 'action': 'store_true', 'dest': 'Vault', 'help': 'Vault manager (Win8 or higher)'}
-		ModuleInfo.__init__(self, 'Vault passwords (Internet Explorer, etc.)', 'windows', options, cannot_be_impersonate_using_tokens=False)
+		ModuleInfo.__init__(self, 'vault', 'windows', dpapi_used=True)
 
-	def run(self, software_name = None):
+	def run(self, software_name=None):
+		
+		# retrieve passwords (IE, etc.) using the Windows Vault API (not all passwords can be decrypted using this technic, e.g. domain passwords)
 		if float(get_os_version()) <= 6.1:
 			print_debug('DEBUG', 'Vault not supported for this OS')
 			return
 
-		pwdFound 	= []
 		cbVaults 	= DWORD()
 		vaults 		= LPGUID()
 		hVault 		= HANDLE(INVALID_HANDLE_VALUE)
 		cbItems 	= DWORD()
 		items 		= c_char_p()
+		pwdFound 	= []
 
 		if vaultEnumerateVaults(0, byref(cbVaults), byref(vaults)) == 0:
 			if cbVaults.value == 0:
@@ -37,8 +40,8 @@ class Vault(ModuleInfo):
 									pItem8 = PVAULT_ITEM_WIN8()
 									try:
 										values = {
-											'URL' 	: str(items8[j].pResource.contents.data.string),
-											'Username' 	: str(items8[j].pUsername.contents.data.string)
+											'URL' 		: str(items8[j].pResource.contents.data.string),
+											'Login' 	: str(items8[j].pUsername.contents.data.string)
 										}
 										if items8[j].pName:		
 											values['Name'] = items8[j].pName

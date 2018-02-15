@@ -10,9 +10,8 @@ import os
 
 class IE(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-e', 'action': 'store_true', 'dest': 'Internet Explorer', 'help': 'internet explorer (check in registry and in the credential manager)'}
 		suboptions = [{'command': '-l', 'action': 'store', 'dest': 'historic', 'help': 'text file with a list of websites', 'title': 'Advanced ie option'}]
-		ModuleInfo.__init__(self, 'ie', 'browsers', options, suboptions, cannot_be_impersonate_using_tokens=True)
+		ModuleInfo.__init__(self, 'ie', 'browsers', suboptions, registry_used=True, dpapi_used=True)
 
 	def get_hash_table(self, lists):
 		# get the url list
@@ -33,7 +32,7 @@ class IE(ModuleInfo):
 		urls = self.history_from_regedit()
 		try:
 			urls = urls + self.history_from_powershell()
-		except Exception,e:
+		except Exception, e:
 			print_debug('DEBUG', '{0}'.format(e))
 			print_debug('ERROR', 'Browser history failed to load, only few url will be tried')
 		
@@ -75,13 +74,12 @@ class IE(ModuleInfo):
 		}
 		get-iehistory
 		'''
-		command=['powershell.exe', '/c', cmdline]
-
-		info = subprocess.STARTUPINFO()
-		info.dwFlags = sub.STARTF_USESHOWWINDOW
-		info.wShowWindow = sub.SW_HIDE
-		p = subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
-		results, _ = p.communicate()
+		command 			= ['powershell.exe', '/c', cmdline]
+		info 				= subprocess.STARTUPINFO()
+		info.dwFlags 		= sub.STARTF_USESHOWWINDOW
+		info.wShowWindow 	= sub.SW_HIDE
+		p 					= subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
+		results, _ 			= p.communicate()
 
 		urls = []
 		for r in results.split('\n'):
@@ -135,9 +133,9 @@ class IE(ModuleInfo):
 			try:
 				if s % 2 != 0:
 					values = {}
-					values['URL'] = u.decode('UTF-16LE')
-					values['Login'] = secret[length - s]
-					values['Password'] = password
+					values['URL'] 		= u.decode('UTF-16LE')
+					values['Login'] 	= secret[length - s]
+					values['Password'] 	= password
 					pfound.append(values)
 				else:
 					password = secret[length - s]
@@ -182,9 +180,9 @@ class IE(ModuleInfo):
 					for h in hash_tables:
 						# both hash are similar, we can decipher the password
 						if h[1] == k[0][:40].lower():
-							nb_pass_found += 1
-							cipher_text = k[1]
-							pwdFound += self.decipher_password(cipher_text, h[0])
+							nb_pass_found 	+= 1
+							cipher_text 	= k[1]
+							pwdFound 		+= self.decipher_password(cipher_text, h[0])
 							break
 			
 			_winreg.CloseKey(hkey)

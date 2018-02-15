@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.constant import *
@@ -7,8 +8,7 @@ import os
 class ApacheDirectoryStudio(ModuleInfo):
 
     def __init__(self):
-        options = {'command': '-ads', 'action': 'store_true', 'dest': 'apachedirectorystudio', 'help': 'Apache Directory Studio'}
-        ModuleInfo.__init__(self, 'apachedirectorystudio', 'sysadmin', options)
+        ModuleInfo.__init__(self, 'apachedirectorystudio', 'sysadmin')
         # Interesting XML attributes in ADS connection configuration
         self.attr_to_extract = ["host", "port", "bindPrincipal", "bindPassword", "authMethod"]
 
@@ -39,7 +39,7 @@ class ApacheDirectoryStudio(ModuleInfo):
         return repos_creds
 
 
-    def run(self, software_name = None):
+    def run(self, software_name=None):
         """
         Main function
         """

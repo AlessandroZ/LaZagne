@@ -12,12 +12,16 @@
 #		options['help'] = 'skype'
 
 class ModuleInfo():
-	def __init__(self, name, category, options, suboptions=[], need_high_privileges=False, need_system_privileges=False, need_to_be_in_env=True, cannot_be_impersonate_using_tokens=False):
-		self.name = name
-		self.category = category
-		self.options = options
-		self.suboptions = suboptions
-		self.need_high_privileges = need_high_privileges
-		self.need_system_privileges = need_system_privileges
-		self.need_to_be_in_env = need_to_be_in_env
-		self.cannot_be_impersonate_using_tokens = cannot_be_impersonate_using_tokens
+	def __init__(self, name, category, options={}, suboptions=[], registry_used=False, dpapi_used=False , system_module=False):
+		self.name 			= name
+		self.category 		= category		
+		self.options  	 	= {
+								'command' 	: '-{name}'.format(name=self.name), 
+								'action'	: 'store_true', 
+								'dest'		: self.name, 
+								'help'		: '{name} passwords'.format(name=self.name)
+							}
+		self.suboptions 	= suboptions
+		self.registry_used 	= registry_used
+		self.system_module 	= system_module
+		self.dpapi_used 	= dpapi_used
