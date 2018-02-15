@@ -51,7 +51,7 @@ class Decrypt_DPAPI():
 					self.umkp.addCredhistFile(self.sid, credhist)
 				
 				if password:
-					if self.umkp.try_credential(self.sid, password):
+					if self.umkp.try_credential(self.sid, str(password)):
 						self.dpapi_ok = True
 					else:
 						print_debug('DEBUG', 'Password not correct: {password}'.format(password=password))
@@ -67,7 +67,7 @@ class Decrypt_DPAPI():
 		if self.umkp:
 			for password in passwords:
 				print_debug('INFO', 'Check password: {password}'.format(password=password))
-				if self.umkp.try_credential(self.sid, password):
+				if self.umkp.try_credential(self.sid, str(password)):
 					print_debug('INFO', 'User password found: {password}\n'.format(password=password))
 					self.dpapi_ok = True
 					return password
