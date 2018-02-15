@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.constant import *
@@ -8,30 +9,21 @@ import os
 
 class Puttycm(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-p', 'action': 'store_true', 'dest': 'puttycm', 'help': 'puttycm'}
-		ModuleInfo.__init__(self, 'puttycm', 'sysadmin', options, cannot_be_impersonate_using_tokens=True)
+		ModuleInfo.__init__(self, 'puttycm', 'sysadmin', registry_used=True)
 		
-	def run(self, software_name = None):	
-		try:
-			database_path = self.get_default_database()
-		except Exception,e:
-			print_debug('DEBUG', '{0}'.format(e))
-			print_debug('INFO', 'Puttycm not installed')
-			return
-		
-		if os.path.exists(database_path):
+	def run(self, software_name=None):	
+		database_path = self.get_default_database()
+		if database_path and os.path.exists(database_path):
 			return self.parse_xml(database_path)
-		else:
-			print_debug('WARNING', 'Default database does not exist: %s' % database_path)
-
+		
 	def get_default_database(self):
-		key = OpenKey(HKEY_CURRENT_USER, 'Software\\ACS\\PuTTY Connection Manager')
-		db = unicode(_winreg.QueryValueEx(key, 'DefaultDatabase')[0])
-		_winreg.CloseKey(key)
-		if db:
+		try:
+			key = OpenKey(HKEY_CURRENT_USER, 'Software\\ACS\\PuTTY Connection Manager')
+			db 	= unicode(_winreg.QueryValueEx(key, 'DefaultDatabase')[0])
+			_winreg.CloseKey(key)
 			return db
-		else:
-			return ' '
+		except:
+			return False
 	
 	def parse_xml(self, database_path):
 		xml_file = os.path.expanduser(database_path)

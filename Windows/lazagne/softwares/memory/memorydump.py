@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: UTF8 -*-
+# -*- coding: utf-8 -*- 
 # Author: Nicolas VERDIER (contact@n1nj4.eu)
 
 """ 
@@ -64,7 +64,7 @@ class MemoryDump(ModuleInfo):
 		options = {'command': '-m', 'action': 'store_true', 'dest': 'memory_dump', 'help': 'retrieve browsers passwords from memory'}
 		ModuleInfo.__init__(self, 'memory_dump', 'memory', options)
 
-	def run(self, software_name = None):
+	def run(self, software_name=None):
 		pwdFound = []
 		for process in Process.list():
 			# if process.get('name', '').lower() in browser_list:

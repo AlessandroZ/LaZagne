@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.constant import *
@@ -7,8 +8,7 @@ import os
 class GitForWindows(ModuleInfo):
 
     def __init__(self):
-        options = {'command': '-t', 'action': 'store_true', 'dest': 'gitforwindows', 'help': 'Git for Windows'}
-        ModuleInfo.__init__(self, 'gitforwindows', 'git', options)
+        ModuleInfo.__init__(self, 'gitforwindows', 'git')
 
     def extract_credentials(self, location):
         """
@@ -35,7 +35,7 @@ class GitForWindows(ModuleInfo):
 
         return pwd_found
 
-    def run(self, software_name = None):
+    def run(self, software_name=None):
         """
         Main function
         """
@@ -43,8 +43,8 @@ class GitForWindows(ModuleInfo):
         # According to the "git-credential-store" documentation:
         # Build a list of locations in which git credentials can be stored
         locations = [
-            constant.profile["USERPROFILE"] + u'\\.git-credentials', 
-            constant.profile["USERPROFILE"] + u'\\.config\\git\\credentials'
+            os.path.join(constant.profile["USERPROFILE"], u'\\.git-credentials'), 
+            os.path.join(constant.profile["USERPROFILE"], u'\\.config\\git\\credentials'),
         ]
         if "XDG_CONFIG_HOME" in os.environ:
             locations.append(unicode(os.environ.get('XDG_CONFIG_HOME')) + u'\\git\\credentials')

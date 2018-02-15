@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.WinStructure import *
@@ -7,18 +8,17 @@ import os
 
 class Tortoise(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-t', 'action': 'store_true', 'dest': 'tortoise', 'help': 'tortoise'}
-		ModuleInfo.__init__(self, 'tortoise', 'svn', options)
+		ModuleInfo.__init__(self, 'tortoise', 'svn', dpapi_used=True)
 
 	# main function
-	def run(self, software_name = None):	
+	def run(self, software_name=None):	
 		pwdFound = []
 		
-		file_path = os.path.join(constant.profile["APPDATA"], u'Subversion\\auth\\svn.simple')
-		if os.path.exists(file_path):
-			for root, dirs, files in os.walk(file_path + os.sep):
-				for name_file in files:
-					f = open(file_path + os.sep + name_file, 'r')
+		path = os.path.join(constant.profile["APPDATA"], u'Subversion\\auth\\svn.simple')
+		if os.path.exists(path):
+			for root, dirs, files in os.walk(path + os.sep):
+				for filename in files:
+					f = open(os.path.join(path, filename), 'r')
 					
 					url = ''
 					username = ''
@@ -69,5 +69,4 @@ class Tortoise(ModuleInfo):
 						except:
 							pass
 			return pwdFound
-		else:
-			print_debug('INFO', 'Tortoise not installed.')
+

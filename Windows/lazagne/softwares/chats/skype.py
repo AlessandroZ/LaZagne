@@ -13,8 +13,7 @@ import os
 
 class Skype(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-s', 'action': 'store_true', 'dest': 'skype', 'help': 'skype'}
-		ModuleInfo.__init__(self, 'skype', 'chats', options)
+		ModuleInfo.__init__(self, 'skype', 'chats', dpapi_used=True)
 
 		self.pwdFound = []
 
@@ -139,27 +138,24 @@ class Skype(ModuleInfo):
 			except Exception,e:
 				print_debug('DEBUG', '{0}'.format(e))
 
-	# main function
-	def run(self, software_name = None):
-		directory = constant.profile['APPDATA'] + u'\Skype'
-		
-		if os.path.exists(directory):
+	def run(self, software_name=None):
+		path = os.path.join(constant.profile['APPDATA'], u'\Skype')
+		if os.path.exists(path):
 			# retrieve the key used to build the salt
 			key = self.get_regkey()
 			if not key:
 				print_debug('ERROR', 'The salt has not been retrieved')
 			else:
-				username = self.get_username(directory)
+				username = self.get_username(path)
 				if username: 
-					d = os.path.join(directory, username)
+					d = os.path.join(path, username)
 					if os.path.exists(d): 
 						self.get_info(key, username, d)
 
 				if not self.pwdFound:
-					for d in os.listdir(directory):
-						self.get_info(key, d, os.path.join(directory, d))
+					for d in os.listdir(path):
+						self.get_info(key, d, os.path.join(path, d))
 
 				return self.pwdFound
-		else:
-			print_debug('INFO', 'Skype not installed.')
+
 			

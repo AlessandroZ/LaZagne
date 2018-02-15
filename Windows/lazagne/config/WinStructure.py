@@ -54,9 +54,9 @@ TOKEN_ADJUST_SESSIONID      = 0x0100
 TOKEN_READ                  = (STANDARD_RIGHTS_READ | TOKEN_QUERY)
 tokenprivs                  = (TOKEN_QUERY | TOKEN_READ | TOKEN_IMPERSONATE | TOKEN_QUERY_SOURCE | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY | (131072L | 4))
 TOKEN_ALL_ACCESS            = (STANDARD_RIGHTS_REQUIRED | TOKEN_ASSIGN_PRIMARY |
-        TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_QUERY_SOURCE |
-        TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT |
-        TOKEN_ADJUST_SESSIONID)
+		TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_QUERY_SOURCE |
+		TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT |
+		TOKEN_ADJUST_SESSIONID)
 
 ############################## Structures ##############################
 
@@ -151,7 +151,7 @@ class Flag(Structure):
 		('0x0b', DWORD),
 		('0x0c', DWORD),
 		('0x0d', DWORD)
-    ]
+	]
 
 class VAULT_ITEM_DATA(Structure):
 	_fields_ = [
@@ -219,98 +219,104 @@ class CRYPTPROTECT_PROMPTSTRUCT(Structure):
 PCRYPTPROTECT_PROMPTSTRUCT = POINTER(CRYPTPROTECT_PROMPTSTRUCT)
 
 class LUID(Structure):
-    _fields_ = [
-        ("LowPart",     DWORD),
-        ("HighPart",    LONG),
-    ]
+	_fields_ = [
+		("LowPart",     DWORD),
+		("HighPart",    LONG),
+	]
 PLUID = POINTER(LUID)
 
 class SID_AND_ATTRIBUTES(Structure):
-    _fields_ = [
-        ("Sid",         PSID),
-        ("Attributes",  DWORD),
-    ]
+	_fields_ = [
+		("Sid",         PSID),
+		("Attributes",  DWORD),
+	]
 
 class TOKEN_USER(Structure):
-    _fields_ = [
-        ("User", SID_AND_ATTRIBUTES),]
+	_fields_ = [
+		("User", SID_AND_ATTRIBUTES),]
 
 class LUID_AND_ATTRIBUTES(Structure):
-    _fields_ = [
-        ("Luid",        LUID),
-        ("Attributes",  DWORD),
-    ]
+	_fields_ = [
+		("Luid",        LUID),
+		("Attributes",  DWORD),
+	]
 
 class TOKEN_PRIVILEGES(Structure):
-    _fields_ = [
-        ("PrivilegeCount",  DWORD),
-        ("Privileges",      LUID_AND_ATTRIBUTES),
-    ]
+	_fields_ = [
+		("PrivilegeCount",  DWORD),
+		("Privileges",      LUID_AND_ATTRIBUTES),
+	]
 PTOKEN_PRIVILEGES = POINTER(TOKEN_PRIVILEGES)
 
 class SECURITY_ATTRIBUTES(Structure):
-    _fields_ = [
-        ("nLength",  					DWORD),
-        ("lpSecurityDescriptor",      	LPVOID),
-        ("bInheritHandle",      		BOOL),
-    ]
+	_fields_ = [
+		("nLength",  					DWORD),
+		("lpSecurityDescriptor",      	LPVOID),
+		("bInheritHandle",      		BOOL),
+	]
 PSECURITY_ATTRIBUTES = POINTER(SECURITY_ATTRIBUTES)
+
+############################## Load dlls ##############################
+
+advapi32 	= WinDLL('advapi32', 	use_last_error=True)
+crypt32 	= WinDLL('crypt32', 	use_last_error=True)
+kernel32	= WinDLL('kernel32', 	use_last_error=True)
 
 ############################## Functions ##############################
 
-RevertToSelf 					= windll.advapi32.RevertToSelf
+RevertToSelf 					= advapi32.RevertToSelf
 RevertToSelf.restype 			= BOOL
 RevertToSelf.argtypes 			= []
 
-ImpersonateLoggedOnUser 		= windll.advapi32.ImpersonateLoggedOnUser
+ImpersonateLoggedOnUser 		= advapi32.ImpersonateLoggedOnUser
 ImpersonateLoggedOnUser.restype	= BOOL
 ImpersonateLoggedOnUser.argtypes= [HANDLE]
 
-DuplicateTokenEx 				= windll.advapi32.DuplicateTokenEx
+DuplicateTokenEx 				= advapi32.DuplicateTokenEx
 DuplicateTokenEx.restype 		= BOOL
 DuplicateTokenEx.argtypes 		= [HANDLE, DWORD, PSECURITY_ATTRIBUTES, DWORD, DWORD, POINTER(HANDLE)]
 
-AdjustTokenPrivileges 			= windll.advapi32.AdjustTokenPrivileges
+AdjustTokenPrivileges 			= advapi32.AdjustTokenPrivileges
 AdjustTokenPrivileges.restype 	= BOOL
 AdjustTokenPrivileges.argtypes 	= [HANDLE, BOOL, PTOKEN_PRIVILEGES, DWORD, PTOKEN_PRIVILEGES, POINTER(DWORD)]
 
-LookupPrivilegeValueA			= windll.advapi32.LookupPrivilegeValueA
+LookupPrivilegeValueA			= advapi32.LookupPrivilegeValueA
 LookupPrivilegeValueA.restype 	= BOOL
 LookupPrivilegeValueA.argtypes 	= [LPCTSTR, LPCTSTR, PLUID]
 
-ConvertSidToStringSidA			= windll.advapi32.ConvertSidToStringSidA
+ConvertSidToStringSidA			= advapi32.ConvertSidToStringSidA
 ConvertSidToStringSidA.restype 	= BOOL
 ConvertSidToStringSidA.argtypes = [DWORD, POINTER(LPTSTR)]
 
-LocalAlloc 						= windll.kernel32.LocalAlloc
+LocalAlloc 						= kernel32.LocalAlloc
 LocalAlloc.restype 				= HANDLE
 LocalAlloc.argtypes    			= [PSID, DWORD]
 
-GetTokenInformation 			= windll.advapi32.GetTokenInformation
+GetTokenInformation 			= advapi32.GetTokenInformation
 GetTokenInformation.restype     = BOOL
 GetTokenInformation.argtypes    = [HANDLE, DWORD, LPVOID, DWORD, POINTER(DWORD)]
 
-OpenProcess             		= windll.kernel32.OpenProcess
+OpenProcess             		= kernel32.OpenProcess
 OpenProcess.restype     		= HANDLE
 OpenProcess.argtypes    		= [DWORD, BOOL, DWORD]
 
-GetCurrentProcessId             = windll.kernel32.GetCurrentProcessId
+GetCurrentProcessId             = kernel32.GetCurrentProcessId
 GetCurrentProcessId.restype     = DWORD
 GetCurrentProcessId.argtypes    = [PVOID]
 
-OpenProcessToken             	= windll.advapi32.OpenProcessToken
+OpenProcessToken             	= advapi32.OpenProcessToken
 OpenProcessToken.restype     	= BOOL
 OpenProcessToken.argtypes    	= [HANDLE, DWORD, POINTER(HANDLE)]
 
-CloseHandle             		= windll.kernel32.CloseHandle
+CloseHandle             		= kernel32.CloseHandle
 CloseHandle.restype     		= BOOL
 CloseHandle.argtypes    		= [HANDLE]
 
-CredEnumerate 					= windll.advapi32.CredEnumerateA
+CredEnumerate 					= advapi32.CredEnumerateA
 CredEnumerate.restype 			= BOOL
 CredEnumerate.argtypes 			= [LPCTSTR, DWORD, POINTER(DWORD), POINTER(POINTER(PCREDENTIAL))]
  
-CredFree 						= windll.advapi32.CredFree
+CredFree 						= advapi32.CredFree
 CredFree.restype 				= PVOID
 CredFree.argtypes 				= [PVOID]
 
@@ -318,34 +324,34 @@ memcpy 							= cdll.msvcrt.memcpy
 memcpy.restype 					= PVOID
 memcpy.argtypes 				= [PVOID]
 
-LocalFree 						= windll.kernel32.LocalFree
+LocalFree 						= kernel32.LocalFree
 LocalFree.restype 				= HANDLE
 LocalFree.argtypes				= [HANDLE]
 
-CryptUnprotectData 				= windll.crypt32.CryptUnprotectData
+CryptUnprotectData 				= crypt32.CryptUnprotectData
 CryptUnprotectData.restype 		= BOOL
 CryptUnprotectData.argtypes		= [POINTER(DATA_BLOB), POINTER(LPWSTR), POINTER(DATA_BLOB), PVOID, PCRYPTPROTECT_PROMPTSTRUCT, DWORD, POINTER(DATA_BLOB)]
 
-prototype = WINFUNCTYPE(ULONG, DWORD, LPDWORD, POINTER(LPGUID))
-vaultEnumerateVaults = prototype(("VaultEnumerateVaults", windll.vaultcli))
+prototype 						= WINFUNCTYPE(ULONG, DWORD, LPDWORD, POINTER(LPGUID))
+vaultEnumerateVaults 			= prototype(("VaultEnumerateVaults", windll.vaultcli))
 
-prototype = WINFUNCTYPE(ULONG, LPGUID, DWORD, HANDLE)
-vaultOpenVault = prototype(("VaultOpenVault", windll.vaultcli))
+prototype 						= WINFUNCTYPE(ULONG, LPGUID, DWORD, HANDLE)
+vaultOpenVault 					= prototype(("VaultOpenVault", windll.vaultcli))
 
-prototype = WINFUNCTYPE(ULONG, HANDLE, DWORD, LPDWORD, POINTER(c_char_p))
-vaultEnumerateItems = prototype(("VaultEnumerateItems", windll.vaultcli))
+prototype 						= WINFUNCTYPE(ULONG, HANDLE, DWORD, LPDWORD, POINTER(c_char_p))
+vaultEnumerateItems 			= prototype(("VaultEnumerateItems", windll.vaultcli))
 
-prototype = WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN8))
-vaultGetItem8 = prototype(("VaultGetItem", windll.vaultcli))
+prototype 						= WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN8))
+vaultGetItem8 					= prototype(("VaultGetItem", windll.vaultcli))
 
 # prototype = WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN7))
 # vaultGetItem7 = prototype(("VaultGetItem", windll.vaultcli))
 
-prototype = WINFUNCTYPE(ULONG, LPVOID)
-vaultFree = prototype(("VaultFree", windll.vaultcli))
+prototype 						= WINFUNCTYPE(ULONG, LPVOID)
+vaultFree 						= prototype(("VaultFree", windll.vaultcli))
 
-prototype = WINFUNCTYPE(ULONG, PHANDLE)
-vaultCloseVault = prototype(("VaultCloseVault", windll.vaultcli))
+prototype 						= WINFUNCTYPE(ULONG, PHANDLE)
+vaultCloseVault 				= prototype(("VaultCloseVault", windll.vaultcli))
 
 ############################## Custom functions ##############################
 

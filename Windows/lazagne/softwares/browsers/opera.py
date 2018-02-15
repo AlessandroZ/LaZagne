@@ -1,204 +1,72 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.WinStructure import *
 from lazagne.config.constant import *
-from ConfigParser import RawConfigParser
-from Crypto.Cipher import DES3
-import binascii
+import traceback
+import tempfile
 import sqlite3
-import struct
-import hashlib
-import re
+import random
+import string
+import shutil
+import json
 import os
 
 class Opera(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-o', 'action': 'store_true', 'dest': 'opera', 'help': 'opera'}
-		ModuleInfo.__init__(self, 'opera', 'browsers', options)
-
-		self.CIPHERED_FILE = u''
+		ModuleInfo.__init__(self, 'opera', 'browsers', dpapi_used=True)
 	
-	def run(self, software_name = None):	
-		# retrieve opera folder
-		path = self.get_path()
-		if not path:
-			print_debug('INFO', 'Opera is not installed.')
-			return
-		
-		passwords = ''
-		# old versions
-		if self.CIPHERED_FILE == u'wand.dat':
-			# check the use of master password 
-			if not os.path.exists(os.path.join(path, u'operaprefs.ini')):
-				print_debug('WARNING', 'The preference file operaprefs.ini has not been found.')
-				return
-			else:
-				
-				if self.masterPasswordUsed(path) == '1':
-					print_debug('WARNING', 'A master password is used.')
-				elif self.masterPasswordUsed(path) != '0':
-					print_debug('ERROR', 'An error occurs, the use of master password is not sure.')
-			
-			passwords = self.decipher_old_version(path)
-			if passwords:
-				return self.parse_results(passwords)
-			else:
-				print_debug('INFO', 'The wand.dat seems to be empty')
-		# new versions
-		else:
-			return self.decipher_new_version(path)
-	
-	def get_path(self):
-		# version less than 10
-		if os.path.exists(constant.profile['APPDATA'] + u'\Opera\Opera\profile'):
-			self.CIPHERED_FILE = u'wand.dat'
-			return constant.profile['APPDATA'] + u'\Opera\Opera\profile'
-		
-		# version more than 10
-		if os.path.exists(constant.profile['APPDATA'] + u'\Opera\Opera'):
-			self.CIPHERED_FILE = u'wand.dat'
-			return constant.profile['APPDATA'] + u'\Opera\Opera'
-		
-		# new versions
-		elif os.path.exists(constant.profile['APPDATA'] + u'\Opera Software\Opera Stable'):
-			self.CIPHERED_FILE = u'Login Data'
-			return constant.profile['APPDATA'] + u'\Opera Software\Opera Stable'
-	
-	def decipher_old_version(self, path):
-		salt = '837DFC0F8EB3E86973AFFF'
-		
-		# retrieve wand.dat file
-		if not os.path.exists(os.path.join(path, u'wand.dat')):
-			print_debug('WARNING', 'wand.dat file has not been found.')
-			return 
-		
-		# read wand.dat
-		f = open(os.path.join(path, u'wand.dat'), 'rb') 
-		file =  f.read()
-		fileSize = len(file)
-		
-		passwords = []
-		offset = 0
-		while offset < fileSize:
-
-			offset = file.find('\x08', offset) + 1
-			if offset == 0:
-				break
-
-			tmp_blockLength = offset - 8
-			tmp_datalen = offset + 8
-			
-			blockLength = struct.unpack('!i', file[tmp_blockLength : tmp_blockLength + 4])[0]
-			datalen = struct.unpack('!i', file[tmp_datalen : tmp_datalen + 4])[0]
-			
-			binary_salt = binascii.unhexlify(salt)
-			desKey = file[offset: offset + 8]
-			tmp = binary_salt + desKey
-			
-			md5hash1 = hashlib.md5(tmp).digest()
-			md5hash2 = hashlib.md5(md5hash1 + tmp).digest() 
-
-			key = md5hash1 + md5hash2[0:8]
-			iv = md5hash2[8:]
-			
-			data = file[offset + 8 + 4: offset + 8 + 4 + datalen]
-
-			des3dec = DES3.new(key, DES3.MODE_CBC, iv)
-			try:
-				plaintext = des3dec.decrypt(data)
-				plaintext = re.sub(r'[^\x20-\x7e]', '', plaintext)
-				passwords.append(plaintext)
-			except Exception,e:
-				print_debug('DEBUG', '{0}'.format(e))
-				print_debug('ERROR', 'Failed to decrypt password')
-			
-			offset += 8 + 4 + datalen
-		return passwords
-		
-	def decipher_new_version(self, path):
-		database_path = os.path.join(path, u'Login Data')
-		if os.path.exists(database_path):
-			
-			# Connect to the Database
-			conn = sqlite3.connect(database_path)
-			cursor = conn.cursor()
-			
-			# Get the results
-			try:
-				cursor.execute('SELECT action_url, username_value, password_value FROM logins')
-			except Exception,e:
-				print_debug('DEBUG', '{0}'.format(e))
-				print_debug('ERROR', 'Opera seems to be used, the database is locked. Kill the process and try again !')
-				return 
-			
-			pwdFound = []
-			for result in cursor.fetchall():
-				values = {}
-				
-				# Decrypt the Password
-				password = Win32CryptUnprotectData(result[2])
-				if password:
-					values['URL'] 		= result[0]
-					values['Login'] 	= result[1]
-					values['Password'] 	= password
-					pwdFound.append(values)
-
-			return pwdFound
-		else:
-			print_debug('INFO', 'No passwords stored\nThe database Login Data is not present.')
-		
-	def masterPasswordUsed(self, path):
-		
-		# the init file is not well defined so lines have to be removed before to parse it
-		cp = RawConfigParser()
-		f = open(os.path.join(path, u'operaprefs.ini', 'rb'))
-		
-		f.readline() # discard first line
-		while 1:
-			try:
-				cp.readfp(f)
-				break
-			except Exception,e:
-				print_debug('DEBUG', '{0}'.format(e))
-				f.readline() # discard first line
-		try:
-			master_pass = cp.get('Security Prefs','Use Paranoid Mailpassword')
-			return master_pass
-		except Exception,e:
-			print_debug('DEBUG', '{0}'.format(e))
-			return False
-		
-	def parse_results(self, passwords):
-		
-		cpt = 0
-		values = {}
+	def run(self, software_name=None):	
 		pwdFound = []
-		for password in passwords:
-			
-			# date (begin of the sensitive data)
-			match=re.search(r'(\d+-\d+-\d+)', password)
-			if match:
-				values = {}
-				cpt = 0
-				tmp_cpt = 0
-			
-			# after finding 2 urls
-			if cpt == 2:
-				tmp_cpt += 1
-				if tmp_cpt == 2:
-					values['Login'] = password
-				elif tmp_cpt == 4:
-					values['Password'] = password
-				
-			# url
-			match=re.search(r'^http', password)
-			if match:
-				cpt +=1
-				if cpt == 1:
-					tmp_url = password
-				elif cpt == 2:
-					values['URL'] = tmp_url
-			pwdFound.append(values)
-		
-		return pwdFound
+		paths 	 = [u'{appdata}\\Opera Software\\Opera Stable'.format(appdata=constant.profile['APPDATA'])]
 
+		for path in paths:
+			if os.path.exists(path):
+				random_dbname 	= ''
+				database_path 	= os.path.join(path, u'Login Data')
+				if not os.path.exists(database_path):
+					print_debug('INFO', 'User database not found')
+					continue
+
+				# Copy database before to query it (bypass lock errors)
+				try:
+					random_dbname = ''.join([random.choice(string.ascii_lowercase) for x in range(0, random.randint(6, 12))])
+					shutil.copy(database_path, os.path.join(unicode(tempfile.gettempdir()), random_dbname))
+					database_path = os.path.join(unicode(tempfile.gettempdir()), random_dbname)
+				except Exception:
+					print_debug('DEBUG', traceback.format_exc())
+
+				# Connect to the Database
+				try:
+					conn 	= sqlite3.connect(database_path)
+					cursor  = conn.cursor()
+				except Exception,e:
+					print_debug('DEBUG', '{0}'.format(e))
+					print_debug('ERROR', 'An error occured opening the database file')
+					continue 
+
+				# Get the results
+				try:
+					cursor.execute('SELECT action_url, username_value, password_value FROM logins')
+				except:
+					continue
+				
+				for result in cursor.fetchall():
+					try:
+						# Decrypt the Password
+						password = Win32CryptUnprotectData(result[2])
+						pwdFound.append(
+							{
+								'URL'		: result[0], 
+								'Login'		: result[1], 
+								'Password'	: password
+							}
+						)
+					except Exception,e:
+						print_debug('DEBUG', traceback.format_exc())
+				
+				conn.close()
+				if database_path.endswith(random_dbname):
+					os.remove(database_path)
+
+		return pwdFound

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.constant import *
 import json
@@ -6,8 +7,7 @@ import os
 class Composer(ModuleInfo):
 
     def __init__(self):
-        options = {'command': '-phpcomp', 'action': 'store_true', 'dest': 'composer', 'help': 'PHP Composer'}
-        ModuleInfo.__init__(self, 'composer', 'php', options)
+        ModuleInfo.__init__(self, 'composer', 'php')
 
     def extract_credentials(self, location):
         """
@@ -45,8 +45,8 @@ class Composer(ModuleInfo):
         # See "https://seld.be/notes/authentication-management-in-composer"
         location = ''
         tmp_location = [
-            constant.profile["COMPOSER_HOME"] + u'\\auth.json', 
-            constant.profile["APPDATA"] + u'\\Composer\\auth.json'
+            os.path.join(constant.profile["COMPOSER_HOME"], u'auth.json'), 
+            os.path.join(constant.profile["APPDATA"], u'Composer\\auth.json')
         ]
         for tmp in tmp_location:
             if os.path.isfile(tmp):

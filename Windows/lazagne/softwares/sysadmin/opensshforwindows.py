@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.constant import *
@@ -8,8 +9,7 @@ import os
 class OpenSSHForWindows(ModuleInfo):
 
     def __init__(self):
-        options = {'command': '-winssh', 'action': 'store_true', 'dest': 'opensshforwindows', 'help': 'OpenSSH for Windows'}
-        ModuleInfo.__init__(self, 'opensshforwindows', 'sysadmin', options)
+        ModuleInfo.__init__(self, 'opensshforwindows', 'sysadmin')
         self.key_files_location = os.path.join(constant.profile["USERPROFILE"], u'.ssh')
 
     def is_private_key_unprotected(self, key_content_encoded, key_algorithm):
@@ -71,7 +71,7 @@ class OpenSSHForWindows(ModuleInfo):
 
         return keys
 
-    def run(self, software_name = None):
+    def run(self, software_name=None):
         """
         Main function
         """
