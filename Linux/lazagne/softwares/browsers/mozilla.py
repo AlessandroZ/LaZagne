@@ -280,15 +280,14 @@ class Mozilla(ModuleInfo):
 		cp = RawConfigParser()
 		try:
 			cp.read(os.path.join(directory, 'profiles.ini'))
+			profile_list = []
+			for section in cp.sections():
+				if section.startswith('Profile'):
+					if cp.has_option(section, 'Path'):
+						profile_list.append(os.path.join(directory, cp.get(section, 'Path').strip()))
+			return profile_list
 		except:
 			return []
-
-		profile_list = []
-		for section in cp.sections():
-			if section.startswith('Profile'):
-				if cp.has_option(section, 'Path'):
-					profile_list.append(os.path.join(directory, cp.get(section, 'Path').strip()))
-		return profile_list
 
 	def save_db(self, userpath):
 
