@@ -1,4 +1,5 @@
-# Thanks to the awesome work harmjoy
+# -*- coding: utf-8 -*- 
+# Thanks to the awesome work done by harmjoy
 # For more information http://www.harmj0y.net/blog/redteaming/keethief-a-case-study-in-attacking-keepass-part-2/
 
 # Thanks for the great work of libkeepass (used to decrypt keepass file)
@@ -12,10 +13,9 @@ import libkeepass
 
 class Keepass(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-k', 'action': 'store_true', 'dest': 'keepass', 'help': 'retrieve keepass password using KeeThief'}
-		ModuleInfo.__init__(self, 'keepass', 'memory', options)
+		ModuleInfo.__init__(self, 'keepass', 'memory')
 
-	def run(self, software_name = None):
+	def run(self, software_name=None):
 		# password found on the memory dump class
 		if constant.keepass:
 			try:

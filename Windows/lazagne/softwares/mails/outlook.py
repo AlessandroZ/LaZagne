@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.WinStructure import *
@@ -6,16 +7,15 @@ import _winreg
 
 class Outlook(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-o', 'action': 'store_true', 'dest': 'outlook', 'help': 'outlook - IMAP, POP3, HTTP, SMTP, LDPAP (not Exchange)'}
-		ModuleInfo.__init__(self, 'outlook', 'mails', options, cannot_be_impersonate_using_tokens=True)
+		ModuleInfo.__init__(self, 'outlook', 'mails', registry_used=True, dpapi_used=True)
 
-	def run(self, software_name = None):
+	def run(self, software_name=None):
 		keyPath = 'Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows Messaging Subsystem\\Profiles\\Outlook'
 		try:
 			hkey = OpenKey(HKEY_CURRENT_USER, keyPath)
 		except Exception,e:
 			print_debug('DEBUG', '{0}'.format(e))
-			print_debug('INFO', 'Outlook not installed or not profile saved')
+			print_debug('INFO', 'Outlook not installed or profile not saved')
 			return
 
 		num = _winreg.QueryInfoKey(hkey)[0]

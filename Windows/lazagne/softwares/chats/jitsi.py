@@ -13,9 +13,8 @@ import re
 
 class Jitsi(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-j', 'action': 'store_true', 'dest': 'jitsi', 'help': 'jitsi'}
 		suboptions = [{'command': '-ma', 'action': 'store', 'dest': 'master_pwd', 'help': 'enter the master password manually', 'title': 'Advanced jitsi option'}]
-		ModuleInfo.__init__(self, 'jitsi', 'chats', options, suboptions, need_to_be_in_env=False)
+		ModuleInfo.__init__(self, 'jitsi', 'chats', suboptions)
 	
 		self.keylen 				= 16
 		self.iterations 			= 1024
@@ -96,8 +95,7 @@ class Jitsi(ModuleInfo):
 		
 		return plaintext.strip()
 	
-	# main function
-	def run(self, software_name = None):		
+	def run(self, software_name=None):		
 		file_properties = self.get_path()
 		if not file_properties:
 			print_debug('INFO', 'Jitsi not installed.')

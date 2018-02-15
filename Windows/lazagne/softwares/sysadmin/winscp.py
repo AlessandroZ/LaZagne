@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.WinStructure import *
@@ -6,12 +7,11 @@ import _winreg
 
 class WinSCP(ModuleInfo):
 	def __init__(self):
-		self.hash = ''
-		self.username = ''
-		self.hostname = ''
-		
-		options = {'command': '-scp', 'action': 'store_true', 'dest': 'winscp', 'help': 'winscp'}
-		ModuleInfo.__init__(self, 'winscp', 'sysadmin', options, cannot_be_impersonate_using_tokens=True)
+		ModuleInfo.__init__(self, 'winscp', 'sysadmin', registry_used=True)
+
+		self.hash 		= ''
+		self.username 	= ''
+		self.hostname 	= ''
 	
 	# ------------------------------ Getters and Setters ------------------------------
 	def decrypt_char(self):	
@@ -46,7 +46,7 @@ class WinSCP(ModuleInfo):
 		else:
 			return True
 	
-	def get_logins_info(self):
+	def get_credentials(self):
 		try:
 			key = OpenKey(HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Sessions')
 		except Exception,e:
@@ -129,15 +129,12 @@ class WinSCP(ModuleInfo):
 	
 	# --------- Main function ---------
 	def run(self, software_name = None):
-		k = self.check_winscp_installed()
-		if k:
-			if not self.check_masterPassword(k):
-				r = self.get_logins_info()
-				if r == False:
-					print_debug('INFO', 'WinSCP not installed.')
-				else:
-					return r
+		winscp_key = self.check_winscp_installed()
+		if winscp_key:
+			if not self.check_masterPassword(winscp_key):
+				results = self.get_credentials()
+				if results:
+					return results
 			else:
 				print_debug('WARNING', 'A master password is used. Passwords cannot been retrieved')
-		else:
-			print_debug('INFO', 'WinSCP not installed.')
+		

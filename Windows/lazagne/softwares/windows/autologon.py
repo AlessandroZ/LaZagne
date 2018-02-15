@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.WinStructure import *
@@ -8,10 +9,9 @@ import _winreg
 
 class Autologon(ModuleInfo):
 	def __init__(self):
-		options = {'command': '--autologon', 'action': 'store_true', 'dest': 'autologon', 'help': 'Windows autologon'}
-		ModuleInfo.__init__(self, 'Autologon', 'windows', options, cannot_be_impersonate_using_tokens=True)
+		ModuleInfo.__init__(self, 'autologon', 'windows', registry_used=True, system_module=True)
 
-	def run(self, software_name = None):		
+	def run(self, software_name=None):		
 		pwdFound = []
 		try:
 			hkey = OpenKey(HKEY_LOCAL_MACHINE, 'SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon')

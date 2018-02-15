@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.constant import *
 from lazagne.config.moduleInfo import ModuleInfo
@@ -7,10 +8,9 @@ import os
 class MavenRepositories(ModuleInfo):
 
     def __init__(self):
-        options = {'command': '-mvn', 'action': 'store_true', 'dest': 'mavenrepositories', 'help': 'Maven repositories'}
-        ModuleInfo.__init__(self, 'mavenrepositories', 'maven', options)
+        ModuleInfo.__init__(self, 'mavenrepositories', 'maven')
         # Interesting XML nodes in Maven repository configuration
-        self.nodes_to_extract = ["id", "username", "password", "privateKey", "passphrase"]
+        self.nodes_to_extract   = ["id", "username", "password", "privateKey", "passphrase"]
         self.settings_namespace = "{http://maven.apache.org/SETTINGS/1.0.0}"
 
     def extract_master_password(self):
@@ -80,7 +80,7 @@ class MavenRepositories(ModuleInfo):
         return state
 
 
-    def run(self, software_name = None):
+    def run(self, software_name=None):
         """
         Main function:
 
@@ -108,15 +108,15 @@ class MavenRepositories(ModuleInfo):
         # => Authentication using private key
         pwd_found = []
         for creds in repos_creds:
-            values = {}
-            values["Id"] = creds["id"]
+            values          = {}
+            values["Id"]    = creds["id"]
             values["Login"] = creds["username"]
             if not self.use_key_auth(creds):
                 pwd = creds["password"].strip()
                 # Case for authentication using password protected with the master password
                 if pwd.startswith("{") and pwd.endswith("}"):
                     values["SymetricEncryptionKey"] = master_password
-                    values["PasswordEncrypted"] = pwd
+                    values["PasswordEncrypted"]     = pwd
                 else:
                     values["Password"] = pwd
             else:
