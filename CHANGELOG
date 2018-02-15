@@ -1,3 +1,10 @@
+LaZagne 2.3.2 (15/02/2018)
+- Only Windows
+	* Big code review
+	* Lots of minor bug fixed
+	* If windows user found => domain passwords retrieved from credentials files
+	* If windows user not found => DPAPI hash printed to bruteforce with john or hashcat (no admin privilege required)
+
 LaZagne 2.3.1 (18/10/2017)
 - Only Windows
 	* Fix unicode issue (#154)
