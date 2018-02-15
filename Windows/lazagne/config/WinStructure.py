@@ -300,10 +300,6 @@ OpenProcess             		= kernel32.OpenProcess
 OpenProcess.restype     		= HANDLE
 OpenProcess.argtypes    		= [DWORD, BOOL, DWORD]
 
-GetCurrentProcessId             = kernel32.GetCurrentProcessId
-GetCurrentProcessId.restype     = DWORD
-GetCurrentProcessId.argtypes    = [PVOID]
-
 OpenProcessToken             	= advapi32.OpenProcessToken
 OpenProcessToken.restype     	= BOOL
 OpenProcessToken.argtypes    	= [HANDLE, DWORD, POINTER(HANDLE)]
