@@ -201,15 +201,27 @@ def get_user_list_on_filesystem(impersonated_user=[]):
 	return all_users
 
 def set_env_variables(user, toImpersonate=False):
+	# restore template path
+	template_path = {
+		'APPDATA'			: u'{drive}:\\Users\\{user}\\AppData\\Roaming\\',
+		'USERPROFILE'		: u'{drive}:\\Users\\{user}\\',
+		'HOMEDRIVE'			: u'{drive}:',
+		'HOMEPATH'			: u'{drive}:\\Users\\{user}',
+		'ALLUSERSPROFILE'	: u'{drive}:\\ProgramData', 
+		'COMPOSER_HOME'		: u'{drive}:\\Users\\{user}\\AppData\\Roaming\\Composer\\', 
+		'LOCALAPPDATA'		: u'{drive}:\\Users\\{user}\\AppData\\Local',
+	}
+
+	constant.profile = template_path
 	if not toImpersonate:
 		# Get value from environment variables
 		for env in constant.profile:
 			if os.environ.get(env):
 				constant.profile[env] = os.environ.get(env)
 
-		# Replace "drive" and "user" with the correct values
-		for env in constant.profile:
-			constant.profile[env] = constant.profile[env].format(drive=constant.drive, user=user)
+	# Replace "drive" and "user" with the correct values
+	for env in constant.profile:
+		constant.profile[env] = constant.profile[env].format(drive=constant.drive, user=user)
 
 # Print user when verbose mode is enabled (without verbose mode the user is printed on the write_output python file)
 def print_user(user):
