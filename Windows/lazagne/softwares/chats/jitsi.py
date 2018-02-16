@@ -98,7 +98,7 @@ class Jitsi(ModuleInfo):
 	def run(self, software_name=None):		
 		file_properties = self.get_path()
 		if not file_properties:
-			print_debug('INFO', 'Jitsi not installed.')
+			print_debug('INFO', u'Jitsi not installed.')
 		else:
 			return self.get_info(file_properties)
 		

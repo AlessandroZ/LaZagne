@@ -29,14 +29,14 @@ class Skype(ModuleInfo):
 			try:
 				hkey = OpenKey(HKEY_CURRENT_USER, keyPath)
 			except Exception, e:
-				print_debug('DEBUG', '{0}'.format(e))
+				print_debug('DEBUG', u'{0}'.format(e))
 				return False
 			
 			num = _winreg.QueryInfoKey(hkey)[1]
 			k = _winreg.EnumValue(hkey, 0)[1]
 			return Win32CryptUnprotectData(k)
 		except Exception,e:
-			print_debug('DEBUG', '{0}'.format(e))
+			print_debug('DEBUG', u'{0}'.format(e))
 			return False
 			
 	# get hash from lazagne.configuration file
@@ -79,8 +79,8 @@ class Skype(ModuleInfo):
 			try:
 				dicFile = open (dictionary_path, 'r')
 			except Exception,e:
-				print_debug('DEBUG', '{0}'.format(e))
-				print_debug('ERROR', 'Unable to open passwords file: %s' % str(dictionary_path))
+				print_debug('DEBUG', u'{0}'.format(e))
+				print_debug('ERROR', u'Unable to open passwords file: %s' % str(dictionary_path))
 				return []
 			
 			for word in dicFile.readlines():
@@ -123,7 +123,7 @@ class Skype(ModuleInfo):
 				enc_hex = self.get_hash_credential(os.path.join(path, u'config.xml'))
 				
 				if not enc_hex:
-					print_debug('WARNING', 'No credential stored on the config.xml file.')
+					print_debug('WARNING', u'No credential stored on the config.xml file.')
 				else:
 					# decrypt the hash to get the md5 to brue force
 					values['Hash'] = self.get_md5_hash(enc_hex, key)
@@ -136,7 +136,7 @@ class Skype(ModuleInfo):
 
 					self.pwdFound.append(values)
 			except Exception,e:
-				print_debug('DEBUG', '{0}'.format(e))
+				print_debug('DEBUG', u'{0}'.format(e))
 
 	def run(self, software_name=None):
 		path = os.path.join(constant.profile['APPDATA'], u'\Skype')
@@ -144,7 +144,7 @@ class Skype(ModuleInfo):
 			# retrieve the key used to build the salt
 			key = self.get_regkey()
 			if not key:
-				print_debug('ERROR', 'The salt has not been retrieved')
+				print_debug('ERROR', u'The salt has not been retrieved')
 			else:
 				username = self.get_username(path)
 				if username: 

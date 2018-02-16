@@ -39,7 +39,7 @@ class Cyberduck(ModuleInfo):
 					
 					pwdFound.append(values)
 			except Exception,e:
-				print_debug('DEBUG', '{0}'.format(e))
+				print_debug('DEBUG', u'{0}'.format(e))
 
 		return pwdFound
 		

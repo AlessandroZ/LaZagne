@@ -82,7 +82,7 @@ class MemoryDump(ModuleInfo):
 			# 	except ProcessException:
 			# 		continue
 				
-			# 	print_debug('INFO', 'dumping passwords from %s (pid: %s) ...' % (process.get('name', ''), str(process.get('pid', ''))))
+			# 	print_debug('INFO', u'dumping passwords from %s (pid: %s) ...' % (process.get('name', ''), str(process.get('pid', ''))))
 			# 	for _, x in mw.mem_search(password_regex, ftype='groups'):
 			# 		login, password = x[-2:]
 			# 		pwdFound.append(

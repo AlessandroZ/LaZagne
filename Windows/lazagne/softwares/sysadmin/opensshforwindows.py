@@ -32,7 +32,7 @@ class OpenSSHForWindows(ModuleInfo):
             # Validate loading
             state = (key is not None and key.can_sign() and key.has_private())
         except Exception as e:
-            print_debug("ERROR", "Cannot validate key protection '%s'" % e)
+            print_debug("ERROR", u"Cannot validate key protection '%s'" % e)
             state = False
             pass
 
@@ -66,7 +66,7 @@ class OpenSSHForWindows(ModuleInfo):
                                                                                                key_algorithm):
                                 keys.append(key_content_encoded)
                         except Exception as e:
-                            print_debug("ERROR", "Cannot load key file '%s' '%s'" % (key_file_path, e))
+                            print_debug("ERROR", u"Cannot load key file '%s' '%s'" % (key_file_path, e))
                             pass
 
         return keys

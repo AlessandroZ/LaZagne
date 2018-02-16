@@ -512,11 +512,11 @@ class MasterKeyPool(object):
                         if not mk.decrypted:
                             mk.decryptWithKey(self.system.machine)
                 if mk.decrypted:
-                    print_debug('INFO', '{password} ok for masterkey {masterkey}'.format(password=password, masterkey=mk.guid))
+                    print_debug('INFO', u'{password} ok for masterkey {masterkey}'.format(password=password, masterkey=mk.guid))
                     self.passwords.add(password)
                     n += 1
                 else:
-                     print_debug('INFO', '{password} not ok for masterkey {masterkey}'.format(password=password, masterkey=mk.guid))
+                     print_debug('INFO', u'{password} not ok for masterkey {masterkey}'.format(password=password, masterkey=mk.guid))
 
         return n
 

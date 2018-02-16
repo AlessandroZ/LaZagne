@@ -30,7 +30,7 @@ class MavenRepositories(ModuleInfo):
                 if master_password_node is not None:
                     master_password = master_password_node.text
             except Exception as e:
-                print_debug("ERROR", "Cannot retrieve master password '%s'" % e)
+                print_debug("ERROR", u"Cannot retrieve master password '%s'" % e)
                 master_password = None
 
         return master_password
@@ -59,7 +59,7 @@ class MavenRepositories(ModuleInfo):
                     if len(creds) > 0:
                         repos_creds.append(creds)
             except Exception as e:
-                print_debug("ERROR", "Cannot retrieve repositories credentials '%s'" % e)
+                print_debug("ERROR", u"Cannot retrieve repositories credentials '%s'" % e)
                 pass
 
         return repos_creds

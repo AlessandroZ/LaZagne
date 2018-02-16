@@ -55,7 +55,7 @@ class Wifi(ModuleInfo):
 										# need to have system privilege, to use this technic
 										password = Win32CryptUnprotectData(binary_string)
 										if not password: 
-											print_debug('DEBUG', '[!] Try using netsh method')
+											print_debug('DEBUG', u'[!] Try using netsh method')
 											process 		= Popen(['netsh.exe', 'wlan', 'show', 'profile', '{SSID}'.format(SSID=values['SSID']), 'key=clear'], stdout=PIPE, stderr=PIPE)
 											stdout, stderr 	= process.communicate()
 											st 				= stdout.split('-------------')[4].split('\n')[6]

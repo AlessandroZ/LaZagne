@@ -31,10 +31,10 @@ class Credentials(object):
 		if os.path.isfile(db):
 			# Check if the database is not empty
 			if not open(db, 'r').read():
-				print_debug('DEBUG', 'Empty database: {db}'.format(db=db))
+				print_debug('DEBUG', u'Empty database: {db}'.format(db=db))
 				raise Exception('Empty database: {db}'.format(db=db))
 		else:
-			print_debug('DEBUG', 'Database not found: {db}'.format(db=db))
+			print_debug('DEBUG', u'Database not found: {db}'.format(db=db))
 			raise Exception('Database not found: {db}'.format(db=db))
 
 	def __iter__(self):
@@ -150,12 +150,12 @@ class Mozilla(ModuleInfo):
 		header 	= f.read(4*15)
 		magic 	= self.getLongBE(header,0)
 		if magic != 0x61561:
-			print_debug('WARNING', 'Bad magic number')
+			print_debug('WARNING', u'Bad magic number')
 			return False
 		
 		version = self.getLongBE(header,4)
 		if version !=2:
-			print_debug('WARNING', 'Bad version !=2 (1.85)')
+			print_debug('WARNING', u'Bad version !=2 (1.85)')
 			return False
 		
 		pagesize 	= self.getLongBE(header,12)
@@ -240,7 +240,7 @@ class Mozilla(ModuleInfo):
 		id 			= prKeyASN1[0][1]
 		key 		= long_to_bytes( prKeyASN1[0][3] )
 
-		print_debug('DEBUG', 'key: {key}'.format(key=repr(key)))
+		print_debug('DEBUG', u'key: {key}'.format(key=repr(key)))
 		return key
 
 	# --------------------------------------------
@@ -286,58 +286,58 @@ class Mozilla(ModuleInfo):
 				pass_file = open(self.dictionary_path, 'r')
 				num_lines = sum(1 for line in pass_file)
 			except:
-				print_debug('ERROR', 'Unable to open passwords file: {file_path}'.format(file_path=str(self.dictionary_path)))
+				print_debug('ERROR', u'Unable to open passwords file: {file_path}'.format(file_path=str(self.dictionary_path)))
 				return False
 			pass_file.close()
 			
-			print_debug('ATTACK', 'Dictionary Attack !!! ({nb_lines} words)'.format(nb_lines=num_lines))
+			print_debug('ATTACK', u'Dictionary Attack !!! ({nb_lines} words)'.format(nb_lines=num_lines))
 			try:
 				with open(self.dictionary_path) as f:
 					for p in f:
 						if self.is_masterpassword_correct(p.strip())[0]:
-							print_debug('FIND', 'Master password found: %s' % p.strip())
+							print_debug('FIND', u'Master password found: %s' % p.strip())
 							return p.strip()
 			
 			except (KeyboardInterrupt, SystemExit):
 				print 'INTERRUPTED!'
-				print_debug('DEBUG', 'Dictionary attack interrupted')
+				print_debug('DEBUG', u'Dictionary attack interrupted')
 			except Exception,e:
-				print_debug('DEBUG', '{exception}'.format(exception=e))
+				print_debug('DEBUG', u'{exception}'.format(exception=e))
 
-			print_debug('WARNING', 'The Master password has not been found using the dictionary attack')
+			print_debug('WARNING', u'The Master password has not been found using the dictionary attack')
 		
 		# 500 most used passwords
 		if 'd' in self.toCheck:
 			wordlist = get_dico() + constant.passwordFound
 			num_lines = (len(wordlist)-1)
-			print_debug('ATTACK', '%d most used passwords !!! ' % num_lines)
+			print_debug('ATTACK', u'%d most used passwords !!! ' % num_lines)
 
 			for word in wordlist:
 				if self.is_masterpassword_correct(word)[0]:
-					print_debug('FIND', 'Master password found: {master_password}'.format(master_password=word.strip()))
+					print_debug('FIND', u'Master password found: {master_password}'.format(master_password=word.strip()))
 					return word
 				
-			print_debug('WARNING', 'No password has been found using the default list')
+			print_debug('WARNING', u'No password has been found using the default list')
 		
 		# Brute force attack
 		if 'b' in self.toCheck or constant.bruteforce:
 			charset_list = 'abcdefghijklmnopqrstuvwxyz1234567890!?'
-			print_debug('ATTACK', 'Brute force attack !!! ({nb_characters} characters)'.format(nb_characters=str(constant.bruteforce)))
-			print_debug('DEBUG', 'charset: {charset}'.format(charset=charset_list))
+			print_debug('ATTACK', u'Brute force attack !!! ({nb_characters} characters)'.format(nb_characters=str(constant.bruteforce)))
+			print_debug('DEBUG', u'charset: {charset}'.format(charset=charset_list))
 
 			try:
 				for length in range(1, int(self.number_toStop)):
 					words = product(charset_list, repeat=length)
 					for word in words:
-						print_debug('DEBUG', '{word}'.format(word=word))
+						print_debug('DEBUG', u'{word}'.format(word=word))
 						if self.is_masterpassword_correct(''.join(word))[0]:
-							print_debug('FIND', 'Master password found: {master_password}'.format(master_password=word.strip()))
+							print_debug('FIND', u'Master password found: {master_password}'.format(master_password=word.strip()))
 							return word.strip()
 			except (KeyboardInterrupt, SystemExit):
 				print 'INTERRUPTED!'
-				print_debug('INFO', 'Dictionary attack interrupted')
+				print_debug('INFO', u'Dictionary attack interrupted')
 
-			print_debug('WARNING', 'No password has been found using the brute force attack')
+			print_debug('WARNING', u'No password has been found using the brute force attack')
 		return False
 
 	def get_database(self, profile):
@@ -373,9 +373,9 @@ class Mozilla(ModuleInfo):
 
 			for profile in profile_list:
 				p = os.path.join(path, profile)
-				print_debug('INFO', 'Profile path found: {profile}'.format(profile=p))
+				print_debug('INFO', u'Profile path found: {profile}'.format(profile=p))
 				if not os.path.exists(os.path.join(p, 'key3.db')):
-					print_debug('WARNING', 'key3 file not found: {key3_file}'.format(key3_file=self.key3))
+					print_debug('WARNING', u'key3 file not found: {key3_file}'.format(key3_file=self.key3))
 					continue
 
 				self.key3 = self.readBsddb(os.path.join(p, u'key3.db'))
@@ -389,7 +389,7 @@ class Mozilla(ModuleInfo):
 					
 					# Find masterpassword if set
 					if not globalSalt:
-						print_debug('WARNING', 'Master Password is used !') 
+						print_debug('WARNING', u'Master Password is used !') 
 						masterPassword = self.found_masterpassword()
 						if not masterPassword:
 							continue
@@ -421,6 +421,6 @@ class Mozilla(ModuleInfo):
 												}
 											)
 						except Exception, e:
-							print_debug('DEBUG', 'An error occured decrypting the password: {error}'.format(error=e))
+							print_debug('DEBUG', u'An error occured decrypting the password: {error}'.format(error=e))
 
 			return pwdFound

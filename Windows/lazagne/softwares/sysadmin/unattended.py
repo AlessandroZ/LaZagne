@@ -38,7 +38,7 @@ class Unattended(ModuleInfo):
 		for file in files:
 			path = os.path.join(windir, unicode(file))
 			if os.path.exists(path):
-				print_debug('INFO', 'Unattended file found: %s' % path)
+				print_debug('INFO', u'Unattended file found: %s' % path)
 				tree = ET.ElementTree(file=path)
 				root = tree.getroot()
 				

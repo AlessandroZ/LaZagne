@@ -25,7 +25,7 @@ class IE(ModuleInfo):
 				h = (urls[u] + '\0').encode('UTF-16LE')
 				hash_tables.append([h, hashlib.sha1(h).hexdigest().lower()])
 			except Exception,e:
-				print_debug('DEBUG', '{0}'.format(e))
+				print_debug('DEBUG', u'{0}'.format(e))
 		return hash_tables
 
 	def get_history(self):
@@ -33,8 +33,8 @@ class IE(ModuleInfo):
 		try:
 			urls = urls + self.history_from_powershell()
 		except Exception, e:
-			print_debug('DEBUG', '{0}'.format(e))
-			print_debug('ERROR', 'Browser history failed to load, only few url will be tried')
+			print_debug('DEBUG', u'{0}'.format(e))
+			print_debug('ERROR', u'Browser history failed to load, only few url will be tried')
 		
 		urls = urls + ['https://www.facebook.com/', 'https://www.gmail.com/', 'https://accounts.google.com/', 'https://accounts.google.com/servicelogin']
 		return urls
@@ -92,7 +92,7 @@ class IE(ModuleInfo):
 		try:
 			hkey = OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\TypedURLs')
 		except Exception,e:
-			print_debug('DEBUG', '{0}'.format(e))
+			print_debug('DEBUG', u'{0}'.format(e))
 			return []
 		
 		num = _winreg.QueryInfoKey(hkey)[1]
@@ -140,13 +140,13 @@ class IE(ModuleInfo):
 				else:
 					password = secret[length - s]
 			except Exception,e:
-				print_debug('DEBUG', '{0}'.format(e))
+				print_debug('DEBUG', u'{0}'.format(e))
 
 		return pfound
 	
 	def run(self, historic=''):
 		if float(get_os_version()) > 6.1:
-			print_debug('INFO', 'Internet Explorer passwords are stored in Vault (check vault module)')
+			print_debug('INFO', u'Internet Explorer passwords are stored in Vault (check vault module)')
 			return
 
 		pwdFound = []
@@ -154,7 +154,7 @@ class IE(ModuleInfo):
 		try:
 			hkey = OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2')
 		except Exception,e:
-			print_debug('DEBUG', '{0}'.format(e))
+			print_debug('DEBUG', u'{0}'.format(e))
 			failed = True
 		
 		if failed == False:
@@ -167,7 +167,7 @@ class IE(ModuleInfo):
 					for line in f:
 						lists.append(line.strip())
 				else:
-					print_debug('WARNING', 'The text file %s does not exist' % historic)
+					print_debug('WARNING', u'The text file %s does not exist' % historic)
 			
 			# retrieve the urls from the history
 			hash_tables = self.get_hash_table(lists)
@@ -189,6 +189,6 @@ class IE(ModuleInfo):
 			
 			# manage errors
 			if nb_site > nb_pass_found:
-				print_debug('ERROR', '%s hashes have not been decrypted, the associate website used to decrypt the passwords has not been found' % str(nb_site - nb_pass_found))
+				print_debug('ERROR', u'%s hashes have not been decrypted, the associate website used to decrypt the passwords has not been found' % str(nb_site - nb_pass_found))
 		
 		return pwdFound

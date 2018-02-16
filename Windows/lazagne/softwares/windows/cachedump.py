@@ -22,7 +22,7 @@ class Cachedump(ModuleInfo):
 					cmd = 'reg.exe save hklm\%s %s' % (h, constant.hives[h])
 					self.run_cmd(cmd)
 				except Exception,e:
-					print_debug('ERROR', 'Failed to save system hives: {error}'.format(error=e))
+					print_debug('ERROR', u'Failed to save system hives: {error}'.format(error=e))
 					return False
 		return True
 

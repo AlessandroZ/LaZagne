@@ -43,7 +43,7 @@ class Chrome(ModuleInfo):
 					random_dbname 	= ''
 					database_path 	= os.path.join(path, profile, u'Login Data')
 					if not os.path.exists(database_path):
-						print_debug('INFO', 'User database not found')
+						print_debug('INFO', u'User database not found')
 						continue
 
 					# Copy database before to query it (bypass lock errors)
@@ -59,8 +59,8 @@ class Chrome(ModuleInfo):
 						conn 	= sqlite3.connect(database_path)
 						cursor  = conn.cursor()
 					except Exception,e:
-						print_debug('DEBUG', '{0}'.format(e))
-						print_debug('ERROR', 'An error occured opening the database file')
+						print_debug('DEBUG', u'{0}'.format(e))
+						print_debug('ERROR', u'An error occured opening the database file')
 						continue 
 
 					# Get the results

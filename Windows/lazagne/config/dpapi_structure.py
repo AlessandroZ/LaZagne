@@ -39,8 +39,15 @@ class Decrypt_DPAPI():
 					
 					# Preferred file contains the GUID of the last mastekey created
 					self.last_masterkey_file	= os.path.join(masterkeydir, preferred_mk_guid)
+					
+					# Be sure the preferred mk guid exists, otherwise take the one which have a similar name (sometimes an error occured retreiving the guid)
+					if not os.path.exists(self.last_masterkey_file):
+						for folder in os.listdir(masterkeydir):
+							if folder.startswith(preferred_mk_guid[:6]):
+								self.last_masterkey_file = os.path.join(masterkeydir, folder)
+
 					if os.path.exists(self.last_masterkey_file):
-						print_debug('DEBUG', 'Last masterkey created: {masterkefile}'.format(masterkefile=self.last_masterkey_file))
+						print_debug('DEBUG', u'Last masterkey created: {masterkefile}'.format(masterkefile=self.last_masterkey_file))
 						self.preferred_umkp = masterkey.MasterKeyPool()
 						self.preferred_umkp.addMasterKey(open(self.last_masterkey_file, 'rb').read())
 
@@ -51,11 +58,16 @@ class Decrypt_DPAPI():
 					self.umkp.addCredhistFile(self.sid, credhist)
 				
 				if password:
-					if self.umkp.try_credential(self.sid, str(password)):
+					if self.try_credential(password):
 						self.dpapi_ok = True
 					else:
-						print_debug('DEBUG', 'Password not correct: {password}'.format(password=password))
+						print_debug('DEBUG', u'Password not correct: {password}'.format(password=password))
 
+	def try_credential(self, password):
+		try:
+			return self.umkp.try_credential(self.sid, password)
+		except:
+			return False
 
 	def check_credentials(self, passwords):
 		# the password is tested if possible only on the last masterkey file created by the system (visible on the preferred file) to avoid false positive
@@ -66,9 +78,9 @@ class Decrypt_DPAPI():
 
 		if self.umkp:
 			for password in passwords:
-				print_debug('INFO', 'Check password: {password}'.format(password=password))
-				if self.umkp.try_credential(self.sid, str(password)):
-					print_debug('INFO', 'User password found: {password}\n'.format(password=password))
+				print_debug('INFO', u'Check password: {password}'.format(password=password))
+				if self.try_credential(password):
+					print_debug('INFO', u'User password found: {password}\n'.format(password=password))
 					self.dpapi_ok = True
 					return password
 
@@ -80,9 +92,9 @@ class Decrypt_DPAPI():
 			if ok: 
 				return msg
 			else:
-				print_debug('DEBUG', msg)
+				print_debug('DEBUG', u'{msg}'.format(msg=msg))
 		else:
-			print_debug('INFO', 'Passwords have not been retrieved. User password seems to be wrong ')
+			print_debug('INFO', u'Passwords have not been retrieved. User password seems to be wrong ')
 		
 		return False
 
