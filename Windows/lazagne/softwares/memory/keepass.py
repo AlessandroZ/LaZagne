@@ -6,7 +6,6 @@
 # https://github.com/phpwutz/libkeepass
 
 from lazagne.config.moduleInfo import ModuleInfo
-from lazagne.config.write_output import print_debug
 from lazagne.config.powershell_execute import powershell_execute
 from lazagne.config.constant import *
 import libkeepass

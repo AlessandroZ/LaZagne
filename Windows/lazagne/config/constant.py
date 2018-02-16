@@ -12,7 +12,7 @@ class constant():
 	folder_name 			= '.'
 	file_name_results 		= 'credentials_{current_time}'.format(current_time=date) # the extention is added depending on the user output choice
 	MAX_HELP_POSITION		= 27
-	CURRENT_VERSION 		= '2.3.2'
+	CURRENT_VERSION 		= '2.3.3'
 	output 					= None
 	file_logger 			= None
 	

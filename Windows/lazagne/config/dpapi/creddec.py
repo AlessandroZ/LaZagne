@@ -49,13 +49,13 @@ def decrypt_credential_block(mkp, credential_block):
 
 
 def helper_dec_err(err_value):
-	msg = ''
+	msg = u''
 	if err_value == 1:
-		msg = '[-] MasterKey not found for blob.'
+		msg = u'[-] MasterKey not found for blob.'
 	elif err_value == 2:
-		msg = '[-] Unable to decrypt blob.'
+		msg = u'[-] Unable to decrypt blob.'
 	else:
-		msg = '[-] Decryption error.'
+		msg = u'[-] Decryption error.'
 	return msg
 
 def decrypt_user_cred(umkp=None, cred_file=None):
@@ -85,8 +85,8 @@ def decrypt_user_cred(umkp=None, cred_file=None):
 
 		# system type
 		elif cred_dec.header.unk_type == 2:
-			return False, 'System credential type'
+			return False, u'System credential type'
 
 		else:
-			return False, 'Unknown CREDENTIAL type, please report.\nCreds: {creds}'.format(creds=cred_dec)
+			return False, u'Unknown CREDENTIAL type, please report.\nCreds: {creds}'.format(creds=cred_dec)
 	

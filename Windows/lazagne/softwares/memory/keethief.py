@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*- 
 from lazagne.config.powershell_execute import powershell_execute
+from lazagne.config.write_output import print_debug
 from lazagne.config.constant import *
 import psutil
 import os
@@ -96,7 +97,7 @@ class KeeThief():
 			output = output.replace('\r', '')
 			if output.startswith('Error: '):
 				output = output.replace('Error: ', '').replace('\n', '').replace('\r', '')
-				print_debug('WARNING', output)
+				print_debug('WARNING', u'{output}'.format(output=output))
 				return False
 
 			values = {}

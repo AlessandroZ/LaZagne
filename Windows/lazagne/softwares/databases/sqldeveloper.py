@@ -67,7 +67,7 @@ class SQLDeveloper(ModuleInfo):
 		if os.path.exists(path):
 			self._passphrase = self.get_passphrase(path)
 			if self._passphrase:
-				print_debug('INFO', 'Passphrase found: {passphrase}'.format(passphrase=self._passphrase))
+				print_debug('INFO', u'Passphrase found: {passphrase}'.format(passphrase=self._passphrase))
 				xml_name = u'connections.xml'
 				xml_file = None
 

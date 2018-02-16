@@ -14,7 +14,7 @@ class Vault(ModuleInfo):
 		
 		# retrieve passwords (IE, etc.) using the Windows Vault API (not all passwords can be decrypted using this technic, e.g. domain passwords)
 		if float(get_os_version()) <= 6.1:
-			print_debug('DEBUG', 'Vault not supported for this OS')
+			print_debug('DEBUG', u'Vault not supported for this OS')
 			return
 
 		cbVaults 	= DWORD()
@@ -26,7 +26,7 @@ class Vault(ModuleInfo):
 
 		if vaultEnumerateVaults(0, byref(cbVaults), byref(vaults)) == 0:
 			if cbVaults.value == 0:
-				print_debug('INFO', 'No Vaults found') 
+				print_debug('INFO', u'No Vaults found') 
 				return
 			else:
 				for i in range(cbVaults.value):
@@ -54,7 +54,7 @@ class Vault(ModuleInfo):
 										pwdFound.append(values)
 
 									except Exception, e:
-										print_debug('DEBUG', str(e))
+										print_debug('DEBUG', u'{error}'.format(e))
 
 									if pItem8:
 										vaultFree(pItem8)

@@ -41,7 +41,7 @@ laZagne.exe browsers
 
 * Launch only a specific software script
 ```
-laZagne.exe browsers -f (for Firefox)
+laZagne.exe browsers -firefox
 ```
 
 * Write all passwords found into a file (-oN for Normal txt, -oJ for Json, -oA for All)
