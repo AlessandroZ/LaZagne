@@ -164,9 +164,9 @@ def write_in_file(result):
 			prettyJson = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '))
 			with open(os.path.join(constant.folder_name, constant.file_name_results + '.json'), 'a+b') as f:
 				f.write(prettyJson.decode('unicode-escape').encode('UTF-8'))
-			constant.st.do_print('[+] File written: {file}'.format(file=os.path.join(constant.folder_name, constant.file_name_results + '.json')))
+			constant.st.do_print(u'[+] File written: {file}'.format(file=os.path.join(constant.folder_name, constant.file_name_results + '.json')))
 		except Exception as e:
-			print_debug('ERROR', 'Error writing the output file: {error}'.format(error=e))
+			print_debug('ERROR', u'Error writing the output file: {error}'.format(error=e))
 
 	if constant.output == 'txt' or constant.output == 'all':
 		try:
@@ -174,9 +174,9 @@ def write_in_file(result):
 				a = parseJsonResultToBuffer(result)
 				f.write(a.encode("UTF-8"))
 			constant.st.write_footer()
-			constant.st.do_print('[+] File written: {file}'.format(file=os.path.join(constant.folder_name, constant.file_name_results + '.txt')))
+			constant.st.do_print(u'[+] File written: {file}'.format(file=os.path.join(constant.folder_name, constant.file_name_results + '.txt')))
 		except Exception as e:
-			print_debug('ERROR', 'Error writing the output file: {error}'.format(error=e))
+			print_debug('ERROR', u'Error writing the output file: {error}'.format(error=e))
 
 
 # Get user list to retrieve  their passwords
@@ -233,7 +233,7 @@ def clean_temporary_files():
 	for h in constant.hives:
 		try:
 			os.remove(constant.hives[h])
-			print_debug('DEBUG', 'Temporary file removed: {filename}'.format(filename=constant.hives[h]))
+			print_debug('DEBUG', u'Temporary file removed: {filename}'.format(filename=constant.hives[h]))
 		except:
 			pass
 

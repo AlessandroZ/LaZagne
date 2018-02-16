@@ -28,7 +28,7 @@ class GalconFusion(ModuleInfo):
 			
 			# Check that we have a userdata directory
 			if not os.path.exists(userdata):
-				print_debug('ERROR', 'Steam doesn\'t have a userdata directory.')
+				print_debug('ERROR', u'Steam doesn\'t have a userdata directory.')
 				return
 			
 			# Now look for Galcon Fusion in every user

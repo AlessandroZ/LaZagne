@@ -14,8 +14,8 @@ class Outlook(ModuleInfo):
 		try:
 			hkey = OpenKey(HKEY_CURRENT_USER, keyPath)
 		except Exception,e:
-			print_debug('DEBUG', '{0}'.format(e))
-			print_debug('INFO', 'Outlook not installed or profile not saved')
+			print_debug('DEBUG', u'{0}'.format(e))
+			print_debug('INFO', u'Outlook not installed or profile not saved')
 			return
 
 		num = _winreg.QueryInfoKey(hkey)[0]
@@ -53,7 +53,7 @@ class Outlook(ModuleInfo):
 					password = Win32CryptUnprotectData(k[1][1:])
 					values[k[0]] = password.decode('utf16')
 				except Exception,e:
-					print_debug('DEBUG', '{0}'.format(e))
+					print_debug('DEBUG', u'{0}'.format(e))
 					values[k[0]] = 'N/A'
 			else:
 				try:

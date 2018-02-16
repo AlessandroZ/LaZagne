@@ -16,7 +16,7 @@ class Autologon(ModuleInfo):
 		try:
 			hkey = OpenKey(HKEY_LOCAL_MACHINE, 'SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon')
 			if int(_winreg.QueryValueEx(hkey, 'AutoAdminLogon')[0]) == 1:
-				print_debug('INFO', 'Autologin enabled')
+				print_debug('INFO', u'Autologin enabled')
 
 				keys = {
 					'DefaultDomainName' 	: '', 
@@ -41,7 +41,7 @@ class Autologon(ModuleInfo):
 					pwdFound.append(keys)
   
 		except Exception,e:
-			print_debug('DEBUG', '{0}'.format(e))
+			print_debug('DEBUG', u'{0}'.format(e))
 			return
 
 		return pwdFound

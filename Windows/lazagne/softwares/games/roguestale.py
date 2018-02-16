@@ -28,7 +28,7 @@ class RoguesTale(ModuleInfo):
 					
 					# Double check to make sure that the file is valid
 					if root.tag != 'user':
-						print_debug('Profile %s does not appear to be valid' % file)
+						print_debug(u'Profile %s does not appear to be valid' % file)
 						continue
 					
 					# Now save it to credentials

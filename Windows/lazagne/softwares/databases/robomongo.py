@@ -67,7 +67,7 @@ class Robomongo(ModuleInfo):
 							creds["PublicKey"] = self.read_file_content(connection_infos["ssh"]["publicKeyFile"])
 					repos_creds.append(creds)
 		except Exception as e:
-			print_debug("ERROR", "Cannot retrieve connections credentials '{error}'".format(error=e))
+			print_debug("ERROR", u"Cannot retrieve connections credentials '{error}'".format(error=e))
 
 		return repos_creds 
 

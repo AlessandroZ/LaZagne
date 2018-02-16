@@ -54,7 +54,7 @@ class RDPManager(ModuleInfo):
 				if values:
 					pwdFound.append(values)
 		except Exception, e:
-			print_debug('DEBUG', str(e))
+			print_debug('DEBUG', u'{error}'.format(e))
 
 		return pwdFound
 
@@ -66,7 +66,7 @@ class RDPManager(ModuleInfo):
 
 		for setting in settings:
 			if os.path.exists(setting):
-				print_debug('INFO', 'Setting file found: {setting}'.format(setting=setting))
+				print_debug('INFO', u'Setting file found: {setting}'.format(setting=setting))
 				
 				tree = ET.ElementTree(file=setting)
 				root = tree.getroot()
@@ -84,7 +84,7 @@ class RDPManager(ModuleInfo):
 				try:
 					for r in root.find('FilesToOpen'):
 						if os.path.exists(r.text):
-							print_debug('INFO', 'New setting file found: %s' % r.text)
+							print_debug('INFO', u'New setting file found: %s' % r.text)
 							pwdFound += self.parse_xml(r.text)
 				except:
 					pass

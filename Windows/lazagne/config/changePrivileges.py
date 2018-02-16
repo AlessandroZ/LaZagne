@@ -90,7 +90,7 @@ def ListSids():
             CloseHandle(hToken)
             CloseHandle(hProcess)
         except Exception as e:
-            print_debug('ERROR', str(e))
+            print_debug('ERROR', u'{error}'.format(error=e))
 
     return list(sids)
 
@@ -117,14 +117,14 @@ def getSidToken(token_sid):
                         if hToken:
                             OpenProcessToken(hProcess, tokenprivs, byref(hToken))
                             if hToken:
-                                print_debug('INFO', 'Using PID: ' + str(sid[0]))
+                                print_debug('INFO', u'Using PID: ' + str(sid[0]))
                                 CloseHandle(hProcess)
                                 return hToken
                     
                     # CloseHandle(hToken)
                     CloseHandle(hProcess)
                 except Exception, e :
-                    print_debug('ERROR', str(e))
+                    print_debug('ERROR', u'{error}'.format(error=e))
                     break
         return False
 
@@ -139,13 +139,13 @@ def getSidToken(token_sid):
                     if hToken:
                         if GetTokenSid( hToken ) == token_sid:
                             print
-                            print_debug('INFO', 'Using PID: ' + str(pid))
+                            print_debug('INFO', u'Using PID: ' + str(pid))
                             CloseHandle(hProcess)
                             return hToken
                     CloseHandle(hToken)
             CloseHandle(hProcess)
         except Exception, e :
-            print_debug('ERROR', str(e))
+            print_debug('ERROR', u'{error}'.format(error=e))
 
     return False
 
