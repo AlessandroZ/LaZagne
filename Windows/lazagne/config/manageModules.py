@@ -15,6 +15,7 @@ from lazagne.softwares.databases.dbvis import Dbvisualizer
 from lazagne.softwares.databases.squirrel import Squirrel
 from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
 from lazagne.softwares.databases.robomongo import Robomongo
+from lazagne.softwares.databases.postgresql import PostgreSQL
 
 # Games
 from lazagne.softwares.games.kalypsomedia import KalypsoMedia
@@ -106,6 +107,7 @@ def get_modules():
 		Squirrel(),
 		SQLDeveloper(),
 		Robomongo(),
+		PostgreSQL(),
 
 		# games
 		KalypsoMedia(),
