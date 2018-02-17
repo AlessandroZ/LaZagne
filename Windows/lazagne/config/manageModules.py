@@ -9,6 +9,7 @@ from lazagne.softwares.browsers.opera import Opera
 from lazagne.softwares.chats.jitsi import Jitsi
 from lazagne.softwares.chats.pidgin import Pidgin
 from lazagne.softwares.chats.skype import Skype
+from lazagne.softwares.chats.psi import PSI
 
 # Databases
 from lazagne.softwares.databases.dbvis import Dbvisualizer
@@ -101,6 +102,7 @@ def get_modules():
 		Jitsi(),
 		Pidgin(),
 		Skype(),
+		PSI(),
 
 		# Databases
 		Dbvisualizer(), 
