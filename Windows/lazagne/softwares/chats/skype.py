@@ -29,14 +29,14 @@ class Skype(ModuleInfo):
 			try:
 				hkey = OpenKey(HKEY_CURRENT_USER, keyPath)
 			except Exception, e:
-				print_debug('DEBUG', u'{0}'.format(e))
+				print_debug('DEBUG', str(e))
 				return False
 			
 			num = _winreg.QueryInfoKey(hkey)[1]
 			k = _winreg.EnumValue(hkey, 0)[1]
 			return Win32CryptUnprotectData(k)
 		except Exception,e:
-			print_debug('DEBUG', u'{0}'.format(e))
+			print_debug('DEBUG', str(e))
 			return False
 			
 	# get hash from lazagne.configuration file
@@ -79,7 +79,7 @@ class Skype(ModuleInfo):
 			try:
 				dicFile = open (dictionary_path, 'r')
 			except Exception,e:
-				print_debug('DEBUG', u'{0}'.format(e))
+				print_debug('DEBUG', str(e))
 				print_debug('ERROR', u'Unable to open passwords file: %s' % str(dictionary_path))
 				return []
 			
@@ -136,7 +136,7 @@ class Skype(ModuleInfo):
 
 					self.pwdFound.append(values)
 			except Exception,e:
-				print_debug('DEBUG', u'{0}'.format(e))
+				print_debug('DEBUG', str(e))
 
 	def run(self, software_name=None):
 		path = os.path.join(constant.profile['APPDATA'], u'\Skype')

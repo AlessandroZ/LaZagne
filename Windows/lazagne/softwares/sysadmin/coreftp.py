@@ -26,8 +26,8 @@ class CoreFTP(ModuleInfo):
 		try:
 			key = OpenKey(HKEY_CURRENT_USER, 'Software\\FTPware\\CoreFTP\\Sites')
 		except Exception,e:
-			print_debug('DEBUG', u'{0}'.format(e))
-		
+			print_debug('DEBUG', str(e))
+
 		if key:	
 			num_profiles = _winreg.QueryInfoKey(key)[0]
 			for n in range(num_profiles):
@@ -48,7 +48,7 @@ class CoreFTP(ModuleInfo):
 						try:
 							values['Password'] = self.decrypt(k[1])
 						except Exception,e:
-							print_debug('DEBUG', u'{0}'.format(e))
+							print_debug('DEBUG', str(e))
 							values['Password'] = 'N/A'
 
 				_winreg.CloseKey(skey)
