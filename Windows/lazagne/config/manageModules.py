@@ -9,12 +9,14 @@ from lazagne.softwares.browsers.opera import Opera
 from lazagne.softwares.chats.jitsi import Jitsi
 from lazagne.softwares.chats.pidgin import Pidgin
 from lazagne.softwares.chats.skype import Skype
+from lazagne.softwares.chats.psi import PSI
 
 # Databases
 from lazagne.softwares.databases.dbvis import Dbvisualizer
 from lazagne.softwares.databases.squirrel import Squirrel
 from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
 from lazagne.softwares.databases.robomongo import Robomongo
+from lazagne.softwares.databases.postgresql import PostgreSQL
 
 # Games
 from lazagne.softwares.games.kalypsomedia import KalypsoMedia
@@ -100,12 +102,14 @@ def get_modules():
 		Jitsi(),
 		Pidgin(),
 		Skype(),
+		PSI(),
 
 		# Databases
 		Dbvisualizer(), 
 		Squirrel(),
 		SQLDeveloper(),
 		Robomongo(),
+		PostgreSQL(),
 
 		# games
 		KalypsoMedia(),
