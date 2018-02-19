@@ -35,7 +35,7 @@ class WinSCP(ModuleInfo):
 			key = OpenKey(HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Configuration\Security')
 			return key
 		except Exception,e:
-			print_debug('DEBUG', u'{0}'.format(e))
+			print_debug('DEBUG', str(e))
 			return False
 	
 	def check_masterPassword(self, key):
@@ -50,7 +50,7 @@ class WinSCP(ModuleInfo):
 		try:
 			key = OpenKey(HKEY_CURRENT_USER, 'Software\Martin Prikryl\WinSCP 2\Sessions')
 		except Exception,e:
-			print_debug('DEBUG', u'{0}'.format(e))
+			print_debug('DEBUG', str(e))
 			return False
 		
 		pwdFound = []
@@ -86,7 +86,7 @@ class WinSCP(ModuleInfo):
 					password = self.decrypt_password()
 					values['Password'] = password
 				except Exception,e:
-					print_debug('DEBUG', u'{0}'.format(e))
+					print_debug('DEBUG', str(e))
 				
 				values['URL'] 	= self.hostname
 				values['Port'] 	= port
@@ -118,7 +118,7 @@ class WinSCP(ModuleInfo):
 			try:
 				result += chr(int(self.decrypt_char()))
 			except Exception,e:
-				print_debug('DEBUG', u'{0}'.format(e))
+				print_debug('DEBUG', str(e))
 				pass
 		
 		if flag == hex_flag:

@@ -41,7 +41,7 @@ class Autologon(ModuleInfo):
 					pwdFound.append(keys)
   
 		except Exception,e:
-			print_debug('DEBUG', u'{0}'.format(e))
+			print_debug('DEBUG', str(e))
 			return
 
 		return pwdFound

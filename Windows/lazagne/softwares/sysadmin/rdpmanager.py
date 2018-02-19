@@ -54,7 +54,7 @@ class RDPManager(ModuleInfo):
 				if values:
 					pwdFound.append(values)
 		except Exception, e:
-			print_debug('DEBUG', u'{error}'.format(e))
+			print_debug('DEBUG', str(e))
 
 		return pwdFound
 

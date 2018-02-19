@@ -25,7 +25,7 @@ class IE(ModuleInfo):
 				h = (urls[u] + '\0').encode('UTF-16LE')
 				hash_tables.append([h, hashlib.sha1(h).hexdigest().lower()])
 			except Exception,e:
-				print_debug('DEBUG', u'{0}'.format(e))
+				print_debug('DEBUG', str(e))
 		return hash_tables
 
 	def get_history(self):
@@ -33,7 +33,7 @@ class IE(ModuleInfo):
 		try:
 			urls = urls + self.history_from_powershell()
 		except Exception, e:
-			print_debug('DEBUG', u'{0}'.format(e))
+			print_debug('DEBUG', str(e))
 			print_debug('ERROR', u'Browser history failed to load, only few url will be tried')
 		
 		urls = urls + ['https://www.facebook.com/', 'https://www.gmail.com/', 'https://accounts.google.com/', 'https://accounts.google.com/servicelogin']
@@ -92,7 +92,7 @@ class IE(ModuleInfo):
 		try:
 			hkey = OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\TypedURLs')
 		except Exception,e:
-			print_debug('DEBUG', u'{0}'.format(e))
+			print_debug('DEBUG', str(e))
 			return []
 		
 		num = _winreg.QueryInfoKey(hkey)[1]
@@ -140,7 +140,7 @@ class IE(ModuleInfo):
 				else:
 					password = secret[length - s]
 			except Exception,e:
-				print_debug('DEBUG', u'{0}'.format(e))
+				print_debug('DEBUG', str(e))
 
 		return pfound
 	
@@ -154,7 +154,7 @@ class IE(ModuleInfo):
 		try:
 			hkey = OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2')
 		except Exception,e:
-			print_debug('DEBUG', u'{0}'.format(e))
+			print_debug('DEBUG', str(e))
 			failed = True
 		
 		if failed == False:
