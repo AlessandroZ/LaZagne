@@ -328,26 +328,30 @@ CryptUnprotectData 				= crypt32.CryptUnprotectData
 CryptUnprotectData.restype 		= BOOL
 CryptUnprotectData.argtypes		= [POINTER(DATA_BLOB), POINTER(LPWSTR), POINTER(DATA_BLOB), PVOID, PCRYPTPROTECT_PROMPTSTRUCT, DWORD, POINTER(DATA_BLOB)]
 
-prototype 						= WINFUNCTYPE(ULONG, DWORD, LPDWORD, POINTER(LPGUID))
-vaultEnumerateVaults 			= prototype(("VaultEnumerateVaults", windll.vaultcli))
+# these functions do not exist on XP workstations
+try:
+	prototype 						= WINFUNCTYPE(ULONG, DWORD, LPDWORD, POINTER(LPGUID))
+	vaultEnumerateVaults 			= prototype(("VaultEnumerateVaults", windll.vaultcli))
 
-prototype 						= WINFUNCTYPE(ULONG, LPGUID, DWORD, HANDLE)
-vaultOpenVault 					= prototype(("VaultOpenVault", windll.vaultcli))
+	prototype 						= WINFUNCTYPE(ULONG, LPGUID, DWORD, HANDLE)
+	vaultOpenVault 					= prototype(("VaultOpenVault", windll.vaultcli))
 
-prototype 						= WINFUNCTYPE(ULONG, HANDLE, DWORD, LPDWORD, POINTER(c_char_p))
-vaultEnumerateItems 			= prototype(("VaultEnumerateItems", windll.vaultcli))
+	prototype 						= WINFUNCTYPE(ULONG, HANDLE, DWORD, LPDWORD, POINTER(c_char_p))
+	vaultEnumerateItems 			= prototype(("VaultEnumerateItems", windll.vaultcli))
 
-prototype 						= WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN8))
-vaultGetItem8 					= prototype(("VaultGetItem", windll.vaultcli))
+	prototype 						= WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN8))
+	vaultGetItem8 					= prototype(("VaultGetItem", windll.vaultcli))
 
-# prototype = WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN7))
-# vaultGetItem7 = prototype(("VaultGetItem", windll.vaultcli))
+	# prototype = WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN7))
+	# vaultGetItem7 = prototype(("VaultGetItem", windll.vaultcli))
 
-prototype 						= WINFUNCTYPE(ULONG, LPVOID)
-vaultFree 						= prototype(("VaultFree", windll.vaultcli))
+	prototype 						= WINFUNCTYPE(ULONG, LPVOID)
+	vaultFree 						= prototype(("VaultFree", windll.vaultcli))
 
-prototype 						= WINFUNCTYPE(ULONG, PHANDLE)
-vaultCloseVault 				= prototype(("VaultCloseVault", windll.vaultcli))
+	prototype 						= WINFUNCTYPE(ULONG, PHANDLE)
+	vaultCloseVault 				= prototype(("VaultCloseVault", windll.vaultcli))
+except:
+	pass
 
 ############################## Custom functions ##############################
 

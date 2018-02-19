@@ -41,7 +41,7 @@ class Opera(ModuleInfo):
 					conn 	= sqlite3.connect(database_path)
 					cursor  = conn.cursor()
 				except Exception,e:
-					print_debug('DEBUG', u'{0}'.format(e))
+					print_debug('DEBUG', str(e))
 					print_debug('ERROR', u'An error occured opening the database file')
 					continue 
 

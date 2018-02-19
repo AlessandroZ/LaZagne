@@ -54,7 +54,7 @@ class Vault(ModuleInfo):
 										pwdFound.append(values)
 
 									except Exception, e:
-										print_debug('DEBUG', u'{error}'.format(e))
+										print_debug('DEBUG', str(e))
 
 									if pItem8:
 										vaultFree(pItem8)
