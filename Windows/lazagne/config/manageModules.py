@@ -147,6 +147,7 @@ def get_modules():
 		OpenSSHForWindows(),
 		RDPManager(),
 		Unattended(),
+		VNC(),
 		WinSCP(),
 
 		# Wifi
@@ -159,7 +160,6 @@ def get_modules():
 		Hashdump(),
 		LSASecrets(), 
 		Vault(),
-		VNC(),
 		WindowsPassword(),
 		CredFiles(),		 	# should be executed at last
 	]
