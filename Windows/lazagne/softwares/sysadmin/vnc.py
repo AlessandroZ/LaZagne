@@ -56,7 +56,6 @@ class VNC(ModuleInfo):
 
 	def vnc_from_registry(self):
 		pfound = []
-		#print_debug('INFO','Hola')
 		vncs = []
 		vncs += [['RealVNC 4.x','HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\RealVNC\\WinVNC4','Password']]
 		vncs += [['RealVNC 3.x','HKEY_LOCAL_MACHINE\\SOFTWARE\\RealVNC\\vncserver','Password']]
@@ -91,14 +90,14 @@ class VNC(ModuleInfo):
 	def vnc_from_filesystem(self):
 		pfound = []
 		vncs = []
-		vncs += [['UltraVNC','C:\Program Files (x86)\uvnc bvba\UltraVNC\ultravnc.ini','passwd']]
-		vncs += [['UltraVNC','C:\Program Files (x86)\uvnc bvba\UltraVNC\ultravnc.ini','passwd2']]
-		vncs += [['UltraVNC','C:\Program Files\uvnc bvba\UltraVNC\ultravnc.ini','passwd']]
-		vncs += [['UltraVNC','C:\Program Files\uvnc bvba\UltraVNC\ultravnc.ini','passwd2']]
-		vncs += [['UltraVNC','C:\Program Files\UltraVNC\ultravnc.ini','passwd']]
-		vncs += [['UltraVNC','C:\Program Files\UltraVNC\ultravnc.ini','passwd2']]
-		vncs += [['UltraVNC','C:\Program Files (x86)\UltraVNC\ultravnc.ini','passwd']]
-		vncs += [['UltraVNC','C:\Program Files (x86)\UltraVNC\ultravnc.ini','passwd2']]
+		vncs += [['UltraVNC',os.environ['ProgramFiles(x86)']+'\uvnc bvba\UltraVNC\ultravnc.ini','passwd']]
+		vncs += [['UltraVNC',os.environ['ProgramFiles(x86)']+'\uvnc bvba\UltraVNC\ultravnc.ini','passwd2']]
+		vncs += [['UltraVNC',os.environ['PROGRAMFILES']+'\uvnc bvba\UltraVNC\ultravnc.ini','passwd']]
+		vncs += [['UltraVNC',os.environ['PROGRAMFILES']+'\uvnc bvba\UltraVNC\ultravnc.ini','passwd2']]
+		vncs += [['UltraVNC',os.environ['PROGRAMFILES']+'\UltraVNC\ultravnc.ini','passwd']]
+		vncs += [['UltraVNC',os.environ['PROGRAMFILES']+'\UltraVNC\ultravnc.ini','passwd2']]
+		vncs += [['UltraVNC',os.environ['ProgramFiles(x86)']+'\UltraVNC\ultravnc.ini','passwd']]
+		vncs += [['UltraVNC',os.environ['ProgramFiles(x86)']+'\UltraVNC\ultravnc.ini','passwd2']]
 		
 		for vnc in vncs:
 			stringToMatch = vnc[2]+'='
