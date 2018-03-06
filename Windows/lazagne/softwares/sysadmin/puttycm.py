@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.constant import *
-from lazagne.config.WinStructure import *
+from lazagne.config.winstructure import *
 import xml.etree.cElementTree as ET
 import _winreg
 import os

@@ -1,6 +1,6 @@
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-from lazagne.config.WinStructure import *
+from lazagne.config.winstructure import *
 from lazagne.config.constant import *
 import subprocess
 import _subprocess as sub

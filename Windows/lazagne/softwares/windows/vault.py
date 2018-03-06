@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-from lazagne.config.WinStructure import *
+from lazagne.config.winstructure import *
 from lazagne.config.constant import *
 from lazagne.config.dpapi_structure import *
 from ctypes.wintypes import *

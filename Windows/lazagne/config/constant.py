@@ -12,17 +12,13 @@ class constant():
 	folder_name 			= '.'
 	file_name_results 		= 'credentials_{current_time}'.format(current_time=date) # the extention is added depending on the user output choice
 	MAX_HELP_POSITION		= 27
-	CURRENT_VERSION 		= '2.3.3'
+	CURRENT_VERSION 		= '2.3.2'
 	output 					= None
 	file_logger 			= None
 	
 	# jitsi options
 	jitsi_masterpass 		= None
 
-	# mozilla options
-	path 					= None
-	bruteforce 				= None
-	
 	# ie options
 	ie_historic 			= None
 	
@@ -46,10 +42,10 @@ class constant():
 								'security'	: 	os.path.join(tmp, ''.join([random.choice(string.ascii_lowercase) for x in range(0, random.randint(6, 12))])),
 								'system'	: 	os.path.join(tmp, ''.join([random.choice(string.ascii_lowercase) for x in range(0, random.randint(6, 12))]))
 							}
-	checkUnattended 		= False
 	quiet_mode 				= False
 	st 						= None  	# standart output
 	drive					= u'C'
 	dpapi 					= None
 	dpapi_hash				= None
 	user_password 			= None
+	module_to_exec_at_end	= []

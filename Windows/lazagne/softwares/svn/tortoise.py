@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*- 
 from lazagne.config.moduleInfo import ModuleInfo
-from lazagne.config.WinStructure import *
+from lazagne.config.winstructure import *
 from lazagne.config.constant import *
 import base64
 import os 

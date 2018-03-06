@@ -159,6 +159,6 @@ def get_modules():
 		LSASecrets(), 
 		Vault(),
 		WindowsPassword(),
-		CredFiles(),		 	# should be executed at last
+		CredFiles(),
 	]
 	return moduleNames
