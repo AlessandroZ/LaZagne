@@ -1,7 +1,10 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*- 
-from lazagne.config.dpapi.preferred import display_masterkey
-from lazagne.config.dpapi.creddec import decrypt_user_cred
-from lazagne.config.dpapi.DPAPI.Core import masterkey
+
+from lazagne.config.DPAPI.masterkey import *
+from lazagne.config.DPAPI.credfile import *
+# from lazagne.config.DPAPI.vault import *
+
 from lazagne.config.write_output import print_debug
 from lazagne.config.constant import *
 import traceback
@@ -9,96 +12,88 @@ import os
 
 class Decrypt_DPAPI():
 	def __init__(self, password=None, pwdhash=None):
-		self.sid 					= None
-		self.preferred_umkp 		= None
-		self.dpapi_ok 				= False
-		self.umkp 					= None
-		self.smkp 					= None
-		self.last_masterkey_file	= None
-		adding_missing_path 		= ''
+		self.sid 				= None
+		self.umkp 				= None
+		self.smkp 				= None
+		adding_missing_path 	= u''
 		
-		# -------------------------- User Information --------------------------
+		# User Information
 
-		protect_folder = os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Protect')
+		protect_folder 	= os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Protect')
+		credhist_file 	= os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Protect', u'CREDHIST')
+		
 		if os.path.exists(protect_folder):
 			for folder in os.listdir(protect_folder):
 				if folder.startswith('S-'):
 					self.sid = folder
-
-			masterkeydir 	= os.path.join(protect_folder, self.sid)
-			if os.path.exists(masterkeydir):
-				# user master key pool
-				self.umkp = masterkey.MasterKeyPool()
-				
-				# load all master key files (not only the one contained on preferred)
-				self.umkp.loadDirectory(masterkeydir)
-
-				preferred_file = os.path.join(masterkeydir, 'Preferred')
-				if os.path.exists(preferred_file):
-					preferred_mk_guid 	= display_masterkey(open(preferred_file, 'rb'))
+					break
+			
+			if self.sid:
+				masterkeydir = os.path.join(protect_folder, self.sid)
+				if os.path.exists(masterkeydir):
+					self.umkp = MasterKeyPool()
+					self.umkp.load_directory(masterkeydir)
+					self.umkp.add_credhist_file(sid=self.sid, credfile=credhist_file)
 					
-					# Preferred file contains the GUID of the last mastekey created
-					self.last_masterkey_file	= os.path.join(masterkeydir, preferred_mk_guid)
-					
-					# Be sure the preferred mk guid exists, otherwise take the one which have a similar name (sometimes an error occured retreiving the guid)
-					if not os.path.exists(self.last_masterkey_file):
-						for folder in os.listdir(masterkeydir):
-							if folder.startswith(preferred_mk_guid[:6]):
-								self.last_masterkey_file = os.path.join(masterkeydir, folder)
+					if password:
+						for r in self.umkp.try_credential(sid=self.sid, password=password):
+							print_debug('INFO', r)
 
-					if os.path.exists(self.last_masterkey_file):
-						print_debug('DEBUG', u'Last masterkey created: {masterkefile}'.format(masterkefile=self.last_masterkey_file))
-						self.preferred_umkp = masterkey.MasterKeyPool()
-						self.preferred_umkp.addMasterKey(open(self.last_masterkey_file, 'rb').read())
-
-				credhist_path 	= os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Protect', u'CREDHIST')
-				credhist		= credhist_path if os.path.exists(credhist_path) else None
-				
-				if credhist:
-					self.umkp.addCredhistFile(self.sid, credhist)
-				
-				if password:
-					if self.try_credential(password):
-						self.dpapi_ok = True
-					else:
-						print_debug('DEBUG', u'Password not correct: {password}'.format(password=password))
-
-	def try_credential(self, password):
-		try:
-			return self.umkp.try_credential(self.sid, password)
-		except:
-			return False
+					elif pwdhash:
+						for r in self.umkp.try_credential_hash(self.sid, pwdhash=pwdhash.decode('hex')):
+							print_debug('INFO', r)
 
 	def check_credentials(self, passwords):
-		# the password is tested if possible only on the last masterkey file created by the system (visible on the preferred file) to avoid false positive
-		# if tested on all masterkey files, it could retrieve a password without to be able to decrypt a blob (happenned on my host :))
-		# mk = self.preferred_umkp if self.preferred_umkp is not None else self.umkp
-		if self.preferred_umkp:
-			self.umkp = self.preferred_umkp
-
 		if self.umkp:
 			for password in passwords:
-				print_debug('INFO', u'Check password: {password}'.format(password=password))
-				if self.try_credential(password):
-					print_debug('INFO', u'User password found: {password}\n'.format(password=password))
-					self.dpapi_ok = True
-					return password
+				for r in self.umkp.try_credential(sid=self.sid, password=password):
+					print_debug('INFO', r)
 
-		return False
-
-	def decrypt_cred(self, cred_file):
-		if self.dpapi_ok:
-			ok, msg = decrypt_user_cred(umkp=self.umkp, cred_file=cred_file)
-			if ok: 
-				return msg
-			else:
-				print_debug('DEBUG', u'{msg}'.format(msg=msg))
+	def manage_response(self, ok, msg):
+		if ok:
+			return msg
 		else:
-			print_debug('INFO', u'Passwords have not been retrieved. User password seems to be wrong ')
-		
-		return False
+			print_debug('DEBUG', u'{msg}'.format(msg=msg))
+			return False
 
-	def get_DPAPI_hash(self, context='local'):
+	def decrypt_blob(self, dpapi_blob):
+		"""
+		Decrypt DPAPI Blob
+		"""
 		if self.umkp:
-			self.umkp.get_john_hash(masterkeyfile=self.last_masterkey_file, sid=self.sid, context=context)
+			blob  	= DPAPIBlob(dpapi_blob)
+			ok, msg = blob.decrypt_encrypted_blob(mkp=self.umkp)
+			return self.manage_response(ok, msg)
+		
+	def decrypt_cred(self, credfile):
+		""" 
+		Decrypt Credential Files
+		"""
+		if self.umkp:
+			c = CredFile(credfile)
+			ok, msg = c.decrypt(self.umkp)
+			return self.manage_response(ok, msg)
+		
+	def decrypt_vault(self, vaults_dir):
+		""" 
+		Decrypt Vault Files
+		"""
+		if self.umkp:
+			v = Vault(vaults_dir=vaults_dir)
+			ok, msg = v.decrypt(mkp=self.umkp)
+			return self.manage_response(ok, msg)
 
+	def get_dpapi_hash(self, context='local'):
+		"""
+		Retrieve DPAPI hash to bruteforce it using john or hashcat.
+		"""
+		if self.umkp:
+			return self.umkp.get_dpapi_hash(sid=self.sid)
+
+	def get_cleartext_password(self):
+		"""
+		Retrieve cleartext password associated to the preferred user maskterkey. 
+		This password should represent the windows user password. 
+		"""
+		if self.umkp:
+			return self.umkp.get_cleartext_password()

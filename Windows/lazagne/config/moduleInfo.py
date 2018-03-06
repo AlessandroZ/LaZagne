@@ -12,7 +12,7 @@
 #		options['help'] = 'skype'
 
 class ModuleInfo():
-	def __init__(self, name, category, options={}, suboptions=[], registry_used=False, dpapi_used=False , system_module=False):
+	def __init__(self, name, category, options={}, suboptions=[], registry_used=False, dpapi_used=False , system_module=False, exec_at_end=False):
 		self.name 			= name
 		self.category 		= category		
 		self.options  	 	= {
@@ -25,3 +25,4 @@ class ModuleInfo():
 		self.registry_used 	= registry_used
 		self.system_module 	= system_module
 		self.dpapi_used 	= dpapi_used
+		self.exec_at_end 	= exec_at_end

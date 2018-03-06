@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-from lazagne.config.WinStructure import *
+from lazagne.config.winstructure import *
 import _winreg
 
 # Password are stored in cleartext on old system (< 2008 R2 and < Win7)

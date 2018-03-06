@@ -15,6 +15,7 @@ from lazagne.softwares.browsers.mozilla import Mozilla
 from lazagne.config.write_output import parseJsonResultToBuffer, print_debug, StandartOutput
 from lazagne.config.changePrivileges import ListSids, rev2self, impersonate_sid_long_handle
 from lazagne.config.manageModules import get_categories, get_modules
+from lazagne.config.dpapi_structure import *
 from lazagne.config.constant import *
 import traceback
 import argparse
@@ -91,6 +92,20 @@ def verbosity():
 	root.addHandler(stream)
 	del args['verbose']
 
+def run_module(title, module):
+	try:
+		constant.st.title_info(title.capitalize()) 					# print title
+		pwdFound = module.run(title.capitalize())					# run the module
+		constant.st.print_output(title.capitalize(), pwdFound) 		# print the results
+		
+		# Return value - not used but needed
+		yield True, title.capitalize(), pwdFound
+	except:
+		traceback.print_exc()
+		print
+		error_message = traceback.format_exc()
+		yield False, title.capitalize(), error_message
+
 def launch_module(module, dpapi_used=True, registry_used=True, system_module=False):
 	modulesToLaunch = []
 	try:
@@ -117,27 +132,21 @@ def launch_module(module, dpapi_used=True, registry_used=True, system_module=Fal
 		if system_module ^ module[i].system_module:
 			continue
 
-		try:
-			constant.st.title_info(i.capitalize()) 					# print title
-			pwdFound = module[i].run(i.capitalize())				# run the module
-			constant.st.print_output(i.capitalize(), pwdFound) 		# print the results
-			
-			# return value - not used but needed 
-			yield True, i.capitalize(), pwdFound
-		except:
-			traceback.print_exc()
-			print
-			error_message = traceback.format_exc()
-			yield False, i.capitalize(), error_message
+		if module[i].exec_at_end:
+			constant.module_to_exec_at_end.append(
+				{
+					'title'		: i,
+					'module' 	: module[i],
+				}
+			)
+			continue
+
+		# run module
+		for m in run_module(title=i, module=module[i]):
+			yield m
+
 
 def manage_advanced_options():
-	# File used for dictionary attacks
-	if 'path' in args:
-		constant.path = args['path']
-	
-	if 'bruteforce' in args: 
-		constant.bruteforce = args['bruteforce']
-
 	# Jitsi advanced options
 	if 'master_pwd' in args:
 		constant.jitsi_masterpass = args['master_pwd']
@@ -151,10 +160,23 @@ def manage_advanced_options():
 
 # Run only one module
 def runModule(category_choosed, dpapi_used=True, registry_used=True, system_module=False):
+	constant.module_to_exec_at_end = []
+
 	categories = [category_choosed] if category_choosed != 'all' else get_categories()
 	for category in categories:
 		for r in launch_module(modules[category], dpapi_used, registry_used, system_module):
 			yield r
+
+	if constant.module_to_exec_at_end:
+		# these modules will need the windows user password to be able to decrypt dpapi blobs
+		constant.dpapi = Decrypt_DPAPI(password=constant.user_password)
+		# add username to check username equals passwords
+		constant.passwordFound.append(constant.username)
+		constant.dpapi.check_credentials(constant.passwordFound)
+
+		for module in constant.module_to_exec_at_end:
+			for m in run_module(title=module['title'], module=module['module']):
+				yield m
 
 # Write output to file (json and txt files)
 def write_in_file(result):
@@ -247,7 +269,7 @@ def runLaZagne(category_choosed='all', password=None):
 
 	constant.username = getpass.getuser()
 	if not constant.username.endswith('$'):
-		constant.finalResults = {'User': constant.username}
+		constant.finalResults 	= {'User': constant.username}
 		print_user(constant.username)
 		yield 'User', constant.username
 		
@@ -338,8 +360,6 @@ if __name__ == '__main__':
 	PPoptional._optionals.title = 'optional arguments'
 	PPoptional.add_argument('-v', 		dest='verbose', 	action='count', 		default=0, 		help='increase verbosity level')
 	PPoptional.add_argument('-quiet', 	dest='quiet', 		action='store_true', 	default=False, 	help='quiet mode: nothing is printed to the output')
-	PPoptional.add_argument('-path', 	dest='path', 		action='store', 		default=False, 	help='path of a file used for dictionary file')
-	PPoptional.add_argument('-b', 		dest='bruteforce', 	action='store', 		default=False, 	help='number of character to brute force')
 
 	# Output 
 	PWrite = argparse.ArgumentParser(add_help=False, formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
@@ -352,7 +372,7 @@ if __name__ == '__main__':
 	# Windows user password 
 	PPwd = argparse.ArgumentParser(add_help=False, formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 	PPwd._optionals.title = 'Windows User Password'
-	PPwd.add_argument('-password', dest='password', action='store', help='Windows user password (used to decrypt credentials files)')
+	PPwd.add_argument('-password', dest='password', action='store', help='Windows user password (used to decrypt creds files)')
 	
 	# ------------------------------------------- Add options and suboptions to all modules -------------------------------------------
 	all_subparser 	= []
