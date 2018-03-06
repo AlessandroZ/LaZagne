@@ -18,11 +18,7 @@ class Unattended(ModuleInfo):
 			return message
 
 	def run(self, software_name=None):		
-		# realise that check only once 
-		if constant.checkUnattended:
-			return 
 
-		constant.checkUnattended = True
 		windir 	= os.path.join(constant.profile['HOMEDRIVE'], unicode(os.sep), u'Windows')
 		files 	= [
 			'Panther\Unattend.xml',

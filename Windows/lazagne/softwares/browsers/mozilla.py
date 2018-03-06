@@ -79,18 +79,11 @@ class SqliteDatabase(Credentials):
 
 
 class Mozilla(ModuleInfo):
-	# b = brute force attack
-	# d = default list
-	# a = dictionary attack
 
 	def __init__(self, isThunderbird=False):
 		
-		# Default attack
-		self.toCheck 				= ['b', 'd'] if not constant.path else ['a']
-		self.dictionary_path 		= constant.path
-		self.number_toStop 			= 3 if not constant.bruteforce else int(constant.bruteforce) + 1
-		self.key3 					= ''
-		name 						= 'thunderbird' if isThunderbird else 'firefox'
+		self.key3 	= ''
+		name 		= 'thunderbird' if isThunderbird else 'firefox'
 		
 		ModuleInfo.__init__(self, name=name, category='browsers')
 
@@ -280,64 +273,17 @@ class Mozilla(ModuleInfo):
 	# Retrieve masterpassword
 	def found_masterpassword(self):
 		
-		# Dictionary attack
-		if 'a' in self.toCheck:
-			try:
-				pass_file = open(self.dictionary_path, 'r')
-				num_lines = sum(1 for line in pass_file)
-			except:
-				print_debug('ERROR', u'Unable to open passwords file: {file_path}'.format(file_path=str(self.dictionary_path)))
-				return False
-			pass_file.close()
-			
-			print_debug('ATTACK', u'Dictionary Attack !!! ({nb_lines} words)'.format(nb_lines=num_lines))
-			try:
-				with open(self.dictionary_path) as f:
-					for p in f:
-						if self.is_masterpassword_correct(p.strip())[0]:
-							print_debug('FIND', u'Master password found: %s' % p.strip())
-							return p.strip()
-			
-			except (KeyboardInterrupt, SystemExit):
-				print 'INTERRUPTED!'
-				print_debug('DEBUG', u'Dictionary attack interrupted')
-			except Exception,e:
-				print_debug('DEBUG', u'{exception}'.format(exception=e))
-
-			print_debug('WARNING', u'The Master password has not been found using the dictionary attack')
-		
 		# 500 most used passwords
-		if 'd' in self.toCheck:
-			wordlist = get_dico() + constant.passwordFound
-			num_lines = (len(wordlist)-1)
-			print_debug('ATTACK', u'%d most used passwords !!! ' % num_lines)
+		wordlist = get_dico() + constant.passwordFound
+		num_lines = (len(wordlist)-1)
+		print_debug('ATTACK', u'%d most used passwords !!! ' % num_lines)
 
-			for word in wordlist:
-				if self.is_masterpassword_correct(word)[0]:
-					print_debug('FIND', u'Master password found: {master_password}'.format(master_password=word.strip()))
-					return word
-				
-			print_debug('WARNING', u'No password has been found using the default list')
-		
-		# Brute force attack
-		if 'b' in self.toCheck or constant.bruteforce:
-			charset_list = 'abcdefghijklmnopqrstuvwxyz1234567890!?'
-			print_debug('ATTACK', u'Brute force attack !!! ({nb_characters} characters)'.format(nb_characters=str(constant.bruteforce)))
-			print_debug('DEBUG', u'charset: {charset}'.format(charset=charset_list))
-
-			try:
-				for length in range(1, int(self.number_toStop)):
-					words = product(charset_list, repeat=length)
-					for word in words:
-						print_debug('DEBUG', u'{word}'.format(word=word))
-						if self.is_masterpassword_correct(''.join(word))[0]:
-							print_debug('FIND', u'Master password found: {master_password}'.format(master_password=word.strip()))
-							return word.strip()
-			except (KeyboardInterrupt, SystemExit):
-				print 'INTERRUPTED!'
-				print_debug('INFO', u'Dictionary attack interrupted')
-
-			print_debug('WARNING', u'No password has been found using the brute force attack')
+		for word in wordlist:
+			if self.is_masterpassword_correct(word)[0]:
+				print_debug('FIND', u'Master password found: {master_password}'.format(master_password=word.strip()))
+				return word
+			
+		print_debug('WARNING', u'No password has been found using the default list')
 		return False
 
 	def get_database(self, profile):

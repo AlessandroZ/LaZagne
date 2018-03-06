@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*- 
 from lazagne.config.moduleInfo import ModuleInfo
-from lazagne.config.WinStructure import *
+from lazagne.config.winstructure import *
 
 class Credman(ModuleInfo):
 	def __init__(self):

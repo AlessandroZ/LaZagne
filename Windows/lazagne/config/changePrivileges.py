@@ -1,6 +1,6 @@
 #original code from https://github.com/joren485/PyWinPrivEsc/blob/master/RunAsSystem.py
 from lazagne.config.write_output import print_debug
-from lazagne.config.WinStructure import *
+from lazagne.config.winstructure import *
 import psutil
 import os
 

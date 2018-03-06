@@ -6,7 +6,7 @@ import os
 
 class FtpNavigator(ModuleInfo):
 	def __init__(self):
-		ModuleInfo.__init__(self, 'ftpnavigator', 'sysadmin')
+		ModuleInfo.__init__(self, 'ftpnavigator', 'sysadmin', system_module=True)
 
 	def decode(self, encode_password):
 		password = ''
