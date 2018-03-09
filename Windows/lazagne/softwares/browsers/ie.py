@@ -108,13 +108,14 @@ class IE(ModuleInfo):
 		# deciper the password
 		pwd = Win32CryptUnprotectData(cipher_text, u)
 		if pwd:
+			a = ''
 			for i in range(len(pwd)):
 				try:
 					a = pwd[i:].decode('UTF-16LE')
 					a = a.decode('utf-8')
 					break
 				except Exception, e:
-					result = ''
+					return []
 		
 		# the last one is always equal to 0
 		secret = a.split('\x00')
