@@ -35,7 +35,7 @@ class Filezilla(ModuleInfo):
 									}
 
 						if password is not None:
-							if password.attrib['encoding'] == 'base64':
+							if 'encoding' in password.attrib and password.attrib['encoding'] == 'base64':
 								values['Password'] = base64.b64decode(password.text)
 							else:
 								values['Password'] = password.text
