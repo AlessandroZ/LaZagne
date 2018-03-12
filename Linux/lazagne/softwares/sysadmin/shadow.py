@@ -1,50 +1,22 @@
-import os,sys
-import crypt
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.dico import get_dico
 from lazagne.config.constant import *
 from itertools import product
+import crypt
+import sys
+import os
 
 class Shadow(ModuleInfo): 
 
 	def __init__(self):
-		# Manage options
-		options = {'command': '-s', 'action': 'store_true', 'dest': 'shadow', 'help': '/etc/shadow - Need root Privileges'}
-		ModuleInfo.__init__(self, 'shadow', 'sysadmin', options)	
+		ModuleInfo.__init__(self, 'shadow', 'sysadmin')	
 
-		self.filestr = '/etc/shadow'
-		self.hash = '\n'
-		self.pwdFound = []
-
-	# used for dictionary attack, if user specify a specific file
-	def get_dic(self, dictionary_path):
-		words = []
-		if dictionary_path:
-			try:
-				dicFile = open (dictionary_path,'r')
-			except Exception,e:
-				print_debug('DEBUG', '{0}'.format(e))
-				print_debug('ERROR', 'Unable to open passwords file: %s' % str(self.dictionary_path))
-				return []
-
-			for word in dicFile.readlines():
-				words.append(word.strip('\n'))
-			dicFile.close()
-		return words
-
-	def attack(self, user, cryptPwd):
-		# By default 500 most famous passwords are used for the dictionary attack 
-		dic = get_dico()
-		# add the user on the list to found weak password (login equal password)
-		dic.insert(0, user)
-
-		# file for dictionary attack entered 
-		if constant.path:
-			if os.path.exists(constant.path):
-				dic = self.get_dic(constant.path)
-			else:
-				print_debug('WARNING', 'The file does not exist: %s' %  str(constant.path))
+	def dictionary_attack(self, user, cryptPwd):
+		dic = get_dico() 	# By default 500 most famous passwords are used for the dictionary attack 
+		dic.insert(0, user) # Add the user on the list to found weak password (login equal password)
 		
 		# Different possible hash type	
 		# ID  | Method
@@ -54,20 +26,21 @@ class Shadow(ModuleInfo):
 		# 5   | SHA-256 (since glibc 2.7)
 		# 6   | SHA-512 (since glibc 2.7)
 		
-		hashType = cryptPwd.split("$")[1]
-		values = {'Category': 'System Account'}
-		
-		if hashType == '1': # MD5
-			print_debug('INFO', '[+] Hash type MD5 detected ...')
-		elif hashType == '2':
-			print_debug('INFO', '[+] Hash type Blowfish detected ...')
-		elif hashType == '5':
-			print_debug('INFO', '[+] Hash type SHA-256 detected ...')
-		elif hashType == '6': # ShA-512 => used by all modern computers
-			print_debug('INFO', '[+] Hash type SHA-512 detected ...')
+		hash_type 	= cryptPwd.split("$")[1]
+		hash_algo 	= {
+			'1' : 'MD5',
+			'2' : 'Blowfish',
+			'5' : 'SHA-256',
+			'6' : 'SHA-512', 	# Used by all modern computers
+		}
 
-		salt = cryptPwd.split("$")[2]
-		realSalt = "$" + hashType + "$" + salt + "$"
+		# For Debug information
+		for h_type in hash_algo:
+			if h_type == hash_type:
+				print_debug('DEBUG', '[+] Hash type {algo} detected ...'.format(algo=hash_algo[h_type]))
+
+		salt 		= cryptPwd.split("$")[2]
+		realSalt 	= '${hash_type}${salt}$'.format(hash_type=hash_type, salt=cryptPwd.split("$")[2])
 		
 		# -------------------------- Dictionary attack --------------------------
 		print_debug('INFO', 'Dictionary Attack on the hash !!! ')
@@ -75,57 +48,45 @@ class Shadow(ModuleInfo):
 			for word in dic:
 				try:
 					cryptWord = crypt.crypt(word, realSalt)
-				except Exception,e:
-					print_debug('DEBUG', '{0}'.format(e))
-					cryptWord = ''
+					if cryptWord == cryptPwd:
+						return {
+							'Login'		: user,
+							'Password'	: word
+						}
+				except Exception, e:
+					pass
 
-				if cryptWord == cryptPwd:
-					values['User'] = user
-					values['password'] = word
-					self.pwdFound.append(values)
-					return
 		except (KeyboardInterrupt, SystemExit):
-			print 'INTERRUPTED!'
-			print_debug('DEBUG', 'Dictionary attack interrupted')
-		except Exception,e:
-			print_debug('DEBUG', '{0}'.format(e))
+			print_debug('DEBUG', u'Dictionary attack interrupted')
+		
+		return False
 
-		print_debug('INFO', 'No password found using this attack !!! ')
+	def run(self, software_name=None):
+		# Need admin privilege
+		if os.getuid() == 0:
+			pwdFound = []
+			with open('/etc/shadow', 'r') as shadow_file:
+				for line in shadow_file.readlines():
+					user_hash 	= line.replace('\n', '')
+					line 		= user_hash.split(':')
 
-	def root_access(self):
-		if os.getuid() != 0:
-			print_debug('INFO', 'You need more privileges (run it with sudo)\n')
-			return False
-		return True
-
-	def check_file_access(self):
-		if not os.path.exists(self.filestr):
-			print_debug('WARNING', 'The path "%s" does not exist' % s(self.filestr))
-			return False
-		return True
-
-	def run(self, software_name = None):
-		# check root access
-		if self.root_access():
-			if self.check_file_access():
-				shadowFile = open (self.filestr,'r')
-				for line in shadowFile.readlines():
-					_hash = line.replace('\n', '')
-					
-					line = _hash.split(':')
-
-					# check if a password is defined
+					# Check if a password is defined
 					if not line[1] in [ 'x', '*','!' ]:
-						user = line[0]
-						cryptPwd = line[1]
+						user 		= line[0]
+						cryptPwd 	= line[1]
 						
-						# save each hash non empty
-						self.hash += _hash + '\n'
-
-						# try dictionary and bruteforce attack 
-						self.attack(user, cryptPwd)
+						# Try dictionary attack
+						result = self.dictionary_attack(user, cryptPwd)
+						if result:
+							pwdFound.append(result)
+						
+						else:
+							# No cleartext password found - save hash
+							pwdFound.append(
+								{
+									'Hash' 		: ':'.join(user_hash.split(':')[1:]), 
+									'Login'		: user_hash.split(':')[0].replace('\n', '')
+								}
+							)
 				
-				values = {'Hash':':'.join(self.hash.split(':')[1:]), 'Login': self.hash.split(':')[0].replace('\n', '')}
-				self.pwdFound.append(values)
-				
-				return self.pwdFound
+				return pwdFound

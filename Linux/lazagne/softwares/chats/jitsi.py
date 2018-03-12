@@ -1,32 +1,36 @@
-from base64 import b64decode
-import hashlib, os, re
-import binascii, array
-from Crypto.Cipher import AES
-from lazagne.config.constant import *
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
 from lazagne.config import homes
+from Crypto.Cipher import AES
+from base64 import b64decode
+import hashlib
+import binascii
+import array
+import os
+import re
 
 # From https://github.com/mitsuhiko/python-pbkdf2
 from pbkdf2 import pbkdf2_bin
 
 class Jitsi(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-j', 'action': 'store_true', 'dest': 'jitsi', 'help': 'jitsi'}
 		suboptions = [{'command': '-ma', 'action': 'store', 'dest': 'master_pwd', 'help': 'enter the master password manually', 'title': 'Advanced jitsi option'}]
-		ModuleInfo.__init__(self, 'jitsi', 'chats', options, suboptions)
+		ModuleInfo.__init__(self, 'jitsi', 'chats', suboptions)
 
-		self.keylen = 32
-		self.iterations = 1024
-		self.padding = '\f'
-		self.account_id = ''
-		self.master_password_used = False
-		self.masterpass = ' '
+		self.keylen 				= 32
+		self.iterations 			= 1024
+		self.padding 				= '\f'
+		self.account_id 			= ''
+		self.master_password_used 	= False
+		self.masterpass 			= ' '
 
 	def get_salt(self):
-		salt_array = [12, 10, 15, 14, 11, 14, 14, 15]
-		salt = array.array('b', salt_array)
-		hexsalt = binascii.hexlify(salt)
+		salt_array 	= [12, 10, 15, 14, 11, 14, 14, 15]
+		salt 		= array.array('b', salt_array)
+		hexsalt 	= binascii.hexlify(salt)
 		return binascii.unhexlify(hexsalt)
 
 	def get_paths(self):
@@ -37,15 +41,14 @@ class Jitsi(ModuleInfo):
 
 		f = open(file_properties,'r')
 		line = f.readline()
-
-
+		
 		cpt = 0
 		pwdFound = []
 		while line:
 			if 'ACCOUNT_UID' in line:
 				m = re.match(r"(.*)ACCOUNT_UID=(.*$)",line)
 				if m:
-					# password found
+					# Password found
 					if cpt > 0:
 						pwdFound.append(values)
 						cpt = 0
@@ -80,20 +83,19 @@ class Jitsi(ModuleInfo):
 		if self.master_password_used and constant.jitsi_masterpass:
 			self.masterpass = constant.jitsi_masterpass
 		elif self.master_password_used and not constant.jitsi_masterpass:
-			return '[!] A master password is used, the password cannot be decrypted. Provide a masterpassword using the -ma option'
+			return u'[!] A master password is used, the password cannot be decrypted. Provide a masterpassword using the -ma option'
 
 		# --- Decrypting the password ---
-		# generate hash
+		# Generate hash
 		secret = pbkdf2_bin(bytes(self.masterpass), salt, self.iterations, self.keylen, hashfunc=hashlib.sha1)
 
-		# decrypt password
+		# Decrypt password
 		cipher = AES.new(secret)
 		plaintext = cipher.decrypt(b64decode(encrypted_pass)).rstrip(self.padding)
 
 		return plaintext
 
-	# main function
-	def run(self, software_name = None):
+	def run(self, software_name=None):
 		all_passwords = []
 		for file_properties in self.get_paths():
 			all_passwords += self.get_info(file_properties)

@@ -1,21 +1,20 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # Thanks to https://github.com/b4n/clawsmail-password-decrypter
-from Crypto.Cipher import DES
 from base64 import standard_b64decode as b64decode
-from ConfigParser import ConfigParser
-from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
+from ConfigParser import ConfigParser
 from lazagne.config import homes
-
-import platform, os
+from Crypto.Cipher import DES
+import platform
+import os
 
 class ClawsMail(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-c', 'action': 'store_true', 'dest': 'clawsmail', 'help': 'clawsmail'}
-		ModuleInfo.__init__(self, 'clawsmail', 'mails', options)
+		ModuleInfo.__init__(self, 'clawsmail', 'mails')
 
-	def run(self, software_name = None):
+	def run(self, software_name=None):
 		all_passwords = []
 		for path in self.get_paths():
 			mode = DES.MODE_CFB
@@ -43,8 +42,7 @@ class ClawsMail(ModuleInfo):
 			as would the libc algorithms (as they fail early).	Yes, this means the
 			password wasn't actually encrypted but only base64-ed.
 			"""
-			if (mode in (DES.MODE_ECB, DES.MODE_CBC)) and ((len(buf) % 8) != 0 or
-														   len(buf) > 8192):
+			if (mode in (DES.MODE_ECB, DES.MODE_CBC)) and ((len(buf) % 8) != 0 or len(buf) > 8192):
 				return buf
 
 			c = DES.new(key, mode=mode, IV=b'\0'*8)
@@ -70,7 +68,6 @@ class ClawsMail(ModuleInfo):
 					account = '<unknown>'
 
 				password = self.pass_decrypt(p.get(s, 'password'), key, mode=mode)
-				# print('password for %s, %s is "%s"' % (account, address, password))
 				values = {'Login' : account, 'URL': address, 'Password': password}
 			except Exception as e:
 				print_debug('ERROR', 'Error resolving password for account "%s": %s' % (s, e))
