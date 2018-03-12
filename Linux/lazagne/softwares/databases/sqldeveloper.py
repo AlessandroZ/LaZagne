@@ -1,155 +1,107 @@
-import binascii, base64
-from Crypto.Cipher import DES
-import array
-import hashlib, re, os
-import xml.etree.cElementTree as ET
-from lazagne.config.constant import *
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+import xml.etree.cElementTree as ET
 from lazagne.config import homes
+from Crypto.Cipher import DES
+import binascii
+import hashlib
+import base64
+import array
+import re
+import os
 
 class SQLDeveloper(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-s', 'action': 'store_true', 'dest': 'sqldeveloper', 'help': 'sqldeveloper'}
-		ModuleInfo.__init__(self, 'sqldeveloper', 'database', options)
+		ModuleInfo.__init__(self, 'sqldeveloper', 'databases')
+		self._salt 			= self.get_salt()
+		self._passphrase 	= None
+		self._iteration 	= 42
 
 	def get_salt(self):
-		salt_array = [5, 19, -103, 66, -109, 114, -24, -83]
-		salt = array.array('b', salt_array)
-		hexsalt = binascii.hexlify(salt)
+		salt_array 	= [5, 19, -103, 66, -109, 114, -24, -83]
+		salt 		= array.array('b', salt_array)
+		hexsalt 	= binascii.hexlify(salt)
 		return binascii.unhexlify(hexsalt)
-
-	def get_iteration(self):
-		return 42
-
+	
 	def get_derived_key(self, password, salt, count):
 		key = bytearray(password) + salt
 		for i in range(count):
-			m = hashlib.md5(key)
+			m 	= hashlib.md5(key)
 			key = m.digest()
 		return (key[:8], key[8:])
-
-	def decrypt(self, salt, msg, password):
-		enc_text = base64.b64decode(msg)
-		(dk, iv) = self.get_derived_key(password, salt, self.get_iteration())
-		crypter = DES.new(dk, DES.MODE_CBC, iv)
-		text = crypter.decrypt(enc_text)
+	
+	def decrypt(self, msg):
+		enc_text 	= base64.b64decode(msg)
+		(dk, iv) 	= self.get_derived_key(self._passphrase, self._salt, self._iteration)
+		crypter 	= DES.new(dk, DES.MODE_CBC, iv)
+		text 		= crypter.decrypt(enc_text)
 		return re.sub(r'[\x01-\x08]','',text)
-
-	def get_mainPath(self, directory):
-		directory = os.path.expanduser(directory)
-		if os.path.exists(directory):
-			for d in os.listdir(directory):
-				if d.startswith('system'):
-					directory += os.sep + d
-					return directory
-			return 'SQL_NO_PASSWD'
-		else:
-			return 'SQL_NOT_EXISTS'
 
 
 	def get_passphrase(self, path):
-		for p in os.listdir(path):
-			if p.startswith('o.sqldeveloper.12'):
-				path += os.sep + p
-				break
+		xml_name = u'product-preferences.xml'
+		xml_file = None
 
-		xml_file = path + os.sep + 'product-preferences.xml'
-		if os.path.exists(xml_file):
+		if os.path.exists(os.path.join(path, xml_name)):
+			xml_file = os.path.join(path, xml_name)
+		else:
+			for p in os.listdir(path):
+				if p.startswith('system'):
+					new_directory = os.path.join(path, p)
+
+					for pp in os.listdir(new_directory):
+						if pp.startswith(u'o.sqldeveloper'):
+							if os.path.exists(os.path.join(new_directory, pp, xml_name)):
+								xml_file = os.path.join(new_directory, pp, xml_name)
+							break
+		if xml_file:
 			tree = ET.ElementTree(file=xml_file)
 			for elem in tree.iter():
 				if 'n' in elem.attrib.keys():
 					if elem.attrib['n'] == 'db.system.id':
 						return elem.attrib['v']
-			return 'Not_Found'
-		else:
-			return 'xml_Not_Found'
+	
+	def run(self, software_name=None):
+		pwdFound = []
+		
+		for home in homes.get(dir='.sqldeveloper'):
+			path = os.path.join(home, u'SQL Developer')
+			if os.path.exists(path):
+				self._passphrase = self.get_passphrase(path)
+				if self._passphrase:
+					print_debug('INFO', u'Passphrase found: {passphrase}'.format(passphrase=self._passphrase))
+					xml_name = u'connections.xml'
+					xml_file = None
 
-	def get_infos(self, path, passphrase, salt):
-		for p in os.listdir(path):
-			if p.startswith('o.jdeveloper.db.connection'):
-				path += os.sep + p
-				break
+					if os.path.exists(os.path.join(path, xml_name)):
+						xml_file = os.path.join(path, xml_name)
+					else:
+						for p in os.listdir(path):
+							if p.startswith('system'):
+								new_directory = os.path.join(path, p)
 
-		xml_file = path + os.sep + 'connections.xml'
-
-		if os.path.exists(xml_file):
-			tree = ET.ElementTree(file=xml_file)
-			pwdFound = []
-			values = {}
-			for elem in tree.iter():
-				if 'addrType' in elem.attrib.keys():
-					if elem.attrib['addrType'] == 'sid':
-						for e in elem.getchildren():
-							values['SID'] = e.text
-
-					elif elem.attrib['addrType'] == 'port':
-						for e in elem.getchildren():
-							values['Port'] = e.text
-
-					elif elem.attrib['addrType'] == 'user':
-						for e in elem.getchildren():
-							values['Login'] = e.text
-
-					elif elem.attrib['addrType'] == 'ConnName':
-						for e in elem.getchildren():
-							values['Name'] = e.text
-
-					elif elem.attrib['addrType'] == 'customUrl':
-						for e in elem.getchildren():
-							values['URL'] = e.text
-
-					elif elem.attrib['addrType'] == 'SavePassword':
-						for e in elem.getchildren():
-							values['SavePassword'] = e.text
-
-					elif elem.attrib['addrType'] == 'hostname':
-						for e in elem.getchildren():
-							values['Host'] = e.text
-
-					elif elem.attrib['addrType'] == 'password':
-						for e in elem.getchildren():
-							pwd = self.decrypt(salt, e.text, passphrase)
-							values['Password'] = pwd
-
-					elif elem.attrib['addrType'] == 'driver':
-						for e in elem.getchildren():
-							values['Driver'] = e.text
+								for pp in os.listdir(new_directory):
+									if pp.startswith(u'o.jdeveloper.db.connection'):
+										if os.path.exists(os.path.join(new_directory, pp, xml_name)):
+											xml_file = os.path.join(new_directory, pp, xml_name)
+										break
+					
+					if xml_file:
+						wanted_value 	= ['sid', 'port', 'hostname', 'user', 'password', 'ConnName', 'customUrl', 'SavePassword', 'driver']
+						renamed_value 	= {'sid': 'SID', 'port': 'Port', 'hostname': 'Host', 'user': 'Login', 'password': 'Password', 'ConnName': 'Name', 'customUrl': 'URL', 'SavePassword': 'SavePassword', 'driver': 'Driver'}
+						tree 			= ET.ElementTree(file=xml_file)
+						
+						for e in tree.findall('Reference'):
+							values = {}
+							for ee in e.findall('RefAddresses/StringRefAddr'):
+								if ee.attrib['addrType'] in wanted_value and ee.find('Contents').text is not None:
+									name 			= renamed_value[ee.attrib['addrType']] 
+									value 			=  ee.find('Contents').text if name != 'Password' else self.decrypt(ee.find('Contents').text)
+									values[name] 	= value
+							
 							pwdFound.append(values)
 
-							values = {}
-
-			return pwdFound
-		else:
-			print_debug('WARNING', 'The xml file containing the passwords has not been found.')
-
-	def run(self, software_name = None):
-		all_passwords = []
-		salt = self.get_salt()
-
-		for path in homes.get(dir='.sqldeveloper'):
-			mainPath = self.get_mainPath(path)
-
-			if mainPath == 'SQL_NOT_EXISTS':
-				print_debug('INFO', 'SQL Developer not installed.')
-				continue
-
-			elif mainPath == 'SQL_NO_PASSWD':
-				print_debug('INFO', 'No passwords found.')
-
-				continue
-			else:
-				passphrase = self.get_passphrase(mainPath)
-
-			if passphrase == 'Not_Found':
-				print_debug('WARNING', 'The passphrase used to encrypt has not been found.')
-				continue
-
-			elif passphrase == 'xml_Not_Found':
-				print_debug('WARNING', 'The xml file containing the passphrase has not been found.')
-				continue
-
-			else:
-				all_passwords += self.get_infos(mainPath, passphrase, salt)
-
-		return all_passwords
+		return pwdFound

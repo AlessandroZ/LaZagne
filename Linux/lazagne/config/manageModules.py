@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 # keyring
 from lazagne.softwares.wallet.gnome import Gnome
 from lazagne.softwares.wallet.kde import kde
@@ -39,14 +41,14 @@ except:
 
 def get_categories():
 	category = {
-		'chats': {'help': 'Chat clients supported'},
-		'sysadmin': {'help': 'SCP/SSH/FTP/FTPS clients supported'},
-		'database': {'help': 'SQL clients supported'},
-		'mails': {'help': 'Email clients supported'},
-		'memory': {'help': 'Retrieve passwords from memory'},
-		'wifi': {'help': 'Wifi'},
-		'browsers': {'help': 'Web browsers supported'},
-		'wallet': {'help': 'Windows credentials (credential manager, etc.)'}
+		'chats'		: {'help': 'Chat clients supported'},
+		'sysadmin'	: {'help': 'SCP/SSH/FTP/FTPS clients supported'},
+		'databases'	: {'help': 'SQL clients supported'},
+		'mails'		: {'help': 'Email clients supported'},
+		'memory'	: {'help': 'Retrieve passwords from memory'},
+		'wifi'		: {'help': 'Wifi'},
+		'browsers'	: {'help': 'Web browsers supported'},
+		'wallet'	: {'help': 'Windows credentials (credential manager, etc.)'}
 	}
 	return category
 
