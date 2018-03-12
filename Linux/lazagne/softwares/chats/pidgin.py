@@ -1,40 +1,40 @@
-import xml.etree.cElementTree as ET
-import os
-from lazagne.config.constant import *
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
-import dbus
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.constant import *
+import xml.etree.cElementTree as ET
 from lazagne.config import homes
+import dbus
+import os
 
 class Pidgin(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-p', 'action': 'store_true', 'dest': 'pidgin', 'help': 'pidgin'}
-		ModuleInfo.__init__(self, 'pidgin', 'chats', options)
+		ModuleInfo.__init__(self, 'pidgin', 'chats')
 
-	# if pidgin is started, use the api to retrieve all passwords
+	# If pidgin is started, use the api to retrieve all passwords
 	def check_if_pidgin_started(self):
 		try:
-			bus = dbus.SessionBus()
-			purple = bus.get_object("im.pidgin.purple.PurpleService","/im/pidgin/purple/PurpleObject","im.pidgin.purple.PurpleInterface")
-			acc = purple.PurpleAccountsGetAllActive()
+			pwdFound 	= []
+			bus 		= dbus.SessionBus()
+			purple 		= bus.get_object("im.pidgin.purple.PurpleService","/im/pidgin/purple/PurpleObject","im.pidgin.purple.PurpleInterface")
+			acc 		= purple.PurpleAccountsGetAllActive()
 
-			pwdFound = []
 			for x in range(len(acc)):
-				values = {}
 				_acc = purple.PurpleAccountsGetAllActive()[x]
-				values['Login'] =  purple.PurpleAccountGetUsername(_acc)
-				values['Password'] =  purple.PurpleAccountGetPassword(_acc)
-				values['Protocol'] =  purple.PurpleAccountGetProtocolName(_acc)
-				pwdFound.append(values)
-
-			# print the results
+				pwdFound.append(
+					{	
+						'Login'		: purple.PurpleAccountGetUsername(_acc), 
+						'Password'	: purple.PurpleAccountGetPassword(_acc),
+						'Protocol' 	: purple.PurpleAccountGetProtocolName(_acc),
+					}
+				)
 			return pwdFound
 		except:
 			# [!] Pidgin is not started :-(
 			return False
 
-
-	def run(self, software_name = None):
+	def run(self, software_name=None):
 		pwdFound = []
 		try:
 			pwdTab = self.check_if_pidgin_started()
@@ -45,23 +45,19 @@ class Pidgin(ModuleInfo):
 
 		for path in homes.get(file=os.path.join('.purple', 'accounts.xml')):
 			tree = ET.ElementTree(file=path)
-
 			root = tree.getroot()
-			accounts = root.getchildren()
 
-			for a in accounts:
-				values = {}
-				aa = a.getchildren()
-				for tag in aa:
-					cpt = 0
-					if tag.tag == 'name':
-						cpt = 1
-						values['Login'] = tag.text
+			for account in root.findall('account'):
+				if account.find('name') is not None:
+					name 		= account.find('name')
+					password 	= account.find('password')
 
-					if tag.tag == 'password':
-						values['Password'] = tag.text
-
-				if len(values) != 0:
-					pwdFound.append(values)
+					if name is not None and password is not None:
+						pwdFound.append(
+							{
+								'Login'		: name.text, 
+								'Password'	: password.text
+							}
+						)
 
 		return pwdFound

@@ -1,34 +1,39 @@
-import sys, struct, hashlib, binascii, re, os
-from Crypto.Cipher import DES3
-from ConfigParser import RawConfigParser
-import sqlite3
-from lazagne.config.constant import *
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from ConfigParser import RawConfigParser
+from lazagne.config.constant import *
 from lazagne.config import homes
-
-CIPHERED_FILE = ''
+from Crypto.Cipher import DES3
+import binascii
+import hashlib 
+import sqlite3
+import struct
+import sys
+import re
+import os
 
 class Opera(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-o', 'action': 'store_true', 'dest': 'opera', 'help': 'opera'}
-		ModuleInfo.__init__(self, 'opera', 'browsers', options)
+		ModuleInfo.__init__(self, 'opera', 'browsers')
 
-	def run(self, software_name = None):
-		# retrieve opera folder
+	def get_paths(self):
+		return homes.get(dir='.opera')
+
+	def run(self, software_name=None):
 		all_passwords = []
 		for path in self.get_paths():
-			passwords = ''
-			# check the use of master password
-			if not os.path.exists(path + os.sep + 'operaprefs.ini'):
-				print_debug('INFO', 'The preference file operaprefs.ini has not been found.')
+			# Check the use of master password
+			if not os.path.exists(os.path.join(path, u'operaprefs.ini')):
+				print_debug('DEBUG', u'The preference file operaprefs.ini has not been found.')
 			else:
 				if self.masterPasswordUsed(path) == '0':
-					print_debug('INFO', 'No master password defined.')
+					print_debug('DEBUG', u'No master password defined.')
 				elif self.masterPasswordUsed(path) == '1':
-					print_debug('WARNING', 'A master password is used.')
+					print_debug('WARNING', u'A master password is used.')
 				else:
-					print_debug('WARNING', 'An error occurs, the use of master password is not sure.')
+					print_debug('WARNING', u'An error occurs, the use of master password is not sure.')
 			print
 
 			passwords = self.decipher_old_version(path)
@@ -36,100 +41,94 @@ class Opera(ModuleInfo):
 			if passwords:
 				all_passwords += self.parse_results(passwords)
 			else:
-				print_debug('INFO', 'The wand.dat seems to be empty')
+				print_debug('DEBUG', u'The wand.dat seems to be empty')
 
 		return all_passwords
-
-	def get_paths(self):
-		return homes.get(dir='.opera')
 
 	def decipher_old_version(self, path):
 		salt = '837DFC0F8EB3E86973AFFF'
 
-		# retrieve wand.dat file
-		if not os.path.exists(path + os.sep + 'wand.dat'):
-			print_debug('WARNING', 'wand.dat file has not been found.')
+		# Retrieve wand.dat file
+		if not os.path.exists(os.path.join(path, u'wand.dat')):
+			print_debug('WARNING', u'wand.dat file has not been found.')
 			return
 
-		# read wand.dat
-		f = open(path + os.sep + 'wand.dat', 'rb')
-		file =	f.read()
-		fileSize = len(file)
+		# Read wand.dat
+		with open(os.path.join(path, u'wand.dat', 'rb')) as outfile:
+			file =	outfile.read()
+		
+		passwords 	= []
+		offset 		= 0
 
-		passwords = []
-
-		offset = 0
-		while offset < fileSize:
+		while offset < len(file):
 
 			offset = file.find('\x08', offset) + 1
-
 			if offset == 0:
 				break
 
 			tmp_blockLength = offset - 8
-			tmp_datalen = offset + 8
+			tmp_datalen 	= offset + 8
 
-			blockLength = struct.unpack('!i', file[tmp_blockLength : tmp_blockLength + 4])[0]
-			datalen = struct.unpack('!i', file[tmp_datalen : tmp_datalen + 4])[0]
+			blockLength 	= struct.unpack('!i', file[tmp_blockLength : tmp_blockLength + 4])[0]
+			datalen 		= struct.unpack('!i', file[tmp_datalen : tmp_datalen + 4])[0]
 
-			binary_salt = binascii.unhexlify(salt)
-			desKey = file[offset: offset + 8]
-			tmp = binary_salt + desKey
+			binary_salt 	= binascii.unhexlify(salt)
+			desKey 			= file[offset: offset + 8]
+			tmp 			= binary_salt + desKey
 
-			md5hash1 = hashlib.md5(tmp).digest()
-			md5hash2 = hashlib.md5(md5hash1 + tmp).digest()
+			md5hash1 		= hashlib.md5(tmp).digest()
+			md5hash2 		= hashlib.md5(md5hash1 + tmp).digest()
 
-			key = md5hash1 + md5hash2[0:8]
-			iv = md5hash2[8:]
+			key 			= md5hash1 + md5hash2[0:8]
+			iv 				= md5hash2[8:]
 
-			data = file[offset + 8 + 4: offset + 8 + 4 + datalen]
-
-			des3dec = DES3.new(key, DES3.MODE_CBC, iv)
+			data 			= file[offset + 8 + 4: offset + 8 + 4 + datalen]
+			des3dec 		= DES3.new(key, DES3.MODE_CBC, iv)
 			try:
-				plaintext = des3dec.decrypt(data)
-				plaintext = re.sub(r'[^\x20-\x7e]', '', plaintext)
+				plaintext 	= des3dec.decrypt(data)
+				plaintext 	= re.sub(r'[^\x20-\x7e]', '', plaintext)
 				passwords.append(plaintext)
 			except Exception,e:
-				print_debug('DEBUG', '{0}'.format(e))
-				print_debug('ERROR', 'Failed to decrypt password')
+				print_debug('DEBUG', str(e))
+				print_debug('ERROR', u'Failed to decrypt password')
 
 			offset += 8 + 4 + datalen
 		return passwords
 
 
 	def masterPasswordUsed(self, path):
-		# the init file is not well defined so lines have to be removed before to parse it
+		# The init file is not well defined so lines have to be removed before to parse it
 		cp = RawConfigParser()
-		f = open(path + os.sep + 'operaprefs.ini', 'rb')
+		with open(os.path.join(path, u'operaprefs.ini', 'rb')) as outfile:
 
-		f.readline() # discard first line
-		while 1:
+			outfile.readline() # discard first line
+			while True:
+				try:
+					cp.readfp(outfile)
+					break
+				except:
+					outfile.readline()	# discard first line
 			try:
-				cp.readfp(f)
-				break
+				master_pass = cp.get('Security Prefs','Use Paranoid Mailpassword')
+				return master_pass
 			except:
-				f.readline()	# discard first line
-		try:
-			master_pass = cp.get('Security Prefs','Use Paranoid Mailpassword')
-			return master_pass
-		except:
-			return False
-
+				return False
 
 	def parse_results(self, passwords):
 
-		cpt = 0
-		values = {}
-		pwdFound = []
+		cpt 		= 0
+		values 		= {}
+		pwdFound 	= []
+
 		for password in passwords:
-			# date (begin of the sensitive data)
-			match=re.search(r'(\d+-\d+-\d+)', password)
+			# Date (begin of the sensitive data)
+			match = re.search(r'(\d+-\d+-\d+)', password)
 			if match:
-				values = {}
-				cpt = 0
+				values 	= {}
+				cpt 	= 0
 				tmp_cpt = 0
 
-			# after finding 2 urls
+			# After finding 2 urls
 			if cpt == 2:
 				tmp_cpt += 1
 				if tmp_cpt == 2:
@@ -138,8 +137,8 @@ class Opera(ModuleInfo):
 					values['Password'] = password
 					pwdFound.append(values)
 
-			# url
-			match=re.search(r'^http', password)
+			# URL
+			match = re.search(r'^http', password)
 			if match:
 				cpt +=1
 				if cpt == 1:
