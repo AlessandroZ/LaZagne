@@ -48,7 +48,8 @@ class Vault(ModuleInfo):
 
 										if vaultGetItem8(hVault, byref(items8[j].id), items8[j].pResource, items8[j].pUsername, items8[j].unknown0, None, 0, byref(pItem8)) == 0:
 											password = pItem8.contents.pPassword.contents.data.string
-											if password:
+											# Remove password too long
+											if password and len(password) < 100:
 												values['Password'] = password
 
 										pwdFound.append(values)
