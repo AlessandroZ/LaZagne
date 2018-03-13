@@ -22,13 +22,15 @@ class Credman(ModuleInfo):
 					# For XP:
 					# - password are encrypted with specific salt depending on its Type
 					# - call CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, CRYPTPROTECT_UI_FORBIDDEN, byref(blobOut))
-
-					pwdFound.append(
-						{
-							'URL'		:	c.TargetName, 
-							'Login'		: 	c.UserName, 
-							'Password'	:	c.CredentialBlob[:c.CredentialBlobSize.real].replace('\x00', '')
-						}
-					)
+					
+					# Remove password too long
+					if c.CredentialBlobSize.real < 200:
+						pwdFound.append(
+							{
+								'URL'		:	c.TargetName, 
+								'Login'		: 	c.UserName, 
+								'Password'	:	c.CredentialBlob[:c.CredentialBlobSize.real].replace('\x00', '')
+							}
+						)
 			CredFree(creds)
 		return pwdFound

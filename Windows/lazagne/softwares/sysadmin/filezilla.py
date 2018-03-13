@@ -9,7 +9,7 @@ class Filezilla(ModuleInfo):
 	def __init__(self):
 		ModuleInfo.__init__(self, 'filezilla', 'sysadmin')
 
-	def run(self, software_name = None):		
+	def run(self, software_name=None):		
 		path = os.path.join(constant.profile['APPDATA'], u'FileZilla')
 		if os.path.exists(path):
 			pwdFound = []
