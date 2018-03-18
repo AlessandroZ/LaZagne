@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-from lazagne.config.header import Header
 from lazagne.config.constant import *
 import xml.etree.cElementTree as ET
 from lazagne.config import homes
