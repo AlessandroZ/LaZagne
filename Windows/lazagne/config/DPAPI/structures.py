@@ -8,6 +8,7 @@ Code based from these two awesome projects:
 """
 
 from construct import *
+import construct
 import datetime
 import struct
 import crypto
@@ -121,12 +122,12 @@ RPC_SID = Struct(
 
 UNICODE_STRING = Struct(
 	'length' 	/ Int32ul,
-	'data'		/ String(this.length, encoding='UTF_16_LE'),
+	'data'		/ PaddedString(this.length, encoding='UTF_16_LE'),
 )
 
 UNICODE_STRING_STRIP = Struct(
 	'length' 	/ Int32ul,
-	'data' 		/ UnicodeRstripZero(String(this.length, encoding='UTF_16_LE'))
+	'data' 		/ UnicodeRstripZero(PaddedString(this.length, encoding='UTF_16_LE'))
 )
 
 SIZED_DATA = Struct(
@@ -173,7 +174,7 @@ CRED_SYSTEM = Struct(
 MKFILE = Struct(
 	'version' 			/ Int32ul,
 	Padding(8),
-	'guid' 				/ String(72, encoding='UTF-16'),
+	'guid' 				/ PaddedString(72, encoding='UTF-16'),
 	Padding(8),
 	'policy' 			/ Int32ul, 							# define if sha-1 or md4 is used
 	'masterkeyLen' 		/ Int64ul, 
