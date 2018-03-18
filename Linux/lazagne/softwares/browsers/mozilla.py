@@ -354,7 +354,7 @@ class Mozilla(ModuleInfo):
 				return globalSalt, master_password, entrySalt
 			
 		print_debug('WARNING', u'No password has been found using the default list')
-		return False
+		return ('', '', '')
 	
 	def remove_padding(self, data):
 		"""
