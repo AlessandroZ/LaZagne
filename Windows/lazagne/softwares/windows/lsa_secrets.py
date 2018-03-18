@@ -9,6 +9,7 @@ import _subprocess as sub
 import tempfile
 import random
 import string
+import struct
 import os
 
 class LSASecrets(ModuleInfo):
@@ -31,18 +32,32 @@ class LSASecrets(ModuleInfo):
 		info 				= subprocess.STARTUPINFO()
 		info.dwFlags 		= sub.STARTF_USESHOWWINDOW
 		info.wShowWindow 	= sub.SW_HIDE
-		p 			= subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
-		results, _ 	= p.communicate()
+		p 					= subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
+		results, _ 			= p.communicate()
 
 	def run(self, software_name=None):
+
+		# DPAPI structure could compute lsa secrets as well, so do not do it again
+		if constant.lsa_secrets:
+			return ['__LSASecrets__', constant.lsa_secrets]
+
 		if self.save_hives():
 		
 			isVistaOrHigher = False
 			if float(get_os_version()) >= 6.0:
 				isVistaOrHigher = True
 			
-			# get LSA Secrets
+			# Get LSA Secrets
 			secrets = get_file_secrets(constant.hives['system'], constant.hives['security'], isVistaOrHigher)
 			if secrets:
+				
+				# Clear DPAPI master key 
+				clear 	= secrets['DPAPI_SYSTEM']
+				size 	= struct.unpack_from("<L", clear)[0]
+				secrets['DPAPI_SYSTEM'] = clear[16:16+44]
+
+				# Keep value to be reused in other module (e.g wifi)
+				constant.lsa_secrets = secrets
+
 				pwdFound = ['__LSASecrets__', secrets]
 				return pwdFound

@@ -8,7 +8,9 @@ from lazagne.config.DPAPI.credfile import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.constant import *
 import traceback
+import ctypes
 import os
+from lazagne.softwares.windows.lsa_secrets import LSASecrets
 
 class Decrypt_DPAPI():
 	def __init__(self, password=None, pwdhash=None):
@@ -42,6 +44,22 @@ class Decrypt_DPAPI():
 					elif pwdhash:
 						for r in self.umkp.try_credential_hash(self.sid, pwdhash=pwdhash.decode('hex')):
 							print_debug('INFO', r)
+
+		# System Information
+		
+		if ctypes.windll.shell32.IsUserAnAdmin() != 0: # Need admin priv
+			if not constant.lsa_secrets:
+				# Retrieve LSA secrets
+				LSASecrets().run()
+			
+			if constant.lsa_secrets:
+				masterkeydir = u'C:\\Windows\\System32\\Microsoft\\Protect\\S-1-5-18\\User'
+				if os.path.exists(masterkeydir):
+					self.smkp = MasterKeyPool()
+					self.smkp.load_directory(masterkeydir)
+					self.smkp.add_system_credential(constant.lsa_secrets['DPAPI_SYSTEM'])
+					for r in self.smkp.try_system_credential():
+						print_debug('INFO', r)
 
 	def check_credentials(self, passwords):
 		if self.umkp:
@@ -97,3 +115,12 @@ class Decrypt_DPAPI():
 		"""
 		if self.umkp:
 			return self.umkp.get_cleartext_password()
+
+	def decrypt_wifi_blob(self, key_material):
+		"""
+		Decrypt wifi password
+		"""
+		if self.smkp:
+			blob 	= DPAPIBlob(key_material.decode('hex'))
+			ok, msg = blob.decrypt_encrypted_blob(mkp=self.smkp)
+			return self.manage_response(ok, msg)

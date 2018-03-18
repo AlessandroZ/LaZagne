@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.dpapi_structure import *
 from lazagne.config.winstructure import *
 from lazagne.config.constant import *
 import xml.etree.cElementTree as ET
@@ -11,61 +12,82 @@ import os
 class Wifi(ModuleInfo):
 	def __init__(self):
 		ModuleInfo.__init__(self, 'Wifi', 'wifi', dpapi_used=True)
+
+	def decrypt_using_lsa_secret(self, key):
+		"""
+		Needs admin priv but will work with all systems
+		"""
+		if not constant.dpapi:
+			constant.dpapi = Decrypt_DPAPI(password=constant.user_password)
+		return constant.dpapi.decrypt_wifi_blob(key)
+
+	def decrypt_using_netsh(self, ssid):
+		"""
+		Does not need admin priv but would work only with english and french systems
+		"""
+		print_debug('DEBUG', u'[!] Try using netsh method')
+		process 		= Popen(['netsh.exe', 'wlan', 'show', 'profile', '{SSID}'.format(SSID=ssid), 'key=clear'], stdout=PIPE, stderr=PIPE)
+		stdout, stderr 	= process.communicate()
+		for st in stdout.split('\n'):
+			if 'key content' in st.lower() or 'contenu de la cl' in st.lower():
+				password = st.split(':')[1].strip()
+				return passwords
+
 	
 	def run(self, software_name=None):
 
-		directory = os.path.join(constant.profile['ALLUSERSPROFILE'], u'Microsoft\Wlansvc\Profiles\Interfaces')
+		if not constant.wifi_password:
+			dpapi = constant.dpapi if constant.dpapi is not None else Decrypt_DPAPI(password=constant.user_password)
 
-		# for windows Vista or higher
-		if os.path.exists(directory):
+			interfaces_dir = os.path.join(constant.profile['ALLUSERSPROFILE'], u'Microsoft\Wlansvc\Profiles\Interfaces')
 
-			passwordFound = False
-			rep = []
-			pwdFound = []
-			for repository in os.listdir(directory):
-				if os.path.isdir(directory + os.sep + repository):
-					
-					rep = directory + os.sep + repository
-					for file in os.listdir(rep):
-						values = {}
-						if os.path.isfile(rep + os.sep + file):
-							f = rep + os.sep + file
-							tree = ET.ElementTree(file=f)
-							root = tree.getroot()
-							xmlns =  root.tag.split("}")[0] + '}'
-							
-							iterate = False
-							for elem in tree.iter():
-								if elem.tag.endswith('SSID'):
-									for w in elem:
-										if w.tag == xmlns + 'name':
-											values['SSID'] = w.text
+			# for windows Vista or higher
+			if os.path.exists(interfaces_dir):
+
+				repository 	= []
+				pwdFound 	= []
+
+				for wifi_dir in os.listdir(interfaces_dir):
+					if os.path.isdir(os.path.join(interfaces_dir, wifi_dir)):
+						
+						repository = os.path.join(interfaces_dir, wifi_dir)
+						for file in os.listdir(repository):
+							values = {}
+							if os.path.isfile(os.path.join(repository, file)):
+								f 		= os.path.join(repository, file)
+								tree 	= ET.ElementTree(file=f)
+								root 	= tree.getroot()
+								xmlns 	=  root.tag.split("}")[0] + '}'
 								
-								if elem.tag.endswith('authentication'):
-									values['Authentication'] = elem.text
+								for elem in tree.iter():
+									if elem.tag.endswith('SSID'):
+										for w in elem:
+											if w.tag == xmlns + 'name':
+												values['SSID'] = w.text
 									
-								if elem.tag.endswith('protected'):
-									values['Protected'] = elem.text
+									if elem.tag.endswith('authentication'):
+										values['Authentication'] = elem.text
+										
+									if elem.tag.endswith('protected'):
+										values['Protected'] = elem.text
+									
+									if elem.tag.endswith('keyMaterial'):
+										key = elem.text
+										try:
+											password = self.decrypt_using_lsa_secret(key=key)
+											if not password:
+												password = self.decrypt_using_netsh(ssid=values['SSID'])
+
+											if password:
+												values['Password'] = password
+											else:
+												values['INFO'] = '[!] Password not found.'
+										except Exception, e:
+											print e
+											values['INFO'] = '[!] Password not found.'
 								
-								if elem.tag.endswith('keyMaterial'):
-									key = elem.text
-									try:
-										binary_string = binascii.unhexlify(key)
-										
-										# need to have system privilege, to use this technic
-										password = Win32CryptUnprotectData(binary_string)
-										if not password: 
-											print_debug('DEBUG', u'[!] Try using netsh method')
-											process 		= Popen(['netsh.exe', 'wlan', 'show', 'profile', '{SSID}'.format(SSID=values['SSID']), 'key=clear'], stdout=PIPE, stderr=PIPE)
-											stdout, stderr 	= process.communicate()
-											st 				= stdout.split('-------------')[4].split('\n')[6]
-											password 		= st.split(':')[1].strip()
-										
-										values['Password'] 	= password
-										passwordFound = True
-									except:
-										values['INFO'] = '[!] Password not found.'
-							
-							if values and values['Authentication'] != 'open':
-								pwdFound.append(values)	
-			return pwdFound
+								if values and values['Authentication'] != 'open':
+									pwdFound.append(values)	
+
+				constant.wifi_password = True
+				return pwdFound
