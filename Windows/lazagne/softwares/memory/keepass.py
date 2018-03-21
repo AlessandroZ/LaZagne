@@ -5,7 +5,7 @@
 # Thanks for the great work of libkeepass (used to decrypt keepass file)
 # https://github.com/phpwutz/libkeepass
 
-from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.module_info import ModuleInfo
 from lazagne.config.powershell_execute import powershell_execute
 from lazagne.config.constant import *
 import libkeepass
