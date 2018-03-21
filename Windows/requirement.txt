@@ -1,4 +1,4 @@
-construct
+construct==2.9.39
 pycrypto
 pyasn1
 psutil

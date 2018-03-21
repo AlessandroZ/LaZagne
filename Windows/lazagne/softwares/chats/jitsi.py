@@ -1,8 +1,7 @@
 from lazagne.config.write_output import print_debug
-from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import *
 from Crypto.Cipher import AES
-# From https://github.com/mitsuhiko/python-pbkdf2
 from pbkdf2 import pbkdf2_bin
 from base64 import b64decode
 import binascii

@@ -7,7 +7,7 @@ This script uses memorpy to dumps cleartext passwords from browser's memory
 It has been tested on both windows 10 and ubuntu 16.04
 The regex have been taken from the mimikittenz https://github.com/putterpanda/mimikittenz
 """
-from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.module_info import ModuleInfo
 from lazagne.config.write_output import print_debug
 from lazagne.config.constant import *
 from keethief import KeeThief

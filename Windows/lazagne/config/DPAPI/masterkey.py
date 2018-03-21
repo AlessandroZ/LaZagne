@@ -40,8 +40,13 @@ class MasterKey():
 		Decrypts the masterkey with the given user's password and SID.
 		Simply computes the corresponding key, then calls self.decrypt_with_hash()
 		"""	
+		try:
+			pwd = pwd.encode("UTF-16LE")
+		except:
+			return
+
 		for algo in ["sha1", "md4"]:
-			self.decrypt_with_hash(sid=sid, pwdhash=hashlib.new(algo, pwd.encode("UTF-16LE")).digest())
+			self.decrypt_with_hash(sid=sid, pwdhash=hashlib.new(algo, pwd).digest())
 			if self.decrypted:
 				break
 
@@ -136,7 +141,7 @@ class MasterKeyPool():
 				'password' 	: None, 	# contains cleartext password
 				'keys'		: [], 		# contains all decrypted mk keys
 			}
-		) 
+		)
 		self.mkfiles 			= []
 		self.credhists 			= {}
 		self.mk_dir 			= None
@@ -177,7 +182,7 @@ class MasterKeyPool():
 		"""
 		Returns an array of Masterkeys corresponding to the given GUID.
 		"""
-		return self.keys.get(guid, [])['keys']
+		return self.keys.get(guid, {}).get('keys')
 
 	def get_password(self, guid):
 		"""

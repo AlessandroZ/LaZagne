@@ -4,7 +4,7 @@
 
 from ConfigParser import RawConfigParser
 from lazagne.config.write_output import print_debug
-from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.module_info import ModuleInfo
 from lazagne.config.dico import get_dico
 from lazagne.config.constant import *
 from binascii import unhexlify

@@ -1,4 +1,4 @@
-LaZagne 2.3.2 (13/03/2018)
+LaZagne 2.3.2 (21/03/2018)
 - Windows
 	* Big code review
 	* Lots of minor bug fixed
@@ -7,6 +7,11 @@ LaZagne 2.3.2 (13/03/2018)
 	* New modules added postgresql and psi-im (thanks to @m41nt41n3r)
 	* XP managed
 	* Adding support for newest firefox version. Awesome work from lclevy: https://github.com/lclevy/firepwd
+	* Adding Wdigest passwords (using mimikatz signature) 
+		* Works on Vista / Win7 x86 and x64
+		* Thanks to 
+			* n1nj4sec for https://github.com/n1nj4sec/memorpy/
+			* Francesco Picasso for https://github.com/RealityNet/hotoloti/blob/master/volatility/mimikatz.py
 
 - Linux
 	* Big code review
