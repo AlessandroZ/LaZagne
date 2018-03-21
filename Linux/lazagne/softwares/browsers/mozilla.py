@@ -65,49 +65,53 @@ class Mozilla(ModuleInfo):
 		try:
 			conn = sqlite3.connect(os.path.join(profile, 'key4.db')) # Firefox 58.0.2 / NSS 3.35 with key4.db in SQLite
 			c 	 = conn.cursor()
-
+			
 			# First check password
 			c.execute("SELECT item1,item2 FROM metadata WHERE id = 'password';")
 			row = c.next()
 
 			(globalSalt, master_password, entrySalt) = self.manage_masterpassword(master_password='', key_data=row)
-			if not globalSalt:
-				return None
-		
-			# Decrypt 3DES key to decrypt "logins.json" content
-			c.execute("SELECT a11,a102 FROM nssPrivate;")
-			a11, a102 = c.next()
-			# a11  : CKA_VALUE
-			# a102 : f8000000000000000000000000000001, CKA_ID
-			self.printASN1(a11, len(a11), 0)
-			"""
-			SEQUENCE {
+			if globalSalt:	
+				# Decrypt 3DES key to decrypt "logins.json" content
+				c.execute("SELECT a11,a102 FROM nssPrivate;")
+				a11, a102 = c.next()
+				# a11  : CKA_VALUE
+				# a102 : f8000000000000000000000000000001, CKA_ID
+				self.printASN1(a11, len(a11), 0)
+				"""
 				SEQUENCE {
-					OBJECTIDENTIFIER 1.2.840.113549.1.12.5.1.3
 					SEQUENCE {
-						OCTETSTRING entry_salt_for_3des_key
-						INTEGER 01
+						OBJECTIDENTIFIER 1.2.840.113549.1.12.5.1.3
+						SEQUENCE {
+							OCTETSTRING entry_salt_for_3des_key
+							INTEGER 01
+						}
 					}
+					OCTETSTRING encrypted_3des_key (with 8 bytes of PKCS#7 padding)
 				}
-				OCTETSTRING encrypted_3des_key (with 8 bytes of PKCS#7 padding)
-			}
-			"""
-			decodedA11 	= decoder.decode( a11 ) 
-			entrySalt 	= decodedA11[0][0][1][0].asOctets()
-			cipherT 	= decodedA11[0][1].asOctets()
-			key 		= self.decrypt3DES(globalSalt, master_password, entrySalt, cipherT)
+				"""
+				decodedA11 	= decoder.decode( a11 ) 
+				entrySalt 	= decodedA11[0][0][1][0].asOctets()
+				cipherT 	= decodedA11[0][1].asOctets()
+				key 		= self.decrypt3DES(globalSalt, master_password, entrySalt, cipherT)
+				if key:
+					yield key[:24]
+				
 		except:
+			pass
+		
+		try:
 			key_data = self.readBsddb(os.path.join(profile, 'key3.db'))
 			
 			# Check masterpassword 
 			(globalSalt, master_password, entrySalt) = self.manage_masterpassword(master_password='', key_data=key_data, new_version=False)
-			if not globalSalt:
-				return None
-
-			key = self.extractSecretKey(key_data=key_data, globalSalt=globalSalt, master_password=master_password, entrySalt=entrySalt)
+			if  globalSalt:
+				key = self.extractSecretKey(key_data=key_data, globalSalt=globalSalt, master_password=master_password, entrySalt=entrySalt)
+				if key:
+					yield key[:24]
+		except:
+			pass
 		
-		if not key: return None
-		return key[:24]
 
 	def getShortLE(self, d, a):
 		return unpack('<H',(d)[a:a+2])[0]
@@ -354,7 +358,7 @@ class Mozilla(ModuleInfo):
 				return globalSalt, master_password, entrySalt
 			
 		print_debug('WARNING', u'No password has been found using the default list')
-		return ('', '', '')
+		return False
 	
 	def remove_padding(self, data):
 		"""
@@ -387,10 +391,8 @@ class Mozilla(ModuleInfo):
 		for profile in profile_list:
 			print_debug('INFO', u'Profile path found: {profile}'.format(profile=profile))
 
-			key = self.get_key(profile)
-			if key:
+			for key in self.get_key(profile):
 				credentials = self.getLoginData(profile)
-
 				for user, passw, url in credentials:
 					try:
 						pwdFound.append(
