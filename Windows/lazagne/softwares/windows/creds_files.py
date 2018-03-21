@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- 
-from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.module_info import ModuleInfo
 from lazagne.config.dpapi_structure import *
 from lazagne.config.constant import *
 import os

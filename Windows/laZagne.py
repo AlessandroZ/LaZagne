@@ -14,7 +14,7 @@ from lazagne.softwares.browsers.mozilla import Mozilla
 
 # Configuration
 from lazagne.config.write_output import parseJsonResultToBuffer, print_debug, StandartOutput
-from lazagne.config.changePrivileges import ListSids, rev2self, impersonate_sid_long_handle
+from lazagne.config.change_privileges import list_sids, rev2self, impersonate_sid_long_handle
 from lazagne.config.manageModules import get_categories, get_modules
 from lazagne.config.dpapi_structure import *
 from lazagne.config.constant import *
@@ -115,7 +115,7 @@ def launch_module(module, dpapi_used=True, registry_used=True, system_module=Fal
 			if args[i] and i in module:
 				modulesToLaunch.append(i)
 	except:
-		# if no args
+		# If no args
 		pass
 
 	# Launch all modules
@@ -142,7 +142,7 @@ def launch_module(module, dpapi_used=True, registry_used=True, system_module=Fal
 			)
 			continue
 
-		# run module
+		# Run module
 		for m in run_module(title=i, module=module[i]):
 			yield m
 
@@ -169,9 +169,9 @@ def runModule(category_choosed, dpapi_used=True, registry_used=True, system_modu
 			yield r
 
 	if constant.module_to_exec_at_end:
-		# these modules will need the windows user password to be able to decrypt dpapi blobs
+		# These modules will need the windows user password to be able to decrypt dpapi blobs
 		constant.dpapi = Decrypt_DPAPI(password=constant.user_password)
-		# add username to check username equals passwords
+		# Add username to check username equals passwords
 		constant.passwordFound.append(constant.username)
 		constant.dpapi.check_credentials(constant.passwordFound)
 
@@ -224,7 +224,7 @@ def get_user_list_on_filesystem(impersonated_user=[]):
 	return all_users
 
 def set_env_variables(user, toImpersonate=False):
-	# restore template path
+	# Restore template path
 	template_path = {
 		'APPDATA'			: u'{drive}:\\Users\\{user}\\AppData\\Roaming\\',
 		'USERPROFILE'		: u'{drive}:\\Users\\{user}\\',
@@ -262,7 +262,7 @@ def clean_temporary_files():
 
 def runLaZagne(category_choosed='all', password=None):
 
-	# useful if this function is called from another tool
+	# Useful if this function is called from another tool
 	if password:
 		constant.user_password = password
 
@@ -285,7 +285,7 @@ def runLaZagne(category_choosed='all', password=None):
 		
 		# --------- Impersonation using tokens ---------
 		
-		sids 				= ListSids()
+		sids 				= list_sids()
 		impersonateUsers 	= {}
 		impersonated_user 	= [constant.username]
 		
@@ -403,6 +403,7 @@ if __name__ == '__main__':
 				categories[c]['subparser'] += tmp
 
 	# ------------------------------------------- Print all -------------------------------------------
+	
 	parents = [PPoptional] + all_subparser + [PPwd, PWrite]
 	dic = {'all':{'parents':parents, 'help':'Run all modules', 'func': runModule}}
 	for c in categories:

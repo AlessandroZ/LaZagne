@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
-from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import *
 from lazagne.config.constant import *
 import xml.etree.cElementTree as ET

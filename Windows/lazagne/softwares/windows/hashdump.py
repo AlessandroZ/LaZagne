@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 from creddump7.win32.hashdump import dump_file_hashes
 from lazagne.config.write_output import print_debug
-from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import *
 from lazagne.config.constant import *
 import subprocess

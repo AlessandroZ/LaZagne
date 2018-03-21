@@ -65,7 +65,7 @@ from lazagne.softwares.windows.credman import Credman
 from lazagne.softwares.windows.hashdump import Hashdump
 from lazagne.softwares.windows.lsa_secrets import LSASecrets
 from lazagne.softwares.windows.vault import Vault
-from lazagne.softwares.windows.windows_password import WindowsPassword
+from lazagne.softwares.windows.windows import WindowsPassword
 from lazagne.softwares.windows.creds_files import CredFiles
 
 
