@@ -83,7 +83,7 @@ def verbosity():
 	elif 	args['verbose'] >= 2: level = logging.DEBUG
 	
 	formatter 	= logging.Formatter(fmt='%(message)s')
-	stream 		= logging.StreamHandler()
+	stream 		= logging.StreamHandler(sys.stdout)
 	stream.setFormatter(formatter)
 	root = logging.getLogger()
 	root.setLevel(level)
