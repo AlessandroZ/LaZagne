@@ -1,4 +1,4 @@
-LaZagne 2.3.2 (21/03/2018)
+LaZagne 2.3.2 (22/03/2018)
 - Windows
 	* Big code review
 	* Lots of minor bug fixed
@@ -12,6 +12,8 @@ LaZagne 2.3.2 (21/03/2018)
 		* Thanks to 
 			* n1nj4sec for https://github.com/n1nj4sec/memorpy/
 			* Francesco Picasso for https://github.com/RealityNet/hotoloti/blob/master/volatility/mimikatz.py
+	* Note: right now, LaZagne x86 cannot read memory from a x64 process (so some modules cannot work using this build such as wdigest passwords)
+		* That's why, two lazagne binaries have been built (x86 and x64).
 
 - Linux
 	* Big code review
