@@ -71,7 +71,7 @@ def verbosity():
 	
 	FORMAT 		= "%(message)s"
 	formatter 	= logging.Formatter(fmt=FORMAT)
-	stream 		= logging.StreamHandler()
+	stream 		= logging.StreamHandler(sys.stdout)
 	stream.setFormatter(formatter)
 	
 	root = logging.getLogger()
