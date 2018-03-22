@@ -5,8 +5,13 @@ from lazagne.config.moduleInfo import ModuleInfo
 from lazagne.config.constant import *
 import xml.etree.cElementTree as ET
 from lazagne.config import homes
-import dbus
 import os
+
+try:
+    import dbus
+except ImportError as e:
+    dbus = None
+
 
 class Pidgin(ModuleInfo):
 	def __init__(self):
@@ -14,6 +19,8 @@ class Pidgin(ModuleInfo):
 
 	# If pidgin is started, use the api to retrieve all passwords
 	def check_if_pidgin_started(self):
+                if not dbus:
+                    return False
 		try:
 			pwdFound 	= []
 			bus 		= dbus.SessionBus()
@@ -38,7 +45,7 @@ class Pidgin(ModuleInfo):
 		pwdFound = []
 		try:
 			pwdTab = self.check_if_pidgin_started()
-			if pwdTab != False:
+			if pwdTab:
 				pwdFound = pwdTab
 		except:
 			pass
