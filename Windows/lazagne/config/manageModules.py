@@ -127,8 +127,8 @@ def get_modules():
 		MavenRepositories(),
 
 		# Memory
-		Keepass(), 				# retrieve browers and keepass passwords
-		MemoryDump(), 			# should be launched after memory dump
+		MemoryDump(), 			# retrieve browers and keepass passwords
+		Keepass(), 				# should be launched after memory dump
 
 		# Php
 		Composer(),
