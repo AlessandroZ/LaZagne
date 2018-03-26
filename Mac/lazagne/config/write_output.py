@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*- 
+#!/usr/bin/python
+
 from lazagne.config.constant import constant
 from time import gmtime, strftime
 import logging
@@ -41,15 +44,17 @@ class StandartOutput():
 	# debug option for the logging
 	def title_info(self, title):
 		t = '------------------- ' + title + ' passwords -----------------\n'
-		self.print_logging(function=logging.info, category='', message=t, color='white')
+		self.print_logging(function=logging.info, prefix='', message=t, color='white')
 
 	def print_user(self, user):
 		self.do_print('########## User: %s ##########\n' % user)
 
-	def print_footer(self):
+	def print_footer(self, elapsed_time=None):
 		footer = '\n[+] %s passwords have been found.\n' % str(constant.nbPasswordFound)
 		if logging.getLogger().isEnabledFor(logging.INFO) == False:
 			footer += 'For more information launch it again with the -v option\n'
+		if elapsed_time:
+			footer += '\nelapsed time = ' + str(elapsed_time)
 		self.do_print(footer)
 
 	def try_unicode(self, obj, encoding='utf-8'):
@@ -64,8 +69,8 @@ class StandartOutput():
 	# centralize print function
 	def do_print(self, message='', color=False):
 		# quiet mode => nothing is printed
-		# if constant.quiet_mode:
-		# 	return
+		if constant.quiet_mode:
+			return
 		
 		message = self.try_unicode(message)
 		self.print_without_error(message, color=color)
@@ -84,24 +89,21 @@ class StandartOutput():
 
 	def print_without_error(self, message, color):
 		print '{color}{message}{restore_color}'.format(
-														color=self.choose_color(color), 
-														message=message, 
-														restore_color=self.no_color
-													)
+			color=self.choose_color(color), 
+			message=message, 
+			restore_color=self.no_color
+		)
 
-	def print_logging(self, function, category='INFO', message='', color=False):
-		# if constant.quiet_mode:
-		# 	return
+	def print_logging(self, function, prefix='[!]', message='', color=False):
+		if constant.quiet_mode:
+			return
 
-		if category:
-			category = '[%s]' % category
-
-		function('{color}{category} {message}{restore_color}\n'.format(
-																		color=self.choose_color(color), 
-																		category=category, 
-																		message=message, 
-																		restore_color=self.no_color)
-																	)
+		function('{color}{prefix} {message}{restore_color}'.format(
+			color=self.choose_color(color), 
+			prefix=prefix, 
+			message=message, 
+			restore_color=self.no_color)
+		)
 
 	def print_output(self, software_name, pwdFound, title1=False):
 	
@@ -180,13 +182,13 @@ class StandartOutput():
 
 
 	def write_header(self):
-		time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-		header = '{banner}\r\n- Date: {date}\r\n- Username: {username}\r\n- Hostname:{hostname}\r\n\r\n'.format(
-				banner	 = self.banner.replace('\n', '\r\n'),
-				date 	 = str(time), 
-				username = getpass.getuser(), 
-				hostname = socket.gethostname()
-			)
+		time 	= strftime("%Y-%m-%d %H:%M:%S", gmtime())
+		header 	= '{banner}\r\n- Date: {date}\r\n- Username: {username}\r\n- Hostname:{hostname}\r\n\r\n'.format(
+			banner	 = self.banner.replace('\n', '\r\n'),
+			date 	 = str(time), 
+			username = getpass.getuser(), 
+			hostname = socket.gethostname()
+		)
 		open(os.path.join(constant.folder_name, '%s.txt' % constant.file_name_results),"a+b").write(header)
 
 	def write_footer(self):
@@ -203,23 +205,23 @@ def print_debug(error_level, message):
 
 	# print when password is found
 	if error_level == 'OK':
-		constant.st.do_print(message=message, color='green')
+		constant.st.do_print(message='[+] {message}'.format(message=message), color='green')
 
 	# print when password is not found
 	elif error_level == 'FAILED':
-		constant.st.do_print(message=message, color='red')
+		constant.st.do_print(message='[-] {message}'.format(message=message), color='red')
 
 	elif error_level == 'CRITICAL' or error_level == 'ERROR':
-		constant.st.print_logging(function=logging.error, category='ERROR', message=message, color='red')
+		constant.st.print_logging(function=logging.error, prefix='[-]', message=message, color='red')
 
 	elif error_level == 'WARNING':
-		constant.st.print_logging(function=logging.warning, category='WARNING', message=message, color='cyan')
+		constant.st.print_logging(function=logging.warning, prefix='[!]', message=message, color='cyan')
 
 	elif error_level == 'DEBUG':
-		constant.st.print_logging(function=logging.debug, message=message, category='DEBUG')
+		constant.st.print_logging(function=logging.debug, prefix='[!]', message=message)
 
 	else:
-		constant.st.print_logging(function=logging.info, message=message, category='INFO')
+		constant.st.print_logging(function=logging.info, prefix='[!]', message=message)
 
 # --------------------------- End of output functions ---------------------------
 
