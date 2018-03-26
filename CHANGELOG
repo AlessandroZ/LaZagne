@@ -2,8 +2,8 @@ LaZagne 2.3.2 (22/03/2018)
 - Windows
 	* Big code review
 	* Lots of minor bug fixed
-	* If windows user found => domain passwords retrieved from credentials files
-	* If windows user not found => DPAPI hash printed to bruteforce with john or hashcat (no admin privilege required)
+	* If windows user password found => domain passwords retrieved from credentials files
+	* If windows user password not found => DPAPI hash printed to bruteforce with john or hashcat (no admin privilege required)
 	* New modules added postgresql and psi-im (thanks to @m41nt41n3r)
 	* XP managed
 	* Adding support for newest firefox version. Awesome work from lclevy: https://github.com/lclevy/firepwd
