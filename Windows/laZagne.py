@@ -108,21 +108,8 @@ def run_module(title, module):
 		yield False, title.capitalize(), error_message
 
 def launch_module(module, dpapi_used=True, registry_used=True, system_module=False):
-	modulesToLaunch = []
-	try:
-		# Launch only a specific module
-		for i in args:
-			if args[i] and i in module:
-				modulesToLaunch.append(i)
-	except:
-		# If no args
-		pass
 
-	# Launch all modules
-	if not modulesToLaunch:
-		modulesToLaunch = module
-	
-	for i in modulesToLaunch:
+	for i in module:
 
 		if not dpapi_used and module[i].dpapi_used:
 			continue
