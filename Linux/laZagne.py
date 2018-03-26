@@ -89,24 +89,9 @@ def manage_advanced_options():
 		constant.jitsi_masterpass = args['master_pwd']
 
 def launch_module(module):
-	ok = False
-	modulesToLaunch = []
-	try:
-		# Launch only a specific module
-		for i in args:
-			if args[i] and i in b:
-				modulesToLaunch.append(i)
-	except:
-		# If no args
-		pass
-
-	# Launch all modules
-	if not modulesToLaunch:
-		modulesToLaunch = module
-
-	for i in modulesToLaunch:
+	for i in module:
 		try:
-			constant.st.title_info(i.capitalize()) 				# Print title
+			constant.st.title_info(i.capitalize()) 					# Print title
 			pwdFound = module[i].run(i.capitalize())				# Run the module
 			constant.st.print_output(i.capitalize(), pwdFound) 		# Print the results
 
