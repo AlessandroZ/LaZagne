@@ -44,7 +44,8 @@ laZagne.exe browsers
 laZagne.exe browsers -firefox
 ```
 
-* Write all passwords found into a file (-oN for Normal txt, -oJ for Json, -oA for All)
+* Write all passwords found into a file (-oN for Normal txt, -oJ for Json, -oA for All).
+Note: If you have problems to parse JSON results written as a multi-line strings, check [this](https://github.com/AlessandroZ/LaZagne/issues/226). 
 ```
 laZagne.exe all -oN
 laZagne.exe all -oA -output C:\Users\test\Desktop
