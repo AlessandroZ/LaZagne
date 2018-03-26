@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*- 
+#!/usr/bin/python
+
 # browsers
 from lazagne.softwares.browsers.mozilla import Mozilla
 from lazagne.softwares.browsers.chrome import Chrome

@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*- 
+#!/usr/bin/python
+
 # Awesome work done by @n0fate
 # check the chainbreaker tool: https://github.com/n0fate/chainbreaker
 
 from lazagne.softwares.system.chainbreaker_module.chainbreaker import *
 from lazagne.config.write_output import print_debug
-from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import *
 import subprocess
 import binascii
@@ -12,8 +15,7 @@ import os
 
 class Chainbreaker(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-chainbreaker', 'action': 'store_true', 'dest': 'keychain', 'help': 'Dump keychain'}
-		ModuleInfo.__init__(self, 'chainbreaker', 'system', options)
+		ModuleInfo.__init__(self, 'chainbreaker', 'system')
 
 	def list_users(self):
 		users_dir 	= '/Users'

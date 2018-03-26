@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 #!/usr/bin/python
 
 ##############################################################################
@@ -22,10 +23,10 @@ import os
 
 # Configuration
 from lazagne.config.write_output import parseJsonResultToBuffer, print_debug, StandartOutput
-from lazagne.config.manageModules import get_categories, get_modules
+from lazagne.config.manage_modules import get_categories, get_modules
 from lazagne.config.constant import *
 
-# object used to manage the output / write functions (cf write_output file)
+# Object used to manage the output / write functions (cf write_output file)
 constant.st = StandartOutput()
 
 category 	= get_categories()
@@ -45,6 +46,12 @@ for module in moduleNames:
 modules['mails']['thunderbird'] = Mozilla(True) # For thunderbird (firefox and thunderbird use the same class)
 
 def output():
+	if args['output']:
+		if os.path.isdir(args['output']):
+			constant.folder_name = args['output']
+		else:
+			print '[!] Specify a directory, not a file !'
+
 	if args['write_normal']:
 		constant.output = 'txt'
 	
@@ -58,10 +65,9 @@ def output():
 		if constant.output != 'json':
 			constant.st.write_header()
 
-	# Remove all unecessary variables
-	del args['write_normal']
-	del args['write_json']
-	del args['write_all']
+def quiet_mode():
+	if args['quiet']:
+		constant.quiet_mode = True
 
 def verbosity():
 	# Write on the console + debug file
@@ -99,23 +105,6 @@ def manage_advanced_options():
 	if 'attack' in args:
 		constant.dictionary_attack = args['attack']
 
-	# File used for dictionary attacks
-	if 'path' in args:
-		constant.path = args['path']
-	if 'bruteforce' in args: 
-		constant.bruteforce = args['bruteforce']
-
-	# Mozilla advanced options
-	if 'manually' in args:
-		constant.manually = args['manually']
-	if 'specific_path' in args:
-		constant.specific_path = args['specific_path']
-	
-	if 'mails' in args['auditType']:
-		constant.mozilla_software = 'Thunderbird'
-	elif 'browsers' in args['auditType']:
-		constant.mozilla_software = 'Firefox'
-
 def launch_module(module):
 	ok = False
 	modulesToLaunch = []
@@ -125,7 +114,7 @@ def launch_module(module):
 			if args[i] and i in b:
 				modulesToLaunch.append(i)
 	except:
-		# if no args
+		# If no args
 		pass
 
 	# Launch all modules
@@ -138,7 +127,7 @@ def launch_module(module):
 			pwdFound = module[i].run(i.capitalize())				# run the module
 			constant.st.print_output(i.capitalize(), pwdFound) 		# print the results
 
-			# return value - not used but needed 
+			# Return value - not used but needed 
 			yield True, i.capitalize(), pwdFound
 		except:
 			traceback.print_exc()
@@ -146,7 +135,7 @@ def launch_module(module):
 			error_message = traceback.format_exc()
 			yield False, i.capitalize(), error_message
 
-# write output to file (json and txt files)
+# Write output to file (json and txt files)
 def write_in_file(result):
 	if constant.output == 'json' or constant.output == 'all':
 		try:
@@ -184,7 +173,6 @@ def print_user(user):
 	if logging.getLogger().isEnabledFor(logging.INFO) == True:
 		constant.st.print_user(user)
 
-
 def get_safe_storage_key(key):
 	try:
 		for passwords in constant.keychains_pwds:
@@ -200,16 +188,16 @@ def runLaZagne(category_choosed='all', interactive=False):
 	constant.finalResults = {}
 	constant.finalResults['User'] = user
 
-	# could be easily changed
+	# Could be easily changed
 	application = 'App Store'
 	
 	i = 0
 	while True:
-		# run all modules
+		# Run all modules
 		for r in runModule(category_choosed):
 			yield r
 
-		# execute once if not interactive, otherwise print the dialog box many times until the user keychain is unlocked (which means that the user passwod has been found) 
+		# Execute once if not interactive, otherwise print the dialog box many times until the user keychain is unlocked (which means that the user passwod has been found) 
 		if not interactive or (interactive and constant.user_keychain_find):
 			break
 		
@@ -220,7 +208,7 @@ def runLaZagne(category_choosed='all', interactive=False):
 			else:
 				msg = 'Password incorrect! Please try again.'
 
-			# code inspired from: https://github.com/fuzzynop/FiveOnceInYourLife
+			# Code inspired from: https://github.com/fuzzynop/FiveOnceInYourLife
 			cmd = 'osascript -e \'tell app "{application}" to activate\' -e \'tell app "{application}" to activate\' -e \'tell app "{application}" to display dialog "{msg}" & return & return  default answer "" with icon 1 with hidden answer with title "{application} Alert"\''.format(application=application, msg=msg)
 			pwd = run_cmd(cmd)
 			if pwd.split(':')[1].startswith('OK'):
@@ -228,11 +216,11 @@ def runLaZagne(category_choosed='all', interactive=False):
 		
 		i += 1
 
-		# if the user enter 10 bad password, be nice with him and break the loop
+		# If the user enter 10 bad password, be nice with him and break the loop
 		if i > 10:
 			break
 
-	# if keychains has been decrypted, launch again some module
+	# If keychains has been decrypted, launch again some module
 	chrome_key = get_safe_storage_key('Chrome Safe Storage')
 	if chrome_key:
 		for r in launch_module({'chrome': Chrome(safe_storage_key=chrome_key)}):
@@ -249,20 +237,20 @@ if __name__ == '__main__':
 	# Version and verbosity 
 	PPoptional = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 	PPoptional._optionals.title = 'optional arguments'
-	PPoptional.add_argument('-i', '--interactive', default=False, action='store_true', help='will prompt a window to the user')
-	PPoptional.add_argument('-password', dest='password', action='store', help='user password used to decrypt the keychain')
-	PPoptional.add_argument('-attack', dest='attack', action='store_true', help='500 well known passwords used to check the user hash (could take a while)')
-	PPoptional.add_argument('-path', dest='path', action='store', help='path of a file used for dictionary file')
-	PPoptional.add_argument('-b', dest='bruteforce', action='store', help='number of character to brute force')
-	PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='increase verbosity level')
+	PPoptional.add_argument('-i', '--interactive', default=False, action='store_true', 	help='will prompt a window to the user')
+	PPoptional.add_argument('-password', 	dest='password', 	action='store', 		help='user password used to decrypt the keychain')
+	PPoptional.add_argument('-attack', 		dest='attack', 		action='store_true', 	help='500 well known passwords used to check the user hash (could take a while)')
+	PPoptional.add_argument('-v', 			dest='verbose', 	action='count', 		help='increase verbosity level', default=0)
+	PPoptional.add_argument('-quiet', 		dest='quiet', 		action='store_true', 	help='quiet mode: nothing is printed to the output', default=False, )
 
 	# Output 
 	PWrite = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
 	PWrite._optionals.title = 'Output'
-	PWrite.add_argument('-oN', dest='write_normal',  action='store_true', help = 'output file in a readable format')
-	PWrite.add_argument('-oJ', dest='write_json',  action='store_true', help = 'output file in a json format')
-	PWrite.add_argument('-oA', dest='write_all',  action='store_true', help = 'output file in all format')
-
+	PWrite.add_argument('-oN',		dest='write_normal',  	action='store_true',	help = 'output file in a readable format')
+	PWrite.add_argument('-oJ', 		dest='write_json',  	action='store_true', 	help = 'output file in a json format')
+	PWrite.add_argument('-oA', 		dest='write_all',  		action='store_true', 	help = 'output file in all format')
+	PWrite.add_argument('-output', 	dest='output', 			action='store', 		help='destination path to store results (default:.)', default='.')
+	
 	# ------------------------------------------- Add options and suboptions to all modules -------------------------------------------
 	all_subparser = []
 	for c in category:
@@ -301,12 +289,16 @@ if __name__ == '__main__':
 		dic_tmp = {c: {'parents': parser_tab, 'help':'Run %s module' % c, 'func': runModule}}
 		dic = dict(dic.items() + dic_tmp.items())
 
-	#2- Main commands
 	subparsers = parser.add_subparsers(help='Choose a main command')
 	for d in dic:
 		subparsers.add_parser(d,parents=dic[d]['parents'],help=dic[d]['help']).set_defaults(func=dic[d]['func'],auditType=d)
 
 	# ------------------------------------------- Parse arguments -------------------------------------------
+	
+	if len(sys.argv) == 1:
+		parser.print_help()
+		sys.exit(1)
+
 	args = dict(parser.parse_args()._get_kwargs())
 	arguments = parser.parse_args()
 	category_choosed = args['auditType']
@@ -315,6 +307,8 @@ if __name__ == '__main__':
 	output()
 	verbosity()
 	manage_advanced_options()
+
+	quiet_mode()
 
 	# Print the title
 	constant.st.first_title()
@@ -325,6 +319,4 @@ if __name__ == '__main__':
 		pass
 
 	write_in_file(stdoutRes)
-
-	elapsed_time = time.time() - start_time
-	print '\nelapsed time = ' + str(elapsed_time)
+	constant.st.print_footer(elapsed_time=str(time.time() - start_time))
