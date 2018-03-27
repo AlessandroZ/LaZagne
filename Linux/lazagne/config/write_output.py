@@ -139,6 +139,10 @@ class StandartOutput():
 				self.print_title(software_name)
 
 			toWrite = []
+			
+			# Remove duplicated password
+			pwdFound = [dict(t) for t in set([tuple(d.items()) for d in pwdFound])]
+
 			for pwd in pwdFound:
 				password_category = False
 				# Detect which kinds of password has been found
