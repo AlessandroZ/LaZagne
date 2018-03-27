@@ -139,9 +139,12 @@ class StandartOutput():
 
 			# Other passwords
 			else:
+				# Remove duplicated password
+				pwdFound = [dict(t) for t in set([tuple(d.items()) for d in pwdFound])]
+
 				for pwd in pwdFound:
 					password_category = False
-					# detect which kinds of password has been found
+					# Detect which kinds of password has been found
 					lower_list = [s.lower() for s in pwd.keys()]
 					password = [s for s in lower_list if "password" in s]
 					if password: 
