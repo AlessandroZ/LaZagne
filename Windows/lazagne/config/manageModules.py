@@ -44,6 +44,7 @@ from lazagne.softwares.php.composer import Composer
 from lazagne.softwares.svn.tortoise import Tortoise
 
 # Sysadmin
+from lazagne.softwares.sysadmin.vnc import VNC
 from lazagne.softwares.sysadmin.apachedirectorystudio import ApacheDirectoryStudio
 from lazagne.softwares.sysadmin.coreftp import CoreFTP
 from lazagne.softwares.sysadmin.cyberduck import Cyberduck
@@ -146,6 +147,7 @@ def get_modules():
 		OpenSSHForWindows(),
 		RDPManager(),
 		Unattended(),
+		VNC(),
 		WinSCP(),
 
 		# Wifi
