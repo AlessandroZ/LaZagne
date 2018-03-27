@@ -106,7 +106,21 @@ def manage_advanced_options():
 		constant.dictionary_attack = args['attack']
 
 def launch_module(module):
-	for i in module:
+	modulesToLaunch = []
+	try:
+		# Launch only a specific module
+		for i in args:
+			if args[i] and i in module:
+				modulesToLaunch.append(i)
+	except:
+		# If no args
+		pass
+
+	# Launch all modules
+	if not modulesToLaunch:
+		modulesToLaunch = module
+
+	for i in modulesToLaunch:
 		try:
 			constant.st.title_info(i.capitalize()) 					# print title
 			pwdFound = module[i].run(i.capitalize())				# run the module
