@@ -10,7 +10,7 @@
 # Disclaimer: Do Not Use this program for illegal purposes ;)
 from lazagne.softwares.browsers.mozilla import Mozilla
 from lazagne.config.write_output import parseJsonResultToBuffer, print_debug, StandartOutput
-from lazagne.config.manageModules import get_categories, get_modules
+from lazagne.config.manage_modules import get_categories, get_modules
 from lazagne.config.constant import *
 import traceback
 import argparse
