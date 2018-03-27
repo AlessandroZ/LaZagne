@@ -405,4 +405,4 @@ class Mozilla(ModuleInfo):
 					except Exception, e:
 						print_debug('DEBUG', u'An error occured decrypting the password: {error}'.format(error=e))
 
-				return pwdFound
+		return pwdFound
