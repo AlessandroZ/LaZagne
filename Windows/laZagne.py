@@ -15,7 +15,7 @@ from lazagne.softwares.browsers.mozilla import Mozilla
 # Configuration
 from lazagne.config.write_output import parseJsonResultToBuffer, print_debug, StandartOutput
 from lazagne.config.change_privileges import list_sids, rev2self, impersonate_sid_long_handle
-from lazagne.config.manageModules import get_categories, get_modules
+from lazagne.config.manage_modules import get_categories, get_modules
 from lazagne.config.dpapi_structure import *
 from lazagne.config.constant import *
 import traceback
@@ -108,8 +108,21 @@ def run_module(title, module):
 		yield False, title.capitalize(), error_message
 
 def launch_module(module, dpapi_used=True, registry_used=True, system_module=False):
+	modulesToLaunch = []
+	try:
+		# Launch only a specific module
+		for i in args:
+			if args[i] and i in module:
+				modulesToLaunch.append(i)
+	except:
+		# If no args
+		pass
 
-	for i in module:
+	# Launch all modules
+	if not modulesToLaunch:
+		modulesToLaunch = module
+
+	for i in modulesToLaunch:
 
 		if not dpapi_used and module[i].dpapi_used:
 			continue

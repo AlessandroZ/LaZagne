@@ -31,8 +31,7 @@ class Wifi(ModuleInfo):
 		for st in stdout.split('\n'):
 			if 'key content' in st.lower() or 'contenu de la cl' in st.lower():
 				password = st.split(':')[1].strip()
-				return passwords
-
+				return password
 	
 	def run(self, software_name=None):
 
