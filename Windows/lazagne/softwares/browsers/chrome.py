@@ -19,9 +19,9 @@ class Chrome(ModuleInfo):
 	def run(self, software_name=None):
 		pwdFound = []
 		paths 	 = [
-						u'{homedrive}{homepath}\\Local Settings\\Application Data\\Google\\Chrome\\User Data'.format(homedrive=constant.profile['HOMEDRIVE'], homepath=constant.profile['HOMEPATH']), 
-						u'{localappdata}\\Google\\Chrome\\User Data'.format(localappdata=constant.profile['LOCALAPPDATA']), 
-					]
+			u'{homedrive}{homepath}\\Local Settings\\Application Data\\Google\\Chrome\\User Data'.format(homedrive=constant.profile['HOMEDRIVE'], homepath=constant.profile['HOMEPATH']), 
+			u'{localappdata}\\Google\\Chrome\\User Data'.format(localappdata=constant.profile['LOCALAPPDATA']), 
+		]
 
 		for path in paths: 
 			if os.path.exists(path):
