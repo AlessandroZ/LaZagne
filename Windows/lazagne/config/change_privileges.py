@@ -81,6 +81,9 @@ def list_sids():
 			pinfo = proc.as_dict(attrs=['pid', 'username', 'name'])
 		except psutil.NoSuchProcess:
 			continue
+		except WindowsError as e:
+            		if e.winerror == 1722: # WindowsError: [Error 1722] The RPC server is unavailable
+                		continue			
 		
 		if pinfo['pid']<=4:
 			continue
