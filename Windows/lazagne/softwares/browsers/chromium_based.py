@@ -14,7 +14,7 @@ from lazagne.config.write_output import print_debug
 
 class ChromiumBased(ModuleInfo):
 	def __init__(self, browser_name, paths):
-		self.paths = paths
+		self.paths = paths if isinstance(paths, list) else [paths]
 		ModuleInfo.__init__(self, browser_name, 'browsers', dpapi_used=True)
 
 	def _get_database_dirs(self):
@@ -87,32 +87,18 @@ class ChromiumBased(ModuleInfo):
 		return [{"URL": url, "Login": login, "Password": password} for url, login, password in set(credentials)]
 
 
+# Name, path or a list of paths
 chromium_browsers = [
-	ChromiumBased(browser_name="chrome", paths=[
-		u'{LOCALAPPDATA}\\Google\\Chrome\\User Data'
-	]),
-	ChromiumBased(browser_name="yandex", paths=[
-		u'{LOCALAPPDATA}\\Yandex\\YandexBrowser\\User Data'
-	]),
-	ChromiumBased(browser_name="coccoc", paths=[
-		u'{LOCALAPPDATA}\\CocCoc\\Browser\\User Data',
-	]),
-	ChromiumBased(browser_name="vivaldi", paths=[
-		u'{LOCALAPPDATA}\\Vivaldi\\User Data',
-	]),
-	ChromiumBased(browser_name="opera", paths=[
-		u'{APPDATA}\\Opera Software\\Opera Stable',
-	]),
-	ChromiumBased(browser_name="kometa", paths=[
-		u'{LOCALAPPDATA}\\Kometa\\User Data',
-	]),
-	ChromiumBased(browser_name="amigo", paths=[
-		u'{LOCALAPPDATA}\\Amigo\\User\\User Data',
-	]),
-	ChromiumBased(browser_name="torch", paths=[
-		u'{LOCALAPPDATA}\\Torch\\User Data',
-	]),
-	ChromiumBased(browser_name="orbitum", paths=[
-		u'{LOCALAPPDATA}\\Orbitum\\User Data',
-	])
+	('amigo', '{LOCALAPPDATA}\\Amigo\\User\\User Data'),
+	('chrome', '{LOCALAPPDATA}\\Google\\Chrome\\User Data'),
+	('coccoc', '{LOCALAPPDATA}\\CocCoc\\Browser\\User Data'),
+	('kometa', '{LOCALAPPDATA}\\Kometa\\User Data'),
+	('opera', '{APPDATA}\\Opera Software\\Opera Stable'),
+	('orbitum', '{LOCALAPPDATA}\\Orbitum\\User Data'),
+	('torch', '{LOCALAPPDATA}\\Torch\\User Data'),
+	('vivaldi', '{LOCALAPPDATA}\\Vivaldi\\User Data'),
+	('yandex', '{LOCALAPPDATA}\\Yandex\\YandexBrowser\\User Data'),
+	('7star', '{LOCALAPPDATA}\\7Star\\7Star\\User Data'),
 ]
+
+chromium_browsers = [ChromiumBased(browser_name=name, paths=paths) for name, paths in chromium_browsers]
