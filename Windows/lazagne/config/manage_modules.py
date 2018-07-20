@@ -1,9 +1,7 @@
 # Browsers
-from lazagne.softwares.browsers.chrome import Chrome
-from lazagne.softwares.browsers.coccoc import CocCoc
+from lazagne.softwares.browsers.chromium_based import chromium_browsers
 from lazagne.softwares.browsers.ie 	import IE
 from lazagne.softwares.browsers.mozilla import Mozilla
-from lazagne.softwares.browsers.opera import Opera
 
 # Chats
 from lazagne.softwares.chats.jitsi import Jitsi
@@ -92,11 +90,9 @@ def get_modules():
 	moduleNames = [
 
 		# Browser
-		Chrome(), 
-		CocCoc(),
 		IE(),
 		Mozilla(),
-		Opera(),
+		# Opera(),
 		
 		# Chats
 		Jitsi(),
@@ -161,4 +157,4 @@ def get_modules():
 		WindowsPassword(),
 		CredFiles(),
 	]
-	return moduleNames
+	return moduleNames + chromium_browsers
