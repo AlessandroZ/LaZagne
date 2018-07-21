@@ -104,7 +104,9 @@ chromium_browsers = [
 	('Kometa', '{LOCALAPPDATA}\\Kometa\\User Data'),
 	('Opera', '{APPDATA}\\Opera Software\\Opera Stable'),
 	('Orbitum', '{LOCALAPPDATA}\\Orbitum\\User Data'),
+	('Sputnik', '{LOCALAPPDATA}\\Sputnik\\Sputnik\\User Data'),
 	('Torch', '{LOCALAPPDATA}\\Torch\\User Data'),
+	('Uran', '{LOCALAPPDATA}\\uCozMedia\\Uran\\User Data'),
 	('Vivaldi', '{LOCALAPPDATA}\\Vivaldi\\User Data'),
 	('YandexBrowser', '{LOCALAPPDATA}\\Yandex\\YandexBrowser\\User Data')
 ]

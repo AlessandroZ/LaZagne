@@ -92,8 +92,7 @@ def get_modules():
 		# Browser
 		IE(),
 		Mozilla(),
-		# Opera(),
-		
+
 		# Chats
 		Jitsi(),
 		Pidgin(),
@@ -123,7 +122,7 @@ def get_modules():
 		MavenRepositories(),
 
 		# Memory
-		MemoryDump(), 			# retrieve browers and keepass passwords
+		MemoryDump(), 			# retrieve browsers and keepass passwords
 		Keepass(), 				# should be launched after memory dump
 
 		# Php
