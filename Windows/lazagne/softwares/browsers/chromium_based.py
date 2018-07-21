@@ -41,7 +41,8 @@ class ChromiumBased(ModuleInfo):
 						databases.add(database_path)
 		return databases
 
-	def _export_credentials(self, db_path):
+	@staticmethod
+	def _export_credentials(db_path):
 		"""
 		Export credentials from the given database
 
@@ -50,7 +51,6 @@ class ChromiumBased(ModuleInfo):
 		:rtype: tuple
 		"""
 
-		# Connect to the Database
 		credentials = []
 
 		try:
@@ -89,16 +89,22 @@ class ChromiumBased(ModuleInfo):
 
 # Name, path or a list of paths
 chromium_browsers = [
-	('amigo', '{LOCALAPPDATA}\\Amigo\\User\\User Data'),
-	('chrome', '{LOCALAPPDATA}\\Google\\Chrome\\User Data'),
-	('coccoc', '{LOCALAPPDATA}\\CocCoc\\Browser\\User Data'),
-	('kometa', '{LOCALAPPDATA}\\Kometa\\User Data'),
-	('opera', '{APPDATA}\\Opera Software\\Opera Stable'),
-	('orbitum', '{LOCALAPPDATA}\\Orbitum\\User Data'),
-	('torch', '{LOCALAPPDATA}\\Torch\\User Data'),
-	('vivaldi', '{LOCALAPPDATA}\\Vivaldi\\User Data'),
-	('yandex', '{LOCALAPPDATA}\\Yandex\\YandexBrowser\\User Data'),
-	('7star', '{LOCALAPPDATA}\\7Star\\7Star\\User Data'),
+	('7Star', '{LOCALAPPDATA}\\7Star\\7Star\\User Data'),
+	('Amigo', '{LOCALAPPDATA}\\Amigo\\User\\User Data'),
+	('Brave', '{APPDATA}\\brave'),
+	('CentBrowser', '{LOCALAPPDATA}\\CentBrowser\\User Data'),
+	('Chedot', '{LOCALAPPDATA}\\Chedot\\User Data'),
+	('Chrome Canary', '{LOCALAPPDATA}\\Google\\Chrome SxS\\User Data'),
+	('Chromium', '{LOCALAPPDATA}\\Chromium\\User Data'),
+	('CocCoc', '{LOCALAPPDATA}\\CocCoc\\Browser\\User Data'),
+	('Comodo Dragon', '{LOCALAPPDATA}\\Comodo\\Dragon\\User Data'),  # Comodo IceDragon is Firefox-based
+	('Google Chrome', '{LOCALAPPDATA}\\Google\\Chrome\\User Data'),
+	('Kometa', '{LOCALAPPDATA}\\Kometa\\User Data'),
+	('Opera', '{APPDATA}\\Opera Software\\Opera Stable'),
+	('Orbitum', '{LOCALAPPDATA}\\Orbitum\\User Data'),
+	('Torch', '{LOCALAPPDATA}\\Torch\\User Data'),
+	('Vivaldi', '{LOCALAPPDATA}\\Vivaldi\\User Data'),
+	('YandexBrowser', '{LOCALAPPDATA}\\Yandex\\YandexBrowser\\User Data')
 ]
 
 chromium_browsers = [ChromiumBased(browser_name=name, paths=paths) for name, paths in chromium_browsers]
