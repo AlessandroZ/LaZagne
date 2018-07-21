@@ -90,7 +90,7 @@ class ChromiumBased(ModuleInfo):
 # Name, path or a list of paths
 chromium_browsers = [
 	('7Star', '{LOCALAPPDATA}\\7Star\\7Star\\User Data'),
-	('Amigo', '{LOCALAPPDATA}\\Amigo\\User\\User Data'),
+	('Amigo', '{LOCALAPPDATA}\\Amigo\\User Data'),
 	('Brave', '{APPDATA}\\brave'),
 	('CentBrowser', '{LOCALAPPDATA}\\CentBrowser\\User Data'),
 	('Chedot', '{LOCALAPPDATA}\\Chedot\\User Data'),
@@ -98,6 +98,8 @@ chromium_browsers = [
 	('Chromium', '{LOCALAPPDATA}\\Chromium\\User Data'),
 	('CocCoc', '{LOCALAPPDATA}\\CocCoc\\Browser\\User Data'),
 	('Comodo Dragon', '{LOCALAPPDATA}\\Comodo\\Dragon\\User Data'),  # Comodo IceDragon is Firefox-based
+	('Elements Browser', '{LOCALAPPDATA}\\Elements Browser\\User Data'),
+	('Epic Privacy Browser', '{LOCALAPPDATA}\\Epic Privacy Browser\\User Data'),
 	('Google Chrome', '{LOCALAPPDATA}\\Google\\Chrome\\User Data'),
 	('Kometa', '{LOCALAPPDATA}\\Kometa\\User Data'),
 	('Opera', '{APPDATA}\\Opera Software\\Opera Stable'),
