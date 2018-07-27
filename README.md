@@ -7,7 +7,7 @@ Description
 The __LaZagne project__ is an open source application used to __retrieve lots of passwords__ stored on a local computer. 
 Each software stores its passwords using different techniques (plaintext, APIs, custom algorithms, databases, etc.). This tool has been developed for the purpose of finding these passwords for the most commonly-used software. 
 
-<p align="center"><img src="./pictures/lazagne.png" alt="The LaZagne project"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/10668373/43320585-3e34c124-91a9-11e8-9ebc-d8eabafd8ac5.png" alt="The LaZagne project"></p>
 
 This project has been added to [pupy](https://github.com/n1nj4sec/pupy/) as a post-exploitation module. Python code will be interpreted in memory without touching the disk and it works on Windows and Linux host. The last Linux release is not up to date so I recommend using pupy to use it. 
 
@@ -96,7 +96,7 @@ laZagne all -i
 Supported software
 ----
 
-<p align="center"><img src="./pictures/softwares.png" alt="The LaZagne project"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/10668373/43320612-525678e6-91a9-11e8-9c5b-bce4eed2f2c9.png" alt="The LaZagne project"></p>
 
 (*) used by many tools to store passwords: Chrome, Owncloud, Evolution, KMail, etc.
 
@@ -117,6 +117,8 @@ Special thanks
 * Benjamin DELPY for [mimikatz](https://github.com/gentilkiwi/mimikatz), which helps me to understand some Windows API.
 * Moyix for [Creddump](https://github.com/moyix/creddump)
 * N0fat for [Chainbreaker](https://github.com/n0fate/chainbreaker/)
+* Richard Moore for the [AES module](https://github.com/ricmoo/pyaes)
+* Todd Whiteman for teh [DES module](https://github.com/toddw-as/pyDes)
 * All [contributors](https://github.com/AlessandroZ/LaZagne/graphs/contributors) who help me on this project
 
 ----
