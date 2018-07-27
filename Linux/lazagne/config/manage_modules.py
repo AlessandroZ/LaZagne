@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
 # keyring
-from lazagne.softwares.wallet.gnome import Gnome
-from lazagne.softwares.wallet.kde import kde
-from lazagne.softwares.wallet.libsecret import libsecret
+from lazagne.softwares.wallet.kde import Kde
+from lazagne.softwares.wallet.libsecret import Libsecret
 # browsers
 from lazagne.softwares.browsers.mozilla import Mozilla
 from lazagne.softwares.browsers.opera import Opera
@@ -18,7 +17,6 @@ from lazagne.softwares.sysadmin.docker import Docker
 from lazagne.softwares.sysadmin.cli import Cli
 # chats
 from lazagne.softwares.chats.pidgin import Pidgin
-from lazagne.softwares.chats.jitsi import Jitsi
 # mails
 from lazagne.softwares.mails.clawsmail import ClawsMail
 # wifi
@@ -56,10 +54,8 @@ def get_modules():
 	moduleNames = [
 		ClawsMail(),
 		DbVisualizer(),
-		# Env_variable(),
-		# Filezilla(),
-		Gnome(),
-		Jitsi(),
+		Env_variable(),
+		Filezilla(),
 		Mozilla(),
 		Opera(),
 		Chrome(),
@@ -73,8 +69,8 @@ def get_modules():
 		Squirrel(),
 		Wifi(),
 		Wpa_supplicant(),
-		kde(),
-		libsecret()
+		Kde(),
+		Libsecret()
 	]
 
 	try:
