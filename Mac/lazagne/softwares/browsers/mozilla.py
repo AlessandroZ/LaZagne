@@ -8,7 +8,6 @@ from lazagne.config.crypto.pyDes import *
 from lazagne.config.dico import get_dico
 from lazagne.config.constant import *
 from pyasn1.codec.der import decoder
-from lazagne.config import homes
 from binascii import unhexlify
 from base64 import b64decode
 from hashlib import sha1
