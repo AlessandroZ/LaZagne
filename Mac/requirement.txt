@@ -1,2 +1,1 @@
-pycrypto
 pyasn1
