@@ -4,7 +4,6 @@ from lazagne.softwares.browsers.ie 	import IE
 from lazagne.softwares.browsers.mozilla import Mozilla
 
 # Chats
-from lazagne.softwares.chats.jitsi import Jitsi
 from lazagne.softwares.chats.pidgin import Pidgin
 from lazagne.softwares.chats.skype import Skype
 from lazagne.softwares.chats.psi import PSI
@@ -94,7 +93,6 @@ def get_modules():
 		Mozilla(),
 
 		# Chats
-		Jitsi(),
 		Pidgin(),
 		Skype(),
 		PSI(),
