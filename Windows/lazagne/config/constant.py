@@ -16,9 +16,6 @@ class constant():
 	output 					= None
 	file_logger 			= None
 	
-	# jitsi options
-	jitsi_masterpass 		= None
-
 	# ie options
 	ie_historic 			= None
 	
