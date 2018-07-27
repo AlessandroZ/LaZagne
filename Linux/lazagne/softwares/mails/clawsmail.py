@@ -4,11 +4,18 @@
 from base64 import standard_b64decode as b64decode
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-from ConfigParser import ConfigParser
+from lazagne.config.crypto.pyDes import *
 from lazagne.config import homes
-from Crypto.Cipher import DES
 import platform
 import os
+
+try: 
+	from ConfigParser import ConfigParser 	# Python 2.7
+except: 
+	from configparser import ConfigParser	# Python 3
+
+
+CFB = 0 # To implement
 
 class ClawsMail(ModuleInfo):
 	def __init__(self):
@@ -17,9 +24,9 @@ class ClawsMail(ModuleInfo):
 	def run(self, software_name=None):
 		all_passwords = []
 		for path in self.get_paths():
-			mode = DES.MODE_CFB
+			mode = CFB
 			if 'FreeBSD' in platform.system():
-				mode = DES.MODE_ECB
+				mode = ECB
 
 			all_passwords += self.accountrc_decrypt(path, self.get_passcrypt_key(), mode)
 
@@ -32,7 +39,7 @@ class ClawsMail(ModuleInfo):
 		PASSCRYPT_KEY = b'passkey0'
 		return PASSCRYPT_KEY
 
-	def pass_decrypt(self, p, key, mode=DES.MODE_CFB):
+	def pass_decrypt(self, p, key, mode=CFB):
 		""" Decrypts a password from ClawsMail. """
 		if p[0] == '!':	 # encrypted password
 			buf = b64decode(p[1:])
@@ -42,16 +49,17 @@ class ClawsMail(ModuleInfo):
 			as would the libc algorithms (as they fail early).	Yes, this means the
 			password wasn't actually encrypted but only base64-ed.
 			"""
-			if (mode in (DES.MODE_ECB, DES.MODE_CBC)) and ((len(buf) % 8) != 0 or len(buf) > 8192):
+			if (mode in (ECB, CBC)) and ((len(buf) % 8) != 0 or len(buf) > 8192):
 				return buf
 
-			c = DES.new(key, mode=mode, IV=b'\0'*8)
+			# c = DES.new(key, mode=mode, IV=b'\0'*8)
+			c = des(key, mode, b'\0'*8)
 			return c.decrypt(buf)
 		else:  # raw password
 			return p
 
 
-	def accountrc_decrypt(self, filename, key, mode=DES.MODE_CFB):
+	def accountrc_decrypt(self, filename, key, mode=CFB):
 		""" Reads passwords from ClawsMail's accountrc file """
 		p = ConfigParser()
 		p.read(filename)

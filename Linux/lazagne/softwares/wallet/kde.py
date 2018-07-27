@@ -12,7 +12,7 @@ from lazagne.config.moduleInfo import ModuleInfo
 import os
 import sys
 
-class kde(ModuleInfo):
+class Kde(ModuleInfo):
 	def __init__(self):
 		ModuleInfo.__init__(self, 'kwallet', 'wallet')
 	
@@ -38,10 +38,10 @@ class kde(ModuleInfo):
 			#sys.stderr = stderrBackup
 			# Walk accros folders defined in the KWallet
 			for folder in wallet.folderList():
-			  wallet.setFolder(folder)
-			  entries = dict()
-			  #Get entries for this folder
-			  for entry in wallet.entryList():
+				wallet.setFolder(folder)
+				entries = dict()
+			#Get entries for this folder
+			for entry in wallet.entryList():
 				values = {}
 				entries[entry] 		= wallet.readEntry( entry )
 				values["Folder"] 	= folder
@@ -50,6 +50,6 @@ class kde(ModuleInfo):
 				if len(values) != 0:
 					pwdFound.append(values)
 			return pwdFound
-		except Exception,e:
+		except Exception as e:
 			print_debug('ERROR', 'An error occurs with KWallet: {0}'.format(e))
 			

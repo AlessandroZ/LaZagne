@@ -33,18 +33,16 @@ class Chrome(ModuleInfo):
 			return
 
 		cursor = conn.cursor()
-
 		try:
 			cursor.execute('SELECT origin_url,username_value,password_value FROM logins')
 			for url, user, password in cursor:
-				print url, user, password
 				yield {
-					'URL': url,
-					'Login': user,
-					'Password': password
+					'URL'		: url,
+					'Login'		: user,
+					'Password'	: password
 				}
-		except:
-			pass
+		except Exception as e:
+			print_debug('DEBUG', e)
 
 		finally:
 			cursor.close()
@@ -54,9 +52,8 @@ class Chrome(ModuleInfo):
 		all_passwords = []
 		
 		for path in self.get_paths():
-		 
 			with tempfile.NamedTemporaryFile() as tmp:
-				with open(path) as infile:
+				with open(path, 'rb') as infile:
 					tmp.write(infile.read())
 
 				for pw in self.get_logins(tmp.name):

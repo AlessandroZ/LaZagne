@@ -105,7 +105,7 @@ def sessions(setenv=True):
 
             try:
                 yield (uid, address)
-            except Exception, e:
+            except Exception as e:
                 pass
             finally:
                 if setenv:
@@ -167,5 +167,5 @@ def sessions(setenv=True):
                                     except:
                                         pass
 
-            except Exception, e:
+            except Exception as e:
                 pass

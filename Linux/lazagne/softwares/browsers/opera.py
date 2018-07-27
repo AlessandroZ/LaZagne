@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-from ConfigParser import RawConfigParser
+from lazagne.config.crypto.pyDes import *
 from lazagne.config.constant import *
 from lazagne.config import homes
-from Crypto.Cipher import DES3
 import binascii
 import hashlib 
 import sqlite3
@@ -13,6 +12,11 @@ import struct
 import sys
 import re
 import os
+
+try: 
+	from ConfigParser import RawConfigParser 	# Python 2.7
+except: 
+	from configparser import RawConfigParser	# Python 3
 
 class Opera(ModuleInfo):
 	def __init__(self):
@@ -83,12 +87,13 @@ class Opera(ModuleInfo):
 			iv 				= md5hash2[8:]
 
 			data 			= file[offset + 8 + 4: offset + 8 + 4 + datalen]
-			des3dec 		= DES3.new(key, DES3.MODE_CBC, iv)
+			# des3dec 		= DES3.new(key, DES3.MODE_CBC, iv)
+			des3dec 	 	= triple_des(key, CBC, iv)
 			try:
 				plaintext 	= des3dec.decrypt(data)
 				plaintext 	= re.sub(r'[^\x20-\x7e]', '', plaintext)
 				passwords.append(plaintext)
-			except Exception,e:
+			except Exception as e:
 				print_debug('DEBUG', str(e))
 				print_debug('ERROR', u'Failed to decrypt password')
 

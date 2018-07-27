@@ -104,7 +104,7 @@ class Ssh(ModuleInfo):
 					identity, hostname, port, user
 				)
 
-		except Exception, e:
+		except Exception as e:
 			pass
 
 	def run(self, software_name=None):

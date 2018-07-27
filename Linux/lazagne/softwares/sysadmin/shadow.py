@@ -53,7 +53,7 @@ class Shadow(ModuleInfo):
 							'Login'		: user,
 							'Password'	: word
 						}
-				except Exception, e:
+				except Exception as e:
 					pass
 
 		except (KeyboardInterrupt, SystemExit):

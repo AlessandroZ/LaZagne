@@ -2,7 +2,6 @@
 # -*- encoding: utf-8 -*-
 from lazagne.config.constant import constant
 from time import gmtime, strftime
-from constant import *
 import logging
 import getpass
 import socket
@@ -31,7 +30,7 @@ class StandartOutput():
 |====================================================================|
 		'''
 
-	def setColor(self, color=None, intensity=False):
+	def setColor(self, color=None):
 		b = bcolors()
 		if color == 'white':
 			sys.stdout.write(b.TITLE) 
@@ -46,18 +45,17 @@ class StandartOutput():
 		
 	# Print banner
 	def first_title(self):
-		self.do_print(message=self.banner, color='white', intensity=True)
-		print
+		self.do_print(message=self.banner, color='white')
 
 	# Info option for the logging
 	def print_title(self, title):
 		t = u'------------------- ' + title + ' passwords -----------------\n'
-		self.do_print(message=t, color='white', intensity=True)
+		self.do_print(message=t, color='white')
 
 	# Debug option for the logging
 	def title_info(self, title):
 		t = u'------------------- ' + title + ' passwords -----------------\n'
-		self.print_logging(function=logging.info, prefix='', message=t, color=False, intensity=True)
+		self.print_logging(function=logging.info, prefix='', message=t, color=False)
 
 	def write_header(self):
 		time 	= strftime("%Y-%m-%d %H:%M:%S", gmtime())
@@ -81,7 +79,7 @@ class StandartOutput():
 			footer += '\nelapsed time = ' + str(elapsed_time)
 		self.do_print(footer)
 
-	def print_logging(self, function, prefix='[!]', message='', color=False, intensity=False):
+	def print_logging(self, function, prefix='[!]', message='', color=False):
 		if constant.quiet_mode:
 			return
 
@@ -91,7 +89,7 @@ class StandartOutput():
 			msg = '{prefix} {msg}'.format(prefix=prefix, msg=str(message))
 
 		if color:
-			self.setColor(color, intensity)
+			self.setColor(color)
 			function(msg)
 			self.setColor()
 		else:
@@ -108,19 +106,19 @@ class StandartOutput():
 
 	def print_without_error(self, message):
 		try:
-			print message
+			print(message)
 		except:
-			print repr(message)
+			print(repr(message))
 
 	# Centralize print function
-	def do_print(self, message='', color=False, intensity=False):
+	def do_print(self, message='', color=False):
 		# Quiet mode => nothing is printed
 		if constant.quiet_mode:
 			return
 		
 		message = self.try_unicode(message)
 		if color:
-			self.setColor(color=color, intensity=intensity)
+			self.setColor(color=color)
 			self.print_without_error(message)
 			self.setColor()
 		else:
@@ -133,6 +131,10 @@ class StandartOutput():
 			constant.finalResults["Passwords"].append([{"Category": category}, values])
 
 	def print_output(self, software_name, pwdFound):
+		# Quiet mode => nothing is printed
+		if constant.quiet_mode:
+			return
+
 		if pwdFound:
 			# If the debug logging level is not apply => print the title
 			if logging.getLogger().isEnabledFor(logging.INFO) == False:
@@ -146,8 +148,9 @@ class StandartOutput():
 			for pwd in pwdFound:
 				password_category = False
 				# Detect which kinds of password has been found
-				lower_list = [s.lower() for s in pwd.keys()]
-				password = [s for s in lower_list if "password" in s]
+				lower_list 	= [s.lower() for s in pwd.keys()]
+				password 	= [s for s in lower_list if "password" in s]
+				
 				if password:
 					password_category = password
 				else:
@@ -162,6 +165,13 @@ class StandartOutput():
 							cmd = [s for s in lower_list if "cmd" in s]
 							if cmd:
 								password_category = cmd
+
+				# Do not print empty passwords
+				try: 
+					if not pwd[password_category[0].capitalize()]:
+						continue
+				except:
+					pass
 
 				# No password found
 				if not password_category:
@@ -196,10 +206,10 @@ def print_debug(error_level, message):
 
 	# Print when password is not found
 	elif error_level == 'FAILED':
-		constant.st.do_print(message='[-] {message}'.format(message=message), color='red', intensity=True)
+		constant.st.do_print(message='[-] {message}'.format(message=message), color='red')
 
 	elif error_level == 'CRITICAL' or error_level == 'ERROR':
-		constant.st.print_logging(function=logging.error, prefix='[-]', message=message, color='red', intensity=True)
+		constant.st.print_logging(function=logging.error, prefix='[-]', message=message, color='red')
 
 	elif error_level == 'WARNING':
 		constant.st.print_logging(function=logging.warning, prefix='[!]', message=message, color='cyan')

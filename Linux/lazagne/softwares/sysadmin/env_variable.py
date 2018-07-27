@@ -2,9 +2,13 @@
 # -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-import urlparse
 import psutil
 import os
+
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
 
 class Env_variable(ModuleInfo):
     def __init__(self):
