@@ -148,10 +148,6 @@ def launch_module(module, dpapi_used=True, registry_used=True, system_module=Fal
 
 
 def manage_advanced_options():
-	# Jitsi advanced options
-	if 'master_pwd' in args:
-		constant.jitsi_masterpass = args['master_pwd']
-	
 	# i.e advanced options
 	if 'historic' in args:
 		constant.ie_historic = args['historic']
@@ -298,6 +294,10 @@ def runLaZagne(category_choosed='all', password=None):
 			if 'service' in user.lower().strip():
 				continue
 			
+			# Do not impersonate the same user twice
+			if user in impersonated_user: 
+				continue
+
 			print_user(user)
 			yield 'User', user
 
