@@ -6,7 +6,7 @@ from lazagne.config import homes
 import os
 import sys
 
-class libsecret(ModuleInfo):
+class Libsecret(ModuleInfo):
 	def __init__(self):
 		ModuleInfo.__init__(self, 'libsecret', 'wallet')
 
@@ -30,8 +30,8 @@ class libsecret(ModuleInfo):
 
 				collections = list(secretstorage.collection.get_all_collections(bus))
 
-			except Exception, e:
-				print e
+			except Exception as e:
+				print_debug('ERROR', e)
 				continue
 
 			for collection in collections:
@@ -46,8 +46,8 @@ class libsecret(ModuleInfo):
 
 				try:
 					storage = collection.get_all_items()
-				except Exception, e:
-					print e
+				except Exception as e:
+					print_debug('ERROR', e)
 					continue
 
 				for item in storage:
@@ -60,8 +60,8 @@ class libsecret(ModuleInfo):
 						'collection'    : label,
 					}
 
-					for k, v in item.get_attributes().iteritems():
-						values[unicode(k)] = unicode(v)
+					# for k, v in item.get_attributes().iteritems():
+					# 	values[unicode(k)] = unicode(v)
 					items.append(values)
 
 			bus.flush()

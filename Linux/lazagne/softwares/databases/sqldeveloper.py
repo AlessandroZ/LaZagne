@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*- 
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config.crypto.pyDes import *
 from lazagne.config.constant import *
 import xml.etree.cElementTree as ET
 from lazagne.config import homes
-from Crypto.Cipher import DES
 import binascii
 import hashlib
 import base64
@@ -36,7 +36,7 @@ class SQLDeveloper(ModuleInfo):
 	def decrypt(self, msg):
 		enc_text 	= base64.b64decode(msg)
 		(dk, iv) 	= self.get_derived_key(self._passphrase, self._salt, self._iteration)
-		crypter 	= DES.new(dk, DES.MODE_CBC, iv)
+		crypter 	= des(dk, CBC, iv)
 		text 		= crypter.decrypt(enc_text)
 		return re.sub(r'[\x01-\x08]','',text)
 

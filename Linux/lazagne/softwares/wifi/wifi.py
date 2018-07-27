@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
-from ConfigParser import RawConfigParser
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
 import os
+
+try: 
+	from ConfigParser import RawConfigParser 	# Python 2.7
+except: 
+	from configparser import RawConfigParser	# Python 3
 
 class Wifi(ModuleInfo):
 	def __init__(self):

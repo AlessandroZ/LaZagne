@@ -3,9 +3,13 @@
 from lazagne.config.constant import *
 from lazagne.config.write_output import print_debug
 from lazagne.config.moduleInfo import ModuleInfo
-from ConfigParser import ConfigParser
 from lazagne.config import homes
 import os
+
+try: 
+	from ConfigParser import ConfigParser 	# Python 2.7
+except: 
+	from configparser import ConfigParser	# Python 3
 
 class Aws(ModuleInfo):
 	def __init__(self):

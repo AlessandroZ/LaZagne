@@ -1,4 +1,4 @@
-pycrypto
 pyasn1
 https://github.com/n1nj4sec/memorpy/archive/master.zip
 psutil
+secretstorage

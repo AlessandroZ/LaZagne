@@ -93,10 +93,10 @@ def password_found(desc, process, user, password):
     global passwords_found
     if (process, user, password) not in passwords_found:
         passwords_found.add((process, user, password))
-        print colorize("%s : "%desc, color="green")
-        print colorize("\t- Process\t: %s"%process, color="grey")
-        print colorize("\t- Username\t: %s"%user, color="grey")
-        print colorize("\t- Password\t: %s"%password, color="grey")
+        print(colorize("%s : "%desc, color="green"))
+        print(colorize("\t- Process\t: %s"%process, color="grey"))
+        print(colorize("\t- Username\t: %s"%user, color="grey"))
+        print(colorize("\t- Password\t: %s"%password, color="grey"))
 
 
 def password_list_match(password_list, near):

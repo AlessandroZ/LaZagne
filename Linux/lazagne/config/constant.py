@@ -12,7 +12,6 @@ class constant():
 	output 				= None
 	file_logger 		= None
 	verbose 			= False
-	jitsi_masterpass 	= None 		# Jitsi options
 	nbPasswordFound 	= 0 		# Total password found
 	passwordFound 		= []
 	finalResults 		= {}

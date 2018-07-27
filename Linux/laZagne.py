@@ -42,7 +42,7 @@ def output():
 		if os.path.isdir(args['output']):
 			constant.folder_name = args['output']
 		else:
-			print '[!] Specify a directory, not a file !'
+			print('[!] Specify a directory, not a file !')
 
 	if args['write_normal']:
 		constant.output = 'txt'
@@ -82,12 +82,6 @@ def verbosity():
 	root.addHandler(stream)
 	del args['verbose']
 
-def manage_advanced_options():
-	
-	# Jitsi advanced options
-	if 'master_pwd' in args:
-		constant.jitsi_masterpass = args['master_pwd']
-
 def launch_module(module):
 
 	modulesToLaunch = []
@@ -114,7 +108,7 @@ def launch_module(module):
 			yield True, i.capitalize(), pwdFound
 		except:
 			traceback.print_exc()
-			print
+			print()
 			error_message = traceback.format_exc()
 			yield False, i.capitalize(), error_message
 
@@ -215,7 +209,7 @@ if __name__ == '__main__':
 				parser_tab += categories[c]['subparser']
 		parser_tab += [PWrite]
 		dic_tmp = {c: {'parents': parser_tab, 'help':'Run %s module' % c, 'func': runModule}}
-		dic = dict(dic.items() + dic_tmp.items())
+		dic.update(dic_tmp)
 
 	#2- Main commands
 	subparsers = parser.add_subparsers(help='Choose a main command')
@@ -240,7 +234,6 @@ if __name__ == '__main__':
 	# Define constant variables
 	output()
 	verbosity()
-	manage_advanced_options()
 
 	start_time = time.time()
 
