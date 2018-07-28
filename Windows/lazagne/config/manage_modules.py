@@ -1,7 +1,8 @@
 # Browsers
 from lazagne.softwares.browsers.chromium_based import chromium_browsers
-from lazagne.softwares.browsers.ie 	import IE
-from lazagne.softwares.browsers.mozilla import Mozilla
+from lazagne.softwares.browsers.ie import IE
+from lazagne.softwares.browsers.mozilla import firefox_browsers
+from lazagne.softwares.browsers.ucbrowser import UCBrowser
 
 # Chats
 from lazagne.softwares.chats.pidgin import Pidgin
@@ -26,6 +27,7 @@ from lazagne.softwares.git.gitforwindows import GitForWindows
 
 # Mails
 from lazagne.softwares.mails.outlook import Outlook
+from lazagne.softwares.mails.thunderbird import Thunderbird
 
 # Maven
 from lazagne.softwares.maven.mavenrepositories import MavenRepositories
@@ -90,7 +92,7 @@ def get_modules():
 
 		# Browser
 		IE(),
-		Mozilla(),
+		UCBrowser(),
 
 		# Chats
 		Pidgin(),
@@ -115,6 +117,7 @@ def get_modules():
 
 		# Mails
 		Outlook(),
+		Thunderbird(),
 
 		# Maven
 		MavenRepositories(),
@@ -154,4 +157,4 @@ def get_modules():
 		WindowsPassword(),
 		CredFiles(),
 	]
-	return moduleNames + chromium_browsers
+	return moduleNames + chromium_browsers + firefox_browsers
