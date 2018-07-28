@@ -15,6 +15,7 @@ from lazagne.config.write_output import print_debug
 class ChromiumBased(ModuleInfo):
 	def __init__(self, browser_name, paths):
 		self.paths = paths if isinstance(paths, list) else [paths]
+		self.database_query = 'SELECT action_url, username_value, password_value FROM logins'
 		ModuleInfo.__init__(self, browser_name, 'browsers', dpapi_used=True)
 
 	def _get_database_dirs(self):
@@ -36,13 +37,18 @@ class ChromiumBased(ModuleInfo):
 						pass
 				# Each profile has its own password database
 				for profile in profiles:
-					database_path = os.path.join(path, profile, u'Login Data')
-					if os.path.exists(database_path):
-						databases.add(database_path)
+					# Some browsers use names other than "Login Data"
+					# Like YandexBrowser - "Ya Login Data", UC Browser - "UC Login Data.18"
+					try:
+						db_files = os.listdir(os.path.join(path, profile))
+					except Exception:
+						continue
+					for db in db_files:
+						if u'login data' in db.lower():
+							databases.add(os.path.join(path, profile, db))
 		return databases
 
-	@staticmethod
-	def _export_credentials(db_path):
+	def _export_credentials(self, db_path):
 		"""
 		Export credentials from the given database
 
@@ -56,7 +62,7 @@ class ChromiumBased(ModuleInfo):
 		try:
 			conn = sqlite3.connect(db_path)
 			cursor = conn.cursor()
-			cursor.execute('SELECT action_url, username_value, password_value FROM logins')
+			cursor.execute(self.database_query)
 		except Exception, e:
 			print_debug('DEBUG', str(e))
 			print_debug('ERROR', u'An error occurred while opening the database file')
@@ -89,26 +95,26 @@ class ChromiumBased(ModuleInfo):
 
 # Name, path or a list of paths
 chromium_browsers = [
-	('7Star', '{LOCALAPPDATA}\\7Star\\7Star\\User Data'),
-	('Amigo', '{LOCALAPPDATA}\\Amigo\\User Data'),
-	('Brave', '{APPDATA}\\brave'),
-	('CentBrowser', '{LOCALAPPDATA}\\CentBrowser\\User Data'),
-	('Chedot', '{LOCALAPPDATA}\\Chedot\\User Data'),
-	('Chrome Canary', '{LOCALAPPDATA}\\Google\\Chrome SxS\\User Data'),
-	('Chromium', '{LOCALAPPDATA}\\Chromium\\User Data'),
-	('CocCoc', '{LOCALAPPDATA}\\CocCoc\\Browser\\User Data'),
-	('Comodo Dragon', '{LOCALAPPDATA}\\Comodo\\Dragon\\User Data'),  # Comodo IceDragon is Firefox-based
-	('Elements Browser', '{LOCALAPPDATA}\\Elements Browser\\User Data'),
-	('Epic Privacy Browser', '{LOCALAPPDATA}\\Epic Privacy Browser\\User Data'),
-	('Google Chrome', '{LOCALAPPDATA}\\Google\\Chrome\\User Data'),
-	('Kometa', '{LOCALAPPDATA}\\Kometa\\User Data'),
-	('Opera', '{APPDATA}\\Opera Software\\Opera Stable'),
-	('Orbitum', '{LOCALAPPDATA}\\Orbitum\\User Data'),
-	('Sputnik', '{LOCALAPPDATA}\\Sputnik\\Sputnik\\User Data'),
-	('Torch', '{LOCALAPPDATA}\\Torch\\User Data'),
-	('Uran', '{LOCALAPPDATA}\\uCozMedia\\Uran\\User Data'),
-	('Vivaldi', '{LOCALAPPDATA}\\Vivaldi\\User Data'),
-	('YandexBrowser', '{LOCALAPPDATA}\\Yandex\\YandexBrowser\\User Data')
+	(u'7Star', u'{LOCALAPPDATA}\\7Star\\7Star\\User Data'),
+	(u'Amigo', u'{LOCALAPPDATA}\\Amigo\\User Data'),
+	(u'Brave', u'{APPDATA}\\brave'),
+	(u'CentBrowser', u'{LOCALAPPDATA}\\CentBrowser\\User Data'),
+	(u'Chedot', u'{LOCALAPPDATA}\\Chedot\\User Data'),
+	(u'Chrome Canary', u'{LOCALAPPDATA}\\Google\\Chrome SxS\\User Data'),
+	(u'Chromium', u'{LOCALAPPDATA}\\Chromium\\User Data'),
+	(u'CocCoc', u'{LOCALAPPDATA}\\CocCoc\\Browser\\User Data'),
+	(u'Comodo Dragon', u'{LOCALAPPDATA}\\Comodo\\Dragon\\User Data'),  # Comodo IceDragon is Firefox-based
+	(u'Elements Browser', u'{LOCALAPPDATA}\\Elements Browser\\User Data'),
+	(u'Epic Privacy Browser', u'{LOCALAPPDATA}\\Epic Privacy Browser\\User Data'),
+	(u'Google Chrome', u'{LOCALAPPDATA}\\Google\\Chrome\\User Data'),
+	(u'Kometa', u'{LOCALAPPDATA}\\Kometa\\User Data'),
+	(u'Opera', u'{APPDATA}\\Opera Software\\Opera Stable'),
+	(u'Orbitum', u'{LOCALAPPDATA}\\Orbitum\\User Data'),
+	(u'Sputnik', u'{LOCALAPPDATA}\\Sputnik\\Sputnik\\User Data'),
+	(u'Torch', u'{LOCALAPPDATA}\\Torch\\User Data'),
+	(u'Uran', u'{LOCALAPPDATA}\\uCozMedia\\Uran\\User Data'),
+	(u'Vivaldi', u'{LOCALAPPDATA}\\Vivaldi\\User Data'),
+	(u'YandexBrowser', u'{LOCALAPPDATA}\\Yandex\\YandexBrowser\\User Data')
 ]
 
 chromium_browsers = [ChromiumBased(browser_name=name, paths=paths) for name, paths in chromium_browsers]

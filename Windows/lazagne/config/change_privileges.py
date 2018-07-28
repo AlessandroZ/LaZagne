@@ -2,6 +2,7 @@
 # Original code from https://github.com/joren485/PyWinPrivEsc/blob/master/RunAsSystem.py
 from lazagne.config.write_output import print_debug
 from lazagne.config.winstructure import *
+import sys
 import psutil
 import os
 
@@ -105,7 +106,7 @@ def list_sids():
 			token_sid = get_token_sid(hToken)
 			if not token_sid:
 				continue
-			sids.append((pinfo['pid'], pinfo['name'], token_sid, pinfo['username']))
+			sids.append((pinfo['pid'], pinfo['name'], token_sid, pinfo['username'].decode(sys.getfilesystemencoding())))
 
 			CloseHandle(hToken)
 			CloseHandle(hProcess)
