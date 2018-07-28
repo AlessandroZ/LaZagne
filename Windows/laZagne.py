@@ -99,8 +99,6 @@ def run_module(title, module):
 		# Return value - not used but needed
 		yield True, title.capitalize(), pwdFound
 	except:
-		traceback.print_exc()
-		print
 		error_message = traceback.format_exc()
 		yield False, title.capitalize(), error_message
 
@@ -313,7 +311,7 @@ def runLaZagne(category_choosed='all', password=None):
 					stdoutRes.append(constant.finalResults)
 					break
 				except Exception:
-					traceback.print_exc()
+					print_debug('DEBUG', traceback.format_exc())
 
 		# --------- Impersonation browsing file system ---------
 
