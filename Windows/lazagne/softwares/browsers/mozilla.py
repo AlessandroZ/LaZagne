@@ -9,7 +9,6 @@ from lazagne.config.crypto.pyDes import *
 from lazagne.config.dico import get_dico
 from lazagne.config.constant import *
 from pyasn1.codec.der import decoder
-# from lazagne.config import homes
 from binascii import unhexlify
 from base64 import b64decode
 from hashlib import sha1
@@ -119,15 +118,23 @@ class Mozilla(ModuleInfo):
 			c = conn.cursor()
 			# First check password
 			c.execute("SELECT item1,item2 FROM metadata WHERE id = 'password';")
-			row = next(c)
+			try:
+				row = c.next() 	# Python 2
+			except Exception as e:
+				row = next(c)	# Python 3
+
 		except Exception as e:
 			print_debug('DEBUG', traceback.format_exc())
 		else:
 			(global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password='', key_data=row)
+			
 			if global_salt:
 				# Decrypt 3DES key to decrypt "logins.json" content
 				c.execute("SELECT a11,a102 FROM nssPrivate;")
-				a11, a102 = next(c)
+				try:
+					a11, a102 = c.next()	# Python 2
+				except:
+					a11, a102 = next(c)		# Python 3
 				# a11  : CKA_VALUE
 				# a102 : f8000000000000000000000000000001, CKA_ID
 				self.print_asn1(a11, len(a11), 0)
