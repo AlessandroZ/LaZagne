@@ -8,8 +8,9 @@ import ctypes
 import socket
 import json
 import os
+import sys
 
-# --------------------------- Standard output functions --------------------------- 
+# --------------------------- Standard output functions ---------------------------
 
 STD_OUTPUT_HANDLE 	= -11
 std_out_handle 		= ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
@@ -199,8 +200,8 @@ class StandartOutput():
 					# Detect which kinds of password has been found
 					lower_list = [s.lower() for s in pwd.keys()]
 					password = [s for s in lower_list if "password" in s]
-					
-					if password: 
+
+					if password:
 						password_category = password
 					else:
 						key = [s for s in lower_list if "key" in s] # for the wifi
@@ -212,12 +213,12 @@ class StandartOutput():
 								password_category = hash
 
 					# Do not print empty passwords
-					try: 
+					try:
 						if not pwd[password_category[0].capitalize()]:
 							continue
 					except:
 						pass
-					
+
 					# No password found
 					if not password_category:
 						print_debug("FAILED", u'Password not found !!!')
@@ -253,10 +254,11 @@ class StandartOutput():
 		header = u'{banner}\r\n- Date: {date}\r\n- Username: {username}\r\n- Hostname:{hostname}\r\n\r\n'.format(
 					banner 	= self.banner.replace('\n', '\r\n'),
 					date 	= str(time), 
-					username= getpass.getuser(), 
+					username= getpass.getuser().decode(sys.getfilesystemencoding()),
 					hostname= socket.gethostname()
 				)
-		open(os.path.join(constant.folder_name, '{filename}.txt'.format(filename=constant.file_name_results)),"a+b").write(header)
+		with open(os.path.join(constant.folder_name, '{}.txt'.format(constant.file_name_results)),"a+b") as f:
+			f.write(header.encode("UTF-8"))
 
 	def write_footer(self):
 		footer = '\n[+] %s passwords have been found.\r\n\r\n' % str(constant.nbPasswordFound)
@@ -323,4 +325,4 @@ def parseJsonResultToBuffer(jsonString, color=False):
 	except Exception as e:
 		print_debug('ERROR', u'Error parsing the json results: {error}'.format(error=e))
 
-	return buffer 
+	return buffer

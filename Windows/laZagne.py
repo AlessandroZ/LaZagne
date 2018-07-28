@@ -9,9 +9,6 @@
 
 # Disclaimer: Do Not Use this program for illegal purposes ;)
 
-# Softwares that passwords can be retrieved without needed to be in the user environmment
-from lazagne.softwares.browsers.mozilla import Mozilla
-
 # Configuration
 from lazagne.config.write_output import parseJsonResultToBuffer, print_debug, StandartOutput
 from lazagne.config.change_privileges import list_sids, rev2self, impersonate_sid_long_handle
@@ -28,6 +25,7 @@ import json
 import ctypes
 import sys
 import os
+
 
 # Useful for the pupy project
 sys.setrecursionlimit(10000) # workaround to this error: RuntimeError: maximum recursion depth exceeded while calling a Python object
@@ -46,7 +44,6 @@ for category in get_categories():
 # Add all modules to the dictionary
 for module in get_modules():
 	modules[module.category][module.options['dest']] = module
-modules['mails']['thunderbird'] = Mozilla(True) # For thunderbird (firefox and thunderbird use the same class)
 
 def output():
 	if args['output']:
@@ -236,7 +233,7 @@ def set_env_variables(user, toImpersonate=False):
 		# Get value from environment variables
 		for env in constant.profile:
 			if os.environ.get(env):
-				constant.profile[env] = os.environ.get(env)
+				constant.profile[env] = os.environ.get(env).decode(sys.getfilesystemencoding())
 
 	# Replace "drive" and "user" with the correct values
 	for env in constant.profile:
@@ -264,7 +261,7 @@ def runLaZagne(category_choosed='all', password=None):
 
 	# ------ Part used for user impersonation ------ 
 
-	constant.username = getpass.getuser()
+	constant.username = getpass.getuser().decode(sys.getfilesystemencoding())
 	if not constant.username.endswith('$'):
 		constant.finalResults 	= {'User': constant.username}
 		print_user(constant.username)
@@ -315,8 +312,8 @@ def runLaZagne(category_choosed='all', password=None):
 					rev2self()
 					stdoutRes.append(constant.finalResults)
 					break
-				except Exception, e:
-					print e
+				except Exception:
+					traceback.print_exc()
 
 		# --------- Impersonation browsing file system ---------
 

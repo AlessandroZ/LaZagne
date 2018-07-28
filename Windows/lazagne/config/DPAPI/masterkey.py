@@ -188,7 +188,7 @@ class MasterKeyPool():
 		"""
 		Returns the password found corresponding to the given GUID.
 		"""
-		return self.keys.get(guid, [])['password']
+		return self.keys.get(guid, {}).get('password')
 
 	def add_credhist_file(self, sid, credfile):
 		"""
