@@ -26,7 +26,6 @@ import ctypes
 import sys
 import os
 
-
 # Useful for the pupy project
 sys.setrecursionlimit(10000) # workaround to this error: RuntimeError: maximum recursion depth exceeded while calling a Python object
 
@@ -100,6 +99,7 @@ def run_module(title, module):
 		yield True, title.capitalize(), pwdFound
 	except:
 		error_message = traceback.format_exc()
+		print_debug('DEBUG', error_message)
 		yield False, title.capitalize(), error_message
 
 def launch_module(module, dpapi_used=True, registry_used=True, system_module=False):
