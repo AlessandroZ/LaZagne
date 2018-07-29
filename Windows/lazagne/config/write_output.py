@@ -253,9 +253,9 @@ class StandartOutput():
 		time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 		header = u'{banner}\r\n- Date: {date}\r\n- Username: {username}\r\n- Hostname:{hostname}\r\n\r\n'.format(
 					banner 	= self.banner.replace('\n', '\r\n'),
-					date 	= str(time), 
+					date 	= str(time),
 					username= getpass.getuser().decode(sys.getfilesystemencoding()),
-					hostname= socket.gethostname()
+					hostname= socket.gethostname().decode(sys.getfilesystemencoding())
 				)
 		with open(os.path.join(constant.folder_name, '{}.txt'.format(constant.file_name_results)),"a+b") as f:
 			f.write(header.encode("UTF-8"))
