@@ -63,7 +63,7 @@ class ChromiumBased(ModuleInfo):
 			conn = sqlite3.connect(db_path)
 			cursor = conn.cursor()
 			cursor.execute(self.database_query)
-		except Exception, e:
+		except Exception as e:
 			print_debug('DEBUG', str(e))
 			print_debug('ERROR', u'An error occurred while opening the database file')
 			return credentials
@@ -84,13 +84,13 @@ class ChromiumBased(ModuleInfo):
 		for database_path in self._get_database_dirs():
 			# Copy database before to query it (bypass lock errors)
 			try:
-				temp = unicode(os.path.join(tempfile.gettempdir(), next(tempfile._get_candidate_names())))
+				temp = os.path.join(tempfile.gettempdir(), next(tempfile._get_candidate_names())).decode('utf-8')
 				shutil.copy(database_path, temp)
 				credentials.extend(self._export_credentials(temp))
 			except Exception:
 				print_debug('DEBUG', traceback.format_exc())
 
-		return [{"URL": url, "Login": login, "Password": password} for url, login, password in set(credentials)]
+		return [{'URL': url, 'Login': login, 'Password': password} for url, login, password in set(credentials)]
 
 
 # Name, path or a list of paths
