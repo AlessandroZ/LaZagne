@@ -374,13 +374,13 @@ def Win32CryptUnprotectData(cipherText, entropy=None):
 		blobEntropy 	= DATA_BLOB(len(entropy), bufferEntropy)
 
 		if CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, 0, byref(blobOut)):
-			return getData(blobOut)
+			return getData(blobOut).decode("utf-8")
 		else:
 			return False
 	
 	else:
 		if CryptUnprotectData(byref(blobIn), None, None, None, None, 0, byref(blobOut)):
-			return getData(blobOut)
+			return getData(blobOut).decode("utf-8")
 		else:
 			return False
 
