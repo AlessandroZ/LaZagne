@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from lazagne.config.write_output import print_debug
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.dico import get_dico
 from lazagne.config.winstructure import *
 from lazagne.config.constant import *
 import xml.etree.cElementTree as ET
-from Crypto.Cipher import AES
 import _winreg
 import hashlib
 import binascii
@@ -18,8 +19,8 @@ class Skype(ModuleInfo):
 		self.pwdFound = []
 
 	def aes_encrypt(self, message, passphrase):
-		IV = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-		aes = AES.new(passphrase, AES.MODE_CBC, IV)
+		iv = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+		aes = AESModeOfOperationCBC(passphrase, iv=iv)
 		return aes.encrypt(message)
 
 	# get value used to build the salt
@@ -31,14 +32,14 @@ class Skype(ModuleInfo):
 			except Exception, e:
 				print_debug('DEBUG', str(e))
 				return False
-			
+
 			num = _winreg.QueryInfoKey(hkey)[1]
 			k = _winreg.EnumValue(hkey, 0)[1]
 			return Win32CryptUnprotectData(k)
 		except Exception,e:
 			print_debug('DEBUG', str(e))
 			return False
-			
+
 	# get hash from lazagne.configuration file
 	def get_hash_credential(self, xml_file):
 		tree = ET.ElementTree(file=xml_file)
@@ -47,7 +48,7 @@ class Skype(ModuleInfo):
 			return encrypted_hash.text
 		else:
 			return False
-	
+
 	# decrypt hash to get the md5 to bruteforce
 	def get_md5_hash(self, enc_hex, key):
 		# convert hash from hex to binary
@@ -69,9 +70,9 @@ class Skype(ModuleInfo):
 		for dec in decrypted:
 			tmp = tmp + struct.pack(">I", dec).strip('\x00')
 
-		# byte to hex 
+		# byte to hex
 		return binascii.hexlify(tmp)
-	
+
 	# used for dictionary attack, if user specify a specific file
 	def get_dic_file(self, dictionary_path):
 		words = []
@@ -82,15 +83,15 @@ class Skype(ModuleInfo):
 				print_debug('DEBUG', str(e))
 				print_debug('ERROR', u'Unable to open passwords file: %s' % str(dictionary_path))
 				return []
-			
+
 			for word in dicFile.readlines():
 				words.append(word.strip('\n'))
 			dicFile.close()
 		return words
-	
+
 	def dictionary_attack(self, login, md5):
 		wordlist = get_dico()
-		
+
 		# if the user specify the file path
 		if constant.path:
 			wordlist += self.get_dic_file(constant.path)
@@ -100,7 +101,7 @@ class Skype(ModuleInfo):
 			if hash == md5:
 				return word
 		return False
-	
+
 	def get_username(self, path):
 		xml_file = os.path.join(path, u'shared.xml')
 		if os.path.exists(xml_file):
@@ -115,20 +116,20 @@ class Skype(ModuleInfo):
 	def get_info(self, key, username, path):
 		if os.path.exists(os.path.join(path, u'config.xml')):
 			values = {}
-			
+
 			try:
 				values['Login'] = username
-				
+
 				# get encrypted hash from the config file
 				enc_hex = self.get_hash_credential(os.path.join(path, u'config.xml'))
-				
+
 				if not enc_hex:
 					print_debug('WARNING', u'No credential stored on the config.xml file.')
 				else:
 					# decrypt the hash to get the md5 to brue force
 					values['Hash'] = self.get_md5_hash(enc_hex, key)
 					values['Pattern to bruteforce using md5'] = unicode(values['Login']) + u'\\nskyper\\n<password>'
-					
+
 					# Try a dictionary attack on the hash
 					password = self.dictionary_attack(values['Login'], values['Hash'])
 					if password:
@@ -139,7 +140,7 @@ class Skype(ModuleInfo):
 				print_debug('DEBUG', str(e))
 
 	def run(self, software_name=None):
-		path = os.path.join(constant.profile['APPDATA'], u'\Skype')
+		path = os.path.join(constant.profile['APPDATA'], u'Skype')
 		if os.path.exists(path):
 			# retrieve the key used to build the salt
 			key = self.get_regkey()
@@ -147,9 +148,9 @@ class Skype(ModuleInfo):
 				print_debug('ERROR', u'The salt has not been retrieved')
 			else:
 				username = self.get_username(path)
-				if username: 
+				if username:
 					d = os.path.join(path, username)
-					if os.path.exists(d): 
+					if os.path.exists(d):
 						self.get_info(key, username, d)
 
 				if not self.pwdFound:
@@ -157,5 +158,3 @@ class Skype(ModuleInfo):
 						self.get_info(key, d, os.path.join(path, d))
 
 				return self.pwdFound
-
-			
