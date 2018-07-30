@@ -19,11 +19,12 @@
 @contact:      bdolangavitt@wesleyan.edu
 """
 
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from rawreg import *
 from ..addrspace import HiveFileAddressSpace
-from hashdump import get_bootkey,str_to_key
+from hashdump import get_bootkey, str_to_key
 from Crypto.Hash import MD5, SHA256
-from Crypto.Cipher import ARC4,DES, AES
+from Crypto.Cipher import ARC4, DES
 
 def get_lsa_key(secaddr, bootkey, vista):
     root = get_root(secaddr)
@@ -76,7 +77,7 @@ def decrypt_secret(secret, key):
 
         des = DES.new(des_key, DES.MODE_ECB)
         decrypted_data += des.decrypt(enc_block)
-        
+
         j += 7
         if len(key[j:j+7]) < 7:
             j = len(key[j:j+7])
@@ -93,7 +94,7 @@ def decrypt_aes(secret, key):
 
     data = ""
     for i in range(60, len(secret), 16):
-        aes = AES.new(aeskey, AES.MODE_CBC, "\x00"*16)
+        aes = AESModeOfOperationCBC(aeskey, iv="\x00"*16)
         buf = secret[i : i + 16]
         if len(buf) < 16:
             buf += (16-len(buf)) * "\00"
@@ -107,11 +108,11 @@ def get_secret_by_name(secaddr, name, lsakey, vista):
     root = get_root(secaddr)
     if not root:
         return None
-    
+
     enc_secret_key = open_key(root, ["Policy", "Secrets", name, "CurrVal"])
     if not enc_secret_key:
         return None
-    
+
     enc_secret_value = enc_secret_key.ValueList.List[0]
     if not enc_secret_value:
         return None
@@ -139,17 +140,17 @@ def get_secrets(sysaddr, secaddr, vista):
     secrets_key = open_key(root, ["Policy", "Secrets"])
     if not secrets_key:
         return None
-    
+
     secrets = {}
     for key in subkeys(secrets_key):
         sec_val_key = open_key(key, ["CurrVal"])
         if not sec_val_key:
             continue
-        
+
         enc_secret_value = sec_val_key.ValueList.List[0]
         if not enc_secret_value:
             continue
-        
+
         enc_secret = secaddr.read(enc_secret_value.Data.value,
                 enc_secret_value.DataLength.value)
         if not enc_secret:

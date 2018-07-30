@@ -21,9 +21,9 @@
 
 from rawreg import *
 from ..addrspace import HiveFileAddressSpace
-from Crypto.Hash import MD5
-from Crypto.Cipher import ARC4,DES
-from struct import unpack,pack
+from Crypto.Cipher import ARC4, DES
+from struct import unpack, pack
+import hashlib
 
 odd_parity = [
   1, 1, 2, 2, 4, 4, 7, 7, 8, 8, 11, 11, 13, 13, 14, 14,
@@ -84,8 +84,8 @@ def sid_to_key(sid):
     s2 = s1[3] + s1[0] + s1[1] + s1[2]
     s2 += s2[0] + s2[1] + s2[2]
 
-    return str_to_key(s1),str_to_key(s2)
-    
+    return str_to_key(s1), str_to_key(s2)
+
 def find_control_set(sysaddr):
     root = get_root(sysaddr)
     if not root:
@@ -101,7 +101,7 @@ def find_control_set(sysaddr):
 def get_bootkey(sysaddr):
     cs = find_control_set(sysaddr)
     lsa_base = ["ControlSet%03d" % cs, "Control", "Lsa"]
-    lsa_keys = ["JD","Skew1","GBG","Data"]
+    lsa_keys = ["JD", "Skew1", "GBG", "Data"]
 
     root = get_root(sysaddr)
     if not root: return None
@@ -110,16 +110,16 @@ def get_bootkey(sysaddr):
     if not lsa: return None
 
     bootkey = ""
-    
+
     for lk in lsa_keys:
         key = open_key(lsa, [lk])
         class_data = sysaddr.read(key.Class.value, key.ClassLength.value)
         bootkey += class_data.decode('utf-16-le').decode('hex')
-    
+
     bootkey_scrambled = ""
     for i in range(len(bootkey)):
         bootkey_scrambled += bootkey[p[i]]
-    
+
     return bootkey_scrambled
 
 def get_hbootkey(samaddr, bootkey):
@@ -137,13 +137,12 @@ def get_hbootkey(samaddr, bootkey):
             F = samaddr.read(v.Data.value, v.DataLength.value)
     if not F: return None
 
-    md5 = MD5.new()
-    md5.update(F[0x70:0x80] + aqwerty + bootkey + anum)
+    md5 = hashlib.md5(F[0x70:0x80] + aqwerty + bootkey + anum)
     rc4_key = md5.digest()
 
     rc4 = ARC4.new(rc4_key)
     hbootkey = rc4.encrypt(F[0x80:0xA0])
-    
+
     return hbootkey
 
 def get_user_keys(samaddr):
@@ -177,7 +176,7 @@ def decrypt_hashes(rid, enc_lm_hash, enc_nt_hash, hbootkey):
         lmhash = decrypt_single_hash(rid, hbootkey, enc_lm_hash, almpassword)
     else:
         lmhash = ""
-    
+
     # NT Hash
     if enc_nt_hash:
         nthash = decrypt_single_hash(rid, hbootkey, enc_nt_hash, antpassword)
