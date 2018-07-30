@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*- 
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationECB
 from lazagne.config.write_output import print_debug
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import *
-from Crypto.Cipher import AES
 import binascii
 import _winreg
 
@@ -16,9 +16,9 @@ class CoreFTP(ModuleInfo):
 		encoded		= binascii.unhexlify(hex)
 		secret 		= self._secret
 		BLOCK_SIZE 	= 16
-		mode 		= AES.MODE_ECB
-		cipher 		= AES.new(secret, mode)
-		return cipher.decrypt(encoded).split('\x00')[0]
+		aes 		= AESModeOfOperationECB(secret)
+		decrypted 	= aes.decrypt(encoded)
+		return decrypted.split('\x00')[0]
 	
 	def run(self, software_name=None):	
 		key 		= None
