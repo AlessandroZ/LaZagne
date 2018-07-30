@@ -7,9 +7,9 @@
 # Should work on Vista / Windows 7 (x86 and X64)
 # Tested on Windows 7 (x86, x64)
 
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from lazagne.config.write_output import print_debug
-from Crypto.Cipher import AES
-from Crypto.Cipher import DES3
+from lazagne.config.crypto.pyDes import *
 from construct import *
 from memorpy import *
 import struct
@@ -225,11 +225,11 @@ class LsaDecryptor():
 			if size % 8:
 				if not self.aes_key or not self.iv:
 					return cleartext
-				cipher = AES.new(self.aes_key, AES.MODE_CBC, self.iv)
+				cipher = AESModeOfOperationCBC(self.aes_key, iv=self.iv)
 			else:
 				if not self.des_key or not self.iv:
 					return cleartext
-				cipher = DES3.new(self.des_key, DES3.MODE_CBC, self.iv[:8])
+				cipher = triple_des(self.des_key, CBC, self.iv[:8])
 			cleartext = cipher.decrypt(encrypted)
 		return cleartext
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationECB, AESModeOfOperationCBC
+from pureSalsa20 import Salsa20
 import hashlib
 import struct
-from Crypto.Cipher import AES
-from pureSalsa20 import Salsa20
 
 AES_BLOCK_SIZE = 16
 
@@ -13,7 +13,7 @@ def sha256(s):
 def transform_key(key, seed, rounds):
     """Transform `key` with `seed` `rounds` times using AES ECB."""
     # create transform cipher with transform seed
-    cipher = AES.new(seed, AES.MODE_ECB)
+    cipher = AESModeOfOperationECB(seed)
     # transform composite key rounds times
     for n in range(0, rounds):
         key = cipher.encrypt(key)
@@ -22,11 +22,11 @@ def transform_key(key, seed, rounds):
 
 def aes_cbc_decrypt(data, key, enc_iv):
     """Decrypt and return `data` with AES CBC."""
-    cipher = AES.new(key, AES.MODE_CBC, enc_iv)
+    cipher = AESModeOfOperationCBC(key, iv=enc_iv)
     return cipher.decrypt(data)
 
 def aes_cbc_encrypt(data, key, enc_iv):
-    cipher = AES.new(key, AES.MODE_CBC, enc_iv)
+    cipher = AESModeOfOperationCBC(key, iv=enc_iv)
     return cipher.encrypt(data)
 
 def unpad(data):
