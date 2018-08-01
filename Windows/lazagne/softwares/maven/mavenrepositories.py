@@ -1,16 +1,18 @@
-# -*- coding: utf-8 -*- 
-from lazagne.config.write_output import print_debug
-from lazagne.config.constant import *
-from lazagne.config.module_info import ModuleInfo
-import xml.etree.ElementTree as ET
+# -*- coding: utf-8 -*-
 import os
+from xml.etree import ElementTree
+
+from lazagne.config.constant import constant
+from lazagne.config.module_info import ModuleInfo
+from lazagne.config.write_output import print_debug
+
 
 class MavenRepositories(ModuleInfo):
 
     def __init__(self):
         ModuleInfo.__init__(self, 'mavenrepositories', 'maven')
         # Interesting XML nodes in Maven repository configuration
-        self.nodes_to_extract   = ["id", "username", "password", "privateKey", "passphrase"]
+        self.nodes_to_extract = ["id", "username", "password", "privateKey", "passphrase"]
         self.settings_namespace = "{http://maven.apache.org/SETTINGS/1.0.0}"
 
     def extract_master_password(self):
@@ -25,7 +27,7 @@ class MavenRepositories(ModuleInfo):
         master_password_file_location = constant.profile["USERPROFILE"] + u'\\.m2\\settings-security.xml'
         if os.path.isfile(master_password_file_location):
             try:
-                config = ET.parse(master_password_file_location).getroot()
+                config = ElementTree.parse(master_password_file_location).getroot()
                 master_password_node = config.find(".//master")
                 if master_password_node is not None:
                     master_password = master_password_node.text
@@ -34,7 +36,6 @@ class MavenRepositories(ModuleInfo):
                 master_password = None
 
         return master_password
-
 
     def extract_repositories_credentials(self):
         """
@@ -48,7 +49,7 @@ class MavenRepositories(ModuleInfo):
         maven_settings_file_location = constant.profile["USERPROFILE"] + u'\\.m2\\settings.xml'
         if os.path.isfile(maven_settings_file_location):
             try:
-                settings = ET.parse(maven_settings_file_location).getroot()
+                settings = ElementTree.parse(maven_settings_file_location).getroot()
                 server_nodes = settings.findall(".//%sserver" % self.settings_namespace)
                 for server_node in server_nodes:
                     creds = {}
@@ -79,7 +80,6 @@ class MavenRepositories(ModuleInfo):
 
         return state
 
-
     def run(self, software_name=None):
         """
         Main function:
@@ -90,9 +90,9 @@ class MavenRepositories(ModuleInfo):
 
         - "LaZagne run initiator" can also use the encrypted password and the master password "AS IS"
         in a Maven distribution to access repositories.
-
-        See https://github.com/jelmerk/maven-settings-decoder
-        See https://github.com/sonatype/plexus-cipher/blob/master/src/main/java/org/sonatype/plexus/components/cipher/PBECipher.java
+        See:
+        github.com/jelmerk/maven-settings-decoder
+        github.com/sonatype/plexus-cipher/blob/master/src/main/java/org/sonatype/plexus/components/cipher/PBECipher.java
         """
 
         # Extract the master password
@@ -108,15 +108,16 @@ class MavenRepositories(ModuleInfo):
         # => Authentication using private key
         pwd_found = []
         for creds in repos_creds:
-            values          = {}
-            values["Id"]    = creds["id"]
-            values["Login"] = creds["username"]
+            values = {
+                "Id": creds["id"],
+                "Login": creds["username"]
+            }
             if not self.use_key_auth(creds):
                 pwd = creds["password"].strip()
                 # Case for authentication using password protected with the master password
                 if pwd.startswith("{") and pwd.endswith("}"):
                     values["SymetricEncryptionKey"] = master_password
-                    values["PasswordEncrypted"]     = pwd
+                    values["PasswordEncrypted"] = pwd
                 else:
                     values["Password"] = pwd
             else:

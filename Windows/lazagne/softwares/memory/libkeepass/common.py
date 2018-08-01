@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
+import base64
+import io
+import struct
+from xml import etree
+
+from crypto import sha256
+
 
 # file header
-
 class HeaderDictionary(dict):
     """
     A dictionary on steroids for comfortable header field storage and 
@@ -82,17 +88,25 @@ class HeaderDictionary(dict):
         class wrap(object):
             def __init__(self, d):
                 object.__setattr__(self, 'd', d)
+
             def __getitem__(self, key):
                 fmt = self.d.fmt.get(self.d.fields.get(key, key))
-                if fmt: return struct.pack(fmt, self.d[key])
-                else: return self.d[key]
+                if fmt:
+                    return struct.pack(fmt, self.d[key])
+                else:
+                    return self.d[key]
+
             __getattr__ = __getitem__
+
             def __setitem__(self, key, val):
                 fmt = self.d.fmt.get(self.d.fields.get(key, key))
-                if fmt: self.d[key] = struct.unpack(fmt, val)[0]
-                else: self.d[key] = val
+                if fmt:
+                    self.d[key] = struct.unpack(fmt, val)[0]
+                else:
+                    self.d[key] = val
+
             __setattr__ = __setitem__
-        
+
         if key == 'b':
             return wrap(self)
         try:
@@ -108,16 +122,12 @@ class HeaderDictionary(dict):
 
 
 # file baseclass
-
-import io
-from crypto import sha256
-
 class KDBFile(object):
     def __init__(self, stream=None, **credentials):
         # list of hashed credentials (pre-transformation)
         self.keys = []
         self.add_credentials(**credentials)
-        
+
         # the buffer containing the decrypted/decompressed payload from a file
         self.in_buffer = None
         # the buffer filled with data for writing back to a file before 
@@ -129,7 +139,7 @@ class KDBFile(object):
         # encryption masterkey. if this is True `in_buffer` must contain
         # clear data.
         self.opened = False
-        
+
         # the raw/basic file handle, expect it to be closed after __init__!
         if stream is not None:
             if not isinstance(stream, io.IOBase):
@@ -144,7 +154,7 @@ class KDBFile(object):
 
     def _read_header(self, stream):
         raise NotImplementedError('The _read_header method was not '
-            'implemented propertly.')
+                                  'implemented propertly.')
 
     def _decrypt(self, stream):
         self._make_master_key()
@@ -157,9 +167,9 @@ class KDBFile(object):
         raise NotImplementedError('The write_to() method was not implemented.')
 
     def add_credentials(self, **credentials):
-        if credentials.has_key('password'):
+        if 'password' in credentials:
             self.add_key_hash(sha256(credentials['password']))
-        if credentials.has_key('keyfile'):
+        if 'keyfile' in credentials:
             self.add_key_hash(load_keyfile(credentials['keyfile']))
 
     def clear_credentials(self):
@@ -206,20 +216,16 @@ class KDBFile(object):
 
 
 # loading keyfiles
-
-import base64
-import hashlib
-from xml import etree
-
 def load_keyfile(filename):
     try:
         return load_xml_keyfile(filename)
-    except:
+    except Exception:
         pass
     try:
         return load_plain_keyfile(filename)
-    except:
+    except Exception:
         pass
+
 
 def load_xml_keyfile(filename):
     """
@@ -239,7 +245,8 @@ def load_xml_keyfile(filename):
         tree = etree.parse(f).getroot()
         # read text from key, data and convert from base64
         return base64.b64decode(tree.find('Key/Data').text)
-    raise IOError('Could not parse XML keyfile.')
+    # raise IOError('Could not parse XML keyfile.')
+
 
 def load_plain_keyfile(filename):
     """
@@ -256,23 +263,20 @@ def load_plain_keyfile(filename):
             return key.decode('hex')
         # anything else may be a file to hash for the key
         return sha256(key)
-    raise IOError('Could not read keyfile.')
+    # raise IOError('Could not read keyfile.')
 
-import struct
 
 def stream_unpack(stream, offset, length, typecode='I'):
     if offset is not None:
         stream.seek(offset)
     data = stream.read(length)
-    return struct.unpack('<'+typecode, data)[0]
+    return struct.unpack('<' + typecode, data)[0]
+
 
 def read_signature(stream):
     sig1 = stream_unpack(stream, 0, 4)
     sig2 = stream_unpack(stream, None, 4)
-    #ver_minor = stream_unpack(stream, None, 2, 'h')
-    #ver_major = stream_unpack(stream, None, 2, 'h')
-    #return (sig1, sig2, ver_major, ver_minor)
-    return (sig1, sig2)
-
-
-
+    # ver_minor = stream_unpack(stream, None, 2, 'h')
+    # ver_major = stream_unpack(stream, None, 2, 'h')
+    # return (sig1, sig2, ver_major, ver_minor)
+    return sig1, sig2

@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
+import hashlib
 import io
 import struct
-import hashlib
 
 # default from KeePass2 source
-BLOCK_LENGTH = 1024*1024
-#HEADER_LENGTH = 4+32+4
+BLOCK_LENGTH = 1024 * 1024
+
+
+# HEADER_LENGTH = 4+32+4
 
 def read_int(stream, length):
     try:
         return struct.unpack('<I', stream.read(length))[0]
-    except:
+    except Exception:
         return None
+
 
 class HashedBlockIO(io.BytesIO):
     """
@@ -30,6 +33,7 @@ class HashedBlockIO(io.BytesIO):
     HashedBlockReader is a subclass of io.BytesIO. The inherited read, seek, ...
     functions shall be used to access the verified data.
     """
+
     def __init__(self, block_stream=None, bytes=None):
         io.BytesIO.__init__(self)
         input_stream = None
@@ -62,7 +66,7 @@ class HashedBlockIO(io.BytesIO):
         index = read_int(block_stream, 4)
         bhash = block_stream.read(32)
         length = read_int(block_stream, 4)
-        
+
         if length > 0:
             data = block_stream.read(length)
             if hashlib.sha256(data).digest() == bhash:
@@ -101,7 +105,6 @@ class HashedBlockIO(io.BytesIO):
                 index += 1
             else:
                 stream.write(struct.pack('<I', index))
-                stream.write('\x00'*32)
+                stream.write('\x00' * 32)
                 stream.write(struct.pack('<I', 0))
                 break
-
