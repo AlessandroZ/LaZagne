@@ -1,36 +1,27 @@
 # -*- coding: utf-8 -*- 
-from lazagne.config.module_info import ModuleInfo
-from lazagne.config.constant import *
-import xml.etree.cElementTree as ET
 import os
+from xml.etree.cElementTree import ElementTree
+
+from lazagne.config.constant import constant
+from lazagne.config.module_info import ModuleInfo
+
 
 class Squirrel(ModuleInfo):
-	def __init__(self):
-		ModuleInfo.__init__(self, name='squirrel', category='databases')
+    def __init__(self):
+        ModuleInfo.__init__(self, name='squirrel', category='databases')
 
-	def run(self, software_name=None):
-		path = os.path.join(constant.profile['USERPROFILE'], u'.squirrel-sql', u'SQLAliases23.xml')
-		if os.path.exists(path):
-			tree = ET.ElementTree(file=path)
-			pwdFound = []
-			for elem in tree.iter('Bean'):
-				values = {}
-				for e in elem:
-					if e.tag == 'name':
-						values['Name'] = e.text
-					
-					elif e.tag == 'url':
-						values['URL'] = e.text
-					
-					elif e.tag == 'userName':
-						values['Login'] = e.text
-					
-					elif e.tag == 'password':
-						values['Password'] = e.text
-				
-				if values:
-					pwdFound.append(values)
-				
-			return pwdFound
+    def run(self, software_name=None):
+        path = os.path.join(constant.profile['USERPROFILE'], u'.squirrel-sql', u'SQLAliases23.xml')
+        if os.path.exists(path):
+            tree = ElementTree(file=path)
+            pwd_found = []
+            elements = {'name': 'Name', 'url': 'URL', 'userName': 'Login', 'password': 'Password'}
+            for elem in tree.iter('Bean'):
+                values = {}
+                for e in elem:
+                    if e.tag in elements:
+                        values[elements[e.tag]] = e.text
+                if values:
+                    pwd_found.append(values)
 
-		
+            return pwd_found
