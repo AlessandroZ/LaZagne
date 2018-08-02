@@ -12,6 +12,7 @@ from lazagne.config.dico import get_dico
 from lazagne.config.constant import *
 from xml.etree import ElementTree
 import subprocess
+import traceback
 import binascii
 import platform
 import hashlib
@@ -40,9 +41,9 @@ class Hashdump(ModuleInfo):
 			v = '.'.join(v.split('.')[:2])
 			major = v.split('.')[0]
 			minor = v.split('.')[1]
-		except Exception, e:
-			# print e
-			pass
+		except:
+			print_debug('DEBUG', traceback.format_exc())
+		
 		return int(major), int(minor)
 
 	def run_cmd(self, cmd):
@@ -136,9 +137,8 @@ class Hashdump(ModuleInfo):
 					salt=salthex, 
 					entropy=entropyhex
 				)
-		except Exception as e:
-			print_debug('ERROR', e)
-			pass
+		except:
+			print_debug('DEBUG', traceback.format_exc())
 
 	# ------------------------------- Dictionary attack -------------------------------
 
@@ -160,7 +160,7 @@ class Hashdump(ModuleInfo):
 						found = True
 						break
 		except (KeyboardInterrupt, SystemExit):
-			print 'INTERRUPTED!'
+			print_debug('DEBUG', 'INTERRUPTED!')
 			print_debug('DEBUG', 'Dictionary attack interrupted')
 
 		return found
