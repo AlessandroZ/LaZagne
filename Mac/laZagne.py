@@ -50,7 +50,7 @@ def output():
 		if os.path.isdir(args['output']):
 			constant.folder_name = args['output']
 		else:
-			print '[!] Specify a directory, not a file !'
+			print_debug('ERROR', '[!] Specify a directory, not a file !')
 
 	if args['write_normal']:
 		constant.output = 'txt'
@@ -129,9 +129,8 @@ def launch_module(module):
 			# Return value - not used but needed 
 			yield True, i.capitalize(), pwdFound
 		except:
-			traceback.print_exc()
-			print
 			error_message = traceback.format_exc()
+			print_debug('DEBUG', error_message)
 			yield False, i.capitalize(), error_message
 
 # Write output to file (json and txt files)
