@@ -59,18 +59,3 @@ def pbkdf2_F(h, salt, itercount, blocknum):
 
     return T
 
-
-def test():
-    # test vector from rfc3211
-    password = 'password'
-    salt = unhexlify('1234567878563412')
-    password = 'All n-entities must communicate with other n-entities via n-1 entiteeheehees'
-    itercount = 500
-    keylen = 16
-    ret = pbkdf2(password, salt, itercount, keylen)
-    print "key:      %s" % hexlify(ret)
-    print "expected: 6A 89 70 BF 68 C9 2C AE A8 4A 8D F2 85 10 85 86"
-
-
-if __name__ == '__main__':
-    test()

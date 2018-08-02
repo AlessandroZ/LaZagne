@@ -19,12 +19,12 @@
 #
 
 from lazagne.config.write_output import print_debug
+from lazagne.config.crypto.pyDes import *
 import os
 import struct
 from binascii import unhexlify
 import datetime
 from pbkdf2 import pbkdf2
-from pyDes import triple_des, CBC
 from ctypes import *
 from Schema import *
 
@@ -358,7 +358,7 @@ class KeyChain():
 
         CipherLen = KeyBlobRecord.totalLength - KeyBlobRecord.startCryptoBlob
         if CipherLen % BLOCKSIZE != 0:
-            print "Bad ciphertext len"
+            print_debug('ERROR', "Bad ciphertext len")
             return '', '', '', 1
 
         ciphertext = record[KeyBlobRecord.startCryptoBlob:KeyBlobRecord.totalLength]
@@ -412,28 +412,20 @@ class KeyChain():
 
         record.append(self.getKeychainTime(BASE_ADDR, RecordMeta.CreationDate & 0xFFFFFFFE))
         record.append(self.getKeychainTime(BASE_ADDR, RecordMeta.ModDate & 0xFFFFFFFE))
-
         record.append(self.getLV(BASE_ADDR, RecordMeta.Description & 0xFFFFFFFE))
         record.append(self.getLV(BASE_ADDR, RecordMeta.Comment & 0xFFFFFFFE))
-
         record.append(self.getFourCharCode(BASE_ADDR, RecordMeta.Creator & 0xFFFFFFFE))
         record.append(self.getFourCharCode(BASE_ADDR, RecordMeta.Type & 0xFFFFFFFE))
-
         record.append(self.getLV(BASE_ADDR, RecordMeta.PrintName & 0xFFFFFFFE))
         record.append(self.getLV(BASE_ADDR, RecordMeta.Alias & 0xFFFFFFFE))
         record.append(self.getLV(BASE_ADDR, RecordMeta.Protected & 0xFFFFFFFE))
         record.append(self.getLV(BASE_ADDR, RecordMeta.Account & 0xFFFFFFFE))
         record.append(self.getLV(BASE_ADDR, RecordMeta.SecurityDomain & 0xFFFFFFFE))
         record.append(self.getLV(BASE_ADDR, RecordMeta.Server & 0xFFFFFFFE))
-
         record.append(self.getFourCharCode(BASE_ADDR, RecordMeta.Protocol & 0xFFFFFFFE))
-
         record.append(self.getLV(BASE_ADDR, RecordMeta.AuthType & 0xFFFFFFFE))
-
         record.append(self.getInt(BASE_ADDR, RecordMeta.Port & 0xFFFFFFFE))
-
         record.append(self.getLV(BASE_ADDR, RecordMeta.Path & 0xFFFFFFFE))        
-
         return record
 
     def getx509Record(self, base_addr, offset):
