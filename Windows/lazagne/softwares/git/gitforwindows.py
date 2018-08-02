@@ -22,7 +22,7 @@ class GitForWindows(ModuleInfo):
         if os.path.isfile(location):
             with open(location) as f:
                 # One line have the following format: https://user:pass@example.com
-                for cred in f.readlines():
+                for cred in f:
                     if len(cred) > 0:
                         parts = urlparse(cred)
                         pwd_found.append((
