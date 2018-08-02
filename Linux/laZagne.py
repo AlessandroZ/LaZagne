@@ -107,9 +107,8 @@ def launch_module(module):
 			# Return value - not used but needed
 			yield True, i.capitalize(), pwdFound
 		except:
-			traceback.print_exc()
-			print()
 			error_message = traceback.format_exc()
+			print_debug('DEBUG', error_message)
 			yield False, i.capitalize(), error_message
 
 # Run module
