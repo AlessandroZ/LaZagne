@@ -466,7 +466,7 @@ class Mozilla(ModuleInfo):
 									'Password'  : self.decrypt(key=key, iv=passw[1], ciphertext=passw[2]),
 								}
 							)
-						except Exception, e:
-							print_debug('DEBUG', u'An error occured decrypting the password: {error}'.format(error=e))
+						except:
+							print_debug('DEBUG', u'An error occured decrypting the password: {error}'.format(error=traceback.format_exc()))
 
 			return pwdFound
