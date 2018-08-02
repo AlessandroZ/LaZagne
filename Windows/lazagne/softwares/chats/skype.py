@@ -19,7 +19,7 @@ class Skype(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'skype', 'chats', dpapi_used=True)
 
-        self.pwdFound = []
+        self.pwd_found = []
 
     def aes_encrypt(self, message, passphrase):
         iv = '\x00' * 16
@@ -76,30 +76,8 @@ class Skype(ModuleInfo):
         # byte to hex
         return binascii.hexlify(tmp)
 
-    # used for dictionary attack, if user specify a specific file
-    def get_dic_file(self, dictionary_path):
-        words = []
-        if dictionary_path:
-            try:
-                dic_file = open(dictionary_path, 'r')
-            except Exception, e:
-                print_debug('DEBUG', str(e))
-                print_debug('ERROR', u'Unable to open passwords file: %s' % str(dictionary_path))
-                return []
-
-            for word in dic_file.readlines():
-                words.append(word.strip('\n'))
-            dic_file.close()
-        return words
-
     def dictionary_attack(self, login, md5):
-        wordlist = get_dico()
-
-        # if the user specify the file path
-        if constant.path:
-            wordlist += self.get_dic_file(constant.path)
-
-        for word in wordlist:
+        for word in get_dico():
             hash_ = hashlib.md5('%s\nskyper\n%s' % (login, word)).hexdigest()
             if hash_ == md5:
                 return word
@@ -138,7 +116,7 @@ class Skype(ModuleInfo):
                     if password:
                         values['Password'] = password
 
-                    self.pwdFound.append(values)
+                    self.pwd_found.append(values)
             except Exception as e:
                 print_debug('DEBUG', str(e))
 
@@ -156,8 +134,8 @@ class Skype(ModuleInfo):
                     if os.path.exists(d):
                         self.get_info(key, username, d)
 
-                if not self.pwdFound:
+                if not self.pwd_found:
                     for d in os.listdir(path):
                         self.get_info(key, d, os.path.join(path, d))
 
-                return self.pwdFound
+                return self.pwd_found

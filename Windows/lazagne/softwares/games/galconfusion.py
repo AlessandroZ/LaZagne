@@ -20,7 +20,7 @@ class GalconFusion(ModuleInfo):
         # Find the location of steam - to make it easier we're going to use a try block
         # 'cos I'm lazy
         try:
-            with win.OpenKey(win.HKEY_CURRENT_USER, 'Software\Valve\Steam') as key:
+            with win.OpenKey(win.HKEY_CURRENT_USER, 'Software\\Valve\\Steam') as key:
                 results = _winreg.QueryValueEx(key, 'SteamPath')
         except Exception:
             pass
