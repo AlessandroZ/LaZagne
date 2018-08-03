@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
+import _winreg
 import binascii
 import hashlib
 import os
 import struct
 from xml.etree.cElementTree import ElementTree
-
-import _winreg
 
 import lazagne.config.winstructure as win
 from lazagne.config.constant import constant
@@ -32,7 +31,7 @@ class Skype(ModuleInfo):
             key_path = 'Software\\Skype\\ProtectedStorage'
             try:
                 hkey = win.OpenKey(win.HKEY_CURRENT_USER, key_path)
-            except Exception, e:
+            except Exception as e:
                 print_debug('DEBUG', str(e))
                 return False
 
