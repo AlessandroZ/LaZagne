@@ -2,7 +2,7 @@
 import base64
 import io
 import struct
-from xml import etree
+from xml.etree import ElementTree
 
 from crypto import sha256
 
@@ -167,9 +167,9 @@ class KDBFile(object):
         raise NotImplementedError('The write_to() method was not implemented.')
 
     def add_credentials(self, **credentials):
-        if 'password' in credentials:
+        if credentials.get('password'):
             self.add_key_hash(sha256(credentials['password']))
-        if 'keyfile' in credentials:
+        if credentials.get('keyfile'):
             self.add_key_hash(load_keyfile(credentials['keyfile']))
 
     def clear_credentials(self):
@@ -242,7 +242,7 @@ def load_xml_keyfile(filename):
     """
     with open(filename, 'r') as f:
         # ignore meta, currently there is only version "1.00"
-        tree = etree.parse(f).getroot()
+        tree = ElementTree.parse(f).getroot()
         # read text from key, data and convert from base64
         return base64.b64decode(tree.find('Key/Data').text)
     # raise IOError('Could not parse XML keyfile.')
