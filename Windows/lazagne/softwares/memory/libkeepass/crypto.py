@@ -18,7 +18,7 @@ def transform_key(key, seed, rounds):
     cipher = AESModeOfOperationECB(seed)
     # transform composite key rounds times
     for n in range(0, rounds):
-        key = cipher.encrypt(key)
+        key = b"".join([cipher.encrypt(key[i:i + AES_BLOCK_SIZE]) for i in range(0, len(key), AES_BLOCK_SIZE)])
     # return hash of transformed key
     return sha256(key)
 
@@ -26,12 +26,12 @@ def transform_key(key, seed, rounds):
 def aes_cbc_decrypt(data, key, enc_iv):
     """Decrypt and return `data` with AES CBC."""
     cipher = AESModeOfOperationCBC(key, iv=enc_iv)
-    return cipher.decrypt(data)
+    return b"".join([cipher.decrypt(data[i:i + AES_BLOCK_SIZE]) for i in range(0, len(data), AES_BLOCK_SIZE)])
 
 
 def aes_cbc_encrypt(data, key, enc_iv):
     cipher = AESModeOfOperationCBC(key, iv=enc_iv)
-    return cipher.encrypt(data)
+    return b"".join([cipher.encrypt(data[i:i + AES_BLOCK_SIZE]) for i in range(0, len(data), AES_BLOCK_SIZE)])
 
 
 def unpad(data):

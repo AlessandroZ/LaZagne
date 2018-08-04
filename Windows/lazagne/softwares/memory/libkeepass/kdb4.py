@@ -312,25 +312,23 @@ class KDBXmlExtension:
 
     def to_dic(self):
         """Return a dictionnary of the element tree."""
-        pwd_founds = []
+        pwd_found = []
         # print etree.tostring(self.obj_root)
         root = ElementTree.fromstring(ElementTree.tostring(self.obj_root))
-        for r in root[1][0]:
-            for entries in r.findall('Entry'):
-                dic = {}
-                entry = list(entries.iter('String'))
-                for en in entry:
-                    try:
-                        if en[0].text == 'UserName':
-                            dic['Login'] = en[1].text
-                        else:
-                            # Replace new line by a point
-                            dic[en[0].text] = en[1].text.replace('\n', '.')
-                    except Exception as e:
-                        # print e
-                        pass
-                pwd_founds.append(dic)
-        return pwd_founds
+        for entry in root.findall('.//Root//Entry'):
+            dic = {}
+            for elem in entry.iter('String'):
+                try:
+                    if elem[0].text == 'UserName':
+                        dic['Login'] = elem[1].text
+                    else:
+                        # Replace new line by a point
+                        dic[elem[0].text] = elem[1].text.replace('\n', '.')
+                except Exception as e:
+                    # print e
+                    pass
+            pwd_found.append(dic)
+        return pwd_found
 
     # def write_to(self, stream):
     #     """Serialize the element tree to the out-buffer."""

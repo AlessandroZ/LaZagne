@@ -5,21 +5,28 @@
 # Thanks for the great work of libkeepass (used to decrypt keepass file)
 # https://github.com/phpwutz/libkeepass
 
-from lazagne.config.module_info import ModuleInfo
-from lazagne.config.powershell_execute import powershell_execute
-from lazagne.config.constant import *
+import traceback
+
 import libkeepass
+from lazagne.config.constant import constant
+from lazagne.config.module_info import ModuleInfo
+from lazagne.config.write_output import print_debug
+
 
 class Keepass(ModuleInfo):
-	def __init__(self):
-		ModuleInfo.__init__(self, 'keepass', 'memory')
+    def __init__(self):
+        ModuleInfo.__init__(self, 'keepass', 'memory')
 
-	def run(self, software_name=None):
-		# password found on the memory dump class
-		if constant.keepass:
-			try:
-				with libkeepass.open(constant.keepass['Database'], password=constant.keepass['Password'], keyfile=constant.keepass['KeyFilePath']) as kdb:
-					pwdFound = kdb.to_dic()
-				return pwdFound
-			except:
-				pass
+    def run(self, software_name=None):
+        # password found on the memory dump class
+        if constant.keepass:
+            res = []
+            for db in constant.keepass:
+                try:
+                    with libkeepass.open(db.values()[0][u'Database'],
+                                         password=db.get(u"KcpPassword", {}).get(u'Password'),
+                                         keyfile=db.get(u"KcpKeyFile", {}).get(u'KeyFilePath')) as kdb:
+                        res.extend(kdb.to_dic())
+                except Exception:
+                    print_debug("ERROR", traceback.format_exc())
+            return res
