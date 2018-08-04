@@ -4,7 +4,7 @@
 from lazagne.softwares.wallet.kde import Kde
 from lazagne.softwares.wallet.libsecret import Libsecret
 # browsers
-from lazagne.softwares.browsers.mozilla import Mozilla
+from lazagne.softwares.browsers.mozilla import firefox_browsers
 from lazagne.softwares.browsers.opera import Opera
 from lazagne.softwares.browsers.chrome import Chrome
 # sysadmin
@@ -19,6 +19,7 @@ from lazagne.softwares.sysadmin.cli import Cli
 from lazagne.softwares.chats.pidgin import Pidgin
 # mails
 from lazagne.softwares.mails.clawsmail import ClawsMail
+from lazagne.softwares.mails.thunderbird import Thunderbird
 # wifi
 from lazagne.softwares.wifi.wifi import Wifi
 from lazagne.softwares.wifi.wpa_supplicant import Wpa_supplicant
@@ -53,10 +54,11 @@ def get_categories():
 def get_modules():
 	moduleNames = [
 		ClawsMail(),
+		Thunderbird(),
 		DbVisualizer(),
 		Env_variable(),
 		Filezilla(),
-		Mozilla(),
+		# Mozilla(),
 		Opera(),
 		Chrome(),
 		Pidgin(),
@@ -84,4 +86,4 @@ def get_modules():
 	# except:
 	# 	pass
 
-	return moduleNames
+	return moduleNames + firefox_browsers

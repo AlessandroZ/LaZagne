@@ -79,21 +79,9 @@ def long_to_bytes(n, blocksize=0):
 
 class Mozilla(ModuleInfo):
 
-	def __init__(self, isThunderbird=False):
-		name = 'thunderbird' if isThunderbird else 'firefox'
-		
-		ModuleInfo.__init__(self, name=name, category='browsers')
-
-	def get_path(self, software_name):
-		"""
-		Returns path depending on the software wanted (Firefox and Thunderbird share the same code)
-		"""
-		path = ''
-		if software_name == 'Firefox':
-			path = os.path.expanduser(".mozilla/firefox")
-		elif software_name == 'Thunderbird':
-			path = os.path.expanduser(".thunderbird")
-		return homes.get(dir=path)
+	def __init__(self, browser_name, path):
+		self.path = os.path.expanduser(path)
+		ModuleInfo.__init__(self, browser_name, category='browsers')
 
 	def get_firefox_profiles(self, directory):
 		""" 
@@ -452,7 +440,7 @@ class Mozilla(ModuleInfo):
 		pwdFound 	 = []
 		profile_list = (
 			item for sublist in (
-				self.get_firefox_profiles(path) for path in self.get_path(software_name)
+				self.get_firefox_profiles(path) for path in [self.path]
 			) for item in sublist
 		)
 		
@@ -474,3 +462,16 @@ class Mozilla(ModuleInfo):
 						print_debug('DEBUG', u'An error occured decrypting the password: {error}'.format(error=traceback.format_exc()))
 
 		return pwdFound
+
+# Name, path
+firefox_browsers = [
+    (u'Firefox', u'~/.mozilla/firefox'),
+    # Check these paths on Linux systems
+    # (u'BlackHawk', u'{APPDATA}\\NETGATE Technologies\\BlackHawk'),
+    # (u'Cyberfox', u'{APPDATA}\\8pecxstudios\\Cyberfox'),
+    # (u'Comodo IceDragon', u'{APPDATA}\\Comodo\\IceDragon'),
+    # (u'K-Meleon', u'{APPDATA}\\K-Meleon'),
+    # (u'Icecat', u'{APPDATA}\\Mozilla\\icecat'),
+]
+
+firefox_browsers = [Mozilla(browser_name=name, path=path) for name, path in firefox_browsers]

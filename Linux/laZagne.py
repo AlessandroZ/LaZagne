@@ -35,7 +35,6 @@ for category in get_categories():
 # Add all modules to the dictionary
 for module in get_modules():
 	modules[module.category][module.options['dest']] = module
-modules['mails']['thunderbird'] = Mozilla(True) # For thunderbird (firefox and thunderbird use the same class)
 
 def output():
 	if args['output']:
@@ -185,7 +184,7 @@ if __name__ == '__main__':
 			categories[c]['parser'].add_argument(m.options['command'], action=m.options['action'], dest=m.options['dest'], help=m.options['help'])
 
 			# Manage all suboptions by modules
-			if m.suboptions and m.name != 'thunderbird':
+			if m.suboptions:
 				tmp = []
 				for sub in m.suboptions:
 					tmp_subparser = argparse.ArgumentParser(add_help=False,formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION))
