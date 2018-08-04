@@ -9,10 +9,10 @@
 import sha
 import hmac
 
-from binascii import hexlify, unhexlify
 from struct import pack
 
 BLOCKLEN = 20
+
 
 # this is what you want to call.
 def pbkdf2(password, salt, itercount, keylen, hashfn=sha):
@@ -27,7 +27,7 @@ def pbkdf2(password, salt, itercount, keylen, hashfn=sha):
     for i in range(1, l + 1):
         T += pbkdf2_F(h, salt, itercount, i)
 
-    return T[: -( BLOCKLEN - keylen % BLOCKLEN)]
+    return T[: -(BLOCKLEN - keylen % BLOCKLEN)]
 
 
 def xorstr(a, b):
@@ -58,4 +58,3 @@ def pbkdf2_F(h, salt, itercount, blocknum):
         T = xorstr(T, U)
 
     return T
-

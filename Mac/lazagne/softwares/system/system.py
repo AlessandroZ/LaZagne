@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*- 
-#!/usr/bin/python
+# !/usr/bin/python
 
-from lazagne.config.write_output import print_debug
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.constant import *
+from lazagne.config.constant import constant
+
 
 class System(ModuleInfo):
-	def __init__(self):
-		ModuleInfo.__init__(self, 'system', 'system')
+    def __init__(self):
+        ModuleInfo.__init__(self, 'system', 'system')
 
-	def run(self, software_name=None):
-		pwdFound = []
-		pwdFound += constant.keychains_pwd
-		pwdFound += constant.system_pwd
-		
-		return pwdFound
+    def run(self, software_name=None):
+        pwd_found = []
+        pwd_found += constant.keychains_pwd
+        pwd_found += constant.system_pwd
 
+        return pwd_found

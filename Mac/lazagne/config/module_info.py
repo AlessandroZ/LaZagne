@@ -1,25 +1,28 @@
-# name => Name of a class
-# category => windows / browsers / etc
-# options => dictionary
-#	 - command
-#	 - action
-#	 - dest
-#	 - help
-#	ex: ('-s', action='store_true', dest='skype', help='skype')
-#		options['command'] = '-s'
-#		options['action'] = 'store_true'
-#		options['dest'] = 'skype'
-#		options['help'] = 'skype'
+"""
+name => Name of a class
+category => windows / browsers / etc
+options => dictionary
+- command
+- action
+- dest
+- help
 
-class ModuleInfo():
-	def __init__(self, name, category, options={}, suboptions=[]):
-		self.name 			= name
-		self.category 		= category		
-		self.options  	 	= {
-			'command' 	: '-{name}'.format(name=self.name), 
-			'action'	: 'store_true', 
-			'dest'		: self.name, 
-			'help'		: '{name} passwords'.format(name=self.name)
-		}
-		self.suboptions = suboptions
+ex: ('-s', action='store_true', dest='skype', help='skype')
+options['command'] = '-s'
+options['action'] = 'store_true'
+options['dest'] = 'skype'
+options['help'] = 'skype'
+"""
 
+
+class ModuleInfo(object):
+    def __init__(self, name, category, sub_options=[]):
+        self.name = name
+        self.category = category
+        self.options = {
+            'command': '-{name}'.format(name=self.name),
+            'action': 'store_true',
+            'dest': self.name,
+            'help': '{name} passwords'.format(name=self.name)
+        }
+        self.suboptions = sub_options
