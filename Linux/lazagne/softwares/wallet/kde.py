@@ -7,49 +7,61 @@
 #
 #######################
 
-from lazagne.config.write_output import print_debug
-from lazagne.config.moduleInfo import ModuleInfo
 import os
 import sys
 
+from lazagne.config.write_output import print_debug
+from lazagne.config.moduleInfo import ModuleInfo
+from lazagne.config import homes
+
+
 class Kde(ModuleInfo):
 	def __init__(self):
+		self.appid = 'Get KDE keyring'
+		self.bus_info = [
+			('org.kde.kwalletd', '/modules/kwalletd'), 
+			('org.kde.kwalletd5', '/modules/kwalletd5')
+		]
 		ModuleInfo.__init__(self, 'kwallet', 'wallet')
 	
 	def run(self, software_name=None):		
-		if os.getuid() == 0:
-			print_debug('INFO', 'Do not run with root privileges')
-			return
+		
 		try:
-			from PyKDE4.kdeui import KWallet
-			from PyQt4.QtGui import QApplication
-			pwdFound = []
-			app = QApplication([])
-			app.setApplicationName("KWallet")
-			# Get the local wallet
-			f 				= open(os.devnull, 'w')
-			stdoutBackup 	= sys.stdout
-			stderrBackup 	= sys.stderr
-			sys.stdout 		= f
-			sys.stderr 		= f
-			wallet 			= KWallet.Wallet.openWallet(KWallet.Wallet.LocalWallet(), 0)
-			
-			#sys.stdout = stdoutBackup
-			#sys.stderr = stderrBackup
-			# Walk accros folders defined in the KWallet
-			for folder in wallet.folderList():
-				wallet.setFolder(folder)
-				entries = dict()
-			#Get entries for this folder
-			for entry in wallet.entryList():
-				values = {}
-				entries[entry] 		= wallet.readEntry( entry )
-				values["Folder"] 	= folder
-				values["Entry"] 	= entry
-				values["Password"] 	= (entries[entry][1].toHex().data()).decode('hex').decode('utf-8')[5:]
-				if len(values) != 0:
-					pwdFound.append(values)
-			return pwdFound
+			import dbus
 		except Exception as e:
-			print_debug('ERROR', 'An error occurs with KWallet: {0}'.format(e))
+			print_debug('ERROR', 'kwallet: {error}'.format(error=e))
+			return []
+
+		pwd_found = []
+		for _, session in homes.sessions():
+			try:
+				bus = dbus.bus.BusConnection(session)
+
+				if 'org.kde.kwalletd' not in [str(x) for x in bus.list_names()]:
+					continue
+
+				for info in self.bus_info: 
+					kwallet_object = bus.get_object(info[0], info[1])
+					
+					wallet = dbus.Interface(kwallet_object, 'org.kde.KWallet')
+					handle = wallet.open(wallet.networkWallet(), 0, self.appid)
+
+					if handle: 
+						for folder in wallet.folderList(handle, self.appid):
+							for entry in wallet.entryList(handle, folder, self.appid):
+								password_list = wallet.readPasswordList(handle, folder, entry, self.appid)
+								for plist in password_list.items():
+									pwd_found.append({
+										'Folder': str(folder), 
+										'Login'	: str(plist[0]),
+										'Password': str(plist[1]),
+									})
 			
+			except Exception as e:
+				print_debug('ERROR', e)
+				continue
+
+			bus.flush()
+			bus.close()
+
+		return pwd_found
