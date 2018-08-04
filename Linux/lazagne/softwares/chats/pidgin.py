@@ -20,6 +20,7 @@ class Pidgin(ModuleInfo):
 	# If pidgin is started, use the api to retrieve all passwords
 	def check_if_pidgin_started(self):
 		if not dbus:
+			print_debug('DEBUG', 'Dbus not installed: sudo apt-get install python-dbus')
 			return False
 		try:
 			pwdFound 	= []
