@@ -57,10 +57,6 @@ laZagne.exe -h
 laZagne.exe browsers -h
 ```
 
-* Use a file for dictionary attacks (used only when it's necessary: Mozilla Master Password, system hashes, etc.). The file has to be a wordlist in cleartext (no rainbow), it has not been optimized to be fast but could be useful for basic passwords.
-```
-laZagne.exe all -path file.txt
-```
 
 * Change verbosity mode (2 different levels)
 ```
