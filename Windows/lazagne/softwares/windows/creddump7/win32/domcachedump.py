@@ -23,10 +23,12 @@ from rawreg import *
 from ..addrspace import HiveFileAddressSpace
 from hashdump import get_bootkey
 from lsasecrets import get_secret_by_name,get_lsa_key
-from Crypto.Hash import HMAC
-from Crypto.Cipher import ARC4
 from struct import unpack
+
+import hmac
+import hashlib
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
+from lazagne.config.crypto.rc4 import RC4
 
 AES_BLOCK_SIZE = 16
 
@@ -34,10 +36,10 @@ def get_nlkm(secaddr, lsakey, vista):
     return get_secret_by_name(secaddr, 'NL$KM', lsakey, vista)
 
 def decrypt_hash(edata, nlkm, ch):
-    hmac_md5 = HMAC.new(nlkm,ch)
+    hmac_md5 = hmac.new(nlkm, ch, hashlib.md5)
     rc4key = hmac_md5.digest()
 
-    rc4 = ARC4.new(rc4key)
+    rc4 = RC4(rc4key)
     data = rc4.encrypt(edata)
     return data
 

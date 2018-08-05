@@ -25,7 +25,7 @@ from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from rawreg import *
 from ..addrspace import HiveFileAddressSpace
 from hashdump import get_bootkey, str_to_key
-from Crypto.Cipher import ARC4
+from lazagne.config.crypto.rc4 import RC4
 from lazagne.config.crypto.pyDes import des, ECB
 
 def get_lsa_key(secaddr, bootkey, vista):
@@ -56,8 +56,8 @@ def get_lsa_key(secaddr, bootkey, vista):
         for i in range(1000):
             md5.update(obf_lsa_key[60:76])
         rc4key = md5.digest()
-        rc4 = ARC4.new(rc4key)
-        lsa_key = rc4.decrypt(obf_lsa_key[12:60])
+        rc4 = RC4(rc4key)
+        lsa_key = rc4.encrypt(obf_lsa_key[12:60])
         lsa_key = lsa_key[0x10:0x20]
     else:
         lsa_key = decrypt_aes(obf_lsa_key, bootkey)

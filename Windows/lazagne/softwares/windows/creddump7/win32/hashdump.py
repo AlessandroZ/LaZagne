@@ -22,7 +22,7 @@
 import hashlib
 from struct import pack
 
-from Crypto.Cipher import ARC4
+from lazagne.config.crypto.rc4 import RC4
 from lazagne.config.crypto.pyDes import des, ECB
 
 from rawreg import *
@@ -153,10 +153,9 @@ def get_hbootkey(samaddr, bootkey):
 
     md5 = hashlib.md5(F[0x70:0x80] + aqwerty + bootkey + anum)
     rc4_key = md5.digest()
+    rc4 = RC4(rc4_key)
 
-    rc4 = ARC4.new(rc4_key)
     hbootkey = rc4.encrypt(F[0x80:0xA0])
-
     return hbootkey
 
 
