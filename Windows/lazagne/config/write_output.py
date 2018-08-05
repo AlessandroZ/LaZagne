@@ -227,7 +227,7 @@ class StandartOutput():
 						constant.nbPasswordFound += 1
 						passwd = None
 						try:
-							passwd = pwd[password_category[0].capitalize()]
+							passwd = unicode(pwd[password_category[0].capitalize()]) # unicode shoud be removed for Python 3 compatibility
 							if passwd and passwd not in constant.passwordFound:
 								constant.passwordFound.append(passwd)
 						except:
