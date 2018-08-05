@@ -58,8 +58,11 @@ class Decrypt_DPAPI():
 					self.smkp = MasterKeyPool()
 					self.smkp.load_directory(masterkeydir)
 					self.smkp.add_system_credential(constant.lsa_secrets['DPAPI_SYSTEM'])
-					for r in self.smkp.try_system_credential():
-						print_debug('INFO', r)
+					for ok, r in self.smkp.try_system_credential():
+						if ok: 
+							print_debug('OK', r)
+						else:
+							print_debug('ERROR', r)
 
 	def check_credentials(self, passwords):
 		if self.umkp:

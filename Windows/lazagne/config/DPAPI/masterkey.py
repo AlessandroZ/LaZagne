@@ -337,7 +337,6 @@ class MasterKeyPool():
 					mkfile.decrypted 		= True
 					self.nb_mkf_decrypted 	+= 1
 					
-					yield u'[+] System masterkey decrypted for {masterkey}'.format(masterkey=mkfile.mkf.guid)
+					yield True, u'System masterkey decrypted for {masterkey}'.format(masterkey=mkfile.mkf.guid)
 				else:
-					yield u'[-] System masterkey not decrypted for masterkey {masterkey}'.format(masterkey=mkfile.mkf.guid)
-
+					yield False, u'System masterkey not decrypted for masterkey {masterkey}'.format(masterkey=mkfile.mkf.guid)
