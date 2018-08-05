@@ -7,10 +7,12 @@ Code based from these two awesome projects:
 	- DPAPILAB 	: https://github.com/dfirfpi/dpapilab
 """
 
-from Crypto.Cipher import AES
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from structures import *
 from blob import *
 import os
+
+AES_BLOCK_SIZE = 16
 
 class Vault():
 	def __init__(self, vaults_dir):
@@ -24,13 +26,15 @@ class Vault():
 			return '', False
 
 		if vault_attr.vault_attr_encrypted.has_iv:
-			cipher = AES.new(key_aes256, AES.MODE_CBC, vault_attr.vault_attr_encrypted.encrypted.iv)
+			cipher = AESModeOfOperationCBC(key_aes256, iv=vault_attr.vault_attr_encrypted.encrypted.iv)
 			is_attribute_ex = True
 		else:
-			cipher = AES.new(key_aes128, AES.MODE_CBC)
+			cipher = AESModeOfOperationCBC(key_aes128)
 			is_attribute_ex = False
 
-		return cipher.decrypt(vault_attr.vault_attr_encrypted.encrypted.data), is_attribute_ex
+		data = vault_attr.vault_attr_encrypted.encrypted.data
+		decypted = b"".join([cipher.decrypt(data[i:i + AES_BLOCK_SIZE]) for i in range(0, len(data), AES_BLOCK_SIZE)])
+		return decypted, is_attribute_ex
 
 	def get_vault_schema(self, guid, base_dir, default_schema):
 		"""
