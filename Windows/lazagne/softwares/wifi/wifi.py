@@ -6,7 +6,6 @@ from xml.etree.cElementTree import ElementTree
 from subprocess import Popen, PIPE
 
 from lazagne.config.constant import constant
-from lazagne.config.dpapi_structure import Decrypt_DPAPI
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.write_output import print_debug
 
@@ -19,11 +18,10 @@ class Wifi(ModuleInfo):
         """
         Needs admin priv but will work with all systems
         """
-        if not constant.dpapi:
-            constant.dpapi = Decrypt_DPAPI(password=constant.user_password)
-        decrypted_blob = constant.dpapi.decrypt_wifi_blob(key)
-        if decrypted_blob:
-            return decrypted_blob.decode(sys.getfilesystemencoding())
+        if constant.system_dpapi:
+            decrypted_blob = constant.system_dpapi.decrypt_wifi_blob(key)
+            if decrypted_blob:
+                return decrypted_blob.decode(sys.getfilesystemencoding())
 
     def decrypt_using_netsh(self, ssid):
         """
@@ -32,7 +30,7 @@ class Wifi(ModuleInfo):
         language_keys = [
             'key content', 'contenu de la cl', 'содержимое ключа'
         ]
-        print_debug('DEBUG', u'Try using netsh method')
+        print_debug('DEBUG', u'Trying using netsh method')
         process = Popen(['netsh.exe', 'wlan', 'show', 'profile', '{SSID}'.format(SSID=ssid), 'key=clear'],
                         stdout=PIPE,
                         stderr=PIPE)

@@ -282,7 +282,8 @@ def runLaZagne(category_choosed='all', password=None):
 			# System modules (hashdump, lsa secrets, etc.)
 			constant.username  		= 'SYSTEM'
 			constant.finalResults 	= {'User': constant.username}
-			
+			constant.system_dpapi 	= SYSTEM_DPAPI()
+
 			if logging.getLogger().isEnabledFor(logging.INFO):
 				constant.st.print_user(constant.username)
 			yield 'User', constant.username
@@ -462,5 +463,6 @@ if __name__ == '__main__':
 	for r in runLaZagne(category_choosed):
 		pass
 
+	clean_temporary_files()
 	write_in_file(stdoutRes)
 	constant.st.print_footer(elapsed_time=str(time.time() - start_time))

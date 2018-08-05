@@ -43,6 +43,7 @@ class constant():
 	st 						= None  	# standart output
 	drive					= u'C'
 	dpapi 					= None
+	system_dpapi 			= None
 	lsa_secrets				= None
 	user_password 			= None
 	wifi_password 			= False 	# Check if the module as already be done

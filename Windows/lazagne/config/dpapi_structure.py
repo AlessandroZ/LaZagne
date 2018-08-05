@@ -12,15 +12,18 @@ import ctypes
 import os
 from lazagne.softwares.windows.lsa_secrets import LSASecrets
 
+def manage_response(ok, msg):
+	if ok:
+		return msg
+	else:
+		print_debug('DEBUG', u'{msg}'.format(msg=msg))
+		return False
+
 class Decrypt_DPAPI():
 	def __init__(self, password=None, pwdhash=None):
 		self.sid 				= None
 		self.umkp 				= None
-		self.smkp 				= None
-		adding_missing_path 	= u''
 		
-		# User Information
-
 		protect_folder 	= os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Protect')
 		credhist_file 	= os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Protect', u'CREDHIST')
 		
@@ -45,37 +48,11 @@ class Decrypt_DPAPI():
 						for r in self.umkp.try_credential_hash(self.sid, pwdhash=pwdhash.decode('hex')):
 							print_debug('INFO', r)
 
-		# System Information
-		
-		if ctypes.windll.shell32.IsUserAnAdmin() != 0: # Need admin priv
-			if not constant.lsa_secrets:
-				# Retrieve LSA secrets
-				LSASecrets().run()
-			
-			if constant.lsa_secrets:
-				masterkeydir = u'C:\\Windows\\System32\\Microsoft\\Protect\\S-1-5-18\\User'
-				if os.path.exists(masterkeydir):
-					self.smkp = MasterKeyPool()
-					self.smkp.load_directory(masterkeydir)
-					self.smkp.add_system_credential(constant.lsa_secrets['DPAPI_SYSTEM'])
-					for ok, r in self.smkp.try_system_credential():
-						if ok: 
-							print_debug('OK', r)
-						else:
-							print_debug('ERROR', r)
-
 	def check_credentials(self, passwords):
 		if self.umkp:
 			for password in passwords:
 				for r in self.umkp.try_credential(sid=self.sid, password=password):
 					print_debug('INFO', r)
-
-	def manage_response(self, ok, msg):
-		if ok:
-			return msg
-		else:
-			print_debug('DEBUG', u'{msg}'.format(msg=msg))
-			return False
 
 	def decrypt_blob(self, dpapi_blob):
 		"""
@@ -84,7 +61,7 @@ class Decrypt_DPAPI():
 		if self.umkp:
 			blob  	= DPAPIBlob(dpapi_blob)
 			ok, msg = blob.decrypt_encrypted_blob(mkp=self.umkp)
-			return self.manage_response(ok, msg)
+			return manage_response(ok, msg)
 		
 	def decrypt_cred(self, credfile):
 		""" 
@@ -93,7 +70,7 @@ class Decrypt_DPAPI():
 		if self.umkp:
 			c = CredFile(credfile)
 			ok, msg = c.decrypt(self.umkp)
-			return self.manage_response(ok, msg)
+			return manage_response(ok, msg)
 		
 	def decrypt_vault(self, vaults_dir):
 		""" 
@@ -102,7 +79,7 @@ class Decrypt_DPAPI():
 		if self.umkp:
 			v = Vault(vaults_dir=vaults_dir)
 			ok, msg = v.decrypt(mkp=self.umkp)
-			return self.manage_response(ok, msg)
+			return manage_response(ok, msg)
 
 	def get_dpapi_hash(self, context='local'):
 		"""
@@ -119,6 +96,28 @@ class Decrypt_DPAPI():
 		if self.umkp:
 			return self.umkp.get_cleartext_password()
 
+
+class SYSTEM_DPAPI():
+	# Need admin priv
+	def __init__(self):
+		self.smkp = None
+
+		if not constant.lsa_secrets:
+			# Retrieve LSA secrets
+			LSASecrets().run()
+		
+		if constant.lsa_secrets:
+			masterkeydir = u'C:\\Windows\\System32\\Microsoft\\Protect\\S-1-5-18\\User'
+			if os.path.exists(masterkeydir):
+				self.smkp = MasterKeyPool()
+				self.smkp.load_directory(masterkeydir)
+				self.smkp.add_system_credential(constant.lsa_secrets['DPAPI_SYSTEM'])
+				for ok, r in self.smkp.try_system_credential():
+					if ok: 
+						print_debug('OK', r)
+					else:
+						print_debug('ERROR', r)
+
 	def decrypt_wifi_blob(self, key_material):
 		"""
 		Decrypt wifi password
@@ -126,4 +125,4 @@ class Decrypt_DPAPI():
 		if self.smkp:
 			blob 	= DPAPIBlob(key_material.decode('hex'))
 			ok, msg = blob.decrypt_encrypted_blob(mkp=self.smkp)
-			return self.manage_response(ok, msg)
+			return manage_response(ok, msg)
