@@ -17,14 +17,16 @@
 ##                                                                         ##
 #############################################################################
 
-from Crypto.Cipher import AES
 from Crypto.Cipher import ARC4
-from Crypto.Cipher import DES
-from Crypto.Cipher import DES3
 import hashlib
 import struct
 import array
 import hmac
+
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC, AESModeOfOperationECB
+from lazagne.config.crypto.pyDes import triple_des, des, ECB, CBC
+
+AES_BLOCK_SIZE = 16
 
 class CryptoAlgo(object):
 	"""
@@ -96,12 +98,12 @@ def des_set_odd_parity(key):
 		tmp[i] = _lut[v]
 	return tmp.tostring()
 
-CryptoAlgo.add_algo(0x6601, name="DES", 	keyLength=64, 		blockLength=64, 	IVLength=64, 	module=DES, 	keyFixup=des_set_odd_parity)
-CryptoAlgo.add_algo(0x6603, name="DES3", 	keyLength=192, 		blockLength=64, 	IVLength=64, 	module=DES3, 	keyFixup=des_set_odd_parity)
-CryptoAlgo.add_algo(0x6611, name="AES", 	keyLength=128, 		blockLength=128, 	IVLength=128, 	module=AES)
-CryptoAlgo.add_algo(0x660e, name="AES-128", keyLength=128, 		blockLength=128, 	IVLength=128,  	module=AES)
-CryptoAlgo.add_algo(0x660f, name="AES-192", keyLength=192, 		blockLength=128, 	IVLength=128, 	module=AES)
-CryptoAlgo.add_algo(0x6610, name="AES-256", keyLength=256,  	blockLength=128, 	IVLength=128, 	module=AES)
+CryptoAlgo.add_algo(0x6601, name="DES", 	keyLength=64, 		blockLength=64, 	IVLength=64, 	module=des, 		keyFixup=des_set_odd_parity)
+CryptoAlgo.add_algo(0x6603, name="DES3", 	keyLength=192, 		blockLength=64, 	IVLength=64, 	module=triple_des, 	keyFixup=des_set_odd_parity)
+CryptoAlgo.add_algo(0x6611, name="AES", 	keyLength=128, 		blockLength=128, 	IVLength=128)
+CryptoAlgo.add_algo(0x660e, name="AES-128", keyLength=128, 		blockLength=128, 	IVLength=128)
+CryptoAlgo.add_algo(0x660f, name="AES-192", keyLength=192, 		blockLength=128, 	IVLength=128)
+CryptoAlgo.add_algo(0x6610, name="AES-256", keyLength=256,  	blockLength=128, 	IVLength=128)
 CryptoAlgo.add_algo(0x8009, name="HMAC", 	digestLength=160, 	blockLength=512)
 CryptoAlgo.add_algo(0x8003, name="md5", 	digestLength=128, 	blockLength=512)
 CryptoAlgo.add_algo(0x8004, name="sha1", 	digestLength=160, 	blockLength=512)
@@ -211,7 +213,10 @@ def decrypt_lsa_key_nt6(lsakey, syskey):
 	dg.update(syskey)
 	for i in xrange(1000):
 		dg.update(lsakey[28:60])
-	keys = AES.new(dg.digest(), AES.MODE_ECB).decrypt(lsakey[60:])
+
+	k = AESModeOfOperationECB(dg.digest())
+	keys = b"".join([k.encrypt(lsakey[60:][i:i + AES_BLOCK_SIZE]) for i in range(0, len(lsakey[60:]), AES_BLOCK_SIZE)])
+	
 	size = struct.unpack_from("<L", keys)[0]
 	keys = keys[16:16 + size]
 	currentkey = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % struct.unpack("<L2H8B", keys[4:20])
@@ -249,7 +254,7 @@ def SystemFunction005(secret, key):
 		des_key.append(ord(block_key[6]) & 0x7F)
 		des_key = algo.do_fixup_key("".join([chr(x << 1) for x in des_key]))
 
-		decrypted_data += DES.new(des_key).decrypt(enc_block)
+		decrypted_data += des(des_key, ECB).decrypt(enc_block)
 		j += 7
 		if len(key[j:j + 7]) < 7:
 			j = len(key[j:j + 7])
@@ -269,7 +274,9 @@ def decrypt_lsa_secret(secret, lsa_keys):
 	for i in xrange(1000):
 		dg.update(secret[28:60])
 
-	clear = AES.new(dg.digest(), AES.MODE_ECB).decrypt(secret[60:])
+	c = AESModeOfOperationECB(dg.digest())
+	clear = b"".join([c.encrypt(secret[60:][i:i + AES_BLOCK_SIZE]) for i in range(0, len(secret[60:]), AES_BLOCK_SIZE)])
+
 	size = struct.unpack_from("<L", clear)[0]
 	return clear[16:16 + size]
 
@@ -305,8 +312,13 @@ def dataDecrypt(cipherAlgo, hashAlgo, raw, encKey, iv, rounds):
 	key, iv 	= derived[:cipherAlgo.keyLength], derived[cipherAlgo.keyLength:]
 	key 		= key[:cipherAlgo.keyLength]
 	iv 			= iv[:cipherAlgo.ivLength]
-	cipher 		= cipherAlgo.module.new(key, mode=cipherAlgo.module.MODE_CBC, IV=iv)
-	cleartxt 	= cipher.decrypt(raw)
+	
+	if "AES" in cipherAlgo.name:
+		cipher = AESModeOfOperationCBC(key, iv=iv)
+		cleartxt = b"".join([cipher.decrypt(raw[i:i + AES_BLOCK_SIZE]) for i in range(0, len(raw), AES_BLOCK_SIZE)])
+	else:
+		cipher 		= cipherAlgo.module.new(key, CBC, iv)
+		cleartxt 	= cipher.decrypt(raw)
 	return cleartxt
 
 def DPAPIHmac(hashAlgo, pwdhash, hmacSalt, value):

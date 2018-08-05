@@ -19,12 +19,14 @@
 @contact:      bdolangavitt@wesleyan.edu
 """
 
+import hashlib
+
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from rawreg import *
 from ..addrspace import HiveFileAddressSpace
 from hashdump import get_bootkey, str_to_key
-from Crypto.Hash import MD5, SHA256
-from Crypto.Cipher import ARC4, DES
+from Crypto.Cipher import ARC4
+from lazagne.config.crypto.pyDes import des, ECB
 
 def get_lsa_key(secaddr, bootkey, vista):
     root = get_root(secaddr)
@@ -49,7 +51,7 @@ def get_lsa_key(secaddr, bootkey, vista):
         return None
 
     if not vista:
-        md5 = MD5.new()
+        md5 = hashlib.md5()
         md5.update(bootkey)
         for i in range(1000):
             md5.update(obf_lsa_key[60:76])
@@ -75,8 +77,8 @@ def decrypt_secret(secret, key):
         block_key = key[j:j+7]
         des_key = str_to_key(block_key)
 
-        des = DES.new(des_key, DES.MODE_ECB)
-        decrypted_data += des.decrypt(enc_block)
+        crypter = des(des_key, ECB)
+        decrypted_data += crypter.decrypt(enc_block)
 
         j += 7
         if len(key[j:j+7]) < 7:
@@ -86,7 +88,7 @@ def decrypt_secret(secret, key):
     return decrypted_data[8:8+dec_data_len]
 
 def decrypt_aes(secret, key):
-    sha = SHA256.new()
+    sha = hashlib.sha256()
     sha.update(key)
     for _i in range(1, 1000+1):
         sha.update(secret[28:60])
