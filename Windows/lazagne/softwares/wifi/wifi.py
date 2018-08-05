@@ -32,7 +32,7 @@ class Wifi(ModuleInfo):
         language_keys = [
             'key content', 'contenu de la cl', 'содержимое ключа'
         ]
-        print_debug('DEBUG', u'[!] Try using netsh method')
+        print_debug('DEBUG', u'Try using netsh method')
         process = Popen(['netsh.exe', 'wlan', 'show', 'profile', '{SSID}'.format(SSID=ssid), 'key=clear'],
                         stdout=PIPE,
                         stderr=PIPE)

