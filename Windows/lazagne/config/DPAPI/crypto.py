@@ -17,7 +17,7 @@
 ##                                                                         ##
 #############################################################################
 
-from Crypto.Cipher import ARC4
+from lazagne.config.crypto.rc4 import RC4
 import hashlib
 import struct
 import array
@@ -201,8 +201,8 @@ def decrypt_lsa_key_nt5(lsakey, syskey):
 	dg.update(syskey)
 	for i in xrange(1000):
 		dg.update(lsakey[60:76])
-	arcfour = ARC4.new(dg.digest())
-	deskey 	= arcfour.decrypt(lsakey[12:60])
+	arcfour = RC4(dg.digest())
+	deskey 	= arcfour.encrypt(lsakey[12:60])
 	return [deskey[16 * x:16 * (x + 1)] for x in xrange(3)]
 
 def decrypt_lsa_key_nt6(lsakey, syskey):
