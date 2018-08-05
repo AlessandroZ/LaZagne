@@ -24,8 +24,11 @@ from ..addrspace import HiveFileAddressSpace
 from hashdump import get_bootkey
 from lsasecrets import get_secret_by_name,get_lsa_key
 from Crypto.Hash import HMAC
-from Crypto.Cipher import ARC4, AES
+from Crypto.Cipher import ARC4
 from struct import unpack
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
+
+AES_BLOCK_SIZE = 16
 
 def get_nlkm(secaddr, lsakey, vista):
     return get_secret_by_name(secaddr, 'NL$KM', lsakey, vista)
@@ -42,15 +45,14 @@ def decrypt_hash_vista(edata, nlkm, ch):
     """
     Based on code from http://lab.mediaservice.net/code/cachedump.rb
     """
-    aes = AES.new(nlkm[16:32], AES.MODE_CBC, ch)
+    aes = AESModeOfOperationCBC(nlkm[16:32], iv=ch)
 
     out = ""
     for i in range(0, len(edata), 16):
         buf = edata[i : i+16]
         if len(buf) < 16:
             buf += (16 - len(buf)) * "\00"
-
-        out += aes.decrypt(buf)
+        out += b"".join([aes.decrypt(buf[i:i + AES_BLOCK_SIZE]) for i in range(0, len(buf), AES_BLOCK_SIZE)])
     return out
 
 def parse_cache_entry(cache_data):
