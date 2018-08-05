@@ -49,7 +49,7 @@ def output():
 		if os.path.isdir(args['output']):
 			constant.folder_name = args['output']
 		else:
-			print '[!] Specify a directory, not a file !'
+			print('[!] Specify a directory, not a file !')
 
 	if args['write_normal']:
 		constant.output = 'txt'
