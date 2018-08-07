@@ -10,6 +10,7 @@
 # Disclaimer: Do Not Use this program for illegal purposes ;)
 
 # Configuration
+from lazagne.config.winstructure import get_os_version
 from lazagne.config.write_output import parseJsonResultToBuffer, print_debug, StandartOutput
 from lazagne.config.change_privileges import list_sids, rev2self, impersonate_sid_long_handle
 from lazagne.config.manage_modules import get_categories, get_modules
@@ -200,9 +201,12 @@ def get_user_list_on_filesystem(impersonated_user=[]):
 	
 	# Check users existing on the system (get only directories)
 	user_path = u'{drive}:\\Users'.format(drive=constant.drive)
+	if float(get_os_version()) < 6:
+		user_path = u'{drive}:\\Documents and Settings'.format(drive=constant.drive)
+
 	all_users = []
 	if os.path.exists(user_path):
-		all_users = os.listdir(user_path)
+		all_users = [filename for filename in os.listdir(user_path) if os.path.isdir(os.path.join(user_path, filename))]
 	
 		# Remove default users
 		for user in ['All Users', 'Default User', 'Default', 'Public', 'desktop.ini']:
@@ -287,8 +291,14 @@ def runLaZagne(category_choosed='all', password=None):
 			if logging.getLogger().isEnabledFor(logging.INFO):
 				constant.st.print_user(constant.username)
 			yield 'User', constant.username
-			for r in runModule(category_choosed, system_module=True, dpapi_used=False):
-				yield r
+
+			try:
+				for r in runModule(category_choosed, system_module=True, dpapi_used=False):
+					yield r
+
+			# Let empty this except - should catch all exceptions to be sure to remove temporary files
+			except:
+				clean_temporary_files()
 
 			stdoutRes.append(constant.finalResults)
 			clean_temporary_files()
