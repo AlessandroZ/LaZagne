@@ -39,8 +39,8 @@ ACCESS_READ = KEY_READ | KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE
 
 # Token manipulation
 PROCESS_QUERY_INFORMATION   = 0x0400
-STANDARD_RIGHTS_REQUIRED    = 0x000F0000L
-READ_CONTROL                = 0x00020000L
+STANDARD_RIGHTS_REQUIRED    = 0x000F0000
+READ_CONTROL                = 0x00020000
 STANDARD_RIGHTS_READ        = READ_CONTROL
 TOKEN_ASSIGN_PRIMARY        = 0x0001
 TOKEN_DUPLICATE             = 0x0002
@@ -350,7 +350,7 @@ try:
 
 	prototype 						= WINFUNCTYPE(ULONG, PHANDLE)
 	vaultCloseVault 				= prototype(("VaultCloseVault", windll.vaultcli))
-except:
+except Exception:
 	pass
 
 ############################## Custom functions ##############################

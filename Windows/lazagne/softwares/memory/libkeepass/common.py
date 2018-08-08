@@ -4,7 +4,7 @@ import io
 import struct
 from xml.etree import ElementTree
 
-from crypto import sha256
+from .crypto import sha256
 
 
 # file header

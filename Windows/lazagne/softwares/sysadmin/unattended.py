@@ -1,74 +1,74 @@
 # -*- coding: utf-8 -*- 
-from lazagne.config.write_output import print_debug
+
+import base64
+
+from xml.etree.cElementTree import ElementTree
+
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import *
-import xml.etree.cElementTree as ET
-import base64
+
 import os
 
+
 class Unattended(ModuleInfo):
-	def __init__(self):
-		ModuleInfo.__init__(self, 'unattended', 'sysadmin', system_module=True)
+    def __init__(self):
+        ModuleInfo.__init__(self, 'unattended', 'sysadmin', system_module=True)
 
-	# Password should be encoded in b64
-	def try_b64_decode(self, message):
-		try:
-			return base64.b64decode(message)
-		except:
-			return message
+    # Password should be encoded in b64
+    def try_b64_decode(self, message):
+        try:
+            return base64.b64decode(message)
+        except Exception:
+            return message
 
-	def run(self, software_name=None):		
+    def run(self):
 
-		windir 	= os.path.join(constant.profile['HOMEDRIVE'], unicode(os.sep), u'Windows')
-		files 	= [
-			'Panther\Unattend.xml',
-			'Panther\Unattended.xml', 
-			'Panther\Unattend\Unattended.xml', 
-			'Panther\Unattend\Unattend.xml', 
-			'System32\Sysprep\unattend.xml', 
-			'System32\Sysprep\Panther\unattend.xml'
-		]
+        windir = os.path.join(constant.profile['HOMEDRIVE'], unicode(os.sep), u'Windows')
+        files = [
+            'Panther\\Unattend.xml',
+            'Panther\\Unattended.xml',
+            'Panther\\Unattend\\Unattended.xml',
+            'Panther\\Unattend\\Unattend.xml',
+            'System32\\Sysprep\\unattend.xml',
+            'System32\\Sysprep\\Panther\\unattend.xml'
+        ]
 
-		pwdFound = []
-		xmlns = '{urn:schemas-microsoft-com:unattend}'
-		for file in files:
-			path = os.path.join(windir, unicode(file))
-			if os.path.exists(path):
-				print_debug('INFO', u'Unattended file found: %s' % path)
-				tree = ET.ElementTree(file=path)
-				root = tree.getroot()
-				
-				for setting in root.findall('%ssettings' % xmlns):
-					component = setting.find('%scomponent' % xmlns)
-					
-					autoLogon = component.find('%sAutoLogon' % xmlns)
-					if autoLogon != None:
-						username = autoLogon.find('%sUsername' % xmlns)
-						password = autoLogon.find('%sPassword' % xmlns)
-						if username != None and password != None:
-							# Remove false positive (with following message on password => *SENSITIVE*DATA*DELETED*)
-							if not 'deleted' in password.text.lower():
-								pwdFound.append(
-									{
-										'Login' 	: username.text,
-										'Password'	: self.try_b64_decode(password.text)
-									}
-								)
-					
-					userAccounts = component.find('%sUserAccounts' % xmlns)
-					if userAccounts != None:
-						localAccounts = userAccounts.find('%sLocalAccounts' % xmlns)
-						if localAccounts != None:
-							for localAccount in localAccounts.findall('%sLocalAccount' % xmlns):
-								username = localAccount.find('%sName' % xmlns)
-								password = localAccount.find('%sPassword' % xmlns)
-								if username != None and password != None:
-									if not 'deleted' in password.text.lower():
-										pwdFound.append(
-											{
-												'Login' 	: username.text,
-												'Password'	: self.try_b64_decode(password.text)
-											}
-										)
+        pwd_found = []
+        xmlns = '{urn:schemas-microsoft-com:unattend}'
+        for file in files:
+            path = os.path.join(windir, unicode(file))
+            if os.path.exists(path):
+                self.debug(u'Unattended file found: %s' % path)
+                tree = ElementTree(file=path)
+                root = tree.getroot()
 
-		return pwdFound
+                for setting in root.findall('%ssettings' % xmlns):
+                    component = setting.find('%scomponent' % xmlns)
+
+                    auto_logon = component.find('%sauto_logon' % xmlns)
+                    if auto_logon:
+                        username = auto_logon.find('%sUsername' % xmlns)
+                        password = auto_logon.find('%sPassword' % xmlns)
+                        if all((username, password)):
+                            # Remove false positive (with following message on password => *SENSITIVE*DATA*DELETED*)
+                            if 'deleted' not in password.text.lower():
+                                pwd_found.append({
+                                    'Login': username.text,
+                                    'Password': self.try_b64_decode(password.text)
+                                })
+
+                    user_accounts = component.find('%suser_accounts' % xmlns)
+                    if user_accounts:
+                        local_accounts = user_accounts.find('%slocal_accounts' % xmlns)
+                        if local_accounts:
+                            for local_account in local_accounts.findall('%slocal_account' % xmlns):
+                                username = local_account.find('%sName' % xmlns)
+                                password = local_account.find('%sPassword' % xmlns)
+                                if all((username, password)):
+                                    if 'deleted' not in password.text.lower():
+                                        pwd_found.append({
+                                            'Login': username.text,
+                                            'Password': self.try_b64_decode(password.text)
+                                        })
+
+        return pwd_found

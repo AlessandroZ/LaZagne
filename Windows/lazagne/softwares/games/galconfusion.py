@@ -6,14 +6,13 @@ import _winreg
 
 import lazagne.config.winstructure as win
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.write_output import print_debug
 
 
 class GalconFusion(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'galconfusion', 'games', registry_used=True)
 
-    def run(self, software_name=None):
+    def run(self):
         creds = []
         results = None
 
@@ -31,7 +30,7 @@ class GalconFusion(ModuleInfo):
 
             # Check that we have a userdata directory
             if not os.path.exists(userdata):
-                print_debug('ERROR', u'Steam doesn\'t have a userdata directory.')
+                self.error(u'Steam doesn\'t have a userdata directory.')
                 return
 
             # Now look for Galcon Fusion in every user

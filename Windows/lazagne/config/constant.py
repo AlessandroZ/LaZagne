@@ -16,9 +16,6 @@ class constant():
 	output 					= None
 	file_logger 			= None
 	
-	# ie options
-	ie_historic 			= None
-	
 	# total password found
 	nbPasswordFound 		= 0
 	passwordFound 			= []

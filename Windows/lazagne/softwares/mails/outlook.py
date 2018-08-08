@@ -3,20 +3,18 @@ import _winreg
 
 import lazagne.config.winstructure as win
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.write_output import print_debug
 
 
 class Outlook(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'outlook', 'mails', registry_used=True, dpapi_used=True)
 
-    def run(self, software_name=None):
+    def run(self):
         key_path = 'Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows Messaging Subsystem\\Profiles\\Outlook'
         try:
             hkey = win.OpenKey(win.HKEY_CURRENT_USER, key_path)
         except Exception as e:
-            print_debug('DEBUG', str(e))
-            print_debug('INFO', u'Outlook not installed or profile not saved')
+            self.debug(e)
             return
 
         num = _winreg.QueryInfoKey(hkey)[0]
@@ -54,7 +52,7 @@ class Outlook(ModuleInfo):
                     password = win.Win32CryptUnprotectData(k[1][1:])
                     values[k[0]] = password.decode('utf16')
                 except Exception as e:
-                    print_debug('DEBUG', str(e))
+                    self.debug(str(e))
                     values[k[0]] = 'N/A'
             else:
                 try:

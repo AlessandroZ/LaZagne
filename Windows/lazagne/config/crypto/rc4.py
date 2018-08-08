@@ -1,6 +1,7 @@
 # Thanks to g2jun for his RC4-Python project
 # Code from https://github.com/g2jun/RC4-Python
 
+
 class RC4():
 
     def __init__(self, key):

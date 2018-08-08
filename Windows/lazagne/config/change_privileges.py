@@ -212,6 +212,6 @@ def rev2self():
 	try:
 		if global_ref:
 			CloseHandle(global_ref)
-	except:
+	except Exception:
 		pass
 	global_ref = None

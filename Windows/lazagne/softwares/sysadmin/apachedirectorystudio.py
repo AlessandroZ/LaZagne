@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*- 
-from lazagne.config.write_output import print_debug
+from xml.etree.ElementTree import parse
+
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import *
-import xml.etree.ElementTree as ET
+
 import os
+
 
 class ApacheDirectoryStudio(ModuleInfo):
 
@@ -12,7 +14,6 @@ class ApacheDirectoryStudio(ModuleInfo):
         # Interesting XML attributes in ADS connection configuration
         self.attr_to_extract = ["host", "port", "bindPrincipal", "bindPassword", "authMethod"]
 
-
     def extract_connections_credentials(self):
         """
         Extract all connection's credentials.
@@ -20,10 +21,13 @@ class ApacheDirectoryStudio(ModuleInfo):
         :return: List of dict in which one dict contains all information for a connection.
         """
         repos_creds = []
-        connection_file_location = os.path.join(constant.profile["USERPROFILE"], u'.ApacheDirectoryStudio\\.metadata\\.plugins\\org.apache.directory.studio.connection.core\\connections.xml')
+        connection_file_location = os.path.join(
+            constant.profile["USERPROFILE"],
+            u'.ApacheDirectoryStudio\\.metadata\\.plugins\\org.apache.directory.studio.connection.core\\connections.xml'
+        )
         if os.path.isfile(connection_file_location):
             try:
-                connections = ET.parse(connection_file_location).getroot()
+                connections = parse(connection_file_location).getroot()
                 connection_nodes = connections.findall(".//connection")
                 for connection_node in connection_nodes:
                     creds = {}
@@ -33,13 +37,11 @@ class ApacheDirectoryStudio(ModuleInfo):
                     if creds:
                         repos_creds.append(creds)
             except Exception as e:
-                print_debug("ERROR", u"Cannot retrieve connections credentials '%s'" % e)
-                pass
+                self.error(u"Cannot retrieve connections credentials '%s'" % e)
 
         return repos_creds
 
-
-    def run(self, software_name=None):
+    def run(self):
         """
         Main function
         """
@@ -49,14 +51,12 @@ class ApacheDirectoryStudio(ModuleInfo):
         # Parse and process the list of connections credentials
         pwd_found = []
         for creds in repos_creds:
-            pwd_found.append(
-                {
-                    "Host"                  : creds["host"], 
-                    "Port"                  : creds["port"], 
-                    "Login"                 : creds["bindPrincipal"], 
-                    "Password"              : creds["bindPassword"], 
-                    "AuthenticationMethod"  : creds["authMethod"] 
-                }
-            )
+            pwd_found.append({
+                "Host"                  : creds["host"],
+                "Port"                  : creds["port"],
+                "Login"                 : creds["bindPrincipal"],
+                "Password"              : creds["bindPassword"],
+                "AuthenticationMethod"  : creds["authMethod"]
+            })
 
         return pwd_found

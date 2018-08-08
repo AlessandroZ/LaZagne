@@ -22,11 +22,11 @@
 import hashlib
 from struct import pack
 
+from ..addrspace import HiveFileAddressSpace
+from .rawreg import *
 from lazagne.config.crypto.rc4 import RC4
 from lazagne.config.crypto.pyDes import des, ECB
 
-from rawreg import *
-from ..addrspace import HiveFileAddressSpace
 
 odd_parity = [
     1, 1, 2, 2, 4, 4, 7, 7, 8, 8, 11, 11, 13, 13, 14, 14,
@@ -177,7 +177,7 @@ def decrypt_single_hash(rid, hbootkey, enc_hash, lmntstr):
     (des_k1, des_k2) = sid_to_key(rid)
     d1 = des(des_k1, ECB)
     d2 = des(des_k2, ECB)
-    
+
     md5 = hashlib.md5()
     md5.update(hbootkey[:0x10] + pack("<L", rid) + lmntstr)
     rc4_key = md5.digest()

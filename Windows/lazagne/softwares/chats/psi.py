@@ -30,7 +30,7 @@ class PSI(ModuleInfo):
     def decode_password(self, password, jid):
         result = ''
         jid = cycle(jid)
-        for n1 in xrange(0, len(password), 4):
+        for n1 in range(0, len(password), 4):
             x = int(password[n1:n1 + 4], 16)
             result += chr(x ^ ord(next(jid)))
 
@@ -56,7 +56,7 @@ class PSI(ModuleInfo):
                     if values:
                         self.pwd_found.append(values)
 
-    def run(self, software_name=None):
+    def run(self):
         for one_file in self.get_profiles_files():
             self.process_one_file(one_file)
 

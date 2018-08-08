@@ -33,7 +33,7 @@ def open(filename, **credentials):
             kdb = cls(stream, **credentials)
             yield kdb
             kdb.close()
-    except:
+    except Exception:
         if kdb: kdb.close()
         raise
 

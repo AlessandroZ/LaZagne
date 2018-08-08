@@ -21,12 +21,13 @@
 
 import hashlib
 
-from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
-from rawreg import *
+from .rawreg import *
 from ..addrspace import HiveFileAddressSpace
-from hashdump import get_bootkey, str_to_key
+from .hashdump import get_bootkey, str_to_key
 from lazagne.config.crypto.rc4 import RC4
 from lazagne.config.crypto.pyDes import des, ECB
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
+
 
 def get_lsa_key(secaddr, bootkey, vista):
     root = get_root(secaddr)
@@ -65,6 +66,7 @@ def get_lsa_key(secaddr, bootkey, vista):
 
     return lsa_key
 
+
 def decrypt_secret(secret, key):
     """Python implementation of SystemFunction005.
 
@@ -86,6 +88,7 @@ def decrypt_secret(secret, key):
 
     (dec_data_len,) = unpack("<L", decrypted_data[:4])
     return decrypted_data[8:8+dec_data_len]
+
 
 def decrypt_aes(secret, key):
     sha = hashlib.sha256()
@@ -131,6 +134,7 @@ def get_secret_by_name(secaddr, name, lsakey, vista):
 
     return secret
 
+
 def get_secrets(sysaddr, secaddr, vista):
     root = get_root(secaddr)
     if not root:
@@ -166,6 +170,7 @@ def get_secrets(sysaddr, secaddr, vista):
         secrets[key.Name] = secret
 
     return secrets
+
 
 def get_file_secrets(sysfile, secfile, vista):
     sysaddr = HiveFileAddressSpace(sysfile)

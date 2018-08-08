@@ -9,7 +9,6 @@ import traceback
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import Win32CryptUnprotectData
-from lazagne.config.write_output import print_debug
 
 
 class ChromiumBased(ModuleInfo):
@@ -64,8 +63,7 @@ class ChromiumBased(ModuleInfo):
             cursor = conn.cursor()
             cursor.execute(self.database_query)
         except Exception as e:
-            print_debug('DEBUG', str(e))
-            print_debug('ERROR', u'An error occurred while opening the database file')
+            self.debug(str(e))
             return credentials
 
         for url, login, password in cursor.fetchall():
@@ -74,12 +72,12 @@ class ChromiumBased(ModuleInfo):
                 password = Win32CryptUnprotectData(password)
                 credentials.append((url, login, password))
             except Exception:
-                print_debug('DEBUG', traceback.format_exc())
+                self.debug(traceback.format_exc())
 
         conn.close()
         return credentials
 
-    def run(self, software_name=None):
+    def run(self):
         credentials = []
         for database_path in self._get_database_dirs():
             # Copy database before to query it (bypass lock errors)
@@ -88,7 +86,7 @@ class ChromiumBased(ModuleInfo):
                 shutil.copy(database_path, temp)
                 credentials.extend(self._export_credentials(temp))
             except Exception:
-                print_debug('DEBUG', traceback.format_exc())
+                self.debug(traceback.format_exc())
 
         return [{'URL': url, 'Login': login, 'Password': password} for url, login, password in set(credentials)]
 

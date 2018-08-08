@@ -7,12 +7,15 @@ Code based from these two awesome projects:
 	- DPAPILAB 	: https://github.com/dfirfpi/dpapilab
 """
 
-from collections import defaultdict
-from structures import *
-from credhist import *
-from system import *
 import hashlib
+
+from collections import defaultdict
+
 import crypto
+from .structures import *
+from .credhist import *
+from .system import *
+
 import os
 
 class MasterKey():
@@ -42,7 +45,7 @@ class MasterKey():
 		"""	
 		try:
 			pwd = pwd.encode("UTF-16LE")
-		except:
+		except Exception:
 			return
 
 		for algo in ["sha1", "md4"]:
@@ -173,7 +176,7 @@ class MasterKeyPool():
 				try:
 					self.add_master_key(os.path.join(directory, k))
 					self.nb_mkf += 1
-				except:
+				except Exception:
 					pass
 			return True
 		return False
@@ -196,7 +199,7 @@ class MasterKeyPool():
 		"""
 		try:
 			self.credhists[sid] = CredHistFile(credfile)
-		except:
+		except Exception:
 			pass
 
 	def get_preferred_guid(self):

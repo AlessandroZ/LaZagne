@@ -34,7 +34,7 @@ def _get_byte(c):
 
 try:
     xrange
-except:
+except Exception:
 
     def to_bufferable(binary):
         if isinstance(binary, bytes):

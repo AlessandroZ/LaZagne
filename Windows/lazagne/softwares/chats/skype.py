@@ -11,7 +11,6 @@ from lazagne.config.constant import constant
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from lazagne.config.dico import get_dico
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.write_output import print_debug
 
 
 class Skype(ModuleInfo):
@@ -32,14 +31,14 @@ class Skype(ModuleInfo):
             try:
                 hkey = win.OpenKey(win.HKEY_CURRENT_USER, key_path)
             except Exception as e:
-                print_debug('DEBUG', str(e))
+                self.debug(str(e))
                 return False
 
             # num = _winreg.QueryInfoKey(hkey)[1]
             k = _winreg.EnumValue(hkey, 0)[1]
             return win.Win32CryptUnprotectData(k)
         except Exception as e:
-            print_debug('DEBUG', str(e))
+            self.debug(str(e))
             return False
 
     # get hash from lazagne.configuration file
@@ -104,7 +103,7 @@ class Skype(ModuleInfo):
                 enc_hex = self.get_hash_credential(os.path.join(path, u'config.xml'))
 
                 if not enc_hex:
-                    print_debug('WARNING', u'No credential stored on the config.xml file.')
+                    self.warning(u'No credential stored on the config.xml file.')
                 else:
                     # decrypt the hash to get the md5 to brue force
                     values['Hash'] = self.get_md5_hash(enc_hex, key)
@@ -117,15 +116,15 @@ class Skype(ModuleInfo):
 
                     self.pwd_found.append(values)
             except Exception as e:
-                print_debug('DEBUG', str(e))
+                self.debug(str(e))
 
-    def run(self, software_name=None):
+    def run(self):
         path = os.path.join(constant.profile['APPDATA'], u'Skype')
         if os.path.exists(path):
             # retrieve the key used to build the salt
             key = self.get_regkey()
             if not key:
-                print_debug('ERROR', u'The salt has not been retrieved')
+                self.error(u'The salt has not been retrieved')
             else:
                 username = self.get_username(path)
                 if username:

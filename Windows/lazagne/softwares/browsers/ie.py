@@ -1,13 +1,11 @@
 import _subprocess as sub
 import _winreg
 import hashlib
-import os
 import subprocess
 import traceback
 
 import lazagne.config.winstructure as win
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.write_output import print_debug
 
 
 class IE(ModuleInfo):
@@ -17,10 +15,9 @@ class IE(ModuleInfo):
              'title': 'Advanced ie option'}]
         ModuleInfo.__init__(self, 'ie', 'browsers', suboptions, registry_used=True, dpapi_used=True)
 
-    def get_hash_table(self, lists):
+    def get_hash_table(self):
         # get the url list
         urls = self.get_history()
-        urls = urls + lists
 
         # calculate the hash for all urls found on the history
         hash_tables = []
@@ -29,7 +26,7 @@ class IE(ModuleInfo):
                 h = (urls[u] + '\0').encode('UTF-16LE')
                 hash_tables.append([h, hashlib.sha1(h).hexdigest().lower()])
             except Exception:
-                print_debug('DEBUG', traceback.format_exc())
+                self.debug(traceback.format_exc())
         return hash_tables
 
     def get_history(self):
@@ -37,8 +34,7 @@ class IE(ModuleInfo):
         try:
             urls = urls + self.history_from_powershell()
         except Exception:
-            print_debug('DEBUG', traceback.format_exc())
-            print_debug('ERROR', u'Browser history failed to load, only few url will be tried')
+            self.debug(traceback.format_exc())
 
         urls = urls + ['https://www.facebook.com/', 'https://www.gmail.com/', 'https://accounts.google.com/',
                        'https://accounts.google.com/servicelogin']
@@ -98,7 +94,7 @@ class IE(ModuleInfo):
         try:
             hkey = win.OpenKey(win.HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\TypedURLs')
         except Exception:
-            print_debug('DEBUG', traceback.format_exc())
+            self.debug(traceback.format_exc())
             return []
 
         num = _winreg.QueryInfoKey(hkey)[1]
@@ -110,7 +106,7 @@ class IE(ModuleInfo):
         return urls
 
     def decipher_password(self, cipher_text, u):
-        pfound = []
+        pwd_found = []
         # deciper the password
         pwd = win.Win32CryptUnprotectData(cipher_text, u)
         a = ''
@@ -139,7 +135,7 @@ class IE(ModuleInfo):
         for s in range(length):
             try:
                 if s % 2 != 0:
-                    pfound.append({
+                    pwd_found.append({
                         'URL': u.decode('UTF-16LE'),
                         'Login': secret[length - s],
                         'Password': password
@@ -147,34 +143,26 @@ class IE(ModuleInfo):
                 else:
                     password = secret[length - s]
             except Exception:
-                print_debug('DEBUG', traceback.format_exc())
+                self.debug(traceback.format_exc())
 
-        return pfound
+        return pwd_found
 
-    def run(self, historic=''):
+    def run(self):
         if float(win.get_os_version()) > 6.1:
-            print_debug('INFO', u'Internet Explorer passwords are stored in Vault (check vault module)')
+            self.debug(u'Internet Explorer passwords are stored in Vault (check vault module)')
             return
 
         pwd_found = []
         try:
             hkey = win.OpenKey(win.HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2')
         except Exception:
-            print_debug('DEBUG', traceback.format_exc())
+            self.debug(traceback.format_exc())
         else:
             nb_site = 0
             nb_pass_found = 0
-            lists = []
-            if historic:
-                if os.path.exists(historic):
-                    f = open(historic, 'r')
-                    for line in f:
-                        lists.append(line.strip())
-                else:
-                    print_debug('WARNING', u'The text file %s does not exist' % historic)
 
             # retrieve the urls from the history
-            hash_tables = self.get_hash_table(lists)
+            hash_tables = self.get_hash_table()
 
             num = _winreg.QueryInfoKey(hkey)[1]
             for x in range(0, num):
@@ -193,7 +181,7 @@ class IE(ModuleInfo):
 
             # manage errors
             if nb_site > nb_pass_found:
-                print_debug('ERROR', u'%s hashes have not been decrypted, the associate website used to decrypt the '
-                                     u'passwords has not been found' % str(nb_site - nb_pass_found))
+                self.error(u'%s hashes have not been decrypted, the associate website used to decrypt the '
+                           u'passwords has not been found' % str(nb_site - nb_pass_found))
 
         return pwd_found

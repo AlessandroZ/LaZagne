@@ -27,8 +27,10 @@ LH_SIG = unpack("<H","lh")[0]
 LF_SIG = unpack("<H","lf")[0]
 RI_SIG = unpack("<H","ri")[0]
 
+
 def get_root(address_space):
     return Obj("_CM_KEY_NODE", ROOT_INDEX, address_space)
+
 
 def open_key(root, key):
     if key == []:
@@ -40,6 +42,7 @@ def open_key(root, key):
             return open_key(s, key)
     # print "ERR: Couldn't find subkey %s of %s" % (keyname, root.Name)
     return None
+
 
 def subkeys(key,stable=True):
     if stable: k = 0
@@ -62,9 +65,11 @@ def subkeys(key,stable=True):
         if s.is_valid() and s.Signature.value == 27502:
             yield s.value
 
+
 def values(key):
     for v in key.ValueList.List:
         yield v.value
+
 
 def walk(root):
     for k in subkeys(root):

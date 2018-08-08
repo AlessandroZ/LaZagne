@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*- 
-from lazagne.config.module_info import ModuleInfo
-from lazagne.config.constant import *
 import json
+
+from lazagne.config.module_info import ModuleInfo
+from lazagne.config.constant import constant
+
 import os
+
 
 class Composer(ModuleInfo):
 
@@ -21,9 +24,10 @@ class Composer(ModuleInfo):
             creds = json.load(f)
             for cred_type in creds:
                 for domain in creds[cred_type]:
-                    values = {}
-                    values["AuthenticationType"] = cred_type
-                    values["Domain"] = domain
+                    values = {
+                        "AuthenticationType" : cred_type,
+                        "Domain" : domain,
+                    }
                     # Extract basic authentication if we are on a "http-basic" section
                     # otherwise extract authentication token
                     if cred_type == "http-basic":
@@ -35,7 +39,7 @@ class Composer(ModuleInfo):
 
         return creds_found
 
-    def run(self, software_name=None):
+    def run(self):
         """
         Main function
         """

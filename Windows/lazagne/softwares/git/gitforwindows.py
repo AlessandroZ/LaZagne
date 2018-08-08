@@ -33,7 +33,7 @@ class GitForWindows(ModuleInfo):
 
         return pwd_found
 
-    def run(self, software_name=None):
+    def run(self):
         """
         Main function
         """

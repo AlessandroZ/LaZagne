@@ -10,7 +10,7 @@ class Squirrel(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, name='squirrel', category='databases')
 
-    def run(self, software_name=None):
+    def run(self):
         path = os.path.join(constant.profile['USERPROFILE'], u'.squirrel-sql', u'SQLAliases23.xml')
         if os.path.exists(path):
             tree = ElementTree(file=path)

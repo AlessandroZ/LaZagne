@@ -5,14 +5,13 @@ from xml.etree.cElementTree import ElementTree
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.write_output import print_debug
 
 
 class RoguesTale(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'roguestale', 'games')
 
-    def run(self, software_name=None):
+    def run(self):
         creds = []
         directory = constant.profile['USERPROFILE'] + u'\\Documents\\Rogue\'s Tale\\users'
 
@@ -30,7 +29,7 @@ class RoguesTale(ModuleInfo):
 
                     # Double check to make sure that the file is valid
                     if root.tag != 'user':
-                        print_debug('WARNING', u'Profile %s does not appear to be valid' % f)
+                        self.warning(u'Profile %s does not appear to be valid' % f)
                         continue
 
                     # Now save it to credentials

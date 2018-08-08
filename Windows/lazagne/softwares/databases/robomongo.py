@@ -4,7 +4,6 @@ import os
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.write_output import print_debug
 
 
 class Robomongo(ModuleInfo):
@@ -83,11 +82,11 @@ class Robomongo(ModuleInfo):
                             })
                     repos_creds.append(creds)
                 except Exception as e:
-                    print_debug("ERROR", u"Cannot retrieve connections credentials '{error}'".format(error=e))
+                    self.error(u"Cannot retrieve connections credentials '{error}'".format(error=e))
 
         return repos_creds
 
-    def run(self, software_name=None):
+    def run(self):
         """
         Extract all connection's credentials.
 

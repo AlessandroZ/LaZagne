@@ -10,14 +10,13 @@ import traceback
 import libkeepass
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.write_output import print_debug
 
 
 class Keepass(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'keepass', 'memory')
 
-    def run(self, software_name=None):
+    def run(self):
         # password found on the memory dump class
         if constant.keepass:
             res = []
@@ -28,5 +27,5 @@ class Keepass(ModuleInfo):
                                          keyfile=db.get(u"KcpKeyFile", {}).get(u'KeyFilePath')) as kdb:
                         res.extend(kdb.to_dic())
                 except Exception:
-                    print_debug("ERROR", traceback.format_exc())
+                    self.debug(traceback.format_exc())
             return res

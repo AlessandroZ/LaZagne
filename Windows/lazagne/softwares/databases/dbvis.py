@@ -41,7 +41,7 @@ class Dbvisualizer(ModuleInfo):
         text = crypter.decrypt(enc_text)
         return re.sub(r'[\x01-\x08]', '', text)
 
-    def run(self, software_name=None):
+    def run(self):
         path = os.path.join(constant.profile['HOMEPATH'], u'.dbvis', u'config70', u'dbvis.xml')
         if os.path.exists(path):
             tree = ElementTree(file=path)

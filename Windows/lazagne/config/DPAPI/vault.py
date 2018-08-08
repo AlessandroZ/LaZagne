@@ -7,12 +7,14 @@ Code based from these two awesome projects:
 	- DPAPILAB 	: https://github.com/dfirfpi/dpapilab
 """
 
+from .structures import *
+from .blob import *
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
-from structures import *
-from blob import *
+
 import os
 
 AES_BLOCK_SIZE = 16
+
 
 class Vault():
 	def __init__(self, vaults_dir):

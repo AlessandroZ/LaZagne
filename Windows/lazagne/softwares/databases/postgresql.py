@@ -10,7 +10,7 @@ class PostgreSQL(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, name='postgresql', category='databases')
 
-    def run(self, software_name=None):
+    def run(self):
         path = os.path.join(constant.profile['APPDATA'], u'postgresql', u'pgpass.conf')
         if os.path.exists(path):
             with open(path) as f:

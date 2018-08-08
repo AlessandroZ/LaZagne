@@ -10,7 +10,6 @@ from xml.etree.cElementTree import ElementTree
 from lazagne.config.constant import constant
 from lazagne.config.crypto.pyDes import des, CBC
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.write_output import print_debug
 
 
 class SQLDeveloper(ModuleInfo):
@@ -64,12 +63,12 @@ class SQLDeveloper(ModuleInfo):
                     if elem.attrib['n'] == 'db.system.id':
                         return elem.attrib['v']
 
-    def run(self, software_name=None):
+    def run(self):
         path = os.path.join(constant.profile['APPDATA'], u'SQL Developer')
         if os.path.exists(path):
             self._passphrase = self.get_passphrase(path)
             if self._passphrase:
-                print_debug('INFO', u'Passphrase found: {passphrase}'.format(passphrase=self._passphrase))
+                self.debug(u'Passphrase found: {passphrase}'.format(passphrase=self._passphrase))
                 xml_name = u'connections.xml'
                 xml_file = None
 

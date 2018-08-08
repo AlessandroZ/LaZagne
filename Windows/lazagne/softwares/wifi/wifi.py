@@ -2,12 +2,12 @@
 import os
 import sys
 import traceback
+
 from xml.etree.cElementTree import ElementTree
 from subprocess import Popen, PIPE
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.write_output import print_debug
 
 
 class Wifi(ModuleInfo):
@@ -30,7 +30,7 @@ class Wifi(ModuleInfo):
         language_keys = [
             'key content', 'contenu de la cl', 'содержимое ключа'
         ]
-        print_debug('DEBUG', u'Trying using netsh method')
+        self.debug(u'Trying using netsh method')
         process = Popen(['netsh.exe', 'wlan', 'show', 'profile', '{SSID}'.format(SSID=ssid), 'key=clear'],
                         stdout=PIPE,
                         stderr=PIPE)
@@ -40,7 +40,7 @@ class Wifi(ModuleInfo):
                 password = st.split(':')[1].strip()
                 return password
 
-    def run(self, software_name=None):
+    def run(self):
 
         if not constant.wifi_password:
             interfaces_dir = os.path.join(constant.profile['ALLUSERSPROFILE'],
@@ -87,7 +87,7 @@ class Wifi(ModuleInfo):
                                             else:
                                                 values['INFO'] = '[!] Password not found.'
                                         except Exception:
-                                            print_debug("ERROR", traceback.format_exc())
+                                            self.error(traceback.format_exc())
                                             values['INFO'] = '[!] Password not found.'
 
                                 if values and values['Authentication'] != 'open':

@@ -5,12 +5,12 @@ import io
 import xml.etree.ElementTree as ElementTree
 import zlib
 
-from common import KDBFile, HeaderDictionary
-from common import stream_unpack
-from crypto import transform_key, pad, unpad
-from crypto import xor, sha256, aes_cbc_decrypt, aes_cbc_encrypt
-from hbio import HashedBlockIO
-from pureSalsa20 import Salsa20
+from .common import KDBFile, HeaderDictionary
+from .common import stream_unpack
+from .crypto import transform_key, pad, unpad
+from .crypto import xor, sha256, aes_cbc_decrypt, aes_cbc_encrypt
+from .hbio import HashedBlockIO
+from .pureSalsa20 import Salsa20
 
 KDB4_SALSA20_IV = bytes('e830094b97205d2a'.decode('hex'))
 KDB4_SIGNATURE = (0x9AA2D903, 0xB54BFB67)

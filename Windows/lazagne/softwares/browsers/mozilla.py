@@ -19,7 +19,6 @@ from lazagne.config.constant import constant
 from lazagne.config.crypto.pyDes import triple_des, CBC
 from lazagne.config.dico import get_dico
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.write_output import print_debug
 
 try:
     from ConfigParser import RawConfigParser  # Python 2.7
@@ -98,8 +97,7 @@ class Mozilla(ModuleInfo):
     # 		path = u'{appdata}\\Thunderbird'.format(appdata=constant.profile['APPDATA'])
     # 	return path
 
-    @staticmethod
-    def get_firefox_profiles(directory):
+    def get_firefox_profiles(self, directory):
         """
         List all profiles
         """
@@ -111,7 +109,7 @@ class Mozilla(ModuleInfo):
                 if section.startswith('Profile') and cp.has_option(section, 'Path'):
                     profile_list.append(os.path.join(directory, cp.get(section, 'Path').strip()))
         except Exception as e:
-            print_debug('ERROR', u'An error occurred while reading profiles.ini: {}'.format(e))
+            self.error(u'An error occurred while reading profiles.ini: {}'.format(e))
         return profile_list
 
     def get_key(self, profile):
@@ -127,7 +125,7 @@ class Mozilla(ModuleInfo):
             row = c.next()
 
         except Exception:
-            print_debug('DEBUG', traceback.format_exc())
+            self.debug(traceback.format_exc())
         else:
             (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password='', key_data=row)
 
@@ -153,7 +151,7 @@ class Mozilla(ModuleInfo):
                 cipher_t = decoded_a11[0][1].asOctets()
                 key = self.decrypt_3des(global_salt, master_password, entry_salt, cipher_t)
                 if key:
-                    print_debug('DEBUG', u'key: {key}'.format(key=repr(key)))
+                    self.debug(u'key: {key}'.format(key=repr(key)))
                     yield key[:24]
 
         try:
@@ -168,10 +166,10 @@ class Mozilla(ModuleInfo):
                                               master_password=master_password,
                                               entry_salt=entry_salt)
                 if key:
-                    print_debug('DEBUG', u'key: {key}'.format(key=repr(key)))
+                    self.debug(u'key: {key}'.format(key=repr(key)))
                     yield key[:24]
         except Exception:
-            print_debug('DEBUG', traceback.format_exc())
+            self.debug(traceback.format_exc())
 
     @staticmethod
     def get_short_le(d, a):
@@ -220,12 +218,12 @@ class Mozilla(ModuleInfo):
             header = f.read(4 * 15)
             magic = self.get_long_be(header, 0)
             if magic != 0x61561:
-                print_debug('WARNING', u'Bad magic number')
+                self.error(u'Bad magic number')
                 return False
 
             version = self.get_long_be(header, 4)
             if version != 2:
-                print_debug('WARNING', u'Bad version !=2 (1.85)')
+                self.error(u'Bad version !=2 (1.85)')
                 return False
 
             pagesize = self.get_long_be(header, 12)
@@ -328,7 +326,7 @@ class Mozilla(ModuleInfo):
             loginf = open(os.path.join(profile, 'logins.json'), 'r').read()
             json_logins = json.loads(loginf)
             if 'logins' not in json_logins:
-                print_debug('DEBUG', 'No logins key in logins.json')
+                self.debug('No logins key in logins.json')
                 return logins
             for row in json_logins['logins']:
                 enc_username = row['encryptedUsername']
@@ -354,7 +352,7 @@ class Mozilla(ModuleInfo):
                                                                                      new_version=new_version)
 
         if not global_salt:
-            print_debug('WARNING', u'Master Password is used !')
+            self.info(u'Master Password is used !')
             (global_salt, master_password, entry_salt) = self.brute_master_password(key_data=key_data,
                                                                                     new_version=new_version)
             if not master_password:
@@ -398,7 +396,7 @@ class Mozilla(ModuleInfo):
 
             return global_salt, master_password, entry_salt
         except Exception:
-            print_debug('DEBUG', traceback.format_exc())
+            self.debug(traceback.format_exc())
             return '', '', ''
 
     def brute_master_password(self, key_data, new_version=True):
@@ -407,21 +405,20 @@ class Mozilla(ModuleInfo):
         """
         wordlist = constant.passwordFound + get_dico()
         num_lines = (len(wordlist) - 1)
-        print_debug('ATTACK', u'%d most used passwords !!! ' % num_lines)
+        self.info(u'%d most used passwords !!! ' % num_lines)
 
         for word in wordlist:
             global_salt, master_password, entry_salt = self.is_master_password_correct(key_data=key_data,
                                                                                        master_password=word.strip(),
                                                                                        new_version=new_version)
             if master_password:
-                print_debug('INFO', u'Master password found: {}'.format(master_password))
+                self.debug(u'Master password found: {}'.format(master_password))
                 return global_salt, master_password, entry_salt
 
-        print_debug('WARNING', u'No password has been found using the default list')
+        self.warning(u'No password has been found using the default list')
         return '', '', ''
 
-    @staticmethod
-    def remove_padding(data):
+    def remove_padding(self, data):
         """
         Remove PKCS#7 padding
         """
@@ -433,7 +430,7 @@ class Mozilla(ModuleInfo):
         try:
             return data[:-nb]
         except Exception:
-            print_debug('DEBUG', traceback.format_exc())
+            self.debug(traceback.format_exc())
             return data
 
     def decrypt(self, key, iv, ciphertext):
@@ -443,7 +440,7 @@ class Mozilla(ModuleInfo):
         data = triple_des(key, CBC, iv).decrypt(ciphertext)
         return self.remove_padding(data)
 
-    def run(self, software_name=None):
+    def run(self):
         """
         Main function
         """
@@ -452,7 +449,7 @@ class Mozilla(ModuleInfo):
         self.path = self.path.format(**constant.profile)
         if os.path.exists(self.path):
             for profile in self.get_firefox_profiles(self.path):
-                print_debug('INFO', u'Profile path found: {profile}'.format(profile=profile))
+                self.debug(u'Profile path found: {profile}'.format(profile=profile))
 
                 for key in self.get_key(profile):
                     credentials = self.get_login_data(profile)
@@ -465,7 +462,7 @@ class Mozilla(ModuleInfo):
                                 'Password': self.decrypt(key=key, iv=passw[1], ciphertext=passw[2]).decode("utf-8"),
                             })
                         except Exception as e:
-                            print_debug('DEBUG', u'An error occurred decrypting the password: {error}'.format(error=e))
+                            self.debug(u'An error occurred decrypting the password: {error}'.format(error=e))
 
         return pwd_found
 

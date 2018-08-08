@@ -6,14 +6,13 @@ import _winreg
 
 import lazagne.config.winstructure as win
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.write_output import print_debug
 
 
 class Turba(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'turba', 'games', registry_used=True)
 
-    def run(self, software_name=None):
+    def run(self):
         creds = []
         results = None
 
@@ -31,13 +30,13 @@ class Turba(ModuleInfo):
 
             # Check that we have a SteamApps directory
             if not os.path.exists(steamapps):
-                print_debug('ERROR', u'Steam doesn\'t have a SteamApps directory.')
+                self.error(u'Steam doesn\'t have a SteamApps directory.')
                 return
 
             filepath = os.path.join(steamapps, u'Turba\\Assets\\Settings.bin')
 
             if not os.path.exists(filepath):
-                print_debug('INFO', u'Turba doesn\'t appear to be installed.')
+                self.debug(u'Turba doesn\'t appear to be installed.')
                 return
 
             # If we're here we should have a valid config file file

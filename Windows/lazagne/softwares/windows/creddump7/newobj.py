@@ -19,10 +19,11 @@
 @contact:      bdolangavitt@wesleyan.edu
 """
 
-from object import *
-from types import regtypes as types
+from .object import *
+from .types import regtypes as types
 from operator import itemgetter
 from struct import unpack
+
 
 def get_ptr_type(structure, member):
     """Return the type a pointer points to.
@@ -42,6 +43,7 @@ def get_ptr_type(structure, member):
             return get_ptr_type(tp, member[1:])
     else:
         return types[structure][1][member[0]][1][1]
+
 
 class Obj(object):
     """Base class for all objects.
@@ -82,7 +84,7 @@ class Obj(object):
 
         try:
             off, tp = get_obj_offset(types, [self.name, attr])
-        except:
+        except Exception:
             raise AttributeError("'%s' has no attribute '%s'" % (self.name, attr))
         
         if tp == 'array':
@@ -168,6 +170,7 @@ class Obj(object):
     def get_offset(self, member):
         return get_obj_offset(types, [self.name] + member)
 
+
 class Primitive(Obj):
     """Class to represent a primitive data type.
        
@@ -191,6 +194,7 @@ class Primitive(Obj):
 
     def members(self):
         return []
+
 
 class Pointer(Obj):
     """Class to represent pointers.
@@ -229,6 +233,7 @@ class Pointer(Obj):
     def members(self):
         return self.value.members()
 
+
 class _UNICODE_STRING(Obj):
     """Class representing a _UNICODE_STRING
 
@@ -250,6 +255,7 @@ class _UNICODE_STRING(Obj):
         return read_unicode_string(self.space, types, [], self.address)
     Buffer = property(fget=getBuffer)
 
+
 class _CM_KEY_NODE(Obj):
     def __new__(typ, *args, **kwargs):
         obj = object.__new__(typ)
@@ -260,6 +266,7 @@ class _CM_KEY_NODE(Obj):
             self.address, self.NameLength.value)
     Name = property(fget=getName)
 
+
 class _CM_KEY_VALUE(Obj):
     def __new__(typ, *args, **kwargs):
         obj = object.__new__(typ)
@@ -269,6 +276,7 @@ class _CM_KEY_VALUE(Obj):
         return read_string(self.space, types, ['_CM_KEY_VALUE', 'Name'],
             self.address, self.NameLength.value)
     Name = property(fget=getName)
+
 
 class _CHILD_LIST(Obj):
     def __new__(typ, *args, **kwargs):
@@ -284,6 +292,7 @@ class _CHILD_LIST(Obj):
                 ["_CM_KEY_VALUE"]))
         return lst
     List = property(fget=getList)
+
 
 class _CM_KEY_INDEX(Obj):
     def __new__(typ, *args, **kwargs):
