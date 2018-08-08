@@ -1,23 +1,23 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
-from lazagne.config.write_output import print_debug
-from lazagne.config.moduleInfo import ModuleInfo
+# -*- coding: utf-8 -*-
 import psutil
-import os
+
+from lazagne.config.module_info import ModuleInfo
 
 try:
     from urllib.parse import urlparse
 except ImportError:
     from urlparse import urlparse
 
+
 class Env_variable(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'Environment variables', 'sysadmin')
 
-    def run(self, software_name=None):
-        pwdFound        = []
-        known_proxies   = set()
-        known_tokens    = set()
+    def run(self):
+        pwd_found = []
+        known_proxies = set()
+        known_tokens = set()
 
         blacklist = (
             'PWD', 'OLDPWD', 'SYSTEMD_NSS_BYPASS_BUS'
@@ -31,43 +31,43 @@ class Env_variable(ModuleInfo):
 
         tokens = (
             ('DigitalOcean', {
-                'ID'    : None,
-                'KEY'   : 'DIGITALOCEAN_ACCESS_TOKEN',
+                'ID': None,
+                'KEY': 'DIGITALOCEAN_ACCESS_TOKEN',
             }),
             ('DigitalOcean', {
-                'ID'    : None,
-                'KEY'   : 'DIGITALOCEAN_API_KEY'
+                'ID': None,
+                'KEY': 'DIGITALOCEAN_API_KEY'
             }),
             ('AWS', {
-                'ID'    : 'AWS_ACCESS_KEY_ID',
-                'KEY'   : 'AWS_SECRET_ACCESS_KEY',
+                'ID': 'AWS_ACCESS_KEY_ID',
+                'KEY': 'AWS_SECRET_ACCESS_KEY',
             }),
             ('AWS', {
-                'ID'    : 'EC2_ACCESS_KEY',
-                'KEY'   : 'EC2_SECRET_KEY'
+                'ID': 'EC2_ACCESS_KEY',
+                'KEY': 'EC2_SECRET_KEY'
             }),
             ('GitHub', {
-                'ID'    : 'GITHUB_CLIENT',
-                'KEY'   : 'GITHUB_SECRET'
+                'ID': 'GITHUB_CLIENT',
+                'KEY': 'GITHUB_SECRET'
             }),
             ('GitHub', {
-                'ID'    : None,
-                'KEY'   : 'GITHUB_TOKEN',
+                'ID': None,
+                'KEY': 'GITHUB_TOKEN',
             }),
             ('OpenStack', {
-                'ID'    : 'OS_USERNAME',
-                'KEY'   : 'OS_PASSWORD'
+                'ID': 'OS_USERNAME',
+                'KEY': 'OS_PASSWORD'
             })
         )
 
         for process in psutil.process_iter():
             try:
                 environ = process.environ()
-            except:
+            except Exception:
                 continue
 
             for var in proxies:
-                if not var in environ or environ[var] in known_proxies:
+                if var not in environ or environ[var] in known_proxies:
                     continue
 
                 proxy = environ[var]
@@ -75,23 +75,21 @@ class Env_variable(ModuleInfo):
 
                 try:
                     parsed = urlparse.urlparse(proxy)
-                except:
+                except Exception:
                     continue
 
                 if parsed.username and parsed.password:
                     pw = {
-                        'Login'     : parsed.username,
-                        'Password'  : parsed.password,
-                        'Host'      : parsed.hostname,
+                        'Login': parsed.username,
+                        'Password': parsed.password,
+                        'Host': parsed.hostname,
                     }
                     if parsed.port:
-                        pw.update(
-                            {
-                                'Port': parsed.port
-                            }
-                        )
+                        pw.update({
+                            'Port': parsed.port
+                        })
 
-                    pwdFound.append(pw)
+                    pwd_found.append(pw)
 
             for token, kvars in tokens:
                 if not kvars['KEY'] in environ:
@@ -103,24 +101,22 @@ class Env_variable(ModuleInfo):
                     continue
 
                 pw = {
-                    'Service'   : token,
-                    'KEY'       : secret
+                    'Service': token,
+                    'KEY': secret
                 }
 
                 if kvars['ID'] and kvars['ID'] in environ:
                     pw.update({'ID': environ[kvars['ID']]})
 
-                pwdFound.append(pw)
+                pwd_found.append(pw)
                 known_tokens.add(secret)
 
             for i in environ:
                 for t in ['passwd', 'pwd', 'pass', 'password']:
                     if (t.upper() in i.upper()) and (i.upper() not in blacklist):
-                        pwdFound.append(
-                            {
-                                'Login'     : i,
-                                'Password'  : environ[i]
-                            }
-                        )
+                        pwd_found.append({
+                            'Login': i,
+                            'Password': environ[i]
+                        })
 
-        return pwdFound
+        return pwd_found

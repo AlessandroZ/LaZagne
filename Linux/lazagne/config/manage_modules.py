@@ -27,63 +27,66 @@ from lazagne.softwares.wifi.wpa_supplicant import Wpa_supplicant
 from lazagne.softwares.databases.squirrel import Squirrel
 from lazagne.softwares.databases.dbvis import DbVisualizer
 from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
+
 # memory
 try:
-	from lazagne.softwares.memory.mimipy import Mimipy
-except:
-	pass
+    from lazagne.softwares.memory.mimipy import Mimipy
+except ImportError:
+    pass
 
 try:
-	from lazagne.softwares.memory.memorydump import MemoryDump
-except:
-	pass
+    from lazagne.softwares.memory.memorydump import MemoryDump
+except ImportError:
+    pass
+
 
 def get_categories():
-	category = {
-		'chats'		: {'help': 'Chat clients supported'},
-		'sysadmin'	: {'help': 'SCP/SSH/FTP/FTPS clients supported'},
-		'databases'	: {'help': 'SQL clients supported'},
-		'mails'		: {'help': 'Email clients supported'},
-		'memory'	: {'help': 'Retrieve passwords from memory'},
-		'wifi'		: {'help': 'Wifi'},
-		'browsers'	: {'help': 'Web browsers supported'},
-		'wallet'	: {'help': 'Windows credentials (credential manager, etc.)'}
-	}
-	return category
+    category = {
+        'chats': {'help': 'Chat clients supported'},
+        'sysadmin': {'help': 'SCP/SSH/FTP/FTPS clients supported'},
+        'databases': {'help': 'SQL clients supported'},
+        'mails': {'help': 'Email clients supported'},
+        'memory': {'help': 'Retrieve passwords from memory'},
+        'wifi': {'help': 'Wifi'},
+        'browsers': {'help': 'Web browsers supported'},
+        'wallet': {'help': 'Windows credentials (credential manager, etc.)'}
+    }
+    return category
+
 
 def get_modules():
-	moduleNames = [
-		ClawsMail(),
-		Thunderbird(),
-		DbVisualizer(),
-		Env_variable(),
-		Filezilla(),
-		# Mozilla(),
-		Opera(),
-		Chrome(),
-		Pidgin(),
-		Shadow(),
+    module_names = [
+        ClawsMail(),
+        Thunderbird(),
+        DbVisualizer(),
+        Env_variable(),
+        Filezilla(),
+        # Mozilla(),
+        Opera(),
+        Chrome(),
+        Pidgin(),
+        Shadow(),
         Aws(),
         Docker(),
-		Ssh(),
-		Cli(),
-		SQLDeveloper(),
-		Squirrel(),
-		Wifi(),
-		Wpa_supplicant(),
-		Kde(),
-		Libsecret()
-	]
+        Ssh(),
+        Cli(),
+        SQLDeveloper(),
+        Squirrel(),
+        Wifi(),
+        Wpa_supplicant(),
+        Kde(),
+        Libsecret()
+    ]
 
-	try:
-		moduleNames.append(Mimipy())
-	except:
-		pass
+    try:
+        module_names.append(Mimipy())
+    except Exception:
+        pass
 
-	# very long to execute
-	# try:
-	# 	moduleNames.append(MemoryDump())
-	# except:
-	# 	pass
+    # very long to execute
+    # try:
+    # 	module_names.append(MemoryDump())
+    # except:
+    # 	pass
 
-	return moduleNames + firefox_browsers
+    return module_names + firefox_browsers
