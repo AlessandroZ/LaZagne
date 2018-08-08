@@ -9,7 +9,6 @@ import binascii
 import traceback
 
 from lazagne.softwares.system.chainbreaker_module.chainbreaker import *
-from lazagne.config.write_output import print_debug
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
 
@@ -20,7 +19,6 @@ class ChainBreaker(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'chainbreaker', 'system')
 
-    @staticmethod
     def list_users(self):
         users_dir = '/Users'
         users_list = []
@@ -31,7 +29,6 @@ class ChainBreaker(ModuleInfo):
 
         return users_list
 
-    @staticmethod
     def list_keychains(self, keychains_path):
         keychains = []
         if os.path.exists(keychains_path):
@@ -40,7 +37,7 @@ class ChainBreaker(ModuleInfo):
                     keychains.append(os.path.join(keychains_path, f))
         return keychains
 
-    def run(self, software_name=None):
+    def run(self):
         pwd_found = []
         # all passwords found on other applications
         passwords = constant.passwordFound
@@ -62,7 +59,7 @@ class ChainBreaker(ModuleInfo):
             key = open('/private/var/db/SystemKey').read()
             system_key = binascii.hexlify(str(key[8:32])).upper()
         except Exception as e:
-            print_debug('DEBUG', 'SystemKey file could not be openned: {error}'.format(error=str(e)))
+            self.debug('SystemKey file could not be openned: {error}'.format(error=str(e)))
             try:
                 # try to open the file using a password found (supposing a password is also used as a system password)
                 for pwd in passwords:
@@ -74,7 +71,7 @@ class ChainBreaker(ModuleInfo):
                     stdout, stderr = p.communicate()
                     if stdout:
                         system_key = stdout.strip()
-                        print_debug('INFO', 'SystemKey found ({system_key}) with sudo password {pwd}'.format(
+                        self.info('SystemKey found ({system_key}) with sudo password {pwd}'.format(
                             system_key=system_key, pwd=pwd))
                         break
             except Exception:
@@ -83,7 +80,7 @@ class ChainBreaker(ModuleInfo):
         for keychain in keychains:
             pwd_ok = False
             for password in passwords:
-                print_debug('INFO', 'Trying to dump keychain {keychain} with password {password}'.format(
+                self.debug('Trying to dump keychain {keychain} with password {password}'.format(
                     keychain=keychain,
                     password=password)
                 )
@@ -99,8 +96,8 @@ class ChainBreaker(ModuleInfo):
                             }
                         )
                 except Exception:
-                    print_debug('ERROR', 'Check the password entered, this one not work (pwd: %s)' % str(password))
-                    print_debug('DEBUG', traceback.format_exc())
+                    self.error('Check the password entered, this one not work (pwd: %s)' % str(password))
+                    self.error(traceback.format_exc())
 
                 if pwd_ok:
                     break
@@ -118,8 +115,8 @@ class ChainBreaker(ModuleInfo):
                             }
                         )
                 except Exception:
-                    print_debug('ERROR', 'Check the system key found, this one not work (key: %s)' % str(system_key))
-                    print_debug('DEBUG', traceback.format_exc())
+                    self.error('Check the system key found, this one not work (key: %s)' % str(system_key))
+                    self.debug(traceback.format_exc())
 
         # keep in memory all passwords stored on the keychain
         constant.keychains_pwds = pwd_found

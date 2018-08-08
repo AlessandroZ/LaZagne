@@ -9,7 +9,7 @@ class System(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'system', 'system')
 
-    def run(self, software_name=None):
+    def run(self):
         pwd_found = []
         pwd_found += constant.keychains_pwd
         pwd_found += constant.system_pwd

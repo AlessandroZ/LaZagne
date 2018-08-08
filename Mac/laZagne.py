@@ -24,7 +24,6 @@ from lazagne.config.write_output import parse_json_result_to_buffer, print_debug
 from lazagne.config.manage_modules import get_categories, get_modules
 from lazagne.config.constant import constant
 
-from lazagne.softwares.browsers.mozilla import Mozilla
 from lazagne.softwares.browsers.chrome import Chrome
 
 
@@ -126,7 +125,7 @@ def launch_module(module):
     for i in modules_to_launch:
         try:
             constant.st.title_info(i.capitalize())  # print title
-            pwd_found = module[i].run(i.capitalize())  # run the module
+            pwd_found = module[i].run()  # run the module
             constant.st.print_output(i.capitalize(), pwd_found)  # print the results
 
             # Return value - not used but needed

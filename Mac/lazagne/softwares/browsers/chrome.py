@@ -16,7 +16,6 @@ import struct
 import glob
 import hmac
 
-from lazagne.config.write_output import print_debug
 from lazagne.config.module_info import ModuleInfo
 
 
@@ -59,7 +58,6 @@ class Chrome(ModuleInfo):
         self.chrome_data = glob.glob(login_data_path) + glob.glob(cc_data_path)
         self.safe_storage_key = safe_storage_key
 
-    @staticmethod
     def get_cc(self, cc_num):
         cc_dict = {
             3: 'AMEX',
@@ -72,7 +70,6 @@ class Chrome(ModuleInfo):
         except KeyError:
             return 'Unknown Card Issuer'
 
-    @staticmethod
     def chrome_decrypt(self, encrypted, iv, key):
         # AES decryption using the PBKDF2 key and 16x ' ' IV, via openSSL (installed on OSX natively)
         hex_key = binascii.hexlify(key)
@@ -126,14 +123,14 @@ class Chrome(ModuleInfo):
         shutil.rmtree(copy_path)
         return decrypted_list
 
-    def run(self, software_name=None):
+    def run(self):
 
         pwd_found = []
         if not self.safe_storage_key:
-            print_debug('WARNING', 'Chrome safe storage key has not been retrieved, cannot decrypt passwords')
+            self.error('Chrome safe storage key has not been retrieved, cannot decrypt passwords')
             return
         else:
-            print_debug('INFO', 'Chrome safe storage key has been retrieved: {safe_storage_key}'.format(
+            self.info('Chrome safe storage key has been retrieved: {safe_storage_key}'.format(
                 safe_storage_key=self.safe_storage_key)
             )
 

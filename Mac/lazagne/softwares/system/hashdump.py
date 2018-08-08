@@ -18,7 +18,6 @@ import os
 
 from xml.etree import ElementTree
 
-from lazagne.config.write_output import print_debug
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.dico import get_dic
 from lazagne.config.constant import constant
@@ -33,14 +32,12 @@ class HashDump(ModuleInfo):
         self.salt_hex = None
         self.entropy_hex = None
 
-    @staticmethod
     def root_access(self):
         if os.getuid() != 0:
-            print_debug('WARNING', 'You need more privileges (run it with sudo)')
+            self.warning('You need more privileges (run it with sudo)')
             return False
         return True
 
-    @staticmethod
     def check_version(self):
         major, minor = 0, 0
         try:
@@ -49,11 +46,10 @@ class HashDump(ModuleInfo):
             major = v.split('.')[0]
             minor = v.split('.')[1]
         except Exception:
-            print_debug('DEBUG', traceback.format_exc())
+            self.debug(traceback.format_exc())
 
         return int(major), int(minor)
 
-    @staticmethod
     def run_cmd(self, cmd):
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         result, _ = p.communicate()
@@ -62,7 +58,6 @@ class HashDump(ModuleInfo):
         else:
             return ''
 
-    @staticmethod
     def list_users(self):
         users_dir = '/Users'
         users_list = []
@@ -78,7 +73,7 @@ class HashDump(ModuleInfo):
         cmd = 'cat /var/db/shadow/hash/%s' % guid
         hash = self.run_cmd(cmd)
         if hash:
-            print_debug('INFO', 'Full hash found : %s ' % hash)
+            self.info('Full hash found : %s ' % hash)
             # Salted sha1: hash[104:152]
             # Zero salted sha1: hash[168:216]
             # NTLM: hash[64:]
@@ -93,7 +88,7 @@ class HashDump(ModuleInfo):
         guid = self.run_cmd(cmd)
         if guid:
             guid = guid.strip()
-            print_debug('INFO', 'GUID found : {guid}'.format(guid=guid))
+            self.info('GUID found : {guid}'.format(guid=guid))
 
             # get hash
             hash_ = self.get_hash_using_guid(guid)
@@ -109,7 +104,7 @@ class HashDump(ModuleInfo):
         guid = self.run_cmd(cmd)
         if guid:
             guid = guid.strip()
-            print_debug('INFO', 'GUID found : {guid}'.format(guid=guid))
+            self.info('GUID found : {guid}'.format(guid=guid))
 
             # get hash
             hash_ = self.get_hash_using_guid(guid)
@@ -150,7 +145,7 @@ class HashDump(ModuleInfo):
                     entropy=entropy_hex
                 )
         except Exception:
-            print_debug('DEBUG', traceback.format_exc())
+            self.debug(traceback.format_exc())
 
     # ------------------------------- Dictionary attack -------------------------------
 
@@ -158,9 +153,9 @@ class HashDump(ModuleInfo):
         found = False
         try:
             if pbkdf2:
-                print_debug('INFO', 'Dictionary attack started !')
+                self.info('Dictionary attack started !')
                 for word in dic:
-                    print_debug('INFO', 'Trying word: %s' % word)
+                    self.info('Trying word: %s' % word)
                     if str(self.entropy_hex) == str(
                             self.dictionary_attack_pbkdf2(str(word), binascii.unhexlify(self.salt_hex),
                                                           self.iterations)):
@@ -170,18 +165,16 @@ class HashDump(ModuleInfo):
                                 'Password': word
                             }
                         )
-                        print_debug('INFO', 'Password found: {word}'.format(word=word))
+                        self.info('Password found: {word}'.format(word=word))
                         found = True
                         break
         except (KeyboardInterrupt, SystemExit):
-            print_debug('DEBUG', 'INTERRUPTED!')
-            print_debug('DEBUG', 'Dictionary attack interrupted')
+            self.debug('Dictionary attack interrupted')
 
         return found
 
     # On OS X >= 10.8
     # System passwords are stored using pbkdf2 algorithm
-    @staticmethod
     def dictionary_attack_pbkdf2(self, password, salt, iterations):
         hex = hashlib.pbkdf2_hmac('sha512', password, salt, iterations, 128)
         password_hash = binascii.hexlify(hex)
@@ -189,21 +182,21 @@ class HashDump(ModuleInfo):
 
     # ------------------------------- End of Dictionary attack -------------------------------
 
-    def run(self, software_name=None):
+    def run(self):
         user_hashes = []
 
         if self.root_access():
             major, minor = self.check_version()
             if major == 10 and (minor == 3 or minor == 4):
                 for user in self.list_users():
-                    print_debug('INFO', 'User found: {user}'.format(user=user))
+                    self.info('User found: {user}'.format(user=user))
                     user_hash = self.get_user_hash_using_niutil(user)
                     if user_hash:
                         user_hashes.append(user_hash)
 
             if major == 10 and (minor == 5 or minor == 6):
                 for user in self.list_users():
-                    print_debug('INFO', 'User found: {user}'.format(user=user))
+                    self.info('User found: {user}'.format(user=user))
                     user_hash = self.get_user_hash_using_dscl(user)
                     if user_hash:
                         user_hashes.append(user_hash)

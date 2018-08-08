@@ -31,7 +31,6 @@ class StandardOutput(object):
 |====================================================================|
 '''
 
-    @staticmethod
     def set_color(self, color=None):
         b = Bcolors()
         if color == 'white':
@@ -70,7 +69,6 @@ class StandardOutput(object):
         open(os.path.join(constant.folder_name, '{filename}.txt'.format(filename=constant.file_name_results)),
              "a+b").write(header)
 
-    @staticmethod
     def write_footer(self):
         footer = '\n[+] %s passwords have been found.\r\n\r\n' % str(constant.nbPasswordFound)
         open(os.path.join(constant.folder_name, '{filename}.txt'.format(filename=constant.file_name_results)),
@@ -100,7 +98,6 @@ class StandardOutput(object):
         else:
             function(msg)
 
-    @staticmethod
     def try_unicode(self, obj, encoding='utf-8'):
         try:
             if isinstance(obj, basestring):
@@ -110,7 +107,6 @@ class StandardOutput(object):
             pass
         return obj
 
-    @staticmethod
     def print_without_error(self, message):
         try:
             print(message)
@@ -182,7 +178,7 @@ class StandardOutput(object):
 
                 # No password found
                 if not password_category:
-                    print_debug("FAILED", "Password not found !!!")
+                    print_debug("ERROR", "Password not found !!!")
                 else:
                     print_debug("OK", '%s found !!!' % password_category[0].title())
                     to_write.append(pwd)
@@ -212,7 +208,7 @@ def print_debug(error_level, message):
         constant.st.do_print(message='[+] {message}'.format(message=message), color='green')
 
     # Print when password is not found
-    elif error_level == 'FAILED':
+    elif error_level == 'ERROR':
         constant.st.do_print(message='[-] {message}'.format(message=message), color='red')
 
     elif error_level == 'CRITICAL' or error_level == 'ERROR':
