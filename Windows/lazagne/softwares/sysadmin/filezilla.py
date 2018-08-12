@@ -21,6 +21,7 @@ class Filezilla(ModuleInfo):
 
                 xml_file = os.path.join(path, file)
                 if os.path.exists(xml_file):
+                    print xml_file
                     tree = ElementTree(file=xml_file)
                     if tree.findall('Servers/Server'):
                         servers = tree.findall('Servers/Server')
@@ -32,8 +33,9 @@ class Filezilla(ModuleInfo):
                         port = server.find('Port')
                         login = server.find('User')
                         password = server.find('Pass')
-
-                        if all((host, port, login)):
+                        
+                        # if all((host, port, login)) does not work
+                        if host is not None and port is not None and login is not None:
                             values = {
                                 'Host': host.text,
                                 'Port': port.text,
@@ -46,6 +48,7 @@ class Filezilla(ModuleInfo):
                             else:
                                 values['Password'] = password.text
 
-                        pwd_found.append(values)
+                        if values: 
+                            pwd_found.append(values)
 
             return pwd_found

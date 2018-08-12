@@ -52,7 +52,7 @@ TOKEN_ADJUST_GROUPS         = 0x0040
 TOKEN_ADJUST_DEFAULT        = 0x0080
 TOKEN_ADJUST_SESSIONID      = 0x0100
 TOKEN_READ                  = (STANDARD_RIGHTS_READ | TOKEN_QUERY)
-tokenprivs                  = (TOKEN_QUERY | TOKEN_READ | TOKEN_IMPERSONATE | TOKEN_QUERY_SOURCE | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY | (131072L | 4))
+tokenprivs                  = (TOKEN_QUERY | TOKEN_READ | TOKEN_IMPERSONATE | TOKEN_QUERY_SOURCE | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY | (131072 | 4))
 TOKEN_ALL_ACCESS            = (STANDARD_RIGHTS_REQUIRED | TOKEN_ASSIGN_PRIMARY |
 		TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_QUERY_SOURCE |
 		TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT |
@@ -261,6 +261,7 @@ PSECURITY_ATTRIBUTES = POINTER(SECURITY_ATTRIBUTES)
 advapi32 	= WinDLL('advapi32', 	use_last_error=True)
 crypt32 	= WinDLL('crypt32', 	use_last_error=True)
 kernel32	= WinDLL('kernel32', 	use_last_error=True)
+psapi		= WinDLL('psapi', 		use_last_error=True)
 
 ############################## Functions ##############################
 
@@ -353,6 +354,11 @@ try:
 except Exception:
 	pass
 
+GetModuleFileNameEx = psapi.GetModuleFileNameExW
+GetModuleFileNameEx.restype = DWORD
+GetModuleFileNameEx.argtypes = [HANDLE, HMODULE, LPWSTR, DWORD]
+
+
 ############################## Custom functions ##############################
 
 def getData(blobOut):
@@ -363,6 +369,22 @@ def getData(blobOut):
 		memcpy(buffer, pbData, cbData)
 		LocalFree(pbData);
 		return buffer.raw
+
+
+def get_full_path_from_pid(pid):
+	if pid: 
+		filename = create_unicode_buffer("", 256)
+		hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, False, int(pid))
+		if not hProcess:
+			return False
+
+		size = GetModuleFileNameEx(hProcess, None, filename, 256)
+		CloseHandle(hProcess)
+		if size:
+			return filename.value
+		else:
+			return False
+
 
 def Win32CryptUnprotectData(cipherText, entropy=None):
 	bufferIn 	= c_buffer(str(cipherText), len(cipherText))

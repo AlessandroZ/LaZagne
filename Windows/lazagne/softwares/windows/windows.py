@@ -56,9 +56,9 @@ class WindowsPassword(ModuleInfo):
                     pwd_found = m.find_wdigest_password()
 
         if not pwd_found:
-            if constant.dpapi:
+            if constant.user_dpapi:
                 # Check if a password already found is a windows password
-                password = constant.dpapi.get_cleartext_password()
+                password = constant.user_dpapi.get_cleartext_password()
                 if password:
                     pwd_found.append({
                         'Login': constant.username,
@@ -71,15 +71,15 @@ class WindowsPassword(ModuleInfo):
 
                     self.info(u'Windows passwords not found.\nTry to bruteforce this hash (using john or hashcat) '
                               u'depending on your context (domain environment or not)')
-                    if constant.dpapi:
+                    if constant.user_dpapi:
                         context = 'local'
                         if self.is_in_domain():
                             context = 'domain'
 
-                        h = constant.dpapi.get_dpapi_hash(context=context)
+                        h = constant.user_dpapi.get_dpapi_hash(context=context)
                         if h:
                             pwd_found.append({
-                                'Dpapi_hash_{context}'.format(context=context): constant.dpapi.get_dpapi_hash(
+                                'Dpapi_hash_{context}'.format(context=context): constant.user_dpapi.get_dpapi_hash(
                                                                                                         context=context)
                             })
 

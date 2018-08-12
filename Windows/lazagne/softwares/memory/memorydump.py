@@ -8,10 +8,19 @@ It has been tested on both windows 10 and ubuntu 16.04
 The regex have been taken from the mimikittenz https://github.com/putterpanda/mimikittenz
 """
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.constant import *
+from lazagne.config.constant import constant
+from lazagne.config.write_output import print_debug
 from .keethief import KeeThief
-from memorpy import *
-import psutil
+
+from lazagne.config.winstructure import get_full_path_from_pid
+
+try:
+    from memorpy import *
+except ImportError:
+    print_debug('ERROR', 'memorpy not installed: pip install https://github.com/n1nj4sec/memorpy/archive/master.zip')
+
+
+# Memorpy has been removed because it takes to much time to execute - could return one day
 
 # create a symbolic link on Windows
 # mklink /J memorpy ..\..\..\..\external\memorpy\memorpy
@@ -68,35 +77,38 @@ class MemoryDump(ModuleInfo):
     def run(self):
         pwd_found = []
         for process in Process.list():
-            # if process.get('name', '').lower() in browser_list:
-            # 	# Get only child process
-            # 	try:
-            # 		p = psutil.Process(process.get('pid'))
-            # 		if p.parent():
-            # 			if process.get('name', '').lower() != str(p.parent().name().lower()):
-            # 				continue
-            # 	except:
-            # 		continue
-
-            # 	try:
-            # 		mw = MemWorker(pid=process.get('pid'))
-            # 	except ProcessException:
-            # 		continue
-
-            # 	self.debug u'dumping passwords from %s (pid: %s) ...' % (process.get('name', ''), str(process.get('pid', ''))))
-            # 	for _, x in mw.mem_search(password_regex, ftype='groups'):
-            # 		login, password = x[-2:]
-            # 		pwd_found.append(
-            # 			{
-            # 				'URL'		:	'Unknown',
-            # 				'Login'		: 	login,
-            # 				'Password'	: 	password
-            # 			}
-            # 		)
+            # if not memorpy:
+            #     if process.get('name', '').lower() in browser_list:
+            #         # Get only child process
+            #         try:
+            #             p = psutil.Process(process.get('pid'))
+            #             if p.parent():
+            #                 if process.get('name', '').lower() != str(p.parent().name().lower()):
+            #                     continue
+            #         except:
+            #             continue
+            #
+            #         try:
+            #             mw = MemWorker(pid=process.get('pid'))
+            #         except ProcessException:
+            #             continue
+            #
+            #         self.debug(u'dumping passwords from %s (pid: %s) ...' % (process.get('name', ''),
+            #                                                                  str(process.get('pid', ''))))
+            #         for _, x in mw.mem_search(password_regex, ftype='groups'):
+            #             login, password = x[-2:]
+            #             pwd_found.append(
+            #                 {
+            #                     'URL'		:	'Unknown',
+            #                     'Login'		: 	login,
+            #                     'Password'	: 	password
+            #                 }
+            #             )
 
             if keepass_process in process.get('name', '').lower():
+                full_exe_path = get_full_path_from_pid(process.get('pid'))
                 k = KeeThief()
-                if k.run(process.get('pid')):
+                if k.run(full_exe_path=full_exe_path):
                     pwd_found.append({
                         'Category': 'KeePass',
                         'KeyType': constant.keepass['KeyType'],

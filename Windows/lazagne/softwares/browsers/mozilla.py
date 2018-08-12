@@ -118,41 +118,48 @@ class Mozilla(ModuleInfo):
         Depending on the Firefox version, could be stored in key3.db or key4.db file.
         """
         try:
-            conn = sqlite3.connect(os.path.join(profile, 'key4.db'))  # Firefox 58.0.2 / NSS 3.35 with key4.db in SQLite
-            c = conn.cursor()
-            # First check password
-            c.execute("SELECT item1,item2 FROM metadata WHERE id = 'password';")
-            row = c.next()
+            row = None
+            # Remove error when file is empty
+            with open(os.path.join(profile, 'key4.db'), 'rb') as f: 
+                content = f.read()
+            
+            if content:
+                conn = sqlite3.connect(os.path.join(profile, 'key4.db'))  # Firefox 58.0.2 / NSS 3.35 with key4.db in SQLite
+                c = conn.cursor()
+                # First check password
+                c.execute("SELECT item1,item2 FROM metadata WHERE id = 'password';")
+                row = c.next()
 
         except Exception:
             self.debug(traceback.format_exc())
         else:
-            (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password='', key_data=row)
+            if row:
+                (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password='', key_data=row)
 
-            if global_salt:
-                # Decrypt 3DES key to decrypt "logins.json" content
-                c.execute("SELECT a11,a102 FROM nssPrivate;")
-                a11, a102 = next(c)
-                # a11  : CKA_VALUE
-                # a102 : f8000000000000000000000000000001, CKA_ID
-                self.print_asn1(a11, len(a11), 0)
-                # SEQUENCE {
-                #     SEQUENCE {
-                #         OBJECTIDENTIFIER 1.2.840.113549.1.12.5.1.3
-                #         SEQUENCE {
-                #             OCTETSTRING entry_salt_for_3des_key
-                #             INTEGER 01
-                #         }
-                #     }
-                #     OCTETSTRING encrypted_3des_key (with 8 bytes of PKCS#7 padding)
-                # }
-                decoded_a11 = decoder.decode(a11)
-                entry_salt = decoded_a11[0][0][1][0].asOctets()
-                cipher_t = decoded_a11[0][1].asOctets()
-                key = self.decrypt_3des(global_salt, master_password, entry_salt, cipher_t)
-                if key:
-                    self.debug(u'key: {key}'.format(key=repr(key)))
-                    yield key[:24]
+                if global_salt:
+                    # Decrypt 3DES key to decrypt "logins.json" content
+                    c.execute("SELECT a11,a102 FROM nssPrivate;")
+                    a11, a102 = next(c)
+                    # a11  : CKA_VALUE
+                    # a102 : f8000000000000000000000000000001, CKA_ID
+                    self.print_asn1(a11, len(a11), 0)
+                    # SEQUENCE {
+                    #     SEQUENCE {
+                    #         OBJECTIDENTIFIER 1.2.840.113549.1.12.5.1.3
+                    #         SEQUENCE {
+                    #             OCTETSTRING entry_salt_for_3des_key
+                    #             INTEGER 01
+                    #         }
+                    #     }
+                    #     OCTETSTRING encrypted_3des_key (with 8 bytes of PKCS#7 padding)
+                    # }
+                    decoded_a11 = decoder.decode(a11)
+                    entry_salt = decoded_a11[0][0][1][0].asOctets()
+                    cipher_t = decoded_a11[0][1].asOctets()
+                    key = self.decrypt_3des(global_salt, master_password, entry_salt, cipher_t)
+                    if key:
+                        self.debug(u'key: {key}'.format(key=repr(key)))
+                        yield key[:24]
 
         try:
             key_data = self.read_bsddb(os.path.join(profile, 'key3.db'))
@@ -403,7 +410,7 @@ class Mozilla(ModuleInfo):
         """
         Try to find master_password doing a dictionary attack using the 500 most used passwords
         """
-        wordlist = constant.passwordFound + get_dico()
+        wordlist = constant.password_found + get_dico()
         num_lines = (len(wordlist) - 1)
         self.info(u'%d most used passwords !!! ' % num_lines)
 

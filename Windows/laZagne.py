@@ -22,7 +22,7 @@ import traceback
 import os
 
 from lazagne.config.winstructure import get_os_version
-from lazagne.config.write_output import parse_json_result_to_buffer, print_debug, StandartOutput
+from lazagne.config.write_output import parse_json_result_to_buffer, print_debug, StandardOutput
 from lazagne.config.change_privileges import list_sids, rev2self, impersonate_sid_long_handle
 from lazagne.config.manage_modules import get_categories, get_modules
 from lazagne.config.dpapi_structure import *
@@ -34,7 +34,7 @@ from lazagne.config.constant import constant
 sys.setrecursionlimit(10000)
 
 # Object used to manage the output / write functions (cf write_output file)
-constant.st = StandartOutput()
+constant.st = StandardOutput()
 
 # Tab containing all passwords
 stdoutRes = []
@@ -173,10 +173,10 @@ def run_category(category_selected, dpapi_used=True, registry_used=True, system_
 
     if constant.module_to_exec_at_end:
         # These modules will need the windows user password to be able to decrypt dpapi blobs
-        constant.dpapi = Decrypt_DPAPI(password=constant.user_password)
+        constant.user_dpapi = UserDpapi(password=constant.user_password)
         # Add username to check username equals passwords
-        constant.passwordFound.append(constant.username)
-        constant.dpapi.check_credentials(constant.passwordFound)
+        constant.password_found.append(constant.username)
+        constant.user_dpapi.check_credentials(constant.password_found)
 
         for module in constant.module_to_exec_at_end:
             for m in run_module(title=module['title'], module=module['module']):
@@ -308,7 +308,7 @@ def runLaZagne(category_selected='all', password=None):
             # System modules (hashdump, lsa secrets, etc.)
             constant.username = 'SYSTEM'
             constant.finalResults = {'User': constant.username}
-            constant.system_dpapi = SYSTEM_DPAPI()
+            constant.system_dpapi = SystemDpapi()
 
             if logging.getLogger().isEnabledFor(logging.INFO):
                 constant.st.print_user(constant.username)
@@ -329,6 +329,7 @@ def runLaZagne(category_selected='all', password=None):
 
     constant.username = getpass.getuser().decode(sys.getfilesystemencoding())
     if not constant.username.endswith('$'):
+        constant.is_current_user = True
         constant.finalResults = {'User': constant.username}
         print_user(constant.username)
         yield 'User', constant.username
@@ -339,6 +340,7 @@ def runLaZagne(category_selected='all', password=None):
             yield r
         stdoutRes.append(constant.finalResults)
 
+    constant.is_current_user = False
     # Check if admin to impersonate
     if ctypes.windll.shell32.IsUserAnAdmin() != 0:
 

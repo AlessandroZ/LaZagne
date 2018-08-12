@@ -4,16 +4,12 @@ import json
 import os
 import sys
 
-import psutil
-
 from lazagne.config.constant import constant
 from lazagne.config.powershell_execute import powershell_execute
 from lazagne.config.write_output import print_debug
 
 
 class KeeThief():
-    def __init__(self):
-        self._pid = None
 
     def launch_kee_thief(self):
         # Awesome work of harmjoy (thanks to him)
@@ -21,18 +17,16 @@ class KeeThief():
         func = 'Get-Process KeePass | Get-KeePassDatabaseKey'
         return powershell_execute(SCRIPT, func)
 
-    def check_if_version_2x(self):
-        p = psutil.Process(self._pid)
-        dirname = os.path.dirname(p.exe().decode(sys.getfilesystemencoding()))
+    def check_if_version_2x(self, full_exe_path):
+        dirname = os.path.dirname(full_exe_path.decode(sys.getfilesystemencoding()))
         # version 1 use an ini configuration file
         if os.path.exists(os.path.join(dirname, u'KeePass.config.xml')):
             return True
         else:
             return False
 
-    def run(self, pid):
-        self._pid = pid
-        if self.check_if_version_2x():
+    def run(self, full_exe_path):
+        if self.check_if_version_2x(full_exe_path):
             output = self.launch_kee_thief()
             try:
                 output = json.loads(output)

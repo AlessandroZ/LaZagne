@@ -7,50 +7,116 @@ Code based from these two awesome projects:
 - DPAPILAB 	: https://github.com/dfirfpi/dpapilab
 """
 
-import crypto
-from .structures import *
-from .masterkey import *
-
+import struct
 import hashlib
 
+from . import crypto
+from .eater import DataStruct
 
-class CredhistEntry():
 
-    def __init__(self, credhist):
-        self.ntlm = None
+class RPC_SID(DataStruct):
+    """
+    Represents a RPC_SID structure. See MSDN for documentation
+    """
+    def __init__(self, raw=None):
+        self.version = None
+        self.idAuth = None
+        self.subAuth = None
+        DataStruct.__init__(self, raw)
+
+    def parse(self, data):
+        self.version = data.eat("B")
+        n = data.eat("B")
+        self.idAuth = struct.unpack(">Q", "\0\0" + data.eat("6s"))[0]
+        self.subAuth = data.eat("%dL" % n)
+
+
+class CredhistEntry(DataStruct):
+
+    def __init__(self, raw=None):
         self.pwdhash = None
-        self.credhist = credhist
+        self.hmac = None
+        self.revision = None
+        self.hashAlgo = None
+        self.rounds = None
+        self.cipherAlgo = None
+        self.shaHashLen = None
+        self.ntHashLen = None
+        self.iv = None
+        self.userSID = None
+        self.encrypted = None
+        self.revision2 = None
+        self.guid = None
+        self.ntlm = None
+        DataStruct.__init__(self, raw)
+
+    def parse(self, data):
+        self.revision = data.eat("L")
+        self.hashAlgo = crypto.CryptoAlgo(data.eat("L"))
+        self.rounds = data.eat("L")
+        data.eat("L")
+        self.cipherAlgo = crypto.CryptoAlgo(data.eat("L"))
+        self.shaHashLen = data.eat("L")
+        self.ntHashLen = data.eat("L")
+        self.iv = data.eat("16s")
+
+        self.userSID = RPC_SID()
+        self.userSID.parse(data)
+
+        n = self.shaHashLen + self.ntHashLen
+        n += -n % self.cipherAlgo.blockSize
+        self.encrypted = data.eat_string(n)
+
+        self.revision2 = data.eat("L")
+        self.guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")
 
     def decrypt_with_hash(self, pwdhash):
         """
         Decrypts this credhist entry with the given user's password hash.
-        Simply computes the encryption key with the given hash then calls self.decrypt_with_key() to finish the decryption.
+        Simply computes the encryption key with the given hash
+        then calls self.decrypt_with_key() to finish the decryption.
         """
-        self.decrypt_with_key(crypto.derivePwdHash(pwdhash, self.credhist.SID))
+        self.decrypt_with_key(crypto.derivePwdHash(pwdhash, self.userSID))
 
     def decrypt_with_key(self, enckey):
         """
         Decrypts this credhist entry using the given encryption key.
         """
-        cleartxt = crypto.dataDecrypt(self.credhist.cipherAlgo, self.credhist.hashAlgo, self.credhist.encrypted, enckey,
-                                      self.credhist.iv, self.credhist.rounds)
-        self.pwdhash = cleartxt[:self.credhist.shaHashLen]
-        self.ntlm = cleartxt[self.credhist.shaHashLen:self.credhist.shaHashLen + self.credhist.ntHashLen].rstrip("\x00")
+        cleartxt = crypto.dataDecrypt(self.cipherAlgo, self.hashAlgo, self.encrypted, enckey,
+                                      self.iv, self.rounds)
+        self.pwdhash = cleartxt[:self.shaHashLen]
+        self.ntlm = cleartxt[self.shaHashLen:self.shaHashLen + self.ntHashLen].rstrip("\x00")
         if len(self.ntlm) != 16:
             self.ntlm = None
 
 
-class CredHistFile():
-    def __init__(self, credhist):
-        self.credhistfile = CRED_HIST_FILE.parse(open(credhist, 'rb').read())
-        self.entries_list = []
-        self.valid = False
+class CredHistFile(DataStruct):
 
-        # credhist is an optional field
-        if self.credhistfile.credhist:
-            for cred in self.credhistfile.credhist:
-                c = CredhistEntry(cred)
-                self.entries_list.append(c)
+    def __init__(self, raw=None):
+        self.entries_list = []
+        self.entries = {}
+        self.valid = False
+        self.footmagic = None
+        self.curr_guid = None
+        DataStruct.__init__(self, raw)
+
+    def parse(self, data):
+        while True:
+            l = data.pop("L")
+            if l == 0:
+                break
+            self.addEntry(data.pop_string(l - 4))
+
+        self.footmagic = data.eat("L")
+        self.curr_guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")
+
+    def addEntry(self, blob):
+        """
+        Creates a CredhistEntry object with blob then adds it to the store
+        """
+        x = CredhistEntry(blob)
+        self.entries[x.guid] = x
+        self.entries_list.append(x)
 
     def decrypt_with_hash(self, pwdhash):
         """

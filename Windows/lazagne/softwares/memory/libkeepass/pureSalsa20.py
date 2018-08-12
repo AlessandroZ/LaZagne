@@ -174,6 +174,11 @@ little2_i32 = Struct("<2i")  # 2 little-endian 32-bit signed ints.
 
 _version = 'p3.2'
 
+try:
+    xrange
+except Exception:
+    xrange = range
+
 
 # ----------- Salsa20 class which emulates pySalsa20.Salsa20 ---------------
 

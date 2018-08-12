@@ -7,10 +7,10 @@ Code based from these two awesome projects:
 - DPAPILAB 	: https://github.com/dfirfpi/dpapilab
 """
 
-from .structures import *
+from .eater import DataStruct
 
 
-class CredSystem():
+class CredSystem(DataStruct):
     """
     This represents the DPAPI_SYSTEM token which is stored as an LSA secret.
 
@@ -19,8 +19,20 @@ class CredSystem():
         self.user
     """
 
-    def __init__(self, dpapi_system):
-        cred_system = CRED_SYSTEM.parse(dpapi_system)
-        self.revision = cred_system.revision
-        self.machine = cred_system.machine
-        self.user = cred_system.user
+    def __init__(self, raw=None):
+        self.revision = None
+        self.machine = None
+        self.user = None
+        DataStruct.__init__(self, raw)
+
+    def parse(self, data):
+        """Parses the given data. May raise exceptions if incorrect data are
+            given. You should not call this function yourself; DataStruct does
+
+            data is a DataStruct object.
+            Returns nothing.
+
+        """
+        self.revision = data.eat("L")
+        self.machine = data.eat("20s")
+        self.user = data.eat("20s")

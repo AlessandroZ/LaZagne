@@ -49,7 +49,6 @@ from lazagne.softwares.wifi.wifi import Wifi
 from lazagne.softwares.windows.autologon import Autologon
 from lazagne.softwares.windows.cachedump import Cachedump
 from lazagne.softwares.windows.credman import Credman
-from lazagne.softwares.windows.creds_files import CredFiles
 from lazagne.softwares.windows.hashdump import Hashdump
 from lazagne.softwares.windows.lsa_secrets import LSASecrets
 from lazagne.softwares.windows.vault import Vault
@@ -143,6 +142,5 @@ def get_modules():
         LSASecrets(),
         Vault(),
         WindowsPassword(),
-        CredFiles(),
     ]
     return module_names + chromium_browsers + firefox_browsers

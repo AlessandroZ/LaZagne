@@ -16,7 +16,7 @@ std_out_handle = ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
 tmp_user = None
 
 
-class StandartOutput():
+class StandardOutput(object):
     def __init__(self):
         self.banner = '''
 |====================================================================|
@@ -64,7 +64,7 @@ class StandartOutput():
         self.do_print(u'########## User: {user} ##########\n'.format(user=user))
 
     def print_footer(self, elapsed_time=None):
-        footer = '\n[+] %s passwords have been found.\n' % str(constant.nbPasswordFound)
+        footer = '\n[+] %s passwords have been found.\n' % str(constant.nb_password_found)
         if not logging.getLogger().isEnabledFor(logging.INFO):
             footer += 'For more information launch it again with the -v option\n'
         if elapsed_time:
@@ -87,8 +87,8 @@ class StandartOutput():
             if isinstance(obj, basestring):
                 if not isinstance(obj, unicode):
                     obj = unicode(obj, encoding)
-        except UnicodeEncodeError:
-            pass
+        except UnicodeDecodeError:
+            return repr(obj)
         return obj
 
     # centralize print function
@@ -106,14 +106,14 @@ class StandartOutput():
             self.print_without_error(message)
 
     def print_without_error(self, message):
+        # try:
+        #     print message.encode('cp850')
+        # except Exception as e:
+        #     print_debug('ERROR', u'error encoding: {error}'.format(error=e))
         try:
-            print message.encode('cp850')
-        except Exception as e:
-            print_debug('ERROR', u'error encoding: {error}'.format(error=e))
-            try:
-                print(message)
-            except Exception:
-                print repr(message)
+            print(message)
+        except Exception:
+            print repr(message)
 
     def print_logging(self, function, prefix='[!]', message='', color=False, intensity=False):
         if constant.quiet_mode:
@@ -225,13 +225,13 @@ class StandartOutput():
                         print_debug("FAILED", u'Password not found !!!')
                     else:
                         # Store all passwords found on a table => for dictionary attack if master password set
-                        constant.nbPasswordFound += 1
+                        constant.nb_password_found += 1
                         passwd = None
                         try:
                             passwd = unicode(pwd[password_category[
-                                0].capitalize()])  # unicode shoud be removed for Python 3 compatibility
-                            if passwd and passwd not in constant.passwordFound:
-                                constant.passwordFound.append(passwd)
+                                0].capitalize()])  # unicode should be removed for Python 3 compatibility
+                            if passwd and passwd not in constant.password_found:
+                                constant.password_found.append(passwd)
                         except Exception:
                             pass
 
@@ -264,7 +264,7 @@ class StandartOutput():
             f.write(header.encode("UTF-8"))
 
     def write_footer(self):
-        footer = '\n[+] %s passwords have been found.\r\n\r\n' % str(constant.nbPasswordFound)
+        footer = '\n[+] %s passwords have been found.\r\n\r\n' % str(constant.nb_password_found)
         open(os.path.join(constant.folder_name, '%s.txt' % constant.file_name_results), "a+b").write(footer)
 
     def checks_write(self, values, category):
@@ -298,10 +298,10 @@ def print_debug(error_level, message):
 
 # --------------------------- End of output functions ---------------------------
 
-def parse_json_result_to_buffer(jsonString, color=False):
+def parse_json_result_to_buffer(json_string, color=False):
     buffer = u''
     try:
-        for json in jsonString:
+        for json in json_string:
             if json:
                 buffer += u'##################  User: {username} ################## \r\n'.format(username=json['User'])
                 if 'Passwords' not in json:

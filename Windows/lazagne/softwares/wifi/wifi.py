@@ -18,7 +18,7 @@ class Wifi(ModuleInfo):
         """
         Needs admin priv but will work with all systems
         """
-        if constant.system_dpapi:
+        if constant.system_dpapi.unlocked:
             decrypted_blob = constant.system_dpapi.decrypt_wifi_blob(key)
             if decrypted_blob:
                 return decrypted_blob.decode(sys.getfilesystemencoding())

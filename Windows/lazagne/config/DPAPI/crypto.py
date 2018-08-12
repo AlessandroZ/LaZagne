@@ -26,6 +26,11 @@ from lazagne.config.crypto.rc4 import RC4
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC, AESModeOfOperationECB
 from lazagne.config.crypto.pyDes import triple_des, des, ECB, CBC
 
+try:
+    xrange
+except Exception:
+    xrange = range
+
 AES_BLOCK_SIZE = 16
 
 

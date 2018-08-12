@@ -80,6 +80,11 @@ class ChromiumBased(ModuleInfo):
     def run(self):
         credentials = []
         for database_path in self._get_database_dirs():
+            # Remove Google Chrome false positif
+            if database_path.endswith('Login Data-journal'):
+                continue
+
+            self.debug('Database found: {db}'.format(db=database_path))
             # Copy database before to query it (bypass lock errors)
             try:
                 temp = os.path.join(tempfile.gettempdir(), next(tempfile._get_candidate_names())).decode('utf-8')

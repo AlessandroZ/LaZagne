@@ -132,6 +132,7 @@ class IE(ModuleInfo):
             length = len(secret) - 1
 
         # list username / password in clear text
+        password = None
         for s in range(length):
             try:
                 if s % 2 != 0:

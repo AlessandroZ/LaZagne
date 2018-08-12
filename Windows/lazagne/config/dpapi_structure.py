@@ -21,14 +21,18 @@ def manage_response(ok, msg):
         return False
 
 
-class Decrypt_DPAPI():
+class UserDpapi(object):
+    """
+    User class for DPAPI functions
+    """
     def __init__(self, password=None, pwdhash=None):
         self.sid = None
         self.umkp = None
+        self.unlocked = False
 
         protect_folder = os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Protect')
         credhist_file = os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Protect', u'CREDHIST')
-
+        
         if os.path.exists(protect_folder):
             for folder in os.listdir(protect_folder):
                 if folder.startswith('S-'):
@@ -43,18 +47,30 @@ class Decrypt_DPAPI():
                     self.umkp.add_credhist_file(sid=self.sid, credfile=credhist_file)
 
                     if password:
-                        for r in self.umkp.try_credential(sid=self.sid, password=password):
-                            print_debug('INFO', r)
+                        for ok,  r in self.umkp.try_credential(sid=self.sid, password=password):
+                            if ok:
+                                self.unlocked = True
+                                print_debug('OK', r)
+                            else:
+                                print_debug('ERROR', r)
 
                     elif pwdhash:
-                        for r in self.umkp.try_credential_hash(self.sid, pwdhash=pwdhash.decode('hex')):
-                            print_debug('INFO', r)
+                        for ok, r in self.umkp.try_credential_hash(self.sid, pwdhash=pwdhash.decode('hex')):
+                            if ok:
+                                self.unlocked = True
+                                print_debug('OK', r)
+                            else:
+                                print_debug('ERROR', r)
 
     def check_credentials(self, passwords):
         if self.umkp:
             for password in passwords:
-                for r in self.umkp.try_credential(sid=self.sid, password=password):
-                    print_debug('INFO', r)
+                for ok, r in self.umkp.try_credential(sid=self.sid, password=password):
+                    if ok:
+                        self.unlocked = True
+                        print_debug('OK', r)
+                    else:
+                        print_debug('ERROR', r)
 
     def decrypt_blob(self, dpapi_blob):
         """
@@ -70,8 +86,9 @@ class Decrypt_DPAPI():
         Decrypt Credential Files
         """
         if self.umkp:
-            c = CredFile(credfile)
-            ok, msg = c.decrypt(self.umkp)
+            with open(credfile, 'rb') as f:
+                c = CredFile(f.read())
+            ok, msg = c.decrypt(self.umkp, credfile)
             return manage_response(ok, msg)
 
     def decrypt_vault(self, vaults_dir):
@@ -88,7 +105,7 @@ class Decrypt_DPAPI():
         Retrieve DPAPI hash to bruteforce it using john or hashcat.
         """
         if self.umkp:
-            return self.umkp.get_dpapi_hash(sid=self.sid)
+            return self.umkp.get_dpapi_hash(sid=self.sid, context=context)
 
     def get_cleartext_password(self):
         """
@@ -99,10 +116,14 @@ class Decrypt_DPAPI():
             return self.umkp.get_cleartext_password()
 
 
-class SYSTEM_DPAPI():
-    # Need admin priv
+class SystemDpapi(object):
+    """
+    System class for DPAPI functions
+    Need to have high privilege
+    """
     def __init__(self):
         self.smkp = None
+        self.unlocked = False
 
         if not constant.lsa_secrets:
             # Retrieve LSA secrets
@@ -117,6 +138,7 @@ class SYSTEM_DPAPI():
                 for ok, r in self.smkp.try_system_credential():
                     if ok:
                         print_debug('OK', r)
+                        self.unlocked = True
                     else:
                         print_debug('ERROR', r)
 

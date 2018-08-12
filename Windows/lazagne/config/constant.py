@@ -17,8 +17,8 @@ class constant():
 	file_logger 			= None
 	
 	# total password found
-	nbPasswordFound 		= 0
-	passwordFound 			= []
+	nb_password_found 		= 0
+	password_found 			= []
 	finalResults			= {}
 	profile 				= {
 								'APPDATA'			: u'{drive}:\\Users\\{user}\\AppData\\Roaming\\',
@@ -39,9 +39,10 @@ class constant():
 	quiet_mode 				= False
 	st 						= None  	# standart output
 	drive					= u'C'
-	dpapi 					= None
+	user_dpapi				= None
 	system_dpapi 			= None
 	lsa_secrets				= None
+	is_current_user 		= False 	# If True, Windows API are used otherwise dpapi is used
 	user_password 			= None
 	wifi_password 			= False 	# Check if the module as already be done
 	module_to_exec_at_end	= []

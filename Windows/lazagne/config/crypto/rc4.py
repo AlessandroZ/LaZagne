@@ -2,7 +2,7 @@
 # Code from https://github.com/g2jun/RC4-Python
 
 
-class RC4():
+class RC4(object):
 
     def __init__(self, key):
         self.key_bytes = self.text_to_bytes(key)

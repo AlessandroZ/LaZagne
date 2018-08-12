@@ -26,7 +26,7 @@ class Cyberduck(ModuleInfo):
 
     def run(self):
         xml_file = self.get_application_path()
-        if os.path.exists(xml_file):
+        if xml_file and os.path.exists(xml_file):
             tree = ElementTree(file=xml_file)
 
             pwd_found = []
