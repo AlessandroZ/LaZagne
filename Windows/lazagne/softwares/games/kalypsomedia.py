@@ -5,6 +5,7 @@ import os
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import char_to_int
 
 
 class KalypsoMedia(ModuleInfo):
@@ -15,7 +16,7 @@ class KalypsoMedia(ModuleInfo):
         """
         xors the two strings
         """
-        return "".join(chr(ord(x) ^ ord(y)) for x, y in zip(s, k))
+        return "".join(chr(char_to_int(x) ^ char_to_int(y)) for x, y in zip(s, k))
 
     def run(self):
         creds = []

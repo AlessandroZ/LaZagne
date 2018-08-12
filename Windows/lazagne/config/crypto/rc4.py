@@ -1,6 +1,8 @@
 # Thanks to g2jun for his RC4-Python project
 # Code from https://github.com/g2jun/RC4-Python
 
+from lazagne.config.winstructure import char_to_int
+
 
 class RC4(object):
 
@@ -13,7 +15,7 @@ class RC4(object):
         # on Windows, default coding for Chinese is GBK
         # s = s.decode('gbk').encode('utf-8')
         for byte in text:
-            byte_list.append(ord(byte)) # ord should not work with Python 3 (will be fixed)
+            byte_list.append(char_to_int(byte))
 
         return byte_list
 

@@ -6,6 +6,7 @@ import _winreg
 
 import lazagne.config.winstructure as win
 from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import string_to_unicode
 
 
 class GalconFusion(ModuleInfo):
@@ -25,7 +26,7 @@ class GalconFusion(ModuleInfo):
             pass
 
         if results:
-            steampath = unicode(results[0])
+            steampath = string_to_unicode(results[0])
             userdata = os.path.join(steampath, u'userdata')
 
             # Check that we have a userdata directory
@@ -35,7 +36,7 @@ class GalconFusion(ModuleInfo):
 
             # Now look for Galcon Fusion in every user
             for f in os.listdir(userdata):
-                filepath = os.path.join(userdata, unicode(f), u'44200\\remote\\galcon.cfg')
+                filepath = os.path.join(userdata, string_to_unicode(f), u'44200\\remote\\galcon.cfg')
                 if not os.path.exists(filepath):
                     continue
 

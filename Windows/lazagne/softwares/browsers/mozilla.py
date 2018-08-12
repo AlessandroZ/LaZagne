@@ -7,7 +7,6 @@ import hmac
 import json
 import sqlite3
 import struct
-import sys
 import traceback
 from base64 import b64decode
 from binascii import unhexlify
@@ -19,15 +18,13 @@ from lazagne.config.constant import constant
 from lazagne.config.crypto.pyDes import triple_des, CBC
 from lazagne.config.dico import get_dico
 from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import char_to_int, python_version
 
 try:
     from ConfigParser import RawConfigParser  # Python 2.7
 except ImportError:
     from configparser import RawConfigParser  # Python 3
 import os
-
-if sys.version_info[0]:
-    python_version = sys.version_info[0]
 
 
 def b(s):
@@ -42,13 +39,6 @@ def l(n):
         return long(n)
     else:
         return int(n)
-
-
-def o(c):
-    if python_version == 2:
-        return ord(c)
-    else:
-        return c
 
 
 def long_to_bytes(n, blocksize=0):
@@ -190,11 +180,11 @@ class Mozilla(ModuleInfo):
         """
         Used for debug
         """
-        type_ = o(d[0])
-        length = o(d[1])
+        type_ = char_to_int(d[0])
+        length = char_to_int(d[1])
         if length & 0x80 > 0:  # http://luca.ntop.org/Teaching/Appunti/asn1.html,
             # nByteLength = length & 0x7f
-            length = o(d[2])
+            length = char_to_int(d[2])
             # Long form. Two to 127 octets. Bit 8 of first octet has value "1" and
             # bits 7-1 give the number of additional length octets.
             skip = 1
@@ -295,8 +285,8 @@ class Mozilla(ModuleInfo):
             return None
 
         priv_key_entry = key_data[unhexlify('f8000000000000000000000000000001')]
-        salt_len = o(priv_key_entry[1])
-        name_len = o(priv_key_entry[2])
+        salt_len = char_to_int(priv_key_entry[1])
+        name_len = char_to_int(priv_key_entry[2])
         priv_key_entry_asn1 = decoder.decode(priv_key_entry[3 + salt_len + name_len:])
         data = priv_key_entry[3 + salt_len + name_len:]
         self.print_asn1(data, len(data), 0)
@@ -374,7 +364,7 @@ class Mozilla(ModuleInfo):
                 pwd_check = key_data.get(b'password-check')
                 if not pwd_check:
                     return '', '', ''
-                entry_salt_len = o(pwd_check[1])
+                entry_salt_len = char_to_int(pwd_check[1])
                 entry_salt = pwd_check[3: 3 + entry_salt_len]
                 encrypted_passwd = pwd_check[-16:]
                 global_salt = key_data[b'global-salt']

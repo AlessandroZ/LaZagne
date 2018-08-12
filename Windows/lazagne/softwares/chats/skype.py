@@ -87,7 +87,7 @@ class Skype(ModuleInfo):
             tree = ElementTree(file=xml_file)
             username = tree.find('Lib/Account/Default')
             try:
-                return unicode(username.text)
+                return win.string_to_unicode(username.text)
             except Exception:
                 pass
         return False
@@ -107,7 +107,7 @@ class Skype(ModuleInfo):
                 else:
                     # decrypt the hash to get the md5 to brue force
                     values['Hash'] = self.get_md5_hash(enc_hex, key)
-                    values['Pattern to bruteforce using md5'] = unicode(values['Login']) + u'\\nskyper\\n<password>'
+                    values['Pattern to bruteforce using md5'] = win.string_to_unicode(values['Login']) + u'\\nskyper\\n<password>'
 
                     # Try a dictionary attack on the hash
                     password = self.dictionary_attack(values['Login'], values['Hash'])

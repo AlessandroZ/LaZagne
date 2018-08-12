@@ -5,7 +5,8 @@ import base64
 from xml.etree.cElementTree import ElementTree
 
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.constant import *
+from lazagne.config.constant import constant
+from lazagne.config.winstructure import string_to_unicode
 
 import os
 
@@ -23,7 +24,7 @@ class Unattended(ModuleInfo):
 
     def run(self):
 
-        windir = os.path.join(constant.profile['HOMEDRIVE'], unicode(os.sep), u'Windows')
+        windir = os.path.join(constant.profile['HOMEDRIVE'], string_to_unicode(os.sep), u'Windows')
         files = [
             'Panther\\Unattend.xml',
             'Panther\\Unattended.xml',
@@ -36,7 +37,7 @@ class Unattended(ModuleInfo):
         pwd_found = []
         xmlns = '{urn:schemas-microsoft-com:unattend}'
         for file in files:
-            path = os.path.join(windir, unicode(file))
+            path = os.path.join(windir, string_to_unicode(file))
             if os.path.exists(path):
                 self.debug(u'Unattended file found: %s' % path)
                 tree = ElementTree(file=path)

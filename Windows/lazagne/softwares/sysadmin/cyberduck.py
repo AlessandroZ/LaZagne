@@ -6,6 +6,7 @@ from xml.etree.cElementTree import ElementTree
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import Win32CryptUnprotectData
 from lazagne.config.constant import constant
+from lazagne.config.winstructure import string_to_unicode
 
 import os
 
@@ -20,8 +21,8 @@ class Cyberduck(ModuleInfo):
         if os.path.exists(directory):
             for dr in os.listdir(directory):
                 if dr.startswith(u'Cyberduck'):
-                    for d in os.listdir(os.path.join(directory, unicode(dr))):
-                        path = os.path.join(directory, unicode(dr), unicode(d), u'user.config')
+                    for d in os.listdir(os.path.join(directory, string_to_unicode(dr))):
+                        path = os.path.join(directory, string_to_unicode(dr), string_to_unicode(d), u'user.config')
                         return path
 
     def run(self):

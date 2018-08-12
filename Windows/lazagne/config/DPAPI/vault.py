@@ -12,6 +12,7 @@ import struct
 from .blob import DPAPIBlob
 from .eater import DataStruct, Eater
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
+from lazagne.config.winstructure import char_to_int
 
 import os
 
@@ -148,7 +149,7 @@ class VaultAttribute(DataStruct):
             self.attr_unknown_4 = data.eat("L")
         self.size = data.eat("L")
         if self.size > 0:
-            self.has_iv = ord(data.eat("1s"))  # To change for Python 3 compatibility
+            self.has_iv = char_to_int(data.eat("1s"))  # To change for Python 3 compatibility
             if self.has_iv == 1:
                 self.iv_size = data.eat("L")
                 self.iv = data.eat(str(self.iv_size)+ "s")

@@ -25,6 +25,7 @@ import hmac
 from lazagne.config.crypto.rc4 import RC4
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC, AESModeOfOperationECB
 from lazagne.config.crypto.pyDes import triple_des, des, ECB, CBC
+from lazagne.config.winstructure import char_to_int
 
 try:
     xrange
@@ -143,8 +144,8 @@ def CryptSessionKeyXP(masterkey, nonce, hashAlgo, entropy=None, strongPassword=N
         masterkey = hashlib.sha1(masterkey).digest()
 
     masterkey += "\x00" * hashAlgo.blockSize
-    ipad = "".join(chr(ord(masterkey[i]) ^ 0x36) for i in range(hashAlgo.blockSize))
-    opad = "".join(chr(ord(masterkey[i]) ^ 0x5c) for i in range(hashAlgo.blockSize))
+    ipad = "".join(chr(char_to_int(masterkey[i]) ^ 0x36) for i in range(hashAlgo.blockSize))
+    opad = "".join(chr(char_to_int(masterkey[i]) ^ 0x5c) for i in range(hashAlgo.blockSize))
     digest = hashlib.new(hashAlgo.name)
     digest.update(ipad)
     digest.update(nonce)
@@ -201,8 +202,8 @@ def CryptDeriveKey(h, cipherAlgo, hashAlgo):
     if len(h) >= cipherAlgo.keyLength:
         return h
     h += "\x00" * hashAlgo.blockSize
-    ipad = "".join(chr(ord(h[i]) ^ 0x36) for i in range(hashAlgo.blockSize))
-    opad = "".join(chr(ord(h[i]) ^ 0x5c) for i in range(hashAlgo.blockSize))
+    ipad = "".join(chr(char_to_int(h[i]) ^ 0x36) for i in range(hashAlgo.blockSize))
+    opad = "".join(chr(char_to_int(h[i]) ^ 0x5c) for i in range(hashAlgo.blockSize))
     k = hashlib.new(hashAlgo.name, ipad).digest() + hashlib.new(hashAlgo.name, opad).digest()
     k = cipherAlgo.do_fixup_key(k)
     return k
@@ -261,14 +262,14 @@ def SystemFunction005(secret, key):
         enc_block = secret[i:i + 8]
         block_key = key[j:j + 7]
         des_key = []
-        des_key.append(ord(block_key[0]) >> 1)
-        des_key.append(((ord(block_key[0]) & 0x01) << 6) | (ord(block_key[1]) >> 2))
-        des_key.append(((ord(block_key[1]) & 0x03) << 5) | (ord(block_key[2]) >> 3))
-        des_key.append(((ord(block_key[2]) & 0x07) << 4) | (ord(block_key[3]) >> 4))
-        des_key.append(((ord(block_key[3]) & 0x0F) << 3) | (ord(block_key[4]) >> 5))
-        des_key.append(((ord(block_key[4]) & 0x1F) << 2) | (ord(block_key[5]) >> 6))
-        des_key.append(((ord(block_key[5]) & 0x3F) << 1) | (ord(block_key[6]) >> 7))
-        des_key.append(ord(block_key[6]) & 0x7F)
+        des_key.append(char_to_int(block_key[0]) >> 1)
+        des_key.append(((char_to_int(block_key[0]) & 0x01) << 6) | (char_to_int(block_key[1]) >> 2))
+        des_key.append(((char_to_int(block_key[1]) & 0x03) << 5) | (char_to_int(block_key[2]) >> 3))
+        des_key.append(((char_to_int(block_key[2]) & 0x07) << 4) | (char_to_int(block_key[3]) >> 4))
+        des_key.append(((char_to_int(block_key[3]) & 0x0F) << 3) | (char_to_int(block_key[4]) >> 5))
+        des_key.append(((char_to_int(block_key[4]) & 0x1F) << 2) | (char_to_int(block_key[5]) >> 6))
+        des_key.append(((char_to_int(block_key[5]) & 0x3F) << 1) | (char_to_int(block_key[6]) >> 7))
+        des_key.append(char_to_int(block_key[6]) & 0x7F)
         des_key = algo.do_fixup_key("".join([chr(x << 1) for x in des_key]))
 
         decrypted_data += des(des_key, ECB).decrypt(enc_block)
@@ -312,7 +313,7 @@ def pbkdf2(passphrase, salt, keylen, iterations, digest='sha1'):
         derived = hmac.new(passphrase, U, digestmod=lambda: hashlib.new(digest)).digest()
         for r in xrange(iterations - 1):
             actual = hmac.new(passphrase, derived, digestmod=lambda: hashlib.new(digest)).digest()
-            derived = ''.join([chr(ord(x) ^ ord(y)) for (x, y) in zip(derived, actual)])
+            derived = ''.join([chr(char_to_int(x) ^ char_to_int(y)) for (x, y) in zip(derived, actual)])
         buff += derived
     return buff[:keylen]
 

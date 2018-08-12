@@ -6,6 +6,7 @@ import _winreg
 
 import lazagne.config.winstructure as win
 from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import string_to_unicode
 
 
 class Turba(ModuleInfo):
@@ -25,7 +26,7 @@ class Turba(ModuleInfo):
             pass
 
         if results:
-            steampath = unicode(results[0])
+            steampath = string_to_unicode(results[0])
             steamapps = os.path.join(steampath, u'SteamApps\common')
 
             # Check that we have a SteamApps directory

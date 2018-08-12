@@ -63,14 +63,14 @@ empty_nt = "31d6cfe0d16ae931b73c59d7e0c089c0".decode('hex')
 
 def str_to_key(s):
     key = []
-    key.append(ord(s[0]) >> 1)
-    key.append(((ord(s[0]) & 0x01) << 6) | (ord(s[1]) >> 2))
-    key.append(((ord(s[1]) & 0x03) << 5) | (ord(s[2]) >> 3))
-    key.append(((ord(s[2]) & 0x07) << 4) | (ord(s[3]) >> 4))
-    key.append(((ord(s[3]) & 0x0F) << 3) | (ord(s[4]) >> 5))
-    key.append(((ord(s[4]) & 0x1F) << 2) | (ord(s[5]) >> 6))
-    key.append(((ord(s[5]) & 0x3F) << 1) | (ord(s[6]) >> 7))
-    key.append(ord(s[6]) & 0x7F)
+    key.append(char_to_int(s[0]) >> 1)
+    key.append(((char_to_int(s[0]) & 0x01) << 6) | (char_to_int(s[1]) >> 2))
+    key.append(((char_to_int(s[1]) & 0x03) << 5) | (char_to_int(s[2]) >> 3))
+    key.append(((char_to_int(s[2]) & 0x07) << 4) | (char_to_int(s[3]) >> 4))
+    key.append(((char_to_int(s[3]) & 0x0F) << 3) | (char_to_int(s[4]) >> 5))
+    key.append(((char_to_int(s[4]) & 0x1F) << 2) | (char_to_int(s[5]) >> 6))
+    key.append(((char_to_int(s[5]) & 0x3F) << 1) | (char_to_int(s[6]) >> 7))
+    key.append(char_to_int(s[6]) & 0x7F)
     for i in range(8):
         key[i] = (key[i] << 1)
         key[i] = odd_parity[key[i]]

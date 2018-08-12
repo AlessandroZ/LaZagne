@@ -4,7 +4,7 @@ import _winreg
 from xml.etree.cElementTree import ElementTree
 
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.winstructure import OpenKey, HKEY_CURRENT_USER
+from lazagne.config.winstructure import OpenKey, HKEY_CURRENT_USER, string_to_unicode
 
 import os
 
@@ -21,7 +21,7 @@ class Puttycm(ModuleInfo):
     def get_default_database(self):
         try:
             key = OpenKey(HKEY_CURRENT_USER, 'Software\\ACS\\PuTTY Connection Manager')
-            db = unicode(_winreg.QueryValueEx(key, 'DefaultDatabase')[0])
+            db = string_to_unicode(_winreg.QueryValueEx(key, 'DefaultDatabase')[0])
             _winreg.CloseKey(key)
             return db
         except Exception:

@@ -12,13 +12,13 @@ from lazagne.config.module_info import ModuleInfo
 
 class Wifi(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'Wifi', 'wifi', dpapi_used=True)
+        ModuleInfo.__init__(self, 'Wifi', 'wifi')
 
     def decrypt_using_lsa_secret(self, key):
         """
         Needs admin priv but will work with all systems
         """
-        if constant.system_dpapi.unlocked:
+        if constant.system_dpapi and constant.system_dpapi.unlocked:
             decrypted_blob = constant.system_dpapi.decrypt_wifi_blob(key)
             if decrypted_blob:
                 return decrypted_blob.decode(sys.getfilesystemencoding())

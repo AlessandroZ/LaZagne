@@ -7,6 +7,7 @@ import socket
 import os
 import sys
 
+from lazagne.config.winstructure import string_to_unicode, char_to_int
 from .constant import constant
 
 # --------------------------- Standard output functions ---------------------------
@@ -76,7 +77,7 @@ class StandardOutput(object):
         result = ''
         while src:
             s, src = src[:length], src[length:]
-            hexa = ' '.join(["%02X" % ord(x) for x in s])
+            hexa = ' '.join(["%02X" % char_to_int(x) for x in s])
             s = s.translate(self.FILTER)
             result += "%04X   %-*s   %s\n" % (N, length * 3, hexa, s)
             N += length
@@ -228,8 +229,7 @@ class StandardOutput(object):
                         constant.nb_password_found += 1
                         passwd = None
                         try:
-                            passwd = unicode(pwd[password_category[
-                                0].capitalize()])  # unicode should be removed for Python 3 compatibility
+                            passwd = string_to_unicode(pwd[password_category[0].capitalize()])
                             if passwd and passwd not in constant.password_found:
                                 constant.password_found.append(passwd)
                         except Exception:

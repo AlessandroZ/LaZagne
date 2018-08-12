@@ -21,7 +21,6 @@ class Filezilla(ModuleInfo):
 
                 xml_file = os.path.join(path, file)
                 if os.path.exists(xml_file):
-                    print xml_file
                     tree = ElementTree(file=xml_file)
                     if tree.findall('Servers/Server'):
                         servers = tree.findall('Servers/Server')

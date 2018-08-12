@@ -56,7 +56,7 @@ class WindowsPassword(ModuleInfo):
                     pwd_found = m.find_wdigest_password()
 
         if not pwd_found:
-            if constant.user_dpapi:
+            if constant.user_dpapi and constant.user_dpapi.unlocked:
                 # Check if a password already found is a windows password
                 password = constant.user_dpapi.get_cleartext_password()
                 if password:

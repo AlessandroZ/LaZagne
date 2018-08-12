@@ -2,6 +2,7 @@
 from ctypes.wintypes import *
 from ctypes import *
 import _winreg
+import sys
 import os
 
 LPTSTR 					= LPSTR
@@ -361,6 +362,7 @@ GetModuleFileNameEx.argtypes = [HANDLE, HMODULE, LPWSTR, DWORD]
 
 ############################## Custom functions ##############################
 
+
 def getData(blobOut):
 		cbData = int(blobOut.cbData)
 		pbData = blobOut.pbData
@@ -429,10 +431,28 @@ def isx64machine():
 
 	return False
 
-isx64 = isx64machine()
 
 def OpenKey(key, path, index=0, access=KEY_READ):
 	if isx64:
 		return _winreg.OpenKey(key, path, index, access | _winreg.KEY_WOW64_64KEY)
 	else:
 		return _winreg.OpenKey(key, path, index, access)
+
+isx64 = isx64machine()
+python_version = 2
+if sys.version_info[0]:
+    python_version = sys.version_info[0]
+
+
+def string_to_unicode(string):
+	if python_version == 2: 
+		return unicode(string)
+	else: 
+		return string  # String on python 3 are already unicode
+
+
+def char_to_int(byte):
+	if python_version == 2: 
+		return ord(byte)
+	else: 
+		return byte  # Python 3

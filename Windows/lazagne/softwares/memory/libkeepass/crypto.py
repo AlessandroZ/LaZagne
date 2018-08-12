@@ -3,6 +3,7 @@ import hashlib
 import struct
 
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationECB, AESModeOfOperationCBC
+from lazagne.config.winstructure import char_to_int
 
 AES_BLOCK_SIZE = 16
 
@@ -35,7 +36,7 @@ def aes_cbc_encrypt(data, key, enc_iv):
 
 
 def unpad(data):
-    extra = ord(data[-1])
+    extra = char_to_int(data[-1])
     return data[:len(data) - extra]
 
 

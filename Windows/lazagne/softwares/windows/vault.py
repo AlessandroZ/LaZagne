@@ -12,7 +12,7 @@ class Vault(ModuleInfo):
     def run(self):
 
         pwd_found = []
-        if constant.user_dpapi.unlocked:
+        if constant.user_dpapi and constant.user_dpapi.unlocked:
             main_vaut_directory = os.path.join(constant.profile['APPDATA'], u'..', u'Local', u'Microsoft', u'Vault')
             if os.path.exists(main_vaut_directory):
                 for vault_directory in os.listdir(main_vaut_directory):

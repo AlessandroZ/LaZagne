@@ -12,6 +12,7 @@ from . import crypto
 
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from lazagne.config.crypto.pyDes import CBC
+from lazagne.config.winstructure import char_to_int
 
 AES_BLOCK_SIZE = 16
 
@@ -94,7 +95,7 @@ class DPAPIBlob(DataStruct):
                     cipher = self.cipherAlgo.module.new(key, CBC, "\x00" * self.cipherAlgo.ivLength)
                     self.cleartext = cipher.decrypt(self.cipherText)
 
-                padding = ord(self.cleartext[-1])
+                padding = char_to_int(self.cleartext[-1])
                 if padding <= self.cipherAlgo.blockSize:
                     self.cleartext = self.cleartext[:-padding]
 

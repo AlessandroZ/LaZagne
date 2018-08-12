@@ -11,7 +11,7 @@ class Credman(ModuleInfo):
     def run(self):
         pwd_found = []
 
-        if constant.user_dpapi.unlocked:
+        if constant.user_dpapi and constant.user_dpapi.unlocked:
             creds_directory = os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Credentials')
             if os.path.exists(creds_directory):
                 for cred_file in os.listdir(creds_directory):

@@ -164,6 +164,7 @@
 
 from array import array
 from struct import Struct
+from lazagne.config.winstructure import char_to_int
 
 little_u64 = Struct("<Q")  # little-endian 64-bit unsigned.
 #    Unpacks to a tuple of one element!
@@ -242,7 +243,7 @@ class Salsa20(object):
             self.set_counter((self.get_counter() + 1) % 2 ** 64)
             # Stopping at 2^70 bytes per nonce is user's responsibility.
             for j in xrange(min(64, lendata - i)):
-                munged[i + j] = chr(ord(data[i + j]) ^ ord(h[j]))
+                munged[i + j] = chr(char_to_int(data[i + j]) ^ char_to_int(h[j]))
 
         self._lastChunk64 = not lendata % 64
         return munged.tostring()

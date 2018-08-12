@@ -4,6 +4,7 @@ from urlparse import urlparse
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import string_to_unicode
 
 
 class GitForWindows(ModuleInfo):
@@ -45,7 +46,7 @@ class GitForWindows(ModuleInfo):
             os.path.join(constant.profile["USERPROFILE"], u'.config\\git\\credentials'),
         ]
         if "XDG_CONFIG_HOME" in os.environ:
-            locations.append(os.path.join(unicode(os.environ.get('XDG_CONFIG_HOME')), u'git\\credentials'))
+            locations.append(os.path.join(string_to_unicode(os.environ.get('XDG_CONFIG_HOME')), u'git\\credentials'))
 
         # Apply the password extraction on the defined locations
         pwd_found = []
