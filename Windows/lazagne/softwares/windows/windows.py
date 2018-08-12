@@ -11,7 +11,7 @@ from .mimikatz import Mimikatz
 
 class WindowsPassword(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'windows', 'windows', exec_at_end=True)
+        ModuleInfo.__init__(self, 'windows', 'windows')
 
     def is_in_domain(self):
         """

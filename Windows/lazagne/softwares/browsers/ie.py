@@ -6,6 +6,7 @@ import traceback
 
 import lazagne.config.winstructure as win
 from lazagne.config.module_info import ModuleInfo
+from lazagne.config.constant import constant
 
 
 class IE(ModuleInfo):
@@ -13,7 +14,7 @@ class IE(ModuleInfo):
         suboptions = [
             {'command': '-l', 'action': 'store', 'dest': 'historic', 'help': 'text file with a list of websites',
              'title': 'Advanced ie option'}]
-        ModuleInfo.__init__(self, 'ie', 'browsers', suboptions, registry_used=True, dpapi_used=True)
+        ModuleInfo.__init__(self, 'ie', 'browsers', suboptions, registry_used=True, winapi_used=True)
 
     def get_hash_table(self):
         # get the url list
@@ -108,7 +109,7 @@ class IE(ModuleInfo):
     def decipher_password(self, cipher_text, u):
         pwd_found = []
         # deciper the password
-        pwd = win.Win32CryptUnprotectData(cipher_text, u)
+        pwd = win.Win32CryptUnprotectData(cipher_text, u, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
         a = ''
         if pwd:
             for i in range(len(pwd)):

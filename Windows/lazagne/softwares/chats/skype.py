@@ -15,7 +15,7 @@ from lazagne.config.module_info import ModuleInfo
 
 class Skype(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'skype', 'chats', dpapi_used=True)
+        ModuleInfo.__init__(self, 'skype', 'chats', winapi_used=True)
 
         self.pwd_found = []
 
@@ -36,7 +36,7 @@ class Skype(ModuleInfo):
 
             # num = _winreg.QueryInfoKey(hkey)[1]
             k = _winreg.EnumValue(hkey, 0)[1]
-            return win.Win32CryptUnprotectData(k)
+            return win.Win32CryptUnprotectData(k, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
         except Exception as e:
             self.debug(str(e))
             return False

@@ -12,12 +12,12 @@ import os
 
 class RDPManager(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'rdpmanager', 'sysadmin', dpapi_used=True)
+        ModuleInfo.__init__(self, 'rdpmanager', 'sysadmin', winapi_used=True)
 
     def decrypt_password(self, encrypted_password):
         try:
             decoded = base64.b64decode(encrypted_password)
-            password_decrypted = Win32CryptUnprotectData(decoded)
+            password_decrypted = Win32CryptUnprotectData(decoded, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
             password_decrypted = password_decrypted.replace('\x00', '')
         except Exception:
             password_decrypted = encrypted_password.replace('\x00', '')

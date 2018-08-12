@@ -100,6 +100,15 @@ class UserDpapi(object):
             ok, msg = v.decrypt(mkp=self.umkp)
             return manage_response(ok, msg)
 
+    def decrypt_encrypted_blob(self, ciphered, entropy_hex=False):
+        """
+        Decrypt encrypted blob
+        """
+        if self.umkp:
+            blob = DPAPIBlob(ciphered)
+            ok, msg = blob.decrypt_encrypted_blob(mkp=self.umkp, entropy_hex=entropy_hex)
+            return manage_response(ok, msg)
+
     def get_dpapi_hash(self, context='local'):
         """
         Retrieve DPAPI hash to bruteforce it using john or hashcat.

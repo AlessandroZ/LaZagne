@@ -10,7 +10,7 @@ import os
 
 class Tortoise(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'tortoise', 'svn', dpapi_used=True)
+        ModuleInfo.__init__(self, 'tortoise', 'svn', winapi_used=True)
 
     def run(self):
         pwd_found = []
@@ -57,7 +57,7 @@ class Tortoise(ModuleInfo):
                     # encrypted the password
                     if result:
                         try:
-                            password = Win32CryptUnprotectData(base64.b64decode(result))
+                            password = Win32CryptUnprotectData(base64.b64decode(result), is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
                             pwd_found.append({
                                 'URL': url,
                                 'Login': username,

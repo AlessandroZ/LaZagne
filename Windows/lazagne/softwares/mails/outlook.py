@@ -3,11 +3,12 @@ import _winreg
 
 import lazagne.config.winstructure as win
 from lazagne.config.module_info import ModuleInfo
+from lazagne.config.constant import constant
 
 
 class Outlook(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'outlook', 'mails', registry_used=True, dpapi_used=True)
+        ModuleInfo.__init__(self, 'outlook', 'mails', registry_used=True, winapi_used=True)
 
     def run(self):
         key_path = 'Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows Messaging Subsystem\\Profiles\\Outlook'
@@ -49,7 +50,7 @@ class Outlook(ModuleInfo):
             k = _winreg.EnumValue(hkey, x)
             if 'password' in k[0].lower():
                 try:
-                    password = win.Win32CryptUnprotectData(k[1][1:])
+                    password = win.Win32CryptUnprotectData(k[1][1:], is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
                     values[k[0]] = password.decode('utf16')
                 except Exception as e:
                     self.debug(str(e))

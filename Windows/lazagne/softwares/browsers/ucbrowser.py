@@ -9,7 +9,7 @@ from lazagne.softwares.browsers.chromium_based import ChromiumBased
 class UCBrowser(ChromiumBased):
     def __init__(self):
         self.database_query = 'SELECT action_url, username_value, password_value FROM wow_logins'
-        ModuleInfo.__init__(self, 'UC Browser', 'browsers', dpapi_used=True)
+        ModuleInfo.__init__(self, 'UC Browser', 'browsers', winapi_used=True)
 
     def _get_database_dirs(self):
         data_dir = u'{LOCALAPPDATA}\\UCBrowser'.format(**constant.profile)

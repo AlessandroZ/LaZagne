@@ -45,4 +45,7 @@ class constant():
 	is_current_user 		= False 	# If True, Windows API are used otherwise dpapi is used
 	user_password 			= None
 	wifi_password 			= False 	# Check if the module as already be done
-	module_to_exec_at_end	= []
+	module_to_exec_at_end	= {
+								"winapi": [],
+								"dpapi" : [],
+							}

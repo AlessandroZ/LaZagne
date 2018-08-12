@@ -15,7 +15,7 @@ class ChromiumBased(ModuleInfo):
     def __init__(self, browser_name, paths):
         self.paths = paths if isinstance(paths, list) else [paths]
         self.database_query = 'SELECT action_url, username_value, password_value FROM logins'
-        ModuleInfo.__init__(self, browser_name, 'browsers', dpapi_used=True)
+        ModuleInfo.__init__(self, browser_name, 'browsers', winapi_used=True)
 
     def _get_database_dirs(self):
         """
@@ -69,7 +69,7 @@ class ChromiumBased(ModuleInfo):
         for url, login, password in cursor.fetchall():
             try:
                 # Decrypt the Password
-                password = Win32CryptUnprotectData(password)
+                password = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
                 credentials.append((url, login, password))
             except Exception:
                 self.debug(traceback.format_exc())

@@ -5,6 +5,7 @@ import _winreg
 import sys
 import os
 
+
 LPTSTR 					= LPSTR
 LPCTSTR 				= LPSTR
 PHANDLE 				= POINTER(HANDLE)
@@ -388,25 +389,30 @@ def get_full_path_from_pid(pid):
 			return False
 
 
-def Win32CryptUnprotectData(cipherText, entropy=None):
-	bufferIn 	= c_buffer(str(cipherText), len(cipherText))
-	blobIn 		= DATA_BLOB(len(cipherText), bufferIn)
-	blobOut 	= DATA_BLOB()
+def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, user_dpapi=False):
+	if is_current_user:
+		bufferIn 	= c_buffer(str(cipherText), len(cipherText))
+		blobIn 		= DATA_BLOB(len(cipherText), bufferIn)
+		blobOut 	= DATA_BLOB()
 
-	if entropy:
-		bufferEntropy 	= c_buffer(entropy, len(entropy))
-		blobEntropy 	= DATA_BLOB(len(entropy), bufferEntropy)
+		if entropy:
+			bufferEntropy 	= c_buffer(entropy, len(entropy))
+			blobEntropy 	= DATA_BLOB(len(entropy), bufferEntropy)
 
-		if CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, 0, byref(blobOut)):
-			return getData(blobOut).decode("utf-8")
+			if CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, 0, byref(blobOut)):
+				return getData(blobOut).decode("utf-8")
+			else:
+				return False
+		
 		else:
-			return False
-	
-	else:
-		if CryptUnprotectData(byref(blobIn), None, None, None, None, 0, byref(blobOut)):
-			return getData(blobOut).decode("utf-8")
-		else:
-			return False
+			if CryptUnprotectData(byref(blobIn), None, None, None, None, 0, byref(blobOut)):
+				return getData(blobOut).decode("utf-8")
+			else:
+				return False
+
+	elif user_dpapi and user_dpapi.unlocked:
+		# entropy should be an hex value
+		return user_dpapi.decrypt_encrypted_blob(cipherText, entropy_hex=entropy)
 
 # return major anr minor version
 # https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx

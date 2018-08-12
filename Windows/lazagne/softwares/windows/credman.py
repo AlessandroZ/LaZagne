@@ -6,7 +6,7 @@ from lazagne.config.winstructure import *
 
 class Credman(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'credman', 'windows', exec_at_end=True)
+        ModuleInfo.__init__(self, 'credman', 'windows', dpapi_used=True)
 
     def run(self):
         pwd_found = []

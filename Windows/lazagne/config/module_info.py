@@ -19,8 +19,8 @@ from lazagne.config.write_output import print_debug
 
 class ModuleInfo():
 
-    def __init__(self, name, category, options={}, suboptions=[], registry_used=False, dpapi_used=False,
-                 system_module=False, exec_at_end=False):
+    def __init__(self, name, category, options={}, suboptions=[], registry_used=False, winapi_used=False,
+                 system_module=False, dpapi_used=False):
         self.name = name
         self.category = category
         self.options = {
@@ -32,8 +32,8 @@ class ModuleInfo():
         self.suboptions = suboptions
         self.registry_used = registry_used
         self.system_module = system_module
+        self.winapi_used = winapi_used
         self.dpapi_used = dpapi_used
-        self.exec_at_end = exec_at_end
 
     def error(self, message):
         print_debug('ERROR', message)

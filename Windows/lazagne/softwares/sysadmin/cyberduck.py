@@ -13,7 +13,7 @@ import os
 
 class Cyberduck(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'cyberduck', 'sysadmin', dpapi_used=True)
+        ModuleInfo.__init__(self, 'cyberduck', 'sysadmin', winapi_used=True)
 
     # find the user.config file containing passwords
     def get_application_path(self):
@@ -37,7 +37,7 @@ class Cyberduck(ModuleInfo):
                             or elem.attrib['name'].startswith('sftp') or elem.attrib['name'].startswith('http') \
                             or elem.attrib['name'].startswith('https'):
                         encrypted_password = base64.b64decode(elem.attrib['value'])
-                        password = Win32CryptUnprotectData(encrypted_password)
+                        password = Win32CryptUnprotectData(encrypted_password, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
                         pwd_found.append({
                             'URL': elem.attrib['name'],
                             'Password': password,
