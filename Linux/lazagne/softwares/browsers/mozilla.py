@@ -30,11 +30,11 @@ if sys.version_info[0]:
     python_version = sys.version_info[0]
 
 
-def b(s):
+def convert_to_byte(s):
     if python_version == 2:
         return s
     else:
-        return s.encode("latin-1")  # utf-8 would cause some side-effects we don't want
+        return s.encode()
 
 
 def l(n):
@@ -59,7 +59,7 @@ def long_to_bytes(n, blocksize=0):
     blocksize.
     """
     # after much testing, this algorithm was deemed to be the fastest
-    s = b('')
+    s = convert_to_byte('')
     n = l(n)
     while n > 0:
         s = struct.pack('>I', n & 0xffffffff) + s
@@ -67,17 +67,17 @@ def long_to_bytes(n, blocksize=0):
 
     # strip off leading zeros
     for i in range(len(s)):
-        if s[i] != b('\000')[0]:
+        if s[i] != convert_to_byte('\000')[0]:
             break
     else:
         # only happens when n == 0
-        s = b('\000')
+        s = convert_to_byte('\000')
         i = 0
     s = s[i:]
     # add back some pad bytes.  this could be done more efficiently w.r.t. the
     # de-padding being done above, but sigh...
     if blocksize > 0 and len(s) % blocksize:
-        s = (blocksize - len(s) % blocksize) * b('\000') + s
+        s = (blocksize - len(s) % blocksize) * convert_to_byte('\000') + s
 
     return s
 
@@ -111,49 +111,63 @@ class Mozilla(ModuleInfo):
         Depending on the Firefox version, could be stored in key3.db or key4.db file.
         """
         try:
-            conn = sqlite3.connect(os.path.join(profile, 'key4.db'))  # Firefox 58.0.2 / NSS 3.35 with key4.db in SQLite
-            c = conn.cursor()
-            # First check password
-            c.execute("SELECT item1,item2 FROM metadata WHERE id = 'password';")
-            row = c.next()
+            row = None
+            # Remove error when file is empty
+            with open(os.path.join(profile, 'key4.db'), 'rb') as f: 
+                content = f.read()
+            
+            if content:
+                conn = sqlite3.connect(os.path.join(profile, 'key4.db'))  # Firefox 58.0.2 / NSS 3.35 with key4.db in SQLite
+                c = conn.cursor()
+                # First check password
+                c.execute("SELECT item1,item2 FROM metadata WHERE id = 'password';")
+                try:
+                    row = c.next()  # Python 2
+                except Exception:
+                    row = next(c)  # Python 3
 
         except Exception:
             self.debug(traceback.format_exc())
 
         else:
-            (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password='', key_data=row)
+            if row:
+                (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password=u'', key_data=row)
 
-            if global_salt:
-                # Decrypt 3DES key to decrypt "logins.json" content
-                c.execute("SELECT a11,a102 FROM nssPrivate;")
-                a11, a102 = next(c)
-                # a11  : CKA_VALUE
-                # a102 : f8000000000000000000000000000001, CKA_ID
-                self.print_asn1(a11, len(a11), 0)
-                # SEQUENCE {
-                #     SEQUENCE {
-                #         OBJECTIDENTIFIER 1.2.840.113549.1.12.5.1.3
-                #         SEQUENCE {
-                #             OCTETSTRING entry_salt_for_3des_key
-                #             INTEGER 01
-                #         }
-                #     }
-                #     OCTETSTRING encrypted_3des_key (with 8 bytes of PKCS#7 padding)
-                # }
-                decoded_a11 = decoder.decode(a11)
-                entry_salt = decoded_a11[0][0][1][0].asOctets()
-                cipher_t = decoded_a11[0][1].asOctets()
-                key = self.decrypt_3des(global_salt, master_password, entry_salt, cipher_t)
-                if key:
-                    self.debug(u'key: {key}'.format(key=repr(key)))
-                    yield key[:24]
+                if global_salt:
+                    # Decrypt 3DES key to decrypt "logins.json" content
+                    c.execute("SELECT a11,a102 FROM nssPrivate;")
+                    try:
+                        a11, a102 = c.next()  # Python 2
+                    except Exception:
+                        a11, a102 = next(c)  # Python 3
+
+                    # a11  : CKA_VALUE
+                    # a102 : f8000000000000000000000000000001, CKA_ID
+                    self.print_asn1(a11, len(a11), 0)
+                    # SEQUENCE {
+                    #     SEQUENCE {
+                    #         OBJECTIDENTIFIER 1.2.840.113549.1.12.5.1.3
+                    #         SEQUENCE {
+                    #             OCTETSTRING entry_salt_for_3des_key
+                    #             INTEGER 01
+                    #         }
+                    #     }
+                    #     OCTETSTRING encrypted_3des_key (with 8 bytes of PKCS#7 padding)
+                    # }
+                    decoded_a11 = decoder.decode(a11)
+                    entry_salt = decoded_a11[0][0][1][0].asOctets()
+                    cipher_t = decoded_a11[0][1].asOctets()
+                    key = self.decrypt_3des(global_salt, master_password, entry_salt, cipher_t)
+                    if key:
+                        self.debug(u'key: {key}'.format(key=repr(key)))
+                        yield key[:24]
 
         try:
             key3_file = os.path.join(profile, 'key3.db')
             if os.path.exists(key3_file):
                 key_data = self.read_bsddb(key3_file)
                 # Check masterpassword
-                (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password='',
+                (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password=u'',
                                                                                         key_data=key_data,
                                                                                         new_version=False)
                 if global_salt:
@@ -267,8 +281,8 @@ class Mozilla(ModuleInfo):
         User master key is also encrypted (if provided, the master_password could be used to encrypt it)
         """
         # See http://www.drh-consultancy.demon.co.uk/key3.html
-        hp = sha1(global_salt + master_password).digest()
-        pes = entry_salt + b('\x00') * (20 - len(entry_salt))
+        hp = sha1(global_salt + convert_to_byte(master_password)).digest()
+        pes = entry_salt + convert_to_byte('\x00') * (20 - len(entry_salt))
         chp = sha1(hp + entry_salt).digest()
         k1 = hmac.new(chp, pes + entry_salt, sha1).digest()
         tk = hmac.new(chp, pes, sha1).digest()
@@ -338,7 +352,7 @@ class Mozilla(ModuleInfo):
             logins.append((self.decode_login_data(enc_username), self.decode_login_data(enc_password), row[1]))
         return logins
 
-    def manage_masterpassword(self, master_password='', key_data=None, new_version=True):
+    def manage_masterpassword(self, master_password=u'', key_data=None, new_version=True):
         """
         Check if a master password is set.
         If so, try to find it using a dictionary attack
@@ -346,23 +360,22 @@ class Mozilla(ModuleInfo):
         (global_salt, master_password, entry_salt) = self.is_master_password_correct(master_password=master_password,
                                                                                      key_data=key_data,
                                                                                      new_version=new_version)
-
         if not global_salt:
             self.warning(u'Master Password is used !')
             (global_salt, master_password, entry_salt) = self.brute_master_password(key_data=key_data,
                                                                                     new_version=new_version)
             if not master_password:
-                return '', '', ''
+                return u'', u'', u''
 
         return global_salt, master_password, entry_salt
 
-    def is_master_password_correct(self, key_data, master_password='', new_version=True):
+    def is_master_password_correct(self, key_data, master_password=u'', new_version=True):
         try:
             if not new_version:
                 # See http://www.drh-consultancy.demon.co.uk/key3.html
                 pwd_check = key_data.get(b'password-check')
                 if not pwd_check:
-                    return '', '', ''
+                    return u'', u'', u''
                 entry_salt_len = o(pwd_check[1])
                 entry_salt = pwd_check[3: 3 + entry_salt_len]
                 encrypted_passwd = pwd_check[-16:]
@@ -387,13 +400,13 @@ class Mozilla(ModuleInfo):
                 encrypted_passwd = decoded_item2[0][1].asOctets()
 
             cleartext_data = self.decrypt_3des(global_salt, master_password, entry_salt, encrypted_passwd)
-            if cleartext_data != b('password-check\x02\x02'):
-                return '', '', ''
+            if cleartext_data != convert_to_byte('password-check\x02\x02'):
+                return u'', u'', u''
 
             return global_salt, master_password, entry_salt
         except Exception:
             self.debug(traceback.format_exc())
-            return '', '', ''
+            return u'', u'', u''
 
     def brute_master_password(self, key_data, new_version=True):
         """
@@ -412,7 +425,7 @@ class Mozilla(ModuleInfo):
                 return global_salt, master_password, entry_salt
 
         self.warning(u'No password has been found using the default list')
-        return '', '', ''
+        return u'', u'', u''
 
     @staticmethod
     def remove_padding(data):

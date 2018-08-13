@@ -22,7 +22,8 @@ PSID                    = PVOID
 LONG                    = c_long
 WORD                    = c_uint16
 
-##############################- Constants ##############################
+
+# #############################- Constants ##############################
 
 # Credential Manager
 CRYPTPROTECT_UI_FORBIDDEN 			= 0x01
@@ -56,130 +57,131 @@ TOKEN_ADJUST_SESSIONID      = 0x0100
 TOKEN_READ                  = (STANDARD_RIGHTS_READ | TOKEN_QUERY)
 tokenprivs                  = (TOKEN_QUERY | TOKEN_READ | TOKEN_IMPERSONATE | TOKEN_QUERY_SOURCE | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY | (131072 | 4))
 TOKEN_ALL_ACCESS            = (STANDARD_RIGHTS_REQUIRED | TOKEN_ASSIGN_PRIMARY |
-		TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_QUERY_SOURCE |
-		TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT |
-		TOKEN_ADJUST_SESSIONID)
+        TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_QUERY_SOURCE |
+        TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT |
+        TOKEN_ADJUST_SESSIONID)
 
-############################## Structures ##############################
+
+# ############################# Structures ##############################
 
 class CREDENTIAL_ATTRIBUTE(Structure):
-	_fields_ = [
-		('Keyword', LPSTR),
-		('Flags', DWORD),
-		('ValueSize', DWORD),
-		('Value', LPBYTE)
-	]
+    _fields_ = [
+        ('Keyword', LPSTR),
+        ('Flags', DWORD),
+        ('ValueSize', DWORD),
+        ('Value', LPBYTE)
+    ]
 PCREDENTIAL_ATTRIBUTE = POINTER(CREDENTIAL_ATTRIBUTE)
 
 class CREDENTIAL(Structure):
-	_fields_ = [
-		('Flags', DWORD),
-		('Type', DWORD),
-		('TargetName', LPSTR),
-		('Comment', LPSTR),
-		('LastWritten', FILETIME),
-		('CredentialBlobSize', DWORD),
-		# ('CredentialBlob', POINTER(BYTE)),
-		('CredentialBlob', POINTER(c_char)),
-		('Persist', DWORD),
-		('AttributeCount', DWORD),
-		('Attributes', PCREDENTIAL_ATTRIBUTE),
-		('TargetAlias', LPSTR),
-		('UserName', LPSTR)
-	]
+    _fields_ = [
+        ('Flags', DWORD),
+        ('Type', DWORD),
+        ('TargetName', LPSTR),
+        ('Comment', LPSTR),
+        ('LastWritten', FILETIME),
+        ('CredentialBlobSize', DWORD),
+        # ('CredentialBlob', POINTER(BYTE)),
+        ('CredentialBlob', POINTER(c_char)),
+        ('Persist', DWORD),
+        ('AttributeCount', DWORD),
+        ('Attributes', PCREDENTIAL_ATTRIBUTE),
+        ('TargetAlias', LPSTR),
+        ('UserName', LPSTR)
+    ]
 PCREDENTIAL = POINTER(CREDENTIAL)
 
 class DATA_BLOB(Structure):
-	_fields_ = [
-		('cbData', DWORD),
-		('pbData', POINTER(c_char))
-	]
+    _fields_ = [
+        ('cbData', DWORD),
+        ('pbData', POINTER(c_char))
+    ]
 
 class GUID(Structure):
-	_fields_ = [
-		("data1", DWORD),
-		("data2", WORD),
-		("data3", WORD),
-		("data4", BYTE * 6)
-	]
+    _fields_ = [
+        ("data1", DWORD),
+        ("data2", WORD),
+        ("data3", WORD),
+        ("data4", BYTE * 6)
+    ]
 LPGUID = POINTER(GUID)
 
 class VAULT_CREDENTIAL_ATTRIBUTEW(Structure):
-	_fields_ = [
-		('keyword', 		LPWSTR),
-		('flags', 			DWORD),
-		('badAlign', 		DWORD),
-		('valueSize', 		DWORD),
-		('value', 			LPBYTE),
-	]
+    _fields_ = [
+        ('keyword', 		LPWSTR),
+        ('flags', 			DWORD),
+        ('badAlign', 		DWORD),
+        ('valueSize', 		DWORD),
+        ('value', 			LPBYTE),
+    ]
 PVAULT_CREDENTIAL_ATTRIBUTEW = POINTER(VAULT_CREDENTIAL_ATTRIBUTEW)
 
 class VAULT_BYTE_BUFFER(Structure):
-	_fields_ = [
-		('length', 		DWORD),
-		('value', 		PBYTE),
-	]
+    _fields_ = [
+        ('length', 		DWORD),
+        ('value', 		PBYTE),
+    ]
 
 class DATA(Structure):
-	_fields_ = [
-		# ('boolean', 		BOOL),
-		# ('short', 			SHORT),
-		# ('unsignedShort', 	WORD),
-		# ('int', 			LONG),
-		# ('unsignedInt', 	ULONG),
-		# ('double', 			DOUBLE),
-		('guid', 			GUID),
-		('string', 			LPWSTR),
-		('byteArray', 		VAULT_BYTE_BUFFER),
-		('protectedArray', 	VAULT_BYTE_BUFFER),
-		('attribute', 		PVAULT_CREDENTIAL_ATTRIBUTEW),
-		# ('Sid', 			PSID)
-		('sid', 			DWORD)
-	]
+    _fields_ = [
+        # ('boolean', 		BOOL),
+        # ('short', 			SHORT),
+        # ('unsignedShort', 	WORD),
+        # ('int', 			LONG),
+        # ('unsignedInt', 	ULONG),
+        # ('double', 			DOUBLE),
+        ('guid', 			GUID),
+        ('string', 			LPWSTR),
+        ('byteArray', 		VAULT_BYTE_BUFFER),
+        ('protectedArray', 	VAULT_BYTE_BUFFER),
+        ('attribute', 		PVAULT_CREDENTIAL_ATTRIBUTEW),
+        # ('Sid', 			PSID)
+        ('sid', 			DWORD)
+    ]
 
 class Flag(Structure):
-	_fields_ = [
-		('0x00', DWORD),
-		('0x01', DWORD),
-		('0x02', DWORD),
-		('0x03', DWORD),
-		('0x04', DWORD),
-		('0x05', DWORD),
-		('0x06', DWORD),
-		('0x07', DWORD),
-		('0x08', DWORD),
-		('0x09', DWORD),
-		('0x0a', DWORD),
-		('0x0b', DWORD),
-		('0x0c', DWORD),
-		('0x0d', DWORD)
-	]
+    _fields_ = [
+        ('0x00', DWORD),
+        ('0x01', DWORD),
+        ('0x02', DWORD),
+        ('0x03', DWORD),
+        ('0x04', DWORD),
+        ('0x05', DWORD),
+        ('0x06', DWORD),
+        ('0x07', DWORD),
+        ('0x08', DWORD),
+        ('0x09', DWORD),
+        ('0x0a', DWORD),
+        ('0x0b', DWORD),
+        ('0x0c', DWORD),
+        ('0x0d', DWORD)
+    ]
 
 class VAULT_ITEM_DATA(Structure):
-	_fields_ = [
-		# ('schemaElementId', 	DWORD),
-		# ('unk0', 				DWORD),
-		# ('Type', 				VAULT_ELEMENT_TYPE),
-		# ('type', 				Flag),
-		# ('type', 				DWORD * 14),
-		# ('unk1', 				DWORD),
-		('data', 				DATA),
-	]
+    _fields_ = [
+        # ('schemaElementId', 	DWORD),
+        # ('unk0', 				DWORD),
+        # ('Type', 				VAULT_ELEMENT_TYPE),
+        # ('type', 				Flag),
+        # ('type', 				DWORD * 14),
+        # ('unk1', 				DWORD),
+        ('data', 				DATA),
+    ]
 PVAULT_ITEM_DATA = POINTER(VAULT_ITEM_DATA)
 
 class VAULT_ITEM_WIN8(Structure):
-	_fields_ = [
-		('id', 				GUID),
-		('pName', 			PWSTR),
-		('pResource', 		PVAULT_ITEM_DATA),
-		('pUsername', 		PVAULT_ITEM_DATA),
-		('pPassword', 		PVAULT_ITEM_DATA), 
-		('unknown0', 		PVAULT_ITEM_DATA), 
-		('LastWritten', 	FILETIME), 
-		('Flags', 			DWORD), 
-		('cbProperties', 	DWORD), 
-		('Properties', 		PVAULT_ITEM_DATA), 
-	]
+    _fields_ = [
+        ('id', 				GUID),
+        ('pName', 			PWSTR),
+        ('pResource', 		PVAULT_ITEM_DATA),
+        ('pUsername', 		PVAULT_ITEM_DATA),
+        ('pPassword', 		PVAULT_ITEM_DATA),
+        ('unknown0', 		PVAULT_ITEM_DATA),
+        ('LastWritten', 	FILETIME),
+        ('Flags', 			DWORD),
+        ('cbProperties', 	DWORD),
+        ('Properties', 		PVAULT_ITEM_DATA),
+    ]
 PVAULT_ITEM_WIN8 = POINTER(VAULT_ITEM_WIN8)
 
 # class VAULT_ITEM_WIN7(Structure):
@@ -197,75 +199,77 @@ PVAULT_ITEM_WIN8 = POINTER(VAULT_ITEM_WIN8)
 # PVAULT_ITEM_WIN7 = POINTER(VAULT_ITEM_WIN7)
 
 class OSVERSIONINFOEXW(Structure):
-	_fields_ = [
-		('dwOSVersionInfoSize', c_ulong),
-		('dwMajorVersion', c_ulong),
-		('dwMinorVersion', c_ulong),
-		('dwBuildNumber', c_ulong),
-		('dwPlatformId', c_ulong),
-		('szCSDVersion', c_wchar*128),
-		('wServicePackMajor', c_ushort),
-		('wServicePackMinor', c_ushort),
-		('wSuiteMask', c_ushort),
-		('wProductType', c_byte),
-		('wReserved', c_byte)
-	]
+    _fields_ = [
+        ('dwOSVersionInfoSize', c_ulong),
+        ('dwMajorVersion', c_ulong),
+        ('dwMinorVersion', c_ulong),
+        ('dwBuildNumber', c_ulong),
+        ('dwPlatformId', c_ulong),
+        ('szCSDVersion', c_wchar*128),
+        ('wServicePackMajor', c_ushort),
+        ('wServicePackMinor', c_ushort),
+        ('wSuiteMask', c_ushort),
+        ('wProductType', c_byte),
+        ('wReserved', c_byte)
+    ]
 
 class CRYPTPROTECT_PROMPTSTRUCT(Structure):
-	_fields_ = [
-		('cbSize', 			DWORD),
-		('dwPromptFlags', 	DWORD),
-		('hwndApp', 		HWND),
-		('szPrompt', 		LPCWSTR),
-	]
+    _fields_ = [
+        ('cbSize', 			DWORD),
+        ('dwPromptFlags', 	DWORD),
+        ('hwndApp', 		HWND),
+        ('szPrompt', 		LPCWSTR),
+    ]
 PCRYPTPROTECT_PROMPTSTRUCT = POINTER(CRYPTPROTECT_PROMPTSTRUCT)
 
 class LUID(Structure):
-	_fields_ = [
-		("LowPart",     DWORD),
-		("HighPart",    LONG),
-	]
+    _fields_ = [
+        ("LowPart",     DWORD),
+        ("HighPart",    LONG),
+    ]
 PLUID = POINTER(LUID)
 
 class SID_AND_ATTRIBUTES(Structure):
-	_fields_ = [
-		("Sid",         PSID),
-		("Attributes",  DWORD),
-	]
+    _fields_ = [
+        ("Sid",         PSID),
+        ("Attributes",  DWORD),
+    ]
 
 class TOKEN_USER(Structure):
-	_fields_ = [
-		("User", SID_AND_ATTRIBUTES),]
+    _fields_ = [
+        ("User", SID_AND_ATTRIBUTES),]
 
 class LUID_AND_ATTRIBUTES(Structure):
-	_fields_ = [
-		("Luid",        LUID),
-		("Attributes",  DWORD),
-	]
+    _fields_ = [
+        ("Luid",        LUID),
+        ("Attributes",  DWORD),
+    ]
 
 class TOKEN_PRIVILEGES(Structure):
-	_fields_ = [
-		("PrivilegeCount",  DWORD),
-		("Privileges",      LUID_AND_ATTRIBUTES),
-	]
+    _fields_ = [
+        ("PrivilegeCount",  DWORD),
+        ("Privileges",      LUID_AND_ATTRIBUTES),
+    ]
 PTOKEN_PRIVILEGES = POINTER(TOKEN_PRIVILEGES)
 
 class SECURITY_ATTRIBUTES(Structure):
-	_fields_ = [
-		("nLength",  					DWORD),
-		("lpSecurityDescriptor",      	LPVOID),
-		("bInheritHandle",      		BOOL),
-	]
+    _fields_ = [
+        ("nLength",  					DWORD),
+        ("lpSecurityDescriptor",      	LPVOID),
+        ("bInheritHandle",      		BOOL),
+    ]
 PSECURITY_ATTRIBUTES = POINTER(SECURITY_ATTRIBUTES)
 
-############################## Load dlls ##############################
+
+# ############################# Load dlls ##############################
 
 advapi32 	= WinDLL('advapi32', 	use_last_error=True)
 crypt32 	= WinDLL('crypt32', 	use_last_error=True)
 kernel32	= WinDLL('kernel32', 	use_last_error=True)
 psapi		= WinDLL('psapi', 		use_last_error=True)
 
-############################## Functions ##############################
+
+# ############################# Functions ##############################
 
 RevertToSelf 					= advapi32.RevertToSelf
 RevertToSelf.restype 			= BOOL
@@ -333,116 +337,119 @@ CryptUnprotectData.argtypes		= [POINTER(DATA_BLOB), POINTER(LPWSTR), POINTER(DAT
 
 # these functions do not exist on XP workstations
 try:
-	prototype 						= WINFUNCTYPE(ULONG, DWORD, LPDWORD, POINTER(LPGUID))
-	vaultEnumerateVaults 			= prototype(("VaultEnumerateVaults", windll.vaultcli))
+    prototype 						= WINFUNCTYPE(ULONG, DWORD, LPDWORD, POINTER(LPGUID))
+    vaultEnumerateVaults 			= prototype(("VaultEnumerateVaults", windll.vaultcli))
 
-	prototype 						= WINFUNCTYPE(ULONG, LPGUID, DWORD, HANDLE)
-	vaultOpenVault 					= prototype(("VaultOpenVault", windll.vaultcli))
+    prototype 						= WINFUNCTYPE(ULONG, LPGUID, DWORD, HANDLE)
+    vaultOpenVault 					= prototype(("VaultOpenVault", windll.vaultcli))
 
-	prototype 						= WINFUNCTYPE(ULONG, HANDLE, DWORD, LPDWORD, POINTER(c_char_p))
-	vaultEnumerateItems 			= prototype(("VaultEnumerateItems", windll.vaultcli))
+    prototype 						= WINFUNCTYPE(ULONG, HANDLE, DWORD, LPDWORD, POINTER(c_char_p))
+    vaultEnumerateItems 			= prototype(("VaultEnumerateItems", windll.vaultcli))
 
-	prototype 						= WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN8))
-	vaultGetItem8 					= prototype(("VaultGetItem", windll.vaultcli))
+    prototype 						= WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN8))
+    vaultGetItem8 					= prototype(("VaultGetItem", windll.vaultcli))
 
-	# prototype = WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN7))
-	# vaultGetItem7 = prototype(("VaultGetItem", windll.vaultcli))
+    # prototype = WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN7))
+    # vaultGetItem7 = prototype(("VaultGetItem", windll.vaultcli))
 
-	prototype 						= WINFUNCTYPE(ULONG, LPVOID)
-	vaultFree 						= prototype(("VaultFree", windll.vaultcli))
+    prototype 						= WINFUNCTYPE(ULONG, LPVOID)
+    vaultFree 						= prototype(("VaultFree", windll.vaultcli))
 
-	prototype 						= WINFUNCTYPE(ULONG, PHANDLE)
-	vaultCloseVault 				= prototype(("VaultCloseVault", windll.vaultcli))
+    prototype 						= WINFUNCTYPE(ULONG, PHANDLE)
+    vaultCloseVault 				= prototype(("VaultCloseVault", windll.vaultcli))
 except Exception:
-	pass
+    pass
 
 GetModuleFileNameEx = psapi.GetModuleFileNameExW
 GetModuleFileNameEx.restype = DWORD
 GetModuleFileNameEx.argtypes = [HANDLE, HMODULE, LPWSTR, DWORD]
 
 
-############################## Custom functions ##############################
-
+# ############################# Custom functions ##############################
 
 def getData(blobOut):
-		cbData = int(blobOut.cbData)
-		pbData = blobOut.pbData
-		buffer = c_buffer(cbData)
-		
-		memcpy(buffer, pbData, cbData)
-		LocalFree(pbData);
-		return buffer.raw
+        cbData = int(blobOut.cbData)
+        pbData = blobOut.pbData
+        buffer = c_buffer(cbData)
+
+        memcpy(buffer, pbData, cbData)
+        LocalFree(pbData);
+        return buffer.raw
 
 
 def get_full_path_from_pid(pid):
-	if pid: 
-		filename = create_unicode_buffer("", 256)
-		hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, False, int(pid))
-		if not hProcess:
-			return False
+    if pid:
+        filename = create_unicode_buffer("", 256)
+        hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, False, int(pid))
+        if not hProcess:
+            return False
 
-		size = GetModuleFileNameEx(hProcess, None, filename, 256)
-		CloseHandle(hProcess)
-		if size:
-			return filename.value
-		else:
-			return False
+        size = GetModuleFileNameEx(hProcess, None, filename, 256)
+        CloseHandle(hProcess)
+        if size:
+            return filename.value
+        else:
+            return False
 
 
 def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, user_dpapi=False):
-	if is_current_user:
-		bufferIn 	= c_buffer(str(cipherText), len(cipherText))
-		blobIn 		= DATA_BLOB(len(cipherText), bufferIn)
-		blobOut 	= DATA_BLOB()
+    if is_current_user:
+        bufferIn 	= c_buffer(str(cipherText), len(cipherText))
+        blobIn 		= DATA_BLOB(len(cipherText), bufferIn)
+        blobOut 	= DATA_BLOB()
 
-		if entropy:
-			bufferEntropy 	= c_buffer(entropy, len(entropy))
-			blobEntropy 	= DATA_BLOB(len(entropy), bufferEntropy)
+        if entropy:
+            bufferEntropy 	= c_buffer(entropy, len(entropy))
+            blobEntropy 	= DATA_BLOB(len(entropy), bufferEntropy)
 
-			if CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, 0, byref(blobOut)):
-				return getData(blobOut).decode("utf-8")
-			else:
-				return False
-		
-		else:
-			if CryptUnprotectData(byref(blobIn), None, None, None, None, 0, byref(blobOut)):
-				return getData(blobOut).decode("utf-8")
-			else:
-				return False
+            if CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, 0, byref(blobOut)):
+                return getData(blobOut).decode("utf-8")
+            else:
+                return False
 
-	elif user_dpapi and user_dpapi.unlocked:
-		# entropy should be an hex value
-		return user_dpapi.decrypt_encrypted_blob(cipherText, entropy_hex=entropy)
+        else:
+            if CryptUnprotectData(byref(blobIn), None, None, None, None, 0, byref(blobOut)):
+                return getData(blobOut).decode("utf-8")
+            else:
+                return False
 
-# return major anr minor version
-# https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx
+    elif user_dpapi and user_dpapi.unlocked:
+        # entropy should be an hex value
+        return user_dpapi.decrypt_encrypted_blob(cipherText, entropy_hex=entropy)
+
+
 def get_os_version():
-	os_version = OSVERSIONINFOEXW()
-	os_version.dwOSVersionInfoSize = sizeof(os_version)
-	retcode = windll.Ntdll.RtlGetVersion(byref(os_version))
-	if retcode != 0:
-		return False
+    """
+    return major anr minor version
+    https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx 
+    """
+    os_version = OSVERSIONINFOEXW()
+    os_version.dwOSVersionInfoSize = sizeof(os_version)
+    retcode = windll.Ntdll.RtlGetVersion(byref(os_version))
+    if retcode != 0:
+        return False
 
-	return '%s.%s' % (str(os_version.dwMajorVersion.real), str(os_version.dwMinorVersion.real))
+    return '%s.%s' % (str(os_version.dwMajorVersion.real), str(os_version.dwMinorVersion.real))
 
 
 def isx64machine():
-	archi = os.environ.get("PROCESSOR_ARCHITEW6432", '')
-	if '64' in archi:
-		return True
+    archi = os.environ.get("PROCESSOR_ARCHITEW6432", '')
+    if '64' in archi:
+        return True
 
-	archi = os.environ.get("PROCESSOR_ARCHITECTURE", '')
-	if '64' in archi:
-		return True
+    archi = os.environ.get("PROCESSOR_ARCHITECTURE", '')
+    if '64' in archi:
+        return True
 
-	return False
+    return False
 
 
 def OpenKey(key, path, index=0, access=KEY_READ):
-	if isx64:
-		return _winreg.OpenKey(key, path, index, access | _winreg.KEY_WOW64_64KEY)
-	else:
-		return _winreg.OpenKey(key, path, index, access)
+    if isx64:
+        return _winreg.OpenKey(key, path, index, access | _winreg.KEY_WOW64_64KEY)
+    else:
+        return _winreg.OpenKey(key, path, index, access)
+
 
 isx64 = isx64machine()
 python_version = 2
@@ -451,14 +458,22 @@ if sys.version_info[0]:
 
 
 def string_to_unicode(string):
-	if python_version == 2: 
-		return unicode(string)
-	else: 
-		return string  # String on python 3 are already unicode
+    if python_version == 2:
+        return unicode(string)
+    else:
+        return string  # String on python 3 are already unicode
 
 
 def char_to_int(byte):
-	if python_version == 2: 
-		return ord(byte)
-	else: 
-		return byte  # Python 3
+    if python_version == 2:
+        return ord(byte)
+    else:
+        return byte  # Python 3
+
+
+def convert_to_byte(string):
+    if python_version == 2:
+        return string
+    else:
+        return string.encode()  # Python 3
+
