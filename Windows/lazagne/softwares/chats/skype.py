@@ -9,7 +9,7 @@ from xml.etree.cElementTree import ElementTree
 import lazagne.config.winstructure as win
 from lazagne.config.constant import constant
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
-from lazagne.config.dico import get_dico
+from lazagne.config.dico import get_dic
 from lazagne.config.module_info import ModuleInfo
 
 
@@ -75,7 +75,7 @@ class Skype(ModuleInfo):
         return binascii.hexlify(tmp)
 
     def dictionary_attack(self, login, md5):
-        for word in get_dico():
+        for word in get_dic():
             hash_ = hashlib.md5('%s\nskyper\n%s' % (login, word)).hexdigest()
             if hash_ == md5:
                 return word

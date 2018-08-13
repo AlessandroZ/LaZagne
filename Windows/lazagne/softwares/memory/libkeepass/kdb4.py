@@ -15,6 +15,11 @@ from .pureSalsa20 import Salsa20
 KDB4_SALSA20_IV = bytes('e830094b97205d2a'.decode('hex'))
 KDB4_SIGNATURE = (0x9AA2D903, 0xB54BFB67)
 
+try:
+    file_types = (file, io.IOBase)
+except NameError:
+    file_types = (io.IOBase,)
+
 
 class KDB4Header(HeaderDictionary):
     fields = {
@@ -68,16 +73,16 @@ class KDB4File(KDBFile):
         if self.header.CompressionFlags == 1:
             self._unzip()
 
-    def write_to(self, stream):
-        """
-        Write the KeePass database back to a KeePass2 compatible file.
+    # def write_to(self, stream):
+    #     """
+    #     Write the KeePass database back to a KeePass2 compatible file.
         
-        :arg stream: A writeable file-like object or IO buffer.
-        """
-        if not (isinstance(stream, io.IOBase) or isinstance(stream, file)):
-            raise TypeError('Stream does not have the buffer interface.')
+    #     :arg stream: A writeable file-like object or IO buffer.
+    #     """
+    #     if not (isinstance(stream, io.IOBase) or isinstance(stream, file_types)):
+    #         raise TypeError('Stream does not have the buffer interface.')
 
-        self._write_header(stream)
+    #     self._write_header(stream)
 
     def _read_header(self, stream):
         """

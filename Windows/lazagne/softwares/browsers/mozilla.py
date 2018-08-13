@@ -111,7 +111,7 @@ class Mozilla(ModuleInfo):
             self.debug(traceback.format_exc())
         else:
             if row:
-                (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password=u'', key_data=row)
+                (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password='', key_data=row)
 
                 if global_salt:
                     # Decrypt 3DES key to decrypt "logins.json" content
@@ -144,7 +144,7 @@ class Mozilla(ModuleInfo):
         try:
             key_data = self.read_bsddb(os.path.join(profile, 'key3.db'))
             # Check masterpassword
-            (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password=u'',
+            (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password='',
                                                                                     key_data=key_data,
                                                                                     new_version=False)
             if global_salt:
@@ -329,7 +329,7 @@ class Mozilla(ModuleInfo):
             logins.append((self.decode_login_data(enc_username), self.decode_login_data(enc_password), row[1]))
         return logins
 
-    def manage_masterpassword(self, master_password=u'', key_data=None, new_version=True):
+    def manage_masterpassword(self, master_password='', key_data=None, new_version=True):
         """
         Check if a master password is set.
         If so, try to find it using a dictionary attack
@@ -343,17 +343,17 @@ class Mozilla(ModuleInfo):
             (global_salt, master_password, entry_salt) = self.brute_master_password(key_data=key_data,
                                                                                     new_version=new_version)
             if not master_password:
-                return u'', u'', u''
+                return '', '', ''
 
         return global_salt, master_password, entry_salt
 
-    def is_master_password_correct(self, key_data, master_password=u'', new_version=True):
+    def is_master_password_correct(self, key_data, master_password='', new_version=True):
         try:
             if not new_version:
                 # See http://www.drh-consultancy.demon.co.uk/key3.html
                 pwd_check = key_data.get(b'password-check')
                 if not pwd_check:
-                    return u'', u'', u''
+                    return '', '', ''
                 entry_salt_len = char_to_int(pwd_check[1])
                 entry_salt = pwd_check[3: 3 + entry_salt_len]
                 encrypted_passwd = pwd_check[-16:]
@@ -379,12 +379,12 @@ class Mozilla(ModuleInfo):
 
             cleartext_data = self.decrypt_3des(global_salt, master_password, entry_salt, encrypted_passwd)
             if cleartext_data != convert_to_byte('password-check\x02\x02'):
-                return u'', u'', u''
+                return '', '', ''
 
             return global_salt, master_password, entry_salt
         except Exception:
             self.debug(traceback.format_exc())
-            return u'', u'', u''
+            return '', '', ''
 
     def brute_master_password(self, key_data, new_version=True):
         """
@@ -403,7 +403,7 @@ class Mozilla(ModuleInfo):
                 return global_salt, master_password, entry_salt
 
         self.warning(u'No password has been found using the default list')
-        return u'', u'', u''
+        return '', '', ''
 
     def remove_padding(self, data):
         """

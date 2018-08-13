@@ -6,6 +6,11 @@ from xml.etree import ElementTree
 
 from .crypto import sha256
 
+try:
+    file_types = (file, io.IOBase)
+except NameError:
+    file_types = (io.IOBase,)
+
 
 # file header
 class HeaderDictionary(dict):
@@ -147,7 +152,7 @@ class KDBFile(object):
             self.read_from(stream)
 
     def read_from(self, stream):
-        if not (isinstance(stream, io.IOBase) or isinstance(stream, file)):
+        if not (isinstance(stream, io.IOBase) or isinstance(stream, file_types)):
             raise TypeError('Stream does not have the buffer interface.')
         self._read_header(stream)
         self._decrypt(stream)
