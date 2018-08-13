@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config import homes
+import traceback
 
 
 class Libsecret(ModuleInfo):
@@ -28,8 +29,8 @@ class Libsecret(ModuleInfo):
 
                 collections = list(secretstorage.collection.get_all_collections(bus))
 
-            except Exception as e:
-                self.error(e)
+            except Exception:
+                self.error(traceback.format_exc())
                 continue
 
             for collection in collections:
@@ -44,8 +45,8 @@ class Libsecret(ModuleInfo):
 
                 try:
                     storage = collection.get_all_items()
-                except Exception as e:
-                    self.error(e)
+                except Exception:
+                    self.error(traceback.format_exc())
                     continue
 
                 for item in storage:
