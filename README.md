@@ -114,7 +114,8 @@ Special thanks
 * Moyix for [Creddump](https://github.com/moyix/creddump)
 * N0fat for [Chainbreaker](https://github.com/n0fate/chainbreaker/)
 * Richard Moore for the [AES module](https://github.com/ricmoo/pyaes)
-* Todd Whiteman for teh [DES module](https://github.com/toddw-as/pyDes)
+* Todd Whiteman for the [DES module](https://github.com/toddw-as/pyDes)
+* mitya57 for [secretstorage](https://github.com/mitya57/secretstorage)
 * All [contributors](https://github.com/AlessandroZ/LaZagne/graphs/contributors) who help me on this project
 
 ----
