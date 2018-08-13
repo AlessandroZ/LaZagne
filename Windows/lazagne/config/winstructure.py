@@ -396,9 +396,17 @@ def get_full_path_from_pid(pid):
             return False
 
 
+python_version = 2
+if sys.version_info[0]:
+    python_version = sys.version_info[0]
+
+
 def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, user_dpapi=False):
+    if python_version == 2:
+        cipherText = str(cipherText)
+
     if is_current_user:
-        bufferIn 	= c_buffer(str(cipherText), len(cipherText))
+        bufferIn 	= c_buffer(cipherText, len(cipherText))  
         blobIn 		= DATA_BLOB(len(cipherText), bufferIn)
         blobOut 	= DATA_BLOB()
 
@@ -454,11 +462,7 @@ def OpenKey(key, path, index=0, access=KEY_READ):
     else:
         return winreg.OpenKey(key, path, index, access)
 
-
 isx64 = isx64machine()
-python_version = 2
-if sys.version_info[0]:
-    python_version = sys.version_info[0]
 
 
 def string_to_unicode(string):

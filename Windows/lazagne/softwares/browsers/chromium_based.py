@@ -87,7 +87,7 @@ class ChromiumBased(ModuleInfo):
             self.debug('Database found: {db}'.format(db=database_path))
             # Copy database before to query it (bypass lock errors)
             try:
-                temp = os.path.join(tempfile.gettempdir(), next(tempfile._get_candidate_names())).decode('utf-8')
+                temp = os.path.join(tempfile.gettempdir(), next(tempfile._get_candidate_names()))
                 shutil.copy(database_path, temp)
                 credentials.extend(self._export_credentials(temp))
             except Exception:

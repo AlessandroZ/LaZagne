@@ -285,7 +285,8 @@ def set_env_variables(user, to_impersonate=False):
         # Get value from environment variables
         for env in constant.profile:
             if os.environ.get(env):
-                constant.profile[env] = os.environ.get(env).decode(sys.getfilesystemencoding())
+                constant.profile[env] = os.environ.get(env)
+                # constant.profile[env] = os.environ.get(env).decode(sys.getfilesystemencoding())
 
     # Replace "drive" and "user" with the correct values
     for env in constant.profile:
@@ -378,7 +379,8 @@ def runLaZagne(category_selected='all', password=None):
 
     # ------ Part used for user impersonation ------
 
-    constant.username = getpass.getuser().decode(sys.getfilesystemencoding())
+    # constant.username = getpass.getuser().decode(sys.getfilesystemencoding())
+    constant.username = getpass.getuser()
     if not constant.username.endswith('$'):
         constant.is_current_user = True
         constant.finalResults = {'User': constant.username}
