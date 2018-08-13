@@ -18,8 +18,7 @@ import crypt
 import re
 import traceback
 
-from memorpy import *
-
+from lazagne.config.lib.memorpy import *
 from lazagne.config.module_info import ModuleInfo
 
 
@@ -78,7 +77,7 @@ class Mimipy(ModuleInfo):
         hashes = []
         with open('/etc/shadow', 'rb') as f:
             for line in f:
-                tab = line.split(":")
+                tab = line.decode().split(":")
                 if len(tab[1]) > 10:
                     hashes.append((tab[0], tab[1]))
         return hashes
@@ -90,17 +89,20 @@ class Mimipy(ModuleInfo):
 
     def password_list_match(self, password_list, near):
         for password in password_list:
-            if near.search(password):
+            if near.search(password.decode('latin')):
                 return True
         return False
 
     def cleanup_string(self, s):
-        ns = ""
-        for c in s:
-            if ord(c) < 0x20 or ord(c) > 0x7e:
-                break
-            ns += c
-        return ns
+        try:
+            ns = ""
+            for c in s:
+                if ord(c) < 0x20 or ord(c) > 0x7e:
+                    break
+                ns += c
+            return ns
+        except Exception: 
+            return s
 
     def test_shadow(self, name, pid, rule, optimizations='nsrx'):
         self.info('Analysing process %s (%s) for shadow passwords ...' % (name, pid))
@@ -136,7 +138,7 @@ class Mimipy(ModuleInfo):
                             if p not in password_tested:
                                 password_tested.add(p)
                                 for user, h in self.shadow_hashes:
-                                    if crypt.crypt(p, h) == h:
+                                    if crypt.crypt(p.decode('latin'), h) == h:
                                         yield (rule["desc"], user, p)
 
     def mimipy_loot_passwords(self, optimizations='nsrx'):
@@ -159,11 +161,9 @@ class Mimipy(ModuleInfo):
 
         pwd_found = []
         for t, process, user, password in self.mimipy_loot_passwords(optimizations="nsrx"):
-            pwd_found.append(
-                {
-                    'Process': str(process),
-                    'Login': str(user),
-                    'Password': str(password),
-                }
-            )
+            pwd_found.append({
+                'Process': str(process),
+                'Login': str(user),
+                'Password': str(password),
+            })
         return pwd_found

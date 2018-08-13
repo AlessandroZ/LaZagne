@@ -29,11 +29,7 @@ from lazagne.softwares.databases.dbvis import DbVisualizer
 from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
 
 # memory
-try:
-    from lazagne.softwares.memory.mimipy import Mimipy
-except ImportError:
-    pass
-
+from lazagne.softwares.memory.mimipy import Mimipy
 try:
     from lazagne.softwares.memory.memorydump import MemoryDump
 except ImportError:
@@ -75,13 +71,9 @@ def get_modules():
         Wifi(),
         Wpa_supplicant(),
         Kde(),
-        Libsecret()
+        Libsecret(), 
+        Mimipy()
     ]
-
-    try:
-        module_names.append(Mimipy())
-    except Exception:
-        pass
 
     # very long to execute
     # try:

@@ -41,7 +41,7 @@ class Wifi(ModuleInfo):
                 return password
 
     def run(self):
-
+        # Run the module only once
         if not constant.wifi_password:
             interfaces_dir = os.path.join(constant.profile['ALLUSERSPROFILE'],
                                           u'Microsoft\\Wlansvc\\Profiles\\Interfaces')

@@ -18,11 +18,7 @@ try:
 except ImportError:
     construct = False
 
-try:
-    from memorpy import *
-except ImportError:
-    print_debug('ERROR', 'memorpy not installed: pip install https://github.com/n1nj4sec/memorpy/archive/master.zip')
-    memorpy = False
+from lazagne.config.lib.memorpy import *
 
 
 # ===============================================================================
