@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*- 
-import _winreg
+try: 
+    import _winreg as winreg
+except:
+    import winreg
 
 from xml.etree.cElementTree import ElementTree
 
@@ -21,8 +24,8 @@ class Puttycm(ModuleInfo):
     def get_default_database(self):
         try:
             key = OpenKey(HKEY_CURRENT_USER, 'Software\\ACS\\PuTTY Connection Manager')
-            db = string_to_unicode(_winreg.QueryValueEx(key, 'DefaultDatabase')[0])
-            _winreg.CloseKey(key)
+            db = string_to_unicode(winreg.QueryValueEx(key, 'DefaultDatabase')[0])
+            winreg.CloseKey(key)
             return db
         except Exception:
             return False

@@ -1,5 +1,3 @@
-import _subprocess as sub
-import _winreg
 import hashlib
 import subprocess
 import traceback
@@ -7,6 +5,19 @@ import traceback
 import lazagne.config.winstructure as win
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
+
+try: 
+    import _subprocess as sub
+    STARTF_USESHOWWINDOW = sub.STARTF_USESHOWWINDOW  # Not work on Python 3
+    SW_HIDE = sub.SW_HIDE
+except:
+    STARTF_USESHOWWINDOW = subprocess.STARTF_USESHOWWINDOW
+    SW_HIDE = subprocess.SW_HIDE
+
+try: 
+    import _winreg as winreg
+except:
+    import winreg
 
 
 class IE(ModuleInfo):
@@ -78,8 +89,8 @@ class IE(ModuleInfo):
         '''
         command = ['powershell.exe', '/c', cmdline]
         info = subprocess.STARTUPINFO()
-        info.dwFlags = sub.STARTF_USESHOWWINDOW
-        info.wShowWindow = sub.SW_HIDE
+        info.dwFlags = STARTF_USESHOWWINDOW
+        info.wShowWindow = SW_HIDE
         p = subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE,
                              universal_newlines=True)
         results, _ = p.communicate()
@@ -98,12 +109,12 @@ class IE(ModuleInfo):
             self.debug(traceback.format_exc())
             return []
 
-        num = _winreg.QueryInfoKey(hkey)[1]
+        num = winreg.QueryInfoKey(hkey)[1]
         for x in range(0, num):
-            k = _winreg.EnumValue(hkey, x)
+            k = winreg.EnumValue(hkey, x)
             if k:
                 urls.append(k[1])
-        _winreg.CloseKey(hkey)
+        winreg.CloseKey(hkey)
         return urls
 
     def decipher_password(self, cipher_text, u):
@@ -166,9 +177,9 @@ class IE(ModuleInfo):
             # retrieve the urls from the history
             hash_tables = self.get_hash_table()
 
-            num = _winreg.QueryInfoKey(hkey)[1]
+            num = winreg.QueryInfoKey(hkey)[1]
             for x in range(0, num):
-                k = _winreg.EnumValue(hkey, x)
+                k = winreg.EnumValue(hkey, x)
                 if k:
                     nb_site += 1
                     for h in hash_tables:
@@ -179,7 +190,7 @@ class IE(ModuleInfo):
                             pwd_found += self.decipher_password(cipher_text, h[0])
                             break
 
-            _winreg.CloseKey(hkey)
+            winreg.CloseKey(hkey)
 
             # manage errors
             if nb_site > nb_pass_found:

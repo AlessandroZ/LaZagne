@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*- 
-import _winreg
+try: 
+    import _winreg as winreg
+except:
+    import winreg
 
 import lazagne.config.winstructure as win
 from lazagne.config.module_info import ModuleInfo
@@ -18,36 +21,36 @@ class Outlook(ModuleInfo):
             self.debug(e)
             return
 
-        num = _winreg.QueryInfoKey(hkey)[0]
+        num = winreg.QueryInfoKey(hkey)[0]
         pwd_found = []
         for x in range(0, num):
-            name = _winreg.EnumKey(hkey, x)
+            name = winreg.EnumKey(hkey, x)
             skey = win.OpenKey(hkey, name, 0, win.ACCESS_READ)
 
-            num_skey = _winreg.QueryInfoKey(skey)[0]
+            num_skey = winreg.QueryInfoKey(skey)[0]
             if num_skey != 0:
                 for y in range(0, num_skey):
-                    name_skey = _winreg.EnumKey(skey, y)
+                    name_skey = winreg.EnumKey(skey, y)
                     sskey = win.OpenKey(skey, name_skey)
-                    num_sskey = _winreg.QueryInfoKey(sskey)[1]
+                    num_sskey = winreg.QueryInfoKey(sskey)[1]
 
                     for z in range(0, num_sskey):
-                        k = _winreg.EnumValue(sskey, z)
+                        k = winreg.EnumValue(sskey, z)
                         if 'password' in k[0].lower():
                             values = self.retrieve_info(sskey, name_skey)
 
                             if values:
                                 pwd_found.append(values)
 
-            _winreg.CloseKey(skey)
-        _winreg.CloseKey(hkey)
+            winreg.CloseKey(skey)
+        winreg.CloseKey(hkey)
         return pwd_found
 
     def retrieve_info(self, hkey, name_key):
         values = {}
-        num = _winreg.QueryInfoKey(hkey)[1]
+        num = winreg.QueryInfoKey(hkey)[1]
         for x in range(0, num):
-            k = _winreg.EnumValue(hkey, x)
+            k = winreg.EnumValue(hkey, x)
             if 'password' in k[0].lower():
                 try:
                     password = win.Win32CryptUnprotectData(k[1][1:], is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)

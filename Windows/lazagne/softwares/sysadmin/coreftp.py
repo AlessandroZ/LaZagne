@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*- 
 import binascii
-import _winreg
+try: 
+    import _winreg as winreg
+except:
+    import winreg
 
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationECB
 from lazagne.config.module_info import ModuleInfo
@@ -28,15 +31,15 @@ class CoreFTP(ModuleInfo):
             self.debug(str(e))
 
         if key:
-            num_profiles = _winreg.QueryInfoKey(key)[0]
+            num_profiles = winreg.QueryInfoKey(key)[0]
             elements = ['Host', 'Port', 'User', 'Password']
             for n in range(num_profiles):
-                name_skey = _winreg.EnumKey(key, n)
+                name_skey = winreg.EnumKey(key, n)
                 skey = OpenKey(key, name_skey)
-                num = _winreg.QueryInfoKey(skey)[1]
+                num = winreg.QueryInfoKey(skey)[1]
                 values = {}
                 for nn in range(num):
-                    k = _winreg.EnumValue(skey, nn)
+                    k = winreg.EnumValue(skey, nn)
                     if k[0] in elements:
                         if k[0] == 'User':
                             values['Login'] = k[1]
@@ -49,7 +52,7 @@ class CoreFTP(ModuleInfo):
                         else:
                             values[k[0]] = k[1]
 
-                _winreg.CloseKey(skey)
-            _winreg.CloseKey(key)
+                winreg.CloseKey(skey)
+            winreg.CloseKey(key)
 
             return pwd_found

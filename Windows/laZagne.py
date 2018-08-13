@@ -16,9 +16,9 @@ import sys
 import json
 import time
 import ctypes
-import _subprocess as sub
 import subprocess
 import traceback
+import codecs
 import os
 
 from lazagne.config.winstructure import get_os_version
@@ -28,6 +28,13 @@ from lazagne.config.manage_modules import get_categories, get_modules
 from lazagne.config.dpapi_structure import *
 from lazagne.config.constant import constant
 
+try: 
+    import _subprocess as sub
+    STARTF_USESHOWWINDOW = sub.STARTF_USESHOWWINDOW  # Not work on Python 3
+    SW_HIDE = sub.SW_HIDE
+except:
+    STARTF_USESHOWWINDOW = subprocess.STARTF_USESHOWWINDOW
+    SW_HIDE = subprocess.SW_HIDE
 
 # Useful for the pupy project
 # workaround to this error: RuntimeError: maximum recursion depth exceeded while calling a Python object
@@ -298,8 +305,8 @@ def save_hives():
                 cmdline = 'reg.exe save hklm\%s %s' % (h, constant.hives[h])
                 command = ['cmd.exe', '/c', cmdline]
                 info = subprocess.STARTUPINFO()
-                info.dwFlags = sub.STARTF_USESHOWWINDOW
-                info.wShowWindow = sub.SW_HIDE
+                info.dwFlags = STARTF_USESHOWWINDOW
+                info.wShowWindow = SW_HIDE
                 p = subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT,
                                      stdout=subprocess.PIPE, universal_newlines=True)
                 results, _ = p.communicate()
@@ -331,7 +338,7 @@ def runLaZagne(category_selected='all', password=None):
         - Retrieve all passwords using Windows API - CryptUnprotectData (Chrome, etc.)
         - If the user password or the dpapi hash is found:
             - Retrieve all passowrds from an encrypted blob (Credentials files, Vaults, etc.)
-    - From all users found on the filesystem (e.g C:\Users) - Need admin privilege:
+    - From all users found on the filesystem (e.g C:\\Users) - Need admin privilege:
         - Retrieve all passwords using their own password storage algorithm (Firefox, Pidgin, etc.)
         - If the user password or the dpapi hash is found:
             - Retrieve all passowrds from an encrypted blob (Chrome, Credentials files, Vaults, etc.)
@@ -542,7 +549,8 @@ if __name__ == '__main__':
                 parser_tab += all_categories[c]['subparser']
         parser_tab += [PPwd, PWrite]
         dic_tmp = {c: {'parents': parser_tab, 'help': 'Run %s module' % c, 'func': run_category}}
-        dic = dict(dic.items() + dic_tmp.items())
+        # Concatenate 2 dic
+        dic = dict(dic, **dic_tmp)
 
     # Main commands
     subparsers = parser.add_subparsers(help='Choose a main command')

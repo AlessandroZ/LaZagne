@@ -20,6 +20,7 @@
 """
 
 import hashlib
+import codecs
 from struct import pack
 
 from ..addrspace import HiveFileAddressSpace
@@ -57,8 +58,8 @@ anum = "0123456789012345678901234567890123456789\0"
 antpassword = "NTPASSWORD\0"
 almpassword = "LMPASSWORD\0"
 
-empty_lm = "aad3b435b51404eeaad3b435b51404ee".decode('hex')
-empty_nt = "31d6cfe0d16ae931b73c59d7e0c089c0".decode('hex')
+empty_lm = codecs.decode('aad3b435b51404eeaad3b435b51404ee', 'hex')
+empty_nt = codecs.decode('31d6cfe0d16ae931b73c59d7e0c089c0', 'hex')
 
 
 def str_to_key(s):

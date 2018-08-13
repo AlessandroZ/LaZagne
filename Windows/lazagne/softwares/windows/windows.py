@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-import _winreg
+try: 
+    import _winreg as winreg
+except:
+    import winreg
+
 import ctypes
 
 from lazagne.config.change_privileges import get_debug_privilege
@@ -20,8 +24,8 @@ class WindowsPassword(ModuleInfo):
         """
         try:
             key = OpenKey(HKEY_LOCAL_MACHINE, r'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Group Policy\\History\\')
-            val, _ = _winreg.QueryValueEx(key, 'DCName')
-            _winreg.CloseKey(key)
+            val, _ = winreg.QueryValueEx(key, 'DCName')
+            winreg.CloseKey(key)
             return val
         except Exception:
             return False

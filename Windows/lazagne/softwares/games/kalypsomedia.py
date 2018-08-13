@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*- 
-import ConfigParser
 import base64
 import os
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import char_to_int
+
+try:
+    from ConfigParser import RawConfigParser  # Python 2.7
+except ImportError:
+    from configparser import RawConfigParser  # Python 3
 
 
 class KalypsoMedia(ModuleInfo):

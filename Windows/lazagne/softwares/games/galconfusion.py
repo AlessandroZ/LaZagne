@@ -2,7 +2,10 @@
 
 import os
 
-import _winreg
+try: 
+    import _winreg as winreg
+except:
+    import winreg
 
 import lazagne.config.winstructure as win
 from lazagne.config.module_info import ModuleInfo
@@ -21,7 +24,7 @@ class GalconFusion(ModuleInfo):
         # 'cos I'm lazy
         try:
             with win.OpenKey(win.HKEY_CURRENT_USER, 'Software\\Valve\\Steam') as key:
-                results = _winreg.QueryValueEx(key, 'SteamPath')
+                results = winreg.QueryValueEx(key, 'SteamPath')
         except Exception:
             pass
 

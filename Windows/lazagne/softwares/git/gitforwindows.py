@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*- 
 import os
-from urlparse import urlparse
+
+try: 
+    from urlparse import urlparse
+except ImportError: 
+    from urllib import parse as urlparse
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo

@@ -1,9 +1,13 @@
 # Vault Structure has been taken from mimikatz
 from ctypes.wintypes import *
 from ctypes import *
-import _winreg
 import sys
 import os
+
+try: 
+    import _winreg as winreg
+except:
+    import winreg
 
 
 LPTSTR 					= LPSTR
@@ -446,9 +450,9 @@ def isx64machine():
 
 def OpenKey(key, path, index=0, access=KEY_READ):
     if isx64:
-        return _winreg.OpenKey(key, path, index, access | _winreg.KEY_WOW64_64KEY)
+        return winreg.OpenKey(key, path, index, access | winreg.KEY_WOW64_64KEY)
     else:
-        return _winreg.OpenKey(key, path, index, access)
+        return winreg.OpenKey(key, path, index, access)
 
 
 isx64 = isx64machine()

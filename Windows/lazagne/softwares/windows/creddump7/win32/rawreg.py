@@ -23,9 +23,9 @@ from ..newobj import Obj,Pointer
 from struct import unpack
 
 ROOT_INDEX = 0x20
-LH_SIG = unpack("<H","lh")[0]
-LF_SIG = unpack("<H","lf")[0]
-RI_SIG = unpack("<H","ri")[0]
+LH_SIG = unpack("<H", b"lh")[0]
+LF_SIG = unpack("<H", b"lf")[0]
+RI_SIG = unpack("<H", b"ri")[0]
 
 
 def get_root(address_space):

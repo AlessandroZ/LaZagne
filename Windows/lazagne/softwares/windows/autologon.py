@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*- 
-import _winreg
+try: 
+    import _winreg as winreg
+except:
+    import winreg
 
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import *
@@ -16,7 +19,7 @@ class Autologon(ModuleInfo):
         pwd_found = []
         try:
             hkey = OpenKey(HKEY_LOCAL_MACHINE, 'SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon')
-            if int(_winreg.QueryValueEx(hkey, 'AutoAdminLogon')[0]) == 1:
+            if int(winreg.QueryValueEx(hkey, 'AutoAdminLogon')[0]) == 1:
                 self.debug(u'Autologin enabled')
 
                 keys = {
@@ -31,7 +34,7 @@ class Autologon(ModuleInfo):
                 to_remove = []
                 for k in keys:
                     try:
-                        keys[k] = str(_winreg.QueryValueEx(hkey, k)[0])
+                        keys[k] = str(winreg.QueryValueEx(hkey, k)[0])
                     except Exception:
                         to_remove.append(k)
 

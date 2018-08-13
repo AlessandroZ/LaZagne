@@ -2,9 +2,9 @@
 import io
 from contextlib import contextmanager
 
-from common import read_signature
+from .common import read_signature
 # from kdb3 import KDB3Reader, KDB3_SIGNATURE
-from kdb4 import KDB4Reader, KDB4_SIGNATURE
+from .kdb4 import KDB4Reader, KDB4_SIGNATURE
 
 BASE_SIGNATURE = 0x9AA2D903
 

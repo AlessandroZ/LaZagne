@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import _winreg
 import binascii
 import hashlib
 import os
@@ -11,6 +10,11 @@ from lazagne.config.constant import constant
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from lazagne.config.dico import get_dic
 from lazagne.config.module_info import ModuleInfo
+
+try: 
+    import _winreg as winreg
+except:
+    import winreg
 
 
 class Skype(ModuleInfo):
@@ -34,8 +38,8 @@ class Skype(ModuleInfo):
                 self.debug(str(e))
                 return False
 
-            # num = _winreg.QueryInfoKey(hkey)[1]
-            k = _winreg.EnumValue(hkey, 0)[1]
+            # num = winreg.QueryInfoKey(hkey)[1]
+            k = winreg.EnumValue(hkey, 0)[1]
             return win.Win32CryptUnprotectData(k, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
         except Exception as e:
             self.debug(str(e))

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*- 
-import _winreg
+try: 
+    import _winreg as winreg
+except:
+    import winreg
 
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import OpenKey, HKEY_CURRENT_USER
@@ -36,8 +39,8 @@ class WinSCP(ModuleInfo):
             return False
 
     def check_masterPassword(self, key):
-        is_master_pwd_used = _winreg.QueryValueEx(key, 'UseMasterPassword')[0]
-        _winreg.CloseKey(key)
+        is_master_pwd_used = winreg.QueryValueEx(key, 'UseMasterPassword')[0]
+        winreg.CloseKey(key)
         if str(is_master_pwd_used) == '0':
             return False
         else:
@@ -51,16 +54,16 @@ class WinSCP(ModuleInfo):
             return False
 
         pwd_found = []
-        num_profiles = _winreg.QueryInfoKey(key)[0]
+        num_profiles = winreg.QueryInfoKey(key)[0]
         for n in range(num_profiles):
-            name_skey = _winreg.EnumKey(key, n)
+            name_skey = winreg.EnumKey(key, n)
             skey = OpenKey(key, name_skey)
-            num = _winreg.QueryInfoKey(skey)[1]
+            num = winreg.QueryInfoKey(skey)[1]
 
             values = {}
             elements = {'HostName': 'URL', 'UserName': 'Login', 'PortNumber': 'Port', 'Password': 'Password'}
             for nn in range(num):
-                k = _winreg.EnumValue(skey, nn)
+                k = winreg.EnumValue(skey, nn)
 
                 for e in elements:
                     if k[0] == e:
@@ -82,8 +85,8 @@ class WinSCP(ModuleInfo):
 
                 pwd_found.append(values)
 
-            _winreg.CloseKey(skey)
-        _winreg.CloseKey(key)
+            winreg.CloseKey(skey)
+        winreg.CloseKey(key)
 
         return pwd_found
 

@@ -7,7 +7,7 @@ import socket
 import os
 import sys
 
-from lazagne.config.winstructure import string_to_unicode, char_to_int
+from lazagne.config.winstructure import string_to_unicode, char_to_int, python_version
 from .constant import constant
 
 # --------------------------- Standard output functions ---------------------------
@@ -84,6 +84,8 @@ class StandardOutput(object):
         return result
 
     def try_unicode(self, obj, encoding='utf-8'):
+        if python_version == 3:
+            return obj
         try:
             if isinstance(obj, basestring):
                 if not isinstance(obj, unicode):
@@ -114,7 +116,7 @@ class StandardOutput(object):
         try:
             print(message)
         except Exception:
-            print repr(message)
+            print(repr(message))
 
     def print_logging(self, function, prefix='[!]', message='', color=False, intensity=False):
         if constant.quiet_mode:

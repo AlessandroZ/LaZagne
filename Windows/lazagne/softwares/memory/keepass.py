@@ -7,7 +7,7 @@
 
 import traceback
 
-import libkeepass
+from . import libkeepass
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
 
