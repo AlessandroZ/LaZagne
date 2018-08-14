@@ -148,9 +148,10 @@ def run_modules(module, system_module=False):
         modules_to_launch = module
 
     for i in modules_to_launch:
-        # Only current user could access to HKCU registry
-        if not constant.is_current_user and  module[i].registry_used:
-            continue
+        # Only current user could access to HKCU registry or use some API that only can be run from the user environment
+        if not constant.is_current_user:
+            if module[i].registry_used or module[i].only_from_current_user:
+                continue
 
         if system_module ^ module[i].system_module:
             continue
