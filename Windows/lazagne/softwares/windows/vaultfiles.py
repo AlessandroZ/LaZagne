@@ -4,7 +4,7 @@ from lazagne.config.constant import constant
 import os
 
 
-class Vault(ModuleInfo):
+class VaultFiles(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'vault', 'windows', dpapi_used=True)
 

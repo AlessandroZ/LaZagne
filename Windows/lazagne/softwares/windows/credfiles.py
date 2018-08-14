@@ -4,7 +4,7 @@ from lazagne.config.constant import constant
 import os
 
 
-class Credman(ModuleInfo):
+class CredFiles(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'credman', 'windows', dpapi_used=True)
 
