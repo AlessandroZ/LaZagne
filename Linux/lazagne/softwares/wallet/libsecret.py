@@ -77,7 +77,10 @@ class Libsecret(ModuleInfo):
                     # 	values[unicode(k)] = unicode(v)
                     items.append(values)
 
-            # bus.flush()
-            # bus.close()
+            try:
+                bus.flush()
+                bus.close()
+            except Exception:
+                pass
 
         return items
