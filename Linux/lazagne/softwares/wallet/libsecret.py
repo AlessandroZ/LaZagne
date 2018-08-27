@@ -22,16 +22,30 @@ class Libsecret(ModuleInfo):
 
         for _, session in homes.sessions():
             try:
+                # List bus connection names
                 bus = dbus.bus.BusConnection(session)
-
                 if 'org.freedesktop.secrets' not in [str(x) for x in bus.list_names()]:
                     continue
-
-                collections = list(secretstorage.collection.get_all_collections(bus))
-
             except Exception:
                 self.error(traceback.format_exc())
                 continue
+
+            collections = None
+            try:
+                # Python 2.7
+                collections = list(secretstorage.collection.get_all_collections(bus))
+            except Exception:
+                pass
+
+            if not collections:
+                try:
+                    # Python 3
+                    from jeepney.integrate.blocking import connect_and_authenticate
+                    bus = connect_and_authenticate(session)
+                    collections = secretstorage.get_all_collections(bus)
+                except Exception:
+                    self.error(traceback.format_exc())
+                    continue
 
             for collection in collections:
                 if collection.is_locked():
@@ -63,7 +77,7 @@ class Libsecret(ModuleInfo):
                     # 	values[unicode(k)] = unicode(v)
                     items.append(values)
 
-            bus.flush()
-            bus.close()
+            # bus.flush()
+            # bus.close()
 
         return items
