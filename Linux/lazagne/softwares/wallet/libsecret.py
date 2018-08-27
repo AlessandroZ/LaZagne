@@ -2,7 +2,19 @@
 # -*- coding: utf-8 -*-
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config import homes
+from binascii import hexlify
 import traceback
+
+try:
+    import jeepney.auth
+except ImportError:
+    pass
+else:
+    # Thanks to @mitya57 for its Work around 
+    def make_auth_external():
+        hex_uid = hexlify(str(make_auth_external.uid).encode('ascii'))
+        return b'AUTH EXTERNAL %b\r\n' % hex_uid
+    jeepney.auth.make_auth_external = make_auth_external
 
 
 class Libsecret(ModuleInfo):
@@ -20,7 +32,7 @@ class Libsecret(ModuleInfo):
             self.error('libsecret: {0}'.format(e))
             return []
 
-        for _, session in homes.sessions():
+        for uid, session in homes.sessions():
             try:
                 # List bus connection names
                 bus = dbus.bus.BusConnection(session)
@@ -41,6 +53,7 @@ class Libsecret(ModuleInfo):
                 try:
                     # Python 3
                     from jeepney.integrate.blocking import connect_and_authenticate
+                    make_auth_external.uid = uid
                     bus = connect_and_authenticate(session)
                     collections = secretstorage.get_all_collections(bus)
                 except Exception:
