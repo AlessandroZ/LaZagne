@@ -27,6 +27,7 @@ from ..addrspace import HiveFileAddressSpace
 from .rawreg import *
 from lazagne.config.crypto.rc4 import RC4
 from lazagne.config.crypto.pyDes import des, ECB
+from lazagne.config.winstructure import char_to_int
 
 
 odd_parity = [
