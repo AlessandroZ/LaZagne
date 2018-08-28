@@ -4,7 +4,7 @@ import os
 
 try: 
     import _winreg as winreg
-except:
+except ImportError:
     import winreg
 
 import lazagne.config.winstructure as win

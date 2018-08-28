@@ -2,7 +2,7 @@
 import binascii
 try: 
     import _winreg as winreg
-except:
+except ImportError:
     import winreg
 
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationECB

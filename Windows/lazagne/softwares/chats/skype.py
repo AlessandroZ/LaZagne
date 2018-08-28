@@ -13,7 +13,7 @@ from lazagne.config.module_info import ModuleInfo
 
 try: 
     import _winreg as winreg
-except:
+except ImportError:
     import winreg
 
 

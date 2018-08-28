@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 try: 
     import _winreg as winreg
-except:
+except ImportError:
     import winreg
 
 from xml.etree.cElementTree import ElementTree

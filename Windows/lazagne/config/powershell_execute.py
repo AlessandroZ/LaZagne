@@ -6,7 +6,7 @@ try:
     import _subprocess as sub
     STARTF_USESHOWWINDOW = sub.STARTF_USESHOWWINDOW  # Not work on Python 3
     SW_HIDE = sub.SW_HIDE
-except:
+except ImportError:
     STARTF_USESHOWWINDOW = subprocess.STARTF_USESHOWWINDOW
     SW_HIDE = subprocess.SW_HIDE
 
