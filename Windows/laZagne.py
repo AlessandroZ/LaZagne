@@ -32,7 +32,7 @@ try:
     import _subprocess as sub
     STARTF_USESHOWWINDOW = sub.STARTF_USESHOWWINDOW  # Not work on Python 3
     SW_HIDE = sub.SW_HIDE
-except:
+except ImportError:
     STARTF_USESHOWWINDOW = subprocess.STARTF_USESHOWWINDOW
     SW_HIDE = subprocess.SW_HIDE
 
@@ -515,7 +515,7 @@ if __name__ == '__main__':
 
         # Manage options
         all_categories[c]['subparser'] = []
-        for module in modules[c].keys():
+        for module in modules[c]:
             m = modules[c][module]
             all_categories[c]['parser'].add_argument(m.options['command'], action=m.options['action'],
                                                  dest=m.options['dest'], help=m.options['help'])
