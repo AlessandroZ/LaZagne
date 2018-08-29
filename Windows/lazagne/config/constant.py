@@ -8,17 +8,19 @@ import os
 date 	= time.strftime("%d%m%Y_%H%M%S")
 tmp  	= tempfile.gettempdir()
 
+
 class constant():
 	folder_name 			= '.'
-	file_name_results 		= 'credentials_{current_time}'.format(current_time=date) # the extention is added depending on the user output choice
+	file_name_results 		= 'credentials_{current_time}'.format(current_time=date) # The extention is added depending on the user output choice
 	MAX_HELP_POSITION		= 27
 	CURRENT_VERSION 		= '2.3.2'
 	output 					= None
 	file_logger 			= None
-	
-	# total password found
-	nb_password_found 		= 0
-	password_found 			= []
+	modules_dic				= {}
+	nb_password_found 		= 0   # Total password found
+	password_found 			= []  # Tab containing all passwords used for dictionary attack
+	stdout_result 			= []  # Tab containing all results by user
+
 	finalResults			= {}
 	profile 				= {
 								'APPDATA'			: u'{drive}:\\Users\\{user}\\AppData\\Roaming\\',
@@ -37,7 +39,7 @@ class constant():
 								'system'	: 	os.path.join(tmp, ''.join([random.choice(string.ascii_lowercase) for x in range(0, random.randint(6, 12))]))
 							}
 	quiet_mode 				= False
-	st 						= None  	# standart output
+	st 						= None  	# Standard output
 	drive					= u'C'
 	user_dpapi				= None
 	system_dpapi 			= None

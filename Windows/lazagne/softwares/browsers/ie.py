@@ -22,10 +22,7 @@ except ImportError:
 
 class IE(ModuleInfo):
     def __init__(self):
-        suboptions = [
-            {'command': '-l', 'action': 'store', 'dest': 'historic', 'help': 'text file with a list of websites',
-             'title': 'Advanced ie option'}]
-        ModuleInfo.__init__(self, 'ie', 'browsers', suboptions, registry_used=True, winapi_used=True)
+        ModuleInfo.__init__(self, 'ie', 'browsers', registry_used=True, winapi_used=True)
 
     def get_hash_table(self):
         # get the url list

@@ -5,7 +5,7 @@ import os
 import sys
 
 from lazagne.config.constant import constant
-from lazagne.config.powershell_execute import powershell_execute
+from lazagne.config.execute_cmd import powershell_execute
 from lazagne.config.write_output import print_debug
 
 

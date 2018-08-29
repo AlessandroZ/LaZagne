@@ -1,6 +1,12 @@
-import subprocess
+# -*- coding: utf-8 -*-
+# !/usr/bin/python
 import base64
+import os
+import subprocess
 import re
+
+from lazagne.config.write_output import print_debug
+from lazagne.config.constant import constant
 
 try: 
     import _subprocess as sub
@@ -12,6 +18,9 @@ except ImportError:
 
 
 def powershell_execute(script, func):
+    """
+    Execute a powershell script
+    """
     output = ""
     try:
         script = re.sub("Write-Verbose ", "Write-Output ", script, flags=re.I)
@@ -53,3 +62,39 @@ def powershell_execute(script, func):
         pass
 
     return output
+
+
+def save_hives():
+    """
+    Save SAM Hives
+    """
+    for h in constant.hives:
+        if not os.path.exists(constant.hives[h]):
+            try:
+                cmdline = 'reg.exe save hklm\%s %s' % (h, constant.hives[h])
+                command = ['cmd.exe', '/c', cmdline]
+                info = subprocess.STARTUPINFO()
+                info.dwFlags = STARTF_USESHOWWINDOW
+                info.wShowWindow = SW_HIDE
+                p = subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT,
+                                     stdout=subprocess.PIPE, universal_newlines=True)
+                results, _ = p.communicate()
+            except Exception as e:
+                print_debug('ERROR', u'Failed to save system hives: {error}'.format(error=e))
+                return False
+    return True
+
+
+def delete_hives():
+    """
+    Delete SAM Hives
+    """
+    # Try to remove all temporary files
+    for h in constant.hives:
+        if os.path.exists(constant.hives[h]):
+            try:
+                os.remove(constant.hives[h])
+                print_debug('DEBUG', u'Temporary file removed: {filename}'.format(filename=constant.hives[h]))
+            except Exception:
+                print_debug('DEBUG', u'Temporary file failed to removed: {filename}'.format(filename=constant.hives[h]))
+
