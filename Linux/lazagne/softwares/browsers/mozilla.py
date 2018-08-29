@@ -427,8 +427,7 @@ class Mozilla(ModuleInfo):
         self.warning(u'No password has been found using the default list')
         return u'', u'', u''
 
-    @staticmethod
-    def remove_padding(data):
+    def remove_padding(self, data):
         """
         Remove PKCS#7 padding
         """
@@ -484,13 +483,13 @@ class Mozilla(ModuleInfo):
 
 # Name, path
 firefox_browsers = [
-    (u'Firefox', u'.mozilla/firefox'),
+    (u'firefox', u'.mozilla/firefox'),
     # Check these paths on Linux systems
-    # (u'BlackHawk', u'{APPDATA}\\NETGATE Technologies\\BlackHawk'),
-    # (u'Cyberfox', u'{APPDATA}\\8pecxstudios\\Cyberfox'),
-    # (u'Comodo IceDragon', u'{APPDATA}\\Comodo\\IceDragon'),
-    # (u'K-Meleon', u'{APPDATA}\\K-Meleon'),
-    # (u'Icecat', u'{APPDATA}\\Mozilla\\icecat'),
+    # (u'blackHawk', u'{APPDATA}\\NETGATE Technologies\\BlackHawk'),
+    # (u'cyberfox', u'{APPDATA}\\8pecxstudios\\Cyberfox'),
+    # (u'comodo icedragon', u'{APPDATA}\\Comodo\\IceDragon'),
+    # (u'k-meleon', u'{APPDATA}\\K-Meleon'),
+    # (u'icecat', u'{APPDATA}\\Mozilla\\icecat'),
 ]
 
 firefox_browsers = [Mozilla(browser_name=name, path=path) for name, path in firefox_browsers]
