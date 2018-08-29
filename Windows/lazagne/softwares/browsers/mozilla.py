@@ -456,12 +456,12 @@ class Mozilla(ModuleInfo):
 
 # Name, path
 firefox_browsers = [
-    (u'Firefox', u'{APPDATA}\\Mozilla\\Firefox'),
-    (u'BlackHawk', u'{APPDATA}\\NETGATE Technologies\\BlackHawk'),
-    (u'Cyberfox', u'{APPDATA}\\8pecxstudios\\Cyberfox'),
-    (u'Comodo IceDragon', u'{APPDATA}\\Comodo\\IceDragon'),
-    (u'K-Meleon', u'{APPDATA}\\K-Meleon'),
-    (u'Icecat', u'{APPDATA}\\Mozilla\\icecat'),
+    (u'firefox', u'{APPDATA}\\Mozilla\\Firefox'),
+    (u'blackHawk', u'{APPDATA}\\NETGATE Technologies\\BlackHawk'),
+    (u'cyberfox', u'{APPDATA}\\8pecxstudios\\Cyberfox'),
+    (u'comodo IceDragon', u'{APPDATA}\\Comodo\\IceDragon'),
+    (u'k-Meleon', u'{APPDATA}\\K-Meleon'),
+    (u'icecat', u'{APPDATA}\\Mozilla\\icecat'),
 ]
 
 firefox_browsers = [Mozilla(browser_name=name, path=path) for name, path in firefox_browsers]

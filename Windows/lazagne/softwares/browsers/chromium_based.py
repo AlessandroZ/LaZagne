@@ -99,25 +99,25 @@ class ChromiumBased(ModuleInfo):
 # Name, path or a list of paths
 chromium_browsers = [
     (u'7Star', u'{LOCALAPPDATA}\\7Star\\7Star\\User Data'),
-    (u'Amigo', u'{LOCALAPPDATA}\\Amigo\\User Data'),
-    (u'Brave', u'{APPDATA}\\brave'),
-    (u'CentBrowser', u'{LOCALAPPDATA}\\CentBrowser\\User Data'),
-    (u'Chedot', u'{LOCALAPPDATA}\\Chedot\\User Data'),
-    (u'Chrome Canary', u'{LOCALAPPDATA}\\Google\\Chrome SxS\\User Data'),
-    (u'Chromium', u'{LOCALAPPDATA}\\Chromium\\User Data'),
-    (u'CocCoc', u'{LOCALAPPDATA}\\CocCoc\\Browser\\User Data'),
-    (u'Comodo Dragon', u'{LOCALAPPDATA}\\Comodo\\Dragon\\User Data'),  # Comodo IceDragon is Firefox-based
-    (u'Elements Browser', u'{LOCALAPPDATA}\\Elements Browser\\User Data'),
-    (u'Epic Privacy Browser', u'{LOCALAPPDATA}\\Epic Privacy Browser\\User Data'),
-    (u'Google Chrome', u'{LOCALAPPDATA}\\Google\\Chrome\\User Data'),
-    (u'Kometa', u'{LOCALAPPDATA}\\Kometa\\User Data'),
-    (u'Opera', u'{APPDATA}\\Opera Software\\Opera Stable'),
-    (u'Orbitum', u'{LOCALAPPDATA}\\Orbitum\\User Data'),
-    (u'Sputnik', u'{LOCALAPPDATA}\\Sputnik\\Sputnik\\User Data'),
-    (u'Torch', u'{LOCALAPPDATA}\\Torch\\User Data'),
-    (u'Uran', u'{LOCALAPPDATA}\\uCozMedia\\Uran\\User Data'),
-    (u'Vivaldi', u'{LOCALAPPDATA}\\Vivaldi\\User Data'),
-    (u'YandexBrowser', u'{LOCALAPPDATA}\\Yandex\\YandexBrowser\\User Data')
+    (u'amigo', u'{LOCALAPPDATA}\\Amigo\\User Data'),
+    (u'brave', u'{APPDATA}\\brave'),
+    (u'centbrowser', u'{LOCALAPPDATA}\\CentBrowser\\User Data'),
+    (u'chedot', u'{LOCALAPPDATA}\\Chedot\\User Data'),
+    (u'chrome canary', u'{LOCALAPPDATA}\\Google\\Chrome SxS\\User Data'),
+    (u'chromium', u'{LOCALAPPDATA}\\Chromium\\User Data'),
+    (u'coccoc', u'{LOCALAPPDATA}\\CocCoc\\Browser\\User Data'),
+    (u'comodo dragon', u'{LOCALAPPDATA}\\Comodo\\Dragon\\User Data'),  # Comodo IceDragon is Firefox-based
+    (u'elements browser', u'{LOCALAPPDATA}\\Elements Browser\\User Data'),
+    (u'epic privacy browser', u'{LOCALAPPDATA}\\Epic Privacy Browser\\User Data'),
+    (u'google chrome', u'{LOCALAPPDATA}\\Google\\Chrome\\User Data'),
+    (u'kometa', u'{LOCALAPPDATA}\\Kometa\\User Data'),
+    (u'opera', u'{APPDATA}\\Opera Software\\Opera Stable'),
+    (u'orbitum', u'{LOCALAPPDATA}\\Orbitum\\User Data'),
+    (u'sputnik', u'{LOCALAPPDATA}\\Sputnik\\Sputnik\\User Data'),
+    (u'torch', u'{LOCALAPPDATA}\\Torch\\User Data'),
+    (u'uran', u'{LOCALAPPDATA}\\uCozMedia\\Uran\\User Data'),
+    (u'vivaldi', u'{LOCALAPPDATA}\\Vivaldi\\User Data'),
+    (u'yandexBrowser', u'{LOCALAPPDATA}\\Yandex\\YandexBrowser\\User Data')
 ]
 
 chromium_browsers = [ChromiumBased(browser_name=name, paths=paths) for name, paths in chromium_browsers]
