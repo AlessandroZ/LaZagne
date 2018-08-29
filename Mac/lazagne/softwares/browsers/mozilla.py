@@ -476,7 +476,7 @@ class Mozilla(ModuleInfo):
 
 # Name, path
 firefox_browsers = [
-    (u'Firefox', u"~/Library/Application Support/Firefox/"),
+    (u'firefox', u"~/Library/Application Support/Firefox/"),
     # Check these paths on Mac systems
     # (u'BlackHawk', u'{APPDATA}\\NETGATE Technologies\\BlackHawk'),
     # (u'Cyberfox', u'{APPDATA}\\8pecxstudios\\Cyberfox'),
