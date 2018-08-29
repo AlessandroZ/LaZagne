@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-
+import json
 import logging
 import getpass
 import socket
@@ -267,3 +267,34 @@ def parse_json_result_to_buffer(json_string, color=False):
         print_debug('ERROR', u'Error parsing the json results: {error}'.format(error=e))
 
     return buffer
+
+
+def write_in_file(result):
+    """
+    Write output to file (json and txt files)
+    """
+    if constant.output == 'json' or constant.output == 'all':
+        try:
+            # Human readable Json format
+            pretty_json = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '))
+            with open(os.path.join(constant.folder_name, constant.file_name_results + '.json'), 'a+b') as f:
+                f.write(pretty_json.decode('unicode-escape').encode('UTF-8'))
+
+            constant.st.do_print(u'[+] File written: {file}'.format(
+                file=os.path.join(constant.folder_name, constant.file_name_results + '.json'))
+            )
+        except Exception as e:
+            print_debug('ERROR', u'Error writing the output file: {error}'.format(error=e))
+
+    if constant.output == 'txt' or constant.output == 'all':
+        try:
+            with open(os.path.join(constant.folder_name, constant.file_name_results + '.txt'), 'a+b') as f:
+                a = parse_json_result_to_buffer(result)
+                f.write(a.encode("UTF-8"))
+
+            constant.st.write_footer()
+            constant.st.do_print(u'[+] File written: {file}'.format(
+                file=os.path.join(constant.folder_name, constant.file_name_results + '.txt'))
+            )
+        except Exception as e:
+            print_debug('ERROR', u'Error writing the output file: {error}'.format(error=e))
