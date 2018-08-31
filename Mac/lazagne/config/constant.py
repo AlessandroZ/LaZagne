@@ -10,7 +10,7 @@ class constant():
     folder_name 		= '.'
     file_name_results 	= 'credentials_{current_time}'.format(current_time=date)  # extension added (txt, json)
     MAX_HELP_POSITION 	= 27
-    CURRENT_VERSION 	= '0.2.1'
+    CURRENT_VERSION 	= '0.3'
     output 				= None
     file_logger 		= None
     verbose 			= False
