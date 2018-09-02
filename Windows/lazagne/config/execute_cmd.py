@@ -76,7 +76,7 @@ def save_hives():
                 info = subprocess.STARTUPINFO()
                 info.dwFlags = STARTF_USESHOWWINDOW
                 info.wShowWindow = SW_HIDE
-                p = subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT,
+                p = subprocess.Popen(command, startupinfo=info, stdin=subprocess.PIPE, stderr=subprocess.STDOUT,
                                      stdout=subprocess.PIPE, universal_newlines=True)
                 results, _ = p.communicate()
             except Exception as e:

@@ -4,18 +4,18 @@ try:
 except ImportError:
     import winreg
 
-import ctypes
+import getpass
+import sys
 
-from lazagne.config.change_privileges import get_debug_privilege
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.winstructure import OpenKey, HKEY_LOCAL_MACHINE, get_os_version, isx64machine
+from lazagne.config.winstructure import OpenKey, HKEY_LOCAL_MACHINE
 from lazagne.config.constant import constant
-from .mimikatz import Mimikatz
 
 
 class WindowsPassword(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'windows', 'windows')
+        self.current_user = getpass.getuser().decode(sys.getfilesystemencoding())
 
     def is_in_domain(self):
         """
@@ -32,59 +32,48 @@ class WindowsPassword(ModuleInfo):
 
     def run(self):
         """
-        - Try to decrypt wdigest password using mimikatz method (only work on Win7 and Vista)
-        - Try to check if an already passwords is also used as windows password
+        - Check if the user password has already be found using Pypykatz
+        - If not, check if a password stored in another application is also used as windows password
         - Windows password not found, return the DPAPI hash (not admin priv needed) to bruteforce using John or Hashcat
         """
+        # Check if password has already been found
+        if constant.pypykatz_result.get(self.current_user, None):
+            if 'Password' in constant.pypykatz_result[self.current_user]:
+                # Password already printed on the Pypykatz module - do not print it again
+                self.info('User has already be found: {password}'.format(
+                    password=constant.pypykatz_result[self.current_user]['Password'])
+                )
+                return
+
+        # Password not already found
         pwd_found = []
+        if constant.user_dpapi and constant.user_dpapi.unlocked:
+            # Check if a password already found is a windows password
+            password = constant.user_dpapi.get_cleartext_password()
+            if password:
+                pwd_found.append({
+                    'Login': constant.username,
+                    'Password': password
+                })
+            else:
+                # Retrieve dpapi hash used to bruteforce (hash can be retrieved without needed admin privilege)
+                # Method taken from Jean-Christophe Delaunay - @Fist0urs
+                # https://www.synacktiv.com/ressources/univershell_2017_dpapi.pdf
 
-        # Check if Admin
-        if ctypes.windll.shell32.IsUserAnAdmin() != 0:
-            # https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx
-            supported_os = {
-                '6.0': 'Vista',
-                '6.1': 'Win7',
-            }
-            os_version = get_os_version()
-            if os_version in supported_os:
-                os = supported_os[os_version]
-                arch = 'x86'
-                if isx64machine():
-                    arch = 'x64'
+                self.info(
+                    u'Windows passwords not found.\n'
+                    u'Try to bruteforce this hash (using john or hashcat)'
+                )
+                if constant.user_dpapi:
+                    context = 'local'
+                    if self.is_in_domain():
+                        context = 'domain'
 
-                if get_debug_privilege():
-                    # Ready to found passwords
-                    self.info('Using mimikatz method')
-
-                    m = Mimikatz(os=os, arch=arch)
-                    pwd_found = m.find_wdigest_password()
-
-        if not pwd_found:
-            if constant.user_dpapi and constant.user_dpapi.unlocked:
-                # Check if a password already found is a windows password
-                password = constant.user_dpapi.get_cleartext_password()
-                if password:
-                    pwd_found.append({
-                        'Login': constant.username,
-                        'Password': password
-                    })
-                else:
-                    # Retrieve dpapi hash used to bruteforce (hash can be retrieved without needed admin privilege)
-                    # Method taken from Jean-Christophe Delaunay - @Fist0urs
-                    # https://www.synacktiv.com/ressources/univershell_2017_dpapi.pdf
-
-                    self.info(u'Windows passwords not found.\nTry to bruteforce this hash (using john or hashcat) '
-                              u'depending on your context (domain environment or not)')
-                    if constant.user_dpapi:
-                        context = 'local'
-                        if self.is_in_domain():
-                            context = 'domain'
-
-                        h = constant.user_dpapi.get_dpapi_hash(context=context)
-                        if h:
-                            pwd_found.append({
-                                'Dpapi_hash_{context}'.format(context=context): constant.user_dpapi.get_dpapi_hash(
-                                                                                                        context=context)
-                            })
+                    h = constant.user_dpapi.get_dpapi_hash(context=context)
+                    if h:
+                        pwd_found.append({
+                            'Dpapi_hash_{context}'.format(context=context): constant.user_dpapi.get_dpapi_hash(
+                                                                                                    context=context)
+                        })
 
         return pwd_found

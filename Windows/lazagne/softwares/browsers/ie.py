@@ -89,7 +89,7 @@ class IE(ModuleInfo):
         info.dwFlags = STARTF_USESHOWWINDOW
         info.wShowWindow = SW_HIDE
         p = subprocess.Popen(command, startupinfo=info, stderr=subprocess.STDOUT, stdout=subprocess.PIPE,
-                             universal_newlines=True)
+                             stdin=subprocess.PIPE, universal_newlines=True)
         results, _ = p.communicate()
 
         urls = []

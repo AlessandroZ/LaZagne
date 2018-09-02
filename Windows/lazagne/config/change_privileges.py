@@ -2,19 +2,20 @@
 # Original code from https://github.com/joren485/PyWinPrivEsc/blob/master/RunAsSystem.py
 
 import sys
-import psutil
+import traceback
+
 from lazagne.config.write_output import print_debug
 from lazagne.config.winstructure import *
 
 import os
 
 
-def get_token_sid(hToken):
+def get_token_info(hToken):
     """
-    Retrieve SID from Token
+    Retrieve SID and user owner from Token
     """
     dwSize = DWORD(0)
-    pStringSid = LPSTR()
+    pStringSid = LPWSTR()
     TokenUser = 1
 
     if GetTokenInformation(hToken, TokenUser, byref(TOKEN_USER()), 0, byref(dwSize)) == 0:
@@ -23,11 +24,12 @@ def get_token_sid(hToken):
             GetTokenInformation(hToken, TokenUser, address, dwSize, byref(dwSize))
             pToken_User = cast(address, POINTER(TOKEN_USER))
             if pToken_User.contents.User.Sid:
-                ConvertSidToStringSidA(pToken_User.contents.User.Sid, byref(pStringSid))
+                ConvertSidToStringSid(pToken_User.contents.User.Sid, byref(pStringSid))
+                owner, domaine, _ = LookupAccountSidW(None, pToken_User.contents.User.Sid)
                 if pStringSid:
                     sid = pStringSid.value
                     LocalFree(address)
-                    return sid
+                    return sid, owner
     return False
 
 
@@ -69,12 +71,9 @@ def enable_privilege(privilegeStr, hToken=None):
 
 def get_debug_privilege():
     """
-    Enable Debug privilege on token
+    Enable SE Debug privilege on token
     """
-    if enable_privilege("SeDebugPrivilege"):
-        return True
-    else:
-        return False
+    return RtlAdjustPrivilege(SE_DEBUG_PRIVILEGE)
 
 
 def list_sids():
@@ -82,42 +81,27 @@ def list_sids():
     List all SID by process
     """
     sids = []
+    for pid in EnumProcesses():
+        if pid <= 4:
+            continue
 
-    for proc in psutil.process_iter():
         try:
-            pinfo = proc.as_dict(attrs=['pid', 'username', 'name'])
-        except psutil.NoSuchProcess:
-            continue
-        except WindowsError as e:
-            if e.winerror == 1722:  # WindowsError: [Error 1722] The RPC server is unavailable
-                continue
+            hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, False, pid)
+            if hProcess:
+                hToken = HANDLE(INVALID_HANDLE_VALUE)
+                if hToken:
+                    OpenProcessToken(hProcess, tokenprivs, byref(hToken))
+                    if hToken:
+                        token_sid, owner = get_token_info(hToken)
+                        if token_sid and owner:
+                            pname = ''
+                            sids.append((pid, pname, token_sid, owner.decode(sys.getfilesystemencoding())))
+                        CloseHandle(hToken)
+                CloseHandle(hProcess)
 
-        if pinfo['pid'] <= 4:
-            continue
-        if pinfo['username'] is None:
-            continue
-        try:
-            hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, False, int(pinfo['pid']))
-            if not hProcess:
-                continue
-
-            hToken = HANDLE(INVALID_HANDLE_VALUE)
-            if not hToken:
-                continue
-
-            OpenProcessToken(hProcess, tokenprivs, byref(hToken))
-            if not hToken:
-                continue
-
-            token_sid = get_token_sid(hToken)
-            if not token_sid:
-                continue
-            sids.append((pinfo['pid'], pinfo['name'], token_sid, pinfo['username'].decode(sys.getfilesystemencoding())))
-
-            CloseHandle(hToken)
-            CloseHandle(hProcess)
         except Exception as e:
-            print_debug('ERROR', u'{error}'.format(error=e))
+            print_debug('DEBUG', traceback.format_exc())
+            continue
 
     return list(sids)
 
@@ -145,8 +129,10 @@ def get_sid_token(token_sid):
                     break
         return False
 
-    pids = [int(x) for x in psutil.pids() if int(x) > 4]
-    for pid in pids:
+    for pid in EnumProcesses():
+        if pid <= 4:
+            continue
+
         try:
             hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, False, int(pid))
             if hProcess:
@@ -154,9 +140,9 @@ def get_sid_token(token_sid):
                 if hToken:
                     OpenProcessToken(hProcess, tokenprivs, byref(hToken))
                     if hToken:
-                        if get_token_sid(hToken) == token_sid:
-                            print
-                            print_debug('INFO', u'Using PID: ' + str(pid))
+                        sid, owner = get_token_info(hToken)
+                        if sid == token_sid:
+                            print_debug('INFO', u'Impersonate token from pid: ' + str(pid))
                             CloseHandle(hProcess)
                             return hToken
                     CloseHandle(hToken)
@@ -213,6 +199,8 @@ def impersonate_token(hToken):
                 CloseHandle(hToken)
                 if ImpersonateLoggedOnUser(hTokendupe):
                     return hTokendupe
+    else:
+        print_debug('DEBUG', 'Get debug privilege failed')
     return False
 
 

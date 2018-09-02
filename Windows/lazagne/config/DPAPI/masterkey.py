@@ -13,6 +13,7 @@ from .system import CredSystem
 from .eater import DataStruct, Eater
 from collections import defaultdict
 
+import codecs
 import hashlib
 import struct
 import os
@@ -414,10 +415,9 @@ class MasterKeyPool(object):
                     if mk.decrypted:
                         mkf.decrypted = True
                         self.nb_mkf_decrypted += 1
-
-                        yield True, u'{hash} ok for masterkey {masterkey}'.format(hash=pwdhash, masterkey=mk.guid)
+                        yield True, u'{hash} ok for masterkey {masterkey}'.format(hash=codecs.encode(pwdhash, 'hex'), masterkey=mkf.guid)
                     else:
-                        yield False, u'{hash} not ok for masterkey {masterkey}'.format(hash=pwdhash, masterkey=mk.guid)
+                        yield False, u'{hash} not ok for masterkey {masterkey}'.format(hash=codecs.encode(pwdhash, 'hex'), masterkey=mkf.guid)
 
     def try_system_credential(self):
         """

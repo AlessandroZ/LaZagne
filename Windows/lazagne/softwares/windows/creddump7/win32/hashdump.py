@@ -183,7 +183,7 @@ def decrypt_single_hash(rid, hbootkey, enc_hash, lmntstr):
     md5 = hashlib.md5()
     md5.update(hbootkey[:0x10] + pack("<L", rid) + lmntstr)
     rc4_key = md5.digest()
-    rc4 = ARC4.new(rc4_key)
+    rc4 = RC4(rc4_key)
     obfkey = rc4.encrypt(enc_hash)
     hash_ = d1.decrypt(obfkey[:8]) + d2.decrypt(obfkey[8:])
 

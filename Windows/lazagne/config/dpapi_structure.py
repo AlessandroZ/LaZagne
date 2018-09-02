@@ -10,7 +10,33 @@ from lazagne.config.write_output import print_debug
 from lazagne.config.constant import constant
 from lazagne.softwares.windows.lsa_secrets import LSASecrets
 
+import getpass
 import os
+import sys
+
+
+def are_masterkeys_retrieved():
+    """
+    Before running modules using DPAPI, we have to retrieve masterkeys
+    otherwise, we do not realize these checks
+    """
+    current_user = constant.username
+    if constant.pypykatz_result.get(current_user, None):
+        password = constant.pypykatz_result[current_user].get('Password', None)
+        pwdhash = constant.pypykatz_result[current_user].get('Shahash', None)
+
+        # Create one DPAPI object by user
+        constant.user_dpapi = UserDpapi(password=password, pwdhash=pwdhash)
+
+    if not constant.user_dpapi or not constant.user_dpapi.unlocked:
+        # constant.user_password represents the password entered manually by the user
+        constant.user_dpapi = UserDpapi(password=constant.user_password)
+
+        # Add username to check username equals passwords
+        constant.user_dpapi.check_credentials([constant.username] + constant.password_found)
+
+    # Return True if at least one masterkey has been decrypted
+    return constant.user_dpapi.unlocked
 
 
 def manage_response(ok, msg):

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*- 
 import json
 import os
+import random
 import shutil
 import sqlite3
+import string
 import tempfile
 import traceback
 
@@ -77,6 +79,34 @@ class ChromiumBased(ModuleInfo):
         conn.close()
         return credentials
 
+    def copy_db(self, database_path):
+        """
+        Copying db will bypass lock errors
+        Using user tempfile will produce an error when impersonating users (Permission denied)
+        A public directory should be used if this error occured (e.g C:\\Users\\Public) 
+        """
+        random_name = ''.join([random.choice(string.ascii_lowercase) for i in range(9)])
+        root_dir = [
+            tempfile.gettempdir(),
+            os.environ.get('PUBLIC', None),
+            os.environ.get('SystemDrive', None) + '\\',
+        ]
+        for r in root_dir: 
+            try:
+                temp = os.path.join(r, random_name)
+                shutil.copy(database_path, temp)
+                self.debug(u'Temporary db copied: {db_path}'.format(db_path=temp))
+                return temp
+            except Exception:
+                self.debug(traceback.format_exc())
+        return False
+
+    def clean_file(self, db_path):
+        try:
+            os.remove(db_path)
+        except Exception:
+            self.debug(traceback.format_exc())
+
     def run(self):
         credentials = []
         for database_path in self._get_database_dirs():
@@ -85,13 +115,15 @@ class ChromiumBased(ModuleInfo):
                 continue
 
             self.debug('Database found: {db}'.format(db=database_path))
+
             # Copy database before to query it (bypass lock errors)
-            try:
-                temp = os.path.join(tempfile.gettempdir(), next(tempfile._get_candidate_names()))
-                shutil.copy(database_path, temp)
-                credentials.extend(self._export_credentials(temp))
-            except Exception:
-                self.debug(traceback.format_exc())
+            path = self.copy_db(database_path)
+            if path:
+                try:
+                    credentials.extend(self._export_credentials(path))
+                except Exception:
+                    self.debug(traceback.format_exc())
+                self.clean_file(path)
 
         return [{'URL': url, 'Login': login, 'Password': password} for url, login, password in set(credentials)]
 

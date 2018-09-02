@@ -204,9 +204,8 @@ class StandardOutput(object):
                 for pwd in pwd_found:
                     password_category = False
                     # Detect which kinds of password has been found
-                    lower_list = [s.lower() for s in pwd.keys()]
+                    lower_list = [s.lower() for s in pwd]
                     password = [s for s in lower_list if "password" in s]
-
                     if password:
                         password_category = password
                     else:
@@ -214,9 +213,9 @@ class StandardOutput(object):
                         if key:
                             password_category = key
                         else:
-                            hash = [s for s in lower_list if "hash" in s]
-                            if hash:
-                                password_category = hash
+                            hash_ = [s for s in lower_list if "hash" in s]
+                            if hash_:
+                                password_category = hash_
 
                     # Do not print empty passwords
                     try:
@@ -236,7 +235,7 @@ class StandardOutput(object):
                             passwd = string_to_unicode(pwd[password_category[0].capitalize()])
                             if passwd and passwd not in constant.password_found:
                                 constant.password_found.append(passwd)
-                        except Exception:
+                        except Exception as e:
                             pass
 
                         # Password field is empty

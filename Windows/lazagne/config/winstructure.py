@@ -65,6 +65,7 @@ TOKEN_ALL_ACCESS            = (STANDARD_RIGHTS_REQUIRED | TOKEN_ASSIGN_PRIMARY |
         TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT |
         TOKEN_ADJUST_SESSIONID)
 
+SE_DEBUG_PRIVILEGE=20
 
 # ############################# Structures ##############################
 
@@ -265,12 +266,34 @@ class SECURITY_ATTRIBUTES(Structure):
 PSECURITY_ATTRIBUTES = POINTER(SECURITY_ATTRIBUTES)
 
 
+class SID_NAME_USE(DWORD):
+    _sid_types = dict(enumerate('''
+        User Group Domain Alias WellKnownGroup DeletedAccount
+        Invalid Unknown Computer Label'''.split(), 1))
+
+    def __init__(self, value=None):
+        if value is not None:
+            if value not in self.sid_types:
+                raise ValueError('invalid SID type')
+            DWORD.__init__(value)
+
+    def __str__(self):
+        if self.value not in self._sid_types:
+            raise ValueError('invalid SID type')
+        return self._sid_types[self.value]
+
+    def __repr__(self):
+        return 'SID_NAME_USE(%s)' % self.value
+
+PSID_NAME_USE = POINTER(SID_NAME_USE)
+
 # ############################# Load dlls ##############################
 
 advapi32 	= WinDLL('advapi32', 	use_last_error=True)
 crypt32 	= WinDLL('crypt32', 	use_last_error=True)
 kernel32	= WinDLL('kernel32', 	use_last_error=True)
 psapi		= WinDLL('psapi', 		use_last_error=True)
+ntdll       = WinDLL('ntdll',      use_last_error=True)
 
 
 # ############################# Functions ##############################
@@ -295,9 +318,13 @@ LookupPrivilegeValueA			= advapi32.LookupPrivilegeValueA
 LookupPrivilegeValueA.restype 	= BOOL
 LookupPrivilegeValueA.argtypes 	= [LPCTSTR, LPCTSTR, PLUID]
 
-ConvertSidToStringSidA			= advapi32.ConvertSidToStringSidA
-ConvertSidToStringSidA.restype 	= BOOL
-ConvertSidToStringSidA.argtypes = [DWORD, POINTER(LPTSTR)]
+ConvertSidToStringSid			= advapi32.ConvertSidToStringSidW
+ConvertSidToStringSid.restype 	= BOOL
+ConvertSidToStringSid.argtypes = [DWORD, POINTER(LPWSTR)]
+
+LookupAccountSid                = advapi32.LookupAccountSidW
+LookupAccountSid.restype        = BOOL
+LookupAccountSid.argtypes       = [LPCWSTR, PSID, LPCWSTR, LPDWORD, LPCWSTR, LPDWORD, PSID_NAME_USE]
 
 LocalAlloc 						= kernel32.LocalAlloc
 LocalAlloc.restype 				= HANDLE
@@ -370,6 +397,96 @@ GetModuleFileNameEx.argtypes = [HANDLE, HMODULE, LPWSTR, DWORD]
 
 
 # ############################# Custom functions ##############################
+
+
+def EnumProcesses():
+    _EnumProcesses = psapi.EnumProcesses
+    _EnumProcesses.argtypes = [LPVOID, DWORD, LPDWORD]
+    _EnumProcesses.restype = bool
+
+    size            = 0x1000
+    cbBytesReturned = DWORD()
+    unit            = sizeof(DWORD)
+    while 1:
+        ProcessIds = (DWORD * (size // unit))()
+        cbBytesReturned.value = size
+        _EnumProcesses(byref(ProcessIds), cbBytesReturned, byref(cbBytesReturned))
+        returned = cbBytesReturned.value
+        if returned < size:
+            break
+        size = size + 0x1000
+    ProcessIdList = list()
+    for ProcessId in ProcessIds:
+        if ProcessId is None:
+            break
+        ProcessIdList.append(ProcessId)
+    return ProcessIdList
+
+
+def LookupAccountSidW(lpSystemName, lpSid):
+    # From https://github.com/MarioVilas/winappdbg/blob/master/winappdbg/win32/advapi32.py
+    _LookupAccountSidW = advapi32.LookupAccountSidW
+    _LookupAccountSidW.argtypes = [LPSTR, PSID, LPWSTR, LPDWORD, LPWSTR, LPDWORD, LPDWORD]
+    _LookupAccountSidW.restype  = BOOL
+
+    ERROR_INSUFFICIENT_BUFFER = 122
+    cchName = DWORD(0)
+    cchReferencedDomainName = DWORD(0)
+    peUse = DWORD(0)
+    success = _LookupAccountSidW(lpSystemName, lpSid, None, byref(cchName), None, byref(cchReferencedDomainName), byref(peUse))
+    error = GetLastError()
+    if not success or error == ERROR_INSUFFICIENT_BUFFER:
+        lpName = create_unicode_buffer(u'', cchName.value + 1)
+        lpReferencedDomainName = create_unicode_buffer(u'', cchReferencedDomainName.value + 1)
+        success = _LookupAccountSidW(lpSystemName, lpSid, lpName, byref(cchName), lpReferencedDomainName, byref(cchReferencedDomainName), byref(peUse))
+        if success:
+            return lpName.value, lpReferencedDomainName.value, peUse.value
+
+    return None, None, None
+
+
+def QueryFullProcessImageNameW(hProcess, dwFlags = 0):
+    _QueryFullProcessImageNameW = kernel32.QueryFullProcessImageNameW
+    _QueryFullProcessImageNameW.argtypes = [HANDLE, DWORD, LPWSTR, POINTER(DWORD)]
+    _QueryFullProcessImageNameW.restype  = bool
+    ERROR_INSUFFICIENT_BUFFER = 122
+
+    dwSize = MAX_PATH
+    while 1:
+        lpdwSize = DWORD(dwSize)
+        lpExeName = create_unicode_buffer('', lpdwSize.value + 1)
+        success = _QueryFullProcessImageNameW(hProcess, dwFlags, lpExeName, byref(lpdwSize))
+        if success and 0 < lpdwSize.value < dwSize:
+            break
+        error = GetLastError()
+        if error != ERROR_INSUFFICIENT_BUFFER:
+            return False
+        dwSize = dwSize + 256
+        if dwSize > 0x1000:
+            # this prevents an infinite loop in Windows 2008 when the path has spaces,
+            # see http://msdn.microsoft.com/en-us/library/ms684919(VS.85).aspx#4
+            return False
+    return lpExeName.value
+
+
+def RtlAdjustPrivilege(privilege_id):
+    """
+    privilege_id: int
+    """
+    _RtlAdjustPrivilege = ntdll.RtlAdjustPrivilege
+    _RtlAdjustPrivilege.argtypes = [ULONG, BOOL, BOOL, POINTER(BOOL)]
+    _RtlAdjustPrivilege.restype  = LONG
+
+    Enable = True
+    CurrentThread = False #enable for whole process
+    Enabled = BOOL()
+    
+    status = _RtlAdjustPrivilege(privilege_id, Enable, CurrentThread, byref(Enabled))
+    if status != 0:
+        return False
+    
+    return True
+
 
 def getData(blobOut):
         cbData = int(blobOut.cbData)

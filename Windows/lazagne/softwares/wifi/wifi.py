@@ -12,7 +12,7 @@ from lazagne.config.module_info import ModuleInfo
 
 class Wifi(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'Wifi', 'wifi')
+        ModuleInfo.__init__(self, 'wifi', 'wifi')
 
     def decrypt_using_lsa_secret(self, key):
         """
@@ -32,6 +32,7 @@ class Wifi(ModuleInfo):
         ]
         self.debug(u'Trying using netsh method')
         process = Popen(['netsh.exe', 'wlan', 'show', 'profile', '{SSID}'.format(SSID=ssid), 'key=clear'],
+                        stdin=PIPE,
                         stdout=PIPE,
                         stderr=PIPE)
         stdout, stderr = process.communicate()
