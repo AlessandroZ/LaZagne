@@ -1,3 +1,2 @@
-construct==2.9.39
 pyasn1
-psutil
+https://github.com/AlessandroZ/pypykatz/archive/master.zip # should point to pypykatz if my PR is approved
