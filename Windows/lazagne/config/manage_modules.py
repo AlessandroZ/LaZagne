@@ -13,8 +13,8 @@ from lazagne.softwares.databases.postgresql import PostgreSQL
 from lazagne.softwares.databases.robomongo import Robomongo
 from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
 from lazagne.softwares.databases.squirrel import Squirrel
-from lazagne.softwares.games.galconfusion import GalconFusion
 # Games
+from lazagne.softwares.games.galconfusion import GalconFusion
 from lazagne.softwares.games.kalypsomedia import KalypsoMedia
 from lazagne.softwares.games.roguestale import RoguesTale
 from lazagne.softwares.games.turba import Turba
@@ -42,6 +42,7 @@ from lazagne.softwares.sysadmin.opensshforwindows import OpenSSHForWindows
 from lazagne.softwares.sysadmin.puttycm import Puttycm
 from lazagne.softwares.sysadmin.rdpmanager import RDPManager
 from lazagne.softwares.sysadmin.unattended import Unattended
+from lazagne.softwares.sysadmin.vnc import Vnc
 from lazagne.softwares.sysadmin.winscp import WinSCP
 # Wifi
 from lazagne.softwares.wifi.wifi import Wifi
@@ -51,6 +52,7 @@ from lazagne.softwares.windows.cachedump import Cachedump
 from lazagne.softwares.windows.credman import Credman
 from lazagne.softwares.windows.credfiles import CredFiles
 from lazagne.softwares.windows.hashdump import Hashdump
+from lazagne.softwares.windows.ppypykatz import Pypykatz
 from lazagne.softwares.windows.lsa_secrets import LSASecrets
 from lazagne.softwares.windows.vault import Vault
 from lazagne.softwares.windows.vaultfiles import VaultFiles
@@ -132,12 +134,14 @@ def get_modules():
         RDPManager(),
         Unattended(),
         WinSCP(),
+        Vnc(),
 
         # Wifi
         Wifi(),
 
         # Windows
         Autologon(),
+        Pypykatz(),
         Cachedump(),
         Credman(),
         Hashdump(),
