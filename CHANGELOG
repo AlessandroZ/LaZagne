@@ -1,4 +1,4 @@
-LaZagne xxxxxx => in progress
+LaZagne 2.4 => in progress
 - Windows / Linux / Mac
 	* Big code review and lots of bug fixed
 	* PEP8 Style (thanks to @ingested)
@@ -10,8 +10,12 @@ LaZagne xxxxxx => in progress
 	* Bug fix
 
 - Windows
-	* Removing construct on DPAPI function (lots of bug fix on DPAPI as well)
+	* Adding pypykatz module - awesome work from @skelsec
+		- https://github.com/skelsec/pypykatz
+	* Adding VNC module - thanks to @aldorm
 	* Manage more than 26 different browsers now (thanks to @ingested)
+	* Removing construct on DPAPI function (lots of bug fix on DPAPI as well)
+	* Removing psutil dependency
 
 LaZagne 2.3.2 (22/03/2018)
 - Windows
