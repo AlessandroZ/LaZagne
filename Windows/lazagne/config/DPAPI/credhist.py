@@ -30,6 +30,11 @@ class RPC_SID(DataStruct):
         self.idAuth = struct.unpack(">Q", "\0\0" + data.eat("6s"))[0]
         self.subAuth = data.eat("%dL" % n)
 
+    def __str__(self):
+        s = ["S-%d-%d" % (self.version, self.idAuth)]
+        s += ["%d" % x for x in self.subAuth]
+        return "-".join(s)
+
 
 class CredhistEntry(DataStruct):
 
@@ -76,7 +81,7 @@ class CredhistEntry(DataStruct):
         Simply computes the encryption key with the given hash
         then calls self.decrypt_with_key() to finish the decryption.
         """
-        self.decrypt_with_key(crypto.derivePwdHash(pwdhash, self.userSID))
+        self.decrypt_with_key(crypto.derivePwdHash(pwdhash, str(self.userSID)))
 
     def decrypt_with_key(self, enckey):
         """
