@@ -339,7 +339,7 @@ def dataDecrypt(cipherAlgo, hashAlgo, raw, encKey, iv, rounds):
         cipher = AESModeOfOperationCBC(key, iv=iv)
         cleartxt = b"".join([cipher.decrypt(raw[i:i + AES_BLOCK_SIZE]) for i in range(0, len(raw), AES_BLOCK_SIZE)])
     else:
-        cipher = cipherAlgo.module.new(key, CBC, iv)
+        cipher = cipherAlgo.module(key, CBC, iv)
         cleartxt = cipher.decrypt(raw)
     return cleartxt
 
