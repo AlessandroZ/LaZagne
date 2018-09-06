@@ -78,9 +78,12 @@ def decrypt_secret(secret, key):
         enc_block = secret[i:i+8]
         block_key = key[j:j+7]
         des_key = str_to_key(block_key)
-
         crypter = des(des_key, ECB)
-        decrypted_data += crypter.decrypt(enc_block)
+
+        try:
+            decrypted_data += crypter.decrypt(enc_block)
+        except:
+            continue
 
         j += 7
         if len(key[j:j+7]) < 7:
