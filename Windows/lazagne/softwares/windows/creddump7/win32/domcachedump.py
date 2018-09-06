@@ -78,15 +78,18 @@ def parse_decrypted_cache(dec_data, uname_len,
     pad = 2 * ( ( domain_len / 2 ) % 2 )
     domain_name_off = domain_off + domain_len + pad
 
-    hash = dec_data[:0x10]
+    data_hash = dec_data[:0x10]
+    
     username = dec_data[uname_off:uname_off+uname_len]
-    username = username.decode('utf-16-le')
-    domain = dec_data[domain_off:domain_off+domain_len]
-    domain = domain.decode('utf-16-le')
-    domain_name = dec_data[domain_name_off:domain_name_off+domain_name_len]
-    domain_name = domain_name.decode('utf-16-le')
+    username = username.decode('utf-16-le', errors='ignore')
 
-    return (username, domain, domain_name, hash)
+    domain = dec_data[domain_off:domain_off+domain_len]
+    domain = domain.decode('utf-16-le', errors='ignore')
+
+    domain_name = dec_data[domain_name_off:domain_name_off+domain_name_len]
+    domain_name = domain_name.decode('utf-16-le', errors='ignore')
+
+    return (username, domain, domain_name, data_hash)
 
 
 def dump_hashes(sysaddr, secaddr, vista):
