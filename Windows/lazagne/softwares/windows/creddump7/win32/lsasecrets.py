@@ -19,7 +19,7 @@
 @contact:      bdolangavitt@wesleyan.edu
 """
 
-import hashlib
+import hashlib, os
 
 from .rawreg import *
 from ..addrspace import HiveFileAddressSpace
@@ -176,6 +176,9 @@ def get_secrets(sysaddr, secaddr, vista):
 
 
 def get_file_secrets(sysfile, secfile, vista):
+    if not os.path.isfile(sysfile) or not os.path.isfile(secfile):
+        return
+        
     sysaddr = HiveFileAddressSpace(sysfile)
     secaddr = HiveFileAddressSpace(secfile)
 
