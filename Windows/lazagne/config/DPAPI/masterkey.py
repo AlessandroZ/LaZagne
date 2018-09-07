@@ -356,32 +356,33 @@ class MasterKeyPool(object):
             for mkf in self.keys[guid].get('mkf', ''):
                 if not mkf.decrypted:
                     mk = mkf.masterkey
-                    mk.decrypt_with_password(sid, password)
-                    if not mk.decrypted and self.credhists.get(sid) is not None:
-                        # Try using credhist file
-                        self.credhists[sid].decrypt_with_password(password)
-                        for credhist in self.credhists[sid].entries_list:
-                            mk.decrypt_with_hash(sid, credhist.pwdhash)
-                            if credhist.ntlm is not None and not mk.decrypted:
-                                mk.decrypt_with_hash(sid, credhist.ntlm)
+                    if mk:
+                        mk.decrypt_with_password(sid, password)
+                        if not mk.decrypted and self.credhists.get(sid) is not None:
+                            # Try using credhist file
+                            self.credhists[sid].decrypt_with_password(password)
+                            for credhist in self.credhists[sid].entries_list:
+                                mk.decrypt_with_hash(sid, credhist.pwdhash)
+                                if credhist.ntlm is not None and not mk.decrypted:
+                                    mk.decrypt_with_hash(sid, credhist.ntlm)
 
-                            if mk.decrypted:
-                                yield u'masterkey {masterkey} decrypted using credhists key'.format(
-                                    masterkey=mk.guid)
-                                self.credhists[sid].valid = True
+                                if mk.decrypted:
+                                    yield u'masterkey {masterkey} decrypted using credhists key'.format(
+                                        masterkey=mk.guid)
+                                    self.credhists[sid].valid = True
 
-                    if mk.decrypted:
-                        # Save the password found
-                        self.keys[mkf.guid]['password'] = password
-                        mkf.decrypted = True
-                        self.nb_mkf_decrypted += 1
+                        if mk.decrypted:
+                            # Save the password found
+                            self.keys[mkf.guid]['password'] = password
+                            mkf.decrypted = True
+                            self.nb_mkf_decrypted += 1
 
-                        yield True, u'{password} ok for masterkey {masterkey}'.format(password=password,
-                                                                                masterkey=mkf.guid)
-
-                    else:
-                        yield False, u'{password} not ok for masterkey {masterkey}'.format(password=password,
+                            yield True, u'{password} ok for masterkey {masterkey}'.format(password=password,
                                                                                     masterkey=mkf.guid)
+
+                        else:
+                            yield False, u'{password} not ok for masterkey {masterkey}'.format(password=password,
+                                                                                        masterkey=mkf.guid)
 
     def try_credential_hash(self, sid, pwdhash=None):
         """
