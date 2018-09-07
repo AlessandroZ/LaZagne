@@ -6,7 +6,7 @@ import os
 
 class CredFiles(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'credman', 'windows', dpapi_used=True)
+        ModuleInfo.__init__(self, 'credfiles', 'windows', dpapi_used=True)
 
     def run(self):
         pwd_found = []

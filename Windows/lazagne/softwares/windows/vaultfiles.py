@@ -6,7 +6,7 @@ import os
 
 class VaultFiles(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'vault', 'windows', dpapi_used=True)
+        ModuleInfo.__init__(self, 'vaultfiles', 'windows', dpapi_used=True)
 
     def run(self):
 
