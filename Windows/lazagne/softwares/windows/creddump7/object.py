@@ -69,7 +69,11 @@ def read_value(addr_space, value_type, vaddr):
     buf = addr_space.read(vaddr, type_size)
     if buf is None:
         return None
-    (val,) = struct.unpack(type_unpack_char, buf)
+
+    try:
+        (val,) = struct.unpack(type_unpack_char, buf)
+    except:
+        return None
 
     return val
 
