@@ -30,7 +30,7 @@ def get_token_info(hToken):
                     sid = pStringSid.value
                     LocalFree(address)
                     return sid, owner
-    return False
+    return None, None
 
 
 def enable_privilege(privilegeStr, hToken=None):
