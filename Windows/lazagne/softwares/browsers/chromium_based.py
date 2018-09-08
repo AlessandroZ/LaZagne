@@ -72,6 +72,9 @@ class ChromiumBased(ModuleInfo):
             try:
                 # Decrypt the Password
                 password = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+                if not url and not login and not password:
+                    continue
+                    
                 credentials.append((url, login, password))
             except Exception:
                 self.debug(traceback.format_exc())
