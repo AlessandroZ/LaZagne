@@ -137,9 +137,6 @@ class StandardOutput(object):
             function(msg)
 
     def print_output(self, software_name, pwd_found):
-        # Quiet mode => nothing is printed
-        if constant.quiet_mode:
-            return
 
         # manage differently hashes / and hex value
         if pwd_found:
@@ -253,7 +250,7 @@ class StandardOutput(object):
             # write credentials into a text file
             self.checks_write(to_write, software_name)
         else:
-            logging.info('[!] No passwords found\n')
+            print_debug("INFO", "No passwords found")
 
     def write_header(self):
         time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
@@ -278,6 +275,10 @@ class StandardOutput(object):
 
 
 def print_debug(error_level, message):
+    # Quiet mode => nothing is printed
+    if constant.quiet_mode:
+        return
+
     # print when password is found
     if error_level == 'OK':
         constant.st.do_print(message='[+] {message}'.format(message=message), color='green')

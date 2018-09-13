@@ -135,9 +135,6 @@ class StandardOutput(object):
             constant.finalResults["Passwords"].append([{"Category": category}, values])
 
     def print_output(self, software_name, pwd_found):
-        # Quiet mode => nothing is printed
-        if constant.quiet_mode:
-            return
 
         if pwd_found:
             # If the debug logging level is not apply => print the title
@@ -200,10 +197,14 @@ class StandardOutput(object):
             # Write credentials into a text file
             self.checks_write(to_write, software_name)
         else:
-            logging.info("[!] No passwords found\n")
+            print_debug("INFO", "No passwords found")
 
 
 def print_debug(error_level, message):
+    # Quiet mode => nothing is printed
+    if constant.quiet_mode:
+        return
+
     # Print when password is found
     if error_level == 'OK':
         constant.st.do_print(message='[+] {message}'.format(message=message), color='green')

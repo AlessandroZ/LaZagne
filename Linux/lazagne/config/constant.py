@@ -9,7 +9,7 @@ class constant():
     folder_name         = 'results_{current_time}'.format(current_time=date)
     file_name_results   = 'credentials'  # The extension is added depending on the user output choice
     max_help   = 27
-    CURRENT_VERSION     = '1.4'
+    CURRENT_VERSION     = '1.4.1'
     output              = None
     file_logger         = None
     verbose             = False
