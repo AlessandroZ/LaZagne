@@ -99,7 +99,20 @@ class Mozilla(ModuleInfo):
             cp.read(os.path.join(directory, 'profiles.ini'))
             for section in cp.sections():
                 if section.startswith('Profile') and cp.has_option(section, 'Path'):
-                    profile_list.append(os.path.join(directory, cp.get(section, 'Path').strip()))
+                    profile_path = None
+
+                    if cp.has_option(section, 'IsRelative'):
+                        if cp.get(section, 'IsRelative') == '1':
+                            profile_path = os.path.join(directory, cp.get(section, 'Path').strip())
+                        elif cp.get(section, 'IsRelative') == '0':
+                            profile_path = cp.get(section, 'Path').strip()
+
+                    else: # No "IsRelative" in profiles.ini
+                        profile_path = os.path.join(directory, cp.get(section, 'Path').strip())
+                    
+                    if profile_path:
+                        profile_list.append(profile_path)
+
         except Exception as e:
             self.error(u'An error occurred while reading profiles.ini: {}'.format(e))
         return profile_list
