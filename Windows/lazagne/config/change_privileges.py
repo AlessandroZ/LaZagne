@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # Original code from https://github.com/joren485/PyWinPrivEsc/blob/master/RunAsSystem.py
 
 import sys
@@ -87,17 +87,19 @@ def list_sids():
 
         try:
             hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, False, pid)
-            if hProcess:
-                hToken = HANDLE(INVALID_HANDLE_VALUE)
+            if not hProcess:
+                continue
+
+            hToken = HANDLE(INVALID_HANDLE_VALUE)
+            if OpenProcessToken(hProcess, tokenprivs, byref(hToken)):
                 if hToken:
-                    OpenProcessToken(hProcess, tokenprivs, byref(hToken))
-                    if hToken:
-                        token_sid, owner = get_token_info(hToken)
-                        if token_sid and owner:
-                            pname = ''
-                            sids.append((pid, pname, token_sid, owner.decode(sys.getfilesystemencoding())))
-                        CloseHandle(hToken)
-                CloseHandle(hProcess)
+                    token_sid, owner = get_token_info(hToken)
+                    if token_sid and owner:
+                        pname = ''
+                        sids.append((pid, pname, token_sid, owner))
+                    CloseHandle(hToken)
+
+            CloseHandle(hProcess)
 
         except Exception as e:
             print_debug('DEBUG', traceback.format_exc())
