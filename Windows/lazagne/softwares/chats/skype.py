@@ -79,7 +79,8 @@ class Skype(ModuleInfo):
         return binascii.hexlify(tmp)
 
     def dictionary_attack(self, login, md5):
-        for word in get_dic():
+        wordlist = constant.password_found + get_dic()
+        for word in wordlist:
             hash_ = hashlib.md5('%s\nskyper\n%s' % (login, word)).hexdigest()
             if hash_ == md5:
                 return word
