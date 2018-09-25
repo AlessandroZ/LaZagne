@@ -407,6 +407,7 @@ def EnumProcesses():
     size            = 0x1000
     cbBytesReturned = DWORD()
     unit            = sizeof(DWORD)
+    dwOwnPid        = os.getpid()
     while 1:
         ProcessIds = (DWORD * (size // unit))()
         cbBytesReturned.value = size
@@ -419,6 +420,8 @@ def EnumProcesses():
     for ProcessId in ProcessIds:
         if ProcessId is None:
             break
+        if ProcessId == dwOwnPid:
+            continue
         ProcessIdList.append(ProcessId)
     return ProcessIdList
 
