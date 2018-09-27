@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/python
 import ctypes
-import getpass
 import logging
 import sys
 import traceback
 
 from lazagne.config.change_privileges import list_sids, rev2self, impersonate_sid_long_handle
-from lazagne.config.users import get_user_list_on_filesystem, set_env_variables
+from lazagne.config.users import get_user_list_on_filesystem, set_env_variables, get_username_winapi
 from lazagne.config.dpapi_structure import SystemDpapi, are_masterkeys_retrieved
 from lazagne.config.execute_cmd import save_hives, delete_hives
 from lazagne.config.write_output import print_debug, StandardOutput
@@ -187,7 +186,7 @@ def run_lazagne(category_selected='all', subcategories={}, password=None):
 
     constant.is_current_user = True
     # constant.username = getpass.getuser().decode(sys.getfilesystemencoding())
-    constant.username = getpass.getuser()
+    constant.username = get_username_winapi()
     if not constant.username.endswith('$'):
         
         constant.finalResults = {'User': constant.username}
