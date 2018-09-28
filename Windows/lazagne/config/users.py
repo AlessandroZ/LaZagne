@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/python
 import os
+import ctypes
 
 from lazagne.config.winstructure import get_os_version
 from lazagne.config.constant import constant
@@ -55,3 +56,23 @@ def set_env_variables(user, to_impersonate=False):
     # Replace "drive" and "user" with the correct values
     for env in constant.profile:
         constant.profile[env] = constant.profile[env].format(drive=constant.drive, user=user)
+
+
+def get_username_winapi():
+    GetUserNameW = ctypes.windll.advapi32.GetUserNameW
+    GetUserNameW.argtypes = [ctypes.c_wchar_p, ctypes.POINTER(ctypes.c_uint)]
+    GetUserNameW.restype = ctypes.c_uint
+
+    _buffer = ctypes.create_unicode_buffer(1)
+    size = ctypes.c_uint(len(_buffer))
+    while not GetUserNameW(_buffer, ctypes.byref(size)):
+        # WinError.h
+        # define ERROR_INSUFFICIENT_BUFFER        122L    // dderror
+        if ctypes.GetLastError() == 122:
+            _buffer = ctypes.create_unicode_buffer(len(_buffer)*2)
+            size.value = len(_buffer)
+        
+        else:
+            return # Unusual error
+
+    return _buffer.value
