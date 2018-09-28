@@ -75,7 +75,7 @@ class MasterKey(DataStruct):
         This function also extracts the HMAC part of the decrypted stuff and compare it with the computed one.
         Note that, once successfully decrypted, the masterkey will not be decrypted anymore; this function will simply return.
         """
-        if self.decrypted:
+        if self.decrypted or not pwdhash:
             return
 
         # Compute encryption key
