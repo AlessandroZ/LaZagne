@@ -536,14 +536,10 @@ def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, use
 
             if CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, 0, byref(blobOut)):
                 return getData(blobOut).decode("utf-8")
-            else:
-                return False
 
         else:
             if CryptUnprotectData(byref(blobIn), None, None, None, None, 0, byref(blobOut)):
                 return getData(blobOut).decode("utf-8")
-            else:
-                return False
 
     elif user_dpapi and user_dpapi.unlocked:
         # entropy should be an hex value
