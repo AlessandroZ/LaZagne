@@ -93,6 +93,7 @@ Supported software
 ----
 
 <p align="center"><img src="https://user-images.githubusercontent.com/10668373/43320612-525678e6-91a9-11e8-9c5b-bce4eed2f2c9.png" alt="The LaZagne project"></p>
+
 | | Windows | Linux | Apple |
 | Browser | Chrome firefox IE Opera | Firefox Oepra | Firefox Chrome |
 
