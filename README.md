@@ -92,10 +92,19 @@ laZagne all -i
 Supported software
 ----
 
-<p align="center"><img src="https://user-images.githubusercontent.com/10668373/43320612-525678e6-91a9-11e8-9c5b-bce4eed2f2c9.png" alt="The LaZagne project"></p>
-
-| | Windows | Linux | Apple |
-| Browser | Chrome firefox IE Opera | Firefox Oepra | Firefox Chrome |
+|  | Windows    | Linux  | Mac |
+| -- | -- | -- | -- |
+| Browser | Chrome, firefox, IE, Opera | Firefox, Opera | Firefox, Chrome |
+| Chats | Jitsy, Pigdin, Skype| Jitsy, Pigdin |  |
+| Databases | DBVisualizer, Postgresql, Robomongo, Squirrel, SQLdevelopper | DBVisualizer, Squirrel, SQLdevelopper  |  |
+| Games | GalconFusion, Kalypsomedia, RogueTale, Turba |  |  |
+| Git | Git for Windows |  |  |
+| Mails | Outlook, Thunderbird  | Clawsmail, Thunderbird |  |
+| Dumps from memory | Keepass, Wdigest (mimikatz method) | system password |  |
+| SVN | Tortoise  | | |
+| Sysadmin | Apache Directory studio, CoreFTP, CyberDuck, fileZilla, FTPNavigator, OpenSSH, PuttyCMRDPManager, WinSCP | AWS,  Docker, Environnement variable, FileZilla, History files, SSH private keys |  |
+| Wifi | Wireless Network | Network Manager | * CF Keychains |
+| Internal mechanism passwords storage | .NET Passport, Generic Network Hashdump (LM/NT), LSA secret | GNOME Keyring, Kwallet,hashdump | Keychains, hashdump |
 
 (*) used by many tools to store passwords: Chrome, Owncloud, Evolution, KMail, etc.
 
