@@ -343,17 +343,21 @@ class Mozilla(ModuleInfo):
         try:
             c.execute('SELECT * FROM moz_logins;')
         except sqlite3.OperationalError:  # Since Firefox 32, json is used instead of sqlite3
-            loginf = open(os.path.join(profile, 'logins.json'), 'r').read()
-            json_logins = json.loads(loginf)
-            if 'logins' not in json_logins:
-                self.debug('No logins key in logins.json')
-                return logins
-            for row in json_logins['logins']:
-                enc_username = row['encryptedUsername']
-                enc_password = row['encryptedPassword']
-                logins.append((self.decode_login_data(enc_username),
-                               self.decode_login_data(enc_password), row['hostname']))
-            return logins
+            logins_json = os.path.join(profile, 'logins.json')
+            if os.path.isfile(logins_json):
+                with open(logins_json) as f:
+                    loginf = f.read()
+                    if loginf:
+                        json_logins = json.loads(loginf)
+                        if 'logins' not in json_logins:
+                            self.debug('No logins key in logins.json')
+                            return logins
+                        for row in json_logins['logins']:
+                            enc_username = row['encryptedUsername']
+                            enc_password = row['encryptedPassword']
+                            logins.append((self.decode_login_data(enc_username),
+                                           self.decode_login_data(enc_password), row['hostname']))
+                        return logins
 
         # Using sqlite3 database
         for row in c:
