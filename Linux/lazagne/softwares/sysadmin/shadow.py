@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import crypt
 import os
 
@@ -23,6 +23,10 @@ class Shadow(ModuleInfo):
         # 2   | Blowfish (not in mainline glibc; added in some Linux distributions)
         # 5   | SHA-256 (since glibc 2.7)
         # 6   | SHA-512 (since glibc 2.7)
+
+        if '$' not in crypt_pwd:
+            # Either malformed or old bcrypt password
+            return False
 
         hash_type = crypt_pwd.split("$")[1]
         hash_algo = {
