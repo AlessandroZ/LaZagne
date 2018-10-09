@@ -117,6 +117,7 @@ Donation
 ----
 If you want to support my work doing a donation, I will appreciate a lot:
 * Via BTC: 16zJ9wTXU4f1qfMLiWvdY3woUHtEBxyriu
+* Via Paypal: https://www.paypal.me/lazagneproject
 
 Special thanks
 ----
