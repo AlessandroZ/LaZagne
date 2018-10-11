@@ -75,7 +75,7 @@ laZagne.exe all -password ZapataVive
 
 __Note: For wifi passwords \ Windows Secrets, launch it with administrator privileges (UAC Authentication / sudo)__
 
-Mac Os
+Mac OS
 ----
 __Note: In Mac OS System, without the user password it is very difficult to retrieve passwords stored on the computer.__ 
 So, I recommend using one of these options
