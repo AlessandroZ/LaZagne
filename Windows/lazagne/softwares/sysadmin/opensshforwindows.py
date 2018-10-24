@@ -58,7 +58,7 @@ class OpenSSHForWindows(ModuleInfo):
                             # Determine the type of the key (public/private) and what is it algorithm
                             if "DSA PRIVATE KEY" in key_content_encoded:
                                 key_algorithm = "DSA"
-                            elif "RSA PRIVATE KEY" in key_content_encoded:
+                            elif "RSA PRIVATE KEY" in key_content_encoded or "OPENSSH PRIVATE KEY" in key_content_encoded:
                                 key_algorithm = "RSA"
                             else:
                                 key_algorithm = None
