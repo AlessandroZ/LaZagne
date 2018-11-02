@@ -44,6 +44,7 @@ from lazagne.softwares.sysadmin.rdpmanager import RDPManager
 from lazagne.softwares.sysadmin.unattended import Unattended
 from lazagne.softwares.sysadmin.vnc import Vnc
 from lazagne.softwares.sysadmin.winscp import WinSCP
+from lazagne.softwares.sysadmin.wsl import Wsl
 # Wifi
 from lazagne.softwares.wifi.wifi import Wifi
 # Windows
@@ -135,6 +136,7 @@ def get_modules():
         Unattended(),
         WinSCP(),
         Vnc(),
+        Wsl(),
 
         # Wifi
         Wifi(),
