@@ -110,7 +110,8 @@ class Cli(ModuleInfo):
             ('wget', '@'),
             ('curl', '@'),
             ('curl', '-u'),
-            ('wget', '-password')
+            ('wget', '-password'),
+            ('rdesktop', '-p'),
         ]
 
         for marker in markers:
