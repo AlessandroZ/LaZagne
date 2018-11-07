@@ -28,6 +28,8 @@ from lazagne.softwares.maven.mavenrepositories import MavenRepositories
 # Memory
 from lazagne.softwares.memory.keepass import Keepass
 from lazagne.softwares.memory.memorydump import MemoryDump
+# Multimedia
+from lazagne.softwares.multimedia.eyecon import EyeCON
 # Php
 from lazagne.softwares.php.composer import Composer
 # Svn
@@ -70,6 +72,7 @@ def get_categories():
         'mails': {'help': 'Email clients supported'},
         'maven': {'help': 'Maven java build tool'},
         'memory': {'help': 'Retrieve passwords from memory'},
+        'multimedia': {'help': 'Multimedia applications, etc'},
         'php': {'help': 'PHP build tool'},
         'svn': {'help': 'SVN clients supported'},
         'sysadmin': {'help': 'SCP/SSH/FTP/FTPS clients supported'},
@@ -117,6 +120,9 @@ def get_modules():
         # Memory
         MemoryDump(),  # retrieve browsers and keepass passwords
         Keepass(),  # should be launched after memory dump
+
+        # Multimedia
+        EyeCON(),
 
         # Php
         Composer(),
