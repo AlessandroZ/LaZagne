@@ -29,6 +29,7 @@ class Wifi(ModuleInfo):
                     cp.read(os.path.join(directory, w))
                     values = {'SSID': w}
                     try:
+                        values['SSID'] = cp.get('wifi', 'ssid')
                         values['Password'] = cp.get('wifi-security', 'psk')
                         pwd_found.append(values)
                     except Exception:
