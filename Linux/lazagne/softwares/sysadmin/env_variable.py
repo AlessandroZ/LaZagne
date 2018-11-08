@@ -60,63 +60,68 @@ class Env_variable(ModuleInfo):
             })
         )
 
-        for process in psutil.process_iter():
-            try:
-                environ = process.environ()
-            except Exception:
-                continue
-
-            for var in proxies:
-                if var not in environ or environ[var] in known_proxies:
-                    continue
-
-                proxy = environ[var]
-                known_proxies.add(proxy)
-
+        try:
+            for process in psutil.process_iter():
                 try:
-                    parsed = urlparse.urlparse(proxy)
+                    environ = process.environ()
                 except Exception:
                     continue
 
-                if parsed.username and parsed.password:
+                for var in proxies:
+                    if var not in environ or environ[var] in known_proxies:
+                        continue
+
+                    proxy = environ[var]
+                    known_proxies.add(proxy)
+
+                    try:
+                        parsed = urlparse.urlparse(proxy)
+                    except Exception:
+                        continue
+
+                    if parsed.username and parsed.password:
+                        pw = {
+                            'Login': parsed.username,
+                            'Password': parsed.password,
+                            'Host': parsed.hostname,
+                        }
+                        if parsed.port:
+                            pw.update({
+                                'Port': parsed.port
+                            })
+
+                        pwd_found.append(pw)
+
+                for token, kvars in tokens:
+                    if not kvars['KEY'] in environ:
+                        continue
+
+                    secret = environ[kvars['KEY']]
+
+                    if secret in known_tokens:
+                        continue
+
                     pw = {
-                        'Login': parsed.username,
-                        'Password': parsed.password,
-                        'Host': parsed.hostname,
+                        'Service': token,
+                        'KEY': secret
                     }
-                    if parsed.port:
-                        pw.update({
-                            'Port': parsed.port
-                        })
+
+                    if kvars['ID'] and kvars['ID'] in environ:
+                        pw.update({'ID': environ[kvars['ID']]})
 
                     pwd_found.append(pw)
+                    known_tokens.add(secret)
 
-            for token, kvars in tokens:
-                if not kvars['KEY'] in environ:
-                    continue
+                for i in environ:
+                    for t in ['passwd', 'pwd', 'pass', 'password']:
+                        if (t.upper() in i.upper()) and (i.upper() not in blacklist):
+                            pwd_found.append({
+                                'Login': i,
+                                'Password': environ[i]
+                            })
 
-                secret = environ[kvars['KEY']]
+            return pwd_found
 
-                if secret in known_tokens:
-                    continue
-
-                pw = {
-                    'Service': token,
-                    'KEY': secret
-                }
-
-                if kvars['ID'] and kvars['ID'] in environ:
-                    pw.update({'ID': environ[kvars['ID']]})
-
-                pwd_found.append(pw)
-                known_tokens.add(secret)
-
-            for i in environ:
-                for t in ['passwd', 'pwd', 'pass', 'password']:
-                    if (t.upper() in i.upper()) and (i.upper() not in blacklist):
-                        pwd_found.append({
-                            'Login': i,
-                            'Password': environ[i]
-                        })
-
-        return pwd_found
+        except AttributeError:
+            # Fix AttributeError: 'module' object has no attribute 'process_iter'
+            pass

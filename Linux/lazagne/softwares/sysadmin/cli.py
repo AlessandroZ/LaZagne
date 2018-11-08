@@ -24,32 +24,37 @@ class Cli(ModuleInfo):
             yield user, histfile
             known.add(histfile)
 
-        for process in psutil.process_iter():
-            try:
-                environ = process.environ()
-                user = process.username()
-            except Exception:
-                continue
-
-            if 'HISTFILE' not in environ:
-                continue
-
-            histfile = environ['HISTFILE']
-
-            if histfile in ('/dev/zero', '/dev/null'):
-                continue
-
-            if histfile.startswith('~/'):
+        try:
+            for process in psutil.process_iter():
                 try:
-                    home = pwd.getpwuid(process.uids().effective).pw_dir
+                    environ = process.environ()
+                    user = process.username()
                 except Exception:
                     continue
 
-                histfile = os.path.join(home, histfile[2:])
+                if 'HISTFILE' not in environ:
+                    continue
 
-            if os.path.isfile(histfile) and not histfile in known:
-                yield user, histfile
-                known.add(histfile)
+                histfile = environ['HISTFILE']
+
+                if histfile in ('/dev/zero', '/dev/null'):
+                    continue
+
+                if histfile.startswith('~/'):
+                    try:
+                        home = pwd.getpwuid(process.uids().effective).pw_dir
+                    except Exception:
+                        continue
+
+                    histfile = os.path.join(home, histfile[2:])
+
+                if os.path.isfile(histfile) and not histfile in known:
+                    yield user, histfile
+                    known.add(histfile)
+
+        except AttributeError:
+            # Fix AttributeError: 'module' object has no attribute 'process_iter'
+            pass
 
     def get_lines(self):
         known = set()
