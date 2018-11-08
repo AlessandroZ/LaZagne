@@ -7,7 +7,8 @@ import traceback
 
 try:
     import jeepney.auth
-except ImportError:
+# except ImportError:
+except Exception:
     pass
 else:
     # Thanks to @mitya57 for its Work around 

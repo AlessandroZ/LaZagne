@@ -84,58 +84,63 @@ def sessions(setenv=True):
 
     visited = set()
 
-    for process in psutil.process_iter():
-        try:
-            if hasattr(process, 'environ'):
-                environ = process.environ()
-            else:
-                # Fallback to manual linux-only method
-                # if psutils is very old
-                environ = get_linux_env(process.pid)
-        except Exception:
-            continue
-
-        if 'DBUS_SESSION_BUS_ADDRESS' not in environ:
-            continue
-
-        address = environ['DBUS_SESSION_BUS_ADDRESS']
-        if address not in visited:
-            uid = process.uids().effective
-            previous = None
-            previous_uid = None
-
-            if setenv:
-                previous_uid = os.geteuid()
-
-                if not uid == previous_uid:
-                    try:
-                        os.seteuid(uid)
-                    except Exception:
-                        continue
-
-                if 'DBUS_SESSION_BUS_ADDRESS' is os.environ:
-                    previous = os.environ['DBUS_SESSION_BUS_ADDRESS']
-
-                os.environ['DBUS_SESSION_BUS_ADDRESS'] = address
-
+    try:
+        for process in psutil.process_iter():
             try:
-                yield (uid, address)
+                if hasattr(process, 'environ'):
+                    environ = process.environ()
+                else:
+                    # Fallback to manual linux-only method
+                    # if psutils is very old
+                    environ = get_linux_env(process.pid)
             except Exception:
-                pass
-            finally:
+                continue
+
+            if 'DBUS_SESSION_BUS_ADDRESS' not in environ:
+                continue
+
+            address = environ['DBUS_SESSION_BUS_ADDRESS']
+            if address not in visited:
+                uid = process.uids().effective
+                previous = None
+                previous_uid = None
+
                 if setenv:
-                    if previous:
-                        os.environ['DBUS_SESSION_BUS_ADDRESS'] = previous
-                    else:
-                        del os.environ['DBUS_SESSION_BUS_ADDRESS']
+                    previous_uid = os.geteuid()
 
-                    if previous_uid != uid:
+                    if not uid == previous_uid:
                         try:
-                            os.seteuid(previous_uid)
+                            os.seteuid(uid)
                         except Exception:
-                            pass
+                            continue
 
-                visited.add(address)
+                    if 'DBUS_SESSION_BUS_ADDRESS' is os.environ:
+                        previous = os.environ['DBUS_SESSION_BUS_ADDRESS']
+
+                    os.environ['DBUS_SESSION_BUS_ADDRESS'] = address
+
+                try:
+                    yield (uid, address)
+                except Exception:
+                    pass
+                finally:
+                    if setenv:
+                        if previous:
+                            os.environ['DBUS_SESSION_BUS_ADDRESS'] = previous
+                        else:
+                            del os.environ['DBUS_SESSION_BUS_ADDRESS']
+
+                        if previous_uid != uid:
+                            try:
+                                os.seteuid(previous_uid)
+                            except Exception:
+                                pass
+
+                    visited.add(address)
+
+    except AttributeError:
+        # Fix AttributeError: 'module' object has no attribute 'process_iter'
+        pass
 
     # Problems occured with this block of code => permission denied to lots of file even with sudo
     # for session_bus_directory in get(directory='.dbus/session-bus'):
