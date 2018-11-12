@@ -37,11 +37,11 @@ class EyeCON(ModuleInfo):
             try:
                 hkey = OpenKey(path[1],path[2])
                 reg_key = winreg.QueryValueEx(hkey, path[3])[0]
-            except Exception, e:
+                if reg_key != '': hosts += [reg_key]
+            except Exception:
                 # skipping if value doesn't exist
                 #self.debug(u'Problems with key:: {reg_key}'.format(reg_key=path[1]+path[2]))
                 pass
-            if reg_key != '': hosts += [reg_key]
         return hosts
 
     def credentials_from_registry(self):
