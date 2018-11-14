@@ -65,6 +65,7 @@ class Vnc(ModuleInfo):
         vncs = (
             ('RealVNC 4.x', 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\RealVNC\\WinVNC4', 'Password'),
             ('RealVNC 3.x', 'HKEY_LOCAL_MACHINE\\SOFTWARE\\RealVNC\\vncserver', 'Password'),
+            ('RealVNC 4.x', 'HKEY_LOCAL_MACHINE\\SOFTWARE\\RealVNC\\WinVNC4', 'Password'),
             ('RealVNC 4.x', 'HKEY_CURRENT_USER\\SOFTWARE\\RealVNC\\WinVNC4', 'Password'),
             ('RealVNC 3.x', 'HKEY_CURRENT_USER\\Software\\ORL\\WinVNC3', 'Password'),
             ('TightVNC', 'HKEY_CURRENT_USER\\Software\\TightVNC\\Server', 'Password'),
