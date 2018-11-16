@@ -2,6 +2,7 @@
 # !/usr/bin/python
 import os
 import ctypes
+import sys
 
 from lazagne.config.winstructure import get_os_version
 from lazagne.config.constant import constant
@@ -50,8 +51,8 @@ def set_env_variables(user, to_impersonate=False):
         # Get value from environment variables
         for env in constant.profile:
             if os.environ.get(env):
-                constant.profile[env] = os.environ.get(env)
-                # constant.profile[env] = os.environ.get(env).decode(sys.getfilesystemencoding())
+                # constant.profile[env] = os.environ.get(env)
+                constant.profile[env] = os.environ.get(env).decode(sys.getfilesystemencoding())
 
     # Replace "drive" and "user" with the correct values
     for env in constant.profile:
