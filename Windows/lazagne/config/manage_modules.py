@@ -41,6 +41,7 @@ from lazagne.softwares.sysadmin.cyberduck import Cyberduck
 from lazagne.softwares.sysadmin.filezilla import Filezilla
 from lazagne.softwares.sysadmin.ftpnavigator import FtpNavigator
 from lazagne.softwares.sysadmin.opensshforwindows import OpenSSHForWindows
+from lazagne.softwares.sysadmin.openvpn import OpenVPN
 from lazagne.softwares.sysadmin.puttycm import Puttycm
 from lazagne.softwares.sysadmin.rdpmanager import RDPManager
 from lazagne.softwares.sysadmin.unattended import Unattended
@@ -138,6 +139,7 @@ def get_modules():
         FtpNavigator(),
         Puttycm(),
         OpenSSHForWindows(),
+        OpenVPN(),
         RDPManager(),
         Unattended(),
         WinSCP(),

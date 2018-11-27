@@ -102,7 +102,7 @@ Supported software
 | Mails | Outlook, Thunderbird  | Clawsmail, Thunderbird |  |
 | Dumps from memory | Keepass, Wdigest (mimikatz method) | system password |  |
 | SVN | Tortoise  | | |
-| Sysadmin | Apache Directory studio, CoreFTP, CyberDuck, fileZilla, FTPNavigator, OpenSSH, PuttyCMRDPManager, WinSCP, Windows Subsystem for Linux | AWS,  Docker, Environnement variable, FileZilla, History files, SSH private keys |  |
+| Sysadmin | Apache Directory studio, CoreFTP, CyberDuck, fileZilla, FTPNavigator, OpenSSH, OpenVPN, PuttyCMRDPManager, WinSCP, Windows Subsystem for Linux | AWS,  Docker, Environnement variable, FileZilla, History files, SSH private keys |  |
 | Wifi | Wireless Network | Network Manager | * CF Keychains |
 | Internal mechanism passwords storage | .NET Passport, Generic Network Hashdump (LM/NT), LSA secret | GNOME Keyring, Kwallet,hashdump | Keychains, hashdump |
 
