@@ -9,6 +9,7 @@ from lazagne.softwares.browsers.opera import Opera
 from lazagne.softwares.browsers.chrome import Chrome
 # sysadmin
 from lazagne.softwares.sysadmin.filezilla import Filezilla
+from lazagne.softwares.sysadmin.fstab import Fstab
 from lazagne.softwares.sysadmin.env_variable import Env_variable
 from lazagne.softwares.sysadmin.shadow import Shadow
 from lazagne.softwares.sysadmin.aws import Aws
@@ -57,6 +58,7 @@ def get_modules():
         DbVisualizer(),
         Env_variable(),
         Filezilla(),
+        Fstab(),
         # Mozilla(),
         Opera(),
         Chrome(),
