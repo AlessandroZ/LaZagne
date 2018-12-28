@@ -13,6 +13,7 @@ class VaultFiles(ModuleInfo):
         pwd_found = []
         if constant.user_dpapi and constant.user_dpapi.unlocked:
             main_vault_directory = os.path.join(constant.profile['APPDATA'], u'..', u'Local', u'Microsoft', u'Vault')
+            main_vault_directory =  os.path.abspath(main_vault_directory)
             if os.path.exists(main_vault_directory):
                 for vault_directory in os.listdir(main_vault_directory):
                     cred = constant.user_dpapi.decrypt_vault(os.path.join(main_vault_directory, vault_directory))
