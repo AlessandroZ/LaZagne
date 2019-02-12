@@ -20,4 +20,3 @@ class constant():
     quiet_mode          = False
     st                  = None  # Standard output
     modules_dic         = {}
-

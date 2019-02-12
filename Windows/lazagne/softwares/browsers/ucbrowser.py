@@ -15,7 +15,8 @@ class UCBrowser(ChromiumBased):
         data_dir = u'{LOCALAPPDATA}\\UCBrowser'.format(**constant.profile)
         try:
             # UC Browser seems to have random characters appended to the User Data dir so we'll list them all
-            self.paths = [os.path.join(data_dir, d) for d in os.listdir(data_dir)]
+            self.paths = [os.path.join(data_dir, d)
+                          for d in os.listdir(data_dir)]
         except Exception:
             self.paths = []
         return ChromiumBased._get_database_dirs(self)

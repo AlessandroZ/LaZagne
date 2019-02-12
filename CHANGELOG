@@ -1,238 +1,236 @@
 LaZagne 2.4
 - Windows / Linux / Mac
-	* Big code review and lots of bug fixed
-	* PEP8 Style (thanks to @ingested)
-	* Pycrypto denpendency removed
+    * Big code review and lots of bug fixes
+    * PEP8 Style (thanks to @ingested)
+    * Pycrypto dependency removed
 
 - Linux
-	* Work with Python 3
-	* Removing external libs to decrypt KDE secrets (only use dbus)
-	* Bug fix
+    * Work with Python 3
+    * Removing external libs to decrypt KDE secrets (only use dbus)
+    * Bug fix
 
 - Windows
-	* Adding pypykatz module - awesome work from @skelsec
-		- https://github.com/skelsec/pypykatz
-	* Adding VNC module - thanks to @aldorm
-	* Manage more than 26 different browsers now (thanks to @ingested)
-	* Removing construct on DPAPI function (lots of bug fix on DPAPI as well)
-	* Removing psutil dependency
+    * Adding pypykatz module - awesome work from @skelsec
+        - https://github.com/skelsec/pypykatz
+    * Adding VNC module - thanks to @aldorm
+    * Manage more than 26 different browsers now (thanks to @ingested)
+    * Removing construct on DPAPI function (lots of bug fix on DPAPI as well)
+    * Removing psutil dependency
 
 LaZagne 2.3.2 (22/03/2018)
 - Windows
-	* Big code review
-	* Lots of minor bug fixed
-	* If windows user password found => domain passwords retrieved from credentials files
-	* If windows user password not found => DPAPI hash printed to bruteforce with john or hashcat (no admin privilege required)
-	* New modules added postgresql and psi-im (thanks to @m41nt41n3r)
-	* XP managed
-	* Adding support for newest firefox version. Awesome work from lclevy: https://github.com/lclevy/firepwd
-	* Adding Wdigest passwords (using mimikatz signature) 
-		* Works on Vista / Win7 x86 and x64
-		* Thanks to 
-			* n1nj4sec for https://github.com/n1nj4sec/memorpy/
-			* Francesco Picasso for https://github.com/RealityNet/hotoloti/blob/master/volatility/mimikatz.py
-	* Note: right now, LaZagne x86 cannot read memory from a x64 process (so some modules cannot work using this build such as wdigest passwords)
-		* That's why, two lazagne binaries have been built (x86 and x64).
+    * Big code review
+    * Lots of minor bug fixes
+    * If windows user password found => domain passwords retrieved from credentials files
+    * If windows user password not found => DPAPI hash printed to brute force with John or hashcat (no admin privilege required)
+    * New modules added PostgreSQL and psi-im (thanks to @m41nt41n3r)
+    * XP managed
+    * Adding support for newest Firefox version. Awesome work from lclevy: https://github.com/lclevy/firepwd
+    * Adding Wdigest passwords (using mimikatz signature)
+        * Works on Vista / Win7 x86 and x64
+        * Thanks to
+            * n1nj4sec for https://github.com/n1nj4sec/memorpy/
+            * Francesco Picasso for https://github.com/RealityNet/hotoloti/blob/master/volatility/mimikatz.py
+    * Note: right now, LaZagne x86 cannot read memory from an x64 process (so some modules cannot work using this build such as wdigest passwords)
+        * That's why two LaZagne binaries have been built (x86 and x64).
 
 - Linux
-	* Big code review
-	* Lots of minor bug fixed
-	* Adding support for newest firefox version. Awesome work from lclevy: https://github.com/lclevy/firepwd
+    * Big code review
+    * Lots of minor bug fixes
+    * Adding support for newest Firefox version. Awesome work from lclevy: https://github.com/lclevy/firepwd
 
 LaZagne 2.3.1 (18/10/2017)
 - Only Windows
-	* Fix unicode issue (#154)
-	* Print less local output when a specific drive has been choosed (#156)
+    * Fix Unicode issue (#154)
+    * Print less local output when a specific drive has been chosen (#156)
 
 LaZagne 2.3 (31/08/2017)
 - Only Windows
-	* Bug "UnicodeDecodeError" resolved (#134) 
-		* Support many alphabets (for chinese, russian, ... passwords)
-			* Well managed when password are written to files (Lazagne.exe all -oA), not always correct when printed on the console (depend on the system encoding)
-	* New module added 
-		* CocCoc browser supported (#141)
-	* Quiet mode added to not print anything on the console (#140) => lazagne.exe all -quiet 
-	* Retrieve passwords from another drive (#142) => lazagne all -drive D
-	* lsa secrets are well written on files (when -oA, -oJ or -oN options are used)
+    * Bug "UnicodeDecodeError" resolved (#134)
+        * Support many alphabets (for Chinese, Russian, ... passwords)
+            * Well managed when password are written to files (Lazagne.exe all -oA), not always correct when printed on the console (depend on the system encoding)
+    * New module added
+        * CocCoc browser supported (#141)
+    * Quiet mode added to not print anything on the console (#140) => lazagne.exe all -quiet
+    * Retrieve passwords from another drive (#142) => lazagne all -drive D
+    * lsa secrets are well written on files (when -oA, -oJ or -oN options are used)
 
 LaZagne 2.2 (17/05/2017)
 - Only Windows
-	* Bug correction: #118
+    * Bug correction: #118
 
 LaZagne 2.1 (28/04/2017)
 - Only Windows
-	* Removing many dependencies (win32api, win32crypt, win32xxx, colorama, etc.) using ctypes
-	* Adding little modules
-		* Retrieve passwords when autologon is enabled
-		* Retrieve passwords stored in unattended files
-	* Using creddump to retrieve system hashes + LSA secrets
-	* Retrieve chrome passwords from multiple profiles
-	* Little bugs fixed + some code review
+    * Removing many dependencies (win32api, win32crypt, win32xxx, colorama, etc.) using ctypes
+    * Adding little modules
+        * Retrieve passwords when autologon is enabled
+        * Retrieve passwords stored in unattended files
+    * Using creddump to retrieve system hashes + LSA secrets
+    * Retrieve chrome passwords from multiple profiles
+    * Little bugs fixed + some code review
 
 - Linux
-	* Adding mimipy module from n1nj4sec (https://github.com/n1nj4sec/mimipy) to retrieve the system password from memory (need root privileges)
+    * Adding mimipy module from n1nj4sec (https://github.com/n1nj4sec/mimipy) to retrieve the system password from memory (need root privileges)
 
 LaZagne 2.0 (20/12/2016)
 - Only Windows:
-	* Only one process is launched (impersonnation is done using "ImpersonateLoggedOnUser" and no more "CreateProcessAsUser")
-	* No more temporary files written on the disk
-		* Uses of powerdump from empire (thanks to adaptivethreat) to avoid writing hives on the disk (avoid "reg save ...")
-	* Better way to catch errors
-	* Json fixes (output to be more "human readable" + error encoding)
-	* Code cleaned
-	* New category added called "memory": used to retrieve password in memory
-		* KeeThief added (thanks to adaptivethreat) - retrieve keepass (version 2.x) password from memory
-			* Powershell code used from https://github.com/adaptivethreat/KeeThief/
-		* Browser passwords present in memory could be retrieved
-			* Thanks to n1nj4sec for his awesome project "memorpy"
-				* https://github.com/n1nj4sec/memorpy
-	* New category added called "php":
-		* New module "PHP Composer" (thanks to righettod => https://github.com/righettod)
+    * Only one process is launched (impersonation is done using "ImpersonateLoggedOnUser" and no more "CreateProcessAsUser")
+    * No more temporary files written on the disk
+        * Uses of powerdump from empire (thanks to adaptivethreat) to avoid writing hives on the disk (avoid "reg save ...")
+    * Better way to catch errors
+    * JSON fixes (output to be more "human readable" + error encoding)
+    * Code cleaned
+    * New category added called "memory": used to retrieve password in memory
+        * KeeThief added (thanks to adaptivethreat) - retrieve KeePass (version 2.x) password from memory
+            * Powershell code used from https://github.com/adaptivethreat/KeeThief/
+        * Browser passwords present in memory could be retrieved
+            * Thanks to n1nj4sec for his awesome project "memorpy"
+                * https://github.com/n1nj4sec/memorpy
+    * New category added called "php":
+        * New module "PHP Composer" (thanks to righettod => https://github.com/righettod)
 
 LaZagne 1.8 (15/11/2016)
 - Only Windows:
-	* Lots of minor bugs fixed
-		* Firefox
-			* when many profiles used (thanks to Aorimn) or when profiles.ini is corrupted
-		* IE: retrieving historic list or windows vault
-		* Writing json file
-		* etc...
+    * Lots of minor bugs fixed
+        * Firefox
+            * when many profiles used (thanks to Aorimn) or when profiles.ini is corrupted
+        * IE: retrieving historic list or windows vault
+        * Writing JSON file
+        * etc...
 
 LaZagne 1.7 (11/09/2016)
 - Only Windows:
-	* New modules (thanks to righettod => https://github.com/righettod): 
-		* Robomongo - MongoDB client
-	* Internet Explorer bug fix (for windows 7)
+    * New modules (thanks to righettod => https://github.com/righettod):
+        * Robomongo - MongoDB client
+    * Internet Explorer bug fix (for windows 7)
 
 LaZagne 1.6 (05/09/2016)
 - Only Windows:
-	* Internet Explorer history retrieved using powershell - no more dll written on the disk (all in memory)
-	* Internet Explorer passwords stored in the credential manager retrieved (for Win8 and higher)
-	* Wifi bug fixed
+    * Internet Explorer history retrieved using Powershell - no more dll written on the disk (all in memory)
+    * Internet Explorer passwords stored in the credential manager retrieved (for Win8 and higher)
+    * Wifi bug fixed
 
 LaZagne 1.5 (01/08/2016)
 - Only Windows:
-	* New modules (thanks to righettod => https://github.com/righettod): 
-		* Maven java build tool 
-		* Apache Directory Studio 
-		* "OpenSSH" application
+    * New modules (thanks to righettod => https://github.com/righettod):
+        * Maven java build tool
+        * Apache Directory Studio
+        * "OpenSSH" application
 
 LaZagne 1.4 (21/07/2016)
 - Only Windows:
-	* New module: Git for Windows (thanks to righettod => https://github.com/righettod)
+    * New module: Git for Windows (thanks to righettod => https://github.com/righettod)
 
 LaZagne 1.3 (02/07/2016)
 - Only Windows
-See "User impersonnation" in README for more information
-	* User impersonation (high privileges needed)
-		* Stealing user process token (when other user processes are running on the system)
-			* All credentials can be retrieved (Chrome, Firefox, etc.)
-		* Browsing file system (ex: C:\Users\<user>\...) 
-			* Only software's passwords which do not use Windows API to encrypt it, can be retrieved (Firefox, Jitsi, Pidgin, etc.). 
-	* Json output has been implemented (txt output is still present with the options -oN)
-		* Lazagne all -oJ => Json output
-	* Standalone lighter (from 18 Mo to 6 Mo) => Thanks to the new version of Pyinstaller
-	* Fix some bugs
+See "User impersonation" in README for more information
+    * User impersonation (high privileges needed)
+        * Stealing user process token (when other user processes are running on the system)
+            * All credentials can be retrieved (Chrome, Firefox, etc.)
+        * Browsing file system (ex: C:\Users\<user>\...)
+            * Only software's passwords which do not use Windows API to encrypt it, can be retrieved (Firefox, Jitsi, Pidgin, etc.).
+    * JSON output has been implemented (txt output is still present with the options -oN)
+        * LaZagne all -oJ => JSON output
+    * Standalone lighter (from 18 Mo to 6 Mo) => Thanks to the new version of Pyinstaller
+    * Fix some bugs
 
 LaZagne 1.1 (22/10/2015)
 - Only Windows
-	* New category: games (Thanks to David Lodge)
-		* Galcon Fusion 
-		* Kalypso Media Launcher
-		* Rogue's Tale
-		* Turba
+    * New category: games (Thanks to David Lodge)
+        * Galcon Fusion
+        * Kalypso Media Launcher
+        * Rogue's Tale
+        * Turba
 
 LaZagne 1.0 (04/10/2015)
 - Only Windows
-	* Fix chrome database locked
-	* Fix windows secrets bug
-	* Fix opera bug
+    * Fix chrome database locked
+    * Fix windows secrets bug
+    * Fix opera bug
 
 - For Linux
-	* Fix opera bug
+    * Fix opera bug
 
 LaZagne 0.9.1 (09/07/2015)
 - Only Windows
-	* Fix mastepassword check error - mozilla
-	* Fix database error - mozilla
+    * Fix master password check error - Mozilla
+    * Fix database error - Mozilla
 
 - For Linux
-	* Fix encoding error
+    * Fix encoding error
 
 LaZagne 0.9 (01/07/2015)
 - Only Windows
-	* Fix Opera bug (thanks to rolandstarke)
-	* Fix encoding error for generic network passwords
+    * Fix Opera bug (thanks to rolandstarke)
+    * Fix encoding error for generic network passwords
 
 - For Windows / Linux
-	* Version number available from the main menu (before: Lazagne all --version => now: Lazagne --version)
-	* spelling mistake corrected
+    * Version number available from the main menu (before: Lazagne all --version => now: Lazagne --version)
+    * spelling mistake corrected
 
 LaZagne 0.8 (11/06/2015)
 - Only Linux
-	* /etc/shadow modules (dictionary attack on hash)
+    * /etc/shadow modules (dictionary attack on hash)
 
-- For Windows / Linux 
-	* Management of the following options "-path" (for dictionary attack) and "-b" (for bruteforce attack) in a different way. Used as general options and not implemented by module. Using the same option, the file will be used by different modules; example: to find the mozilla masterpassword, the unix system password (from the hash), used by skype (for windows), etc.
+- For Windows / Linux
+    * Management of the following options "-path" (for dictionary attacks) and "-b" (for brute force attack) in a different way. Used as general options and not implemented by module. Using the same option, the file will be used by different modules; example: to find the Mozilla master password, the Unix system password (from the hash), used by Skype (for windows), etc.
 
 LaZagne 0.71 (04/06/2015)
 - Only Linux
-	* Wifi password module from WPA Supplicant implemented (by rpesche)
+    * Wifi password module from WPA Supplicant implemented (by rpesche)
 
 LaZagne 0.7 (29/05/2015)
-- For Windows / Linux 
-	* Fix mozilla bug (special characters were not printed)
+- For Windows / Linux
+    * Fix Mozilla bug (special characters were not printed)
 
 LaZagne 0.6 (26/05/2015)
-- For Windows / Linux 
-	* Firefox / Thunderbird: No more dependency with nss library (many thanks to Laurent Clevy for its awesome technic: https://github.com/lclevy/firepwd)
-	* Fix opera bug
+- For Windows / Linux
+    * Firefox / Thunderbird: No more dependency with NSS library (many thanks to Laurent Clevy for its awesome technic: https://github.com/lclevy/firepwd)
+    * Fix opera bug
 
 - Only Windows
-	* WinSCP false positive removed (when SSH key is used)
+    * WinSCP false positive removed (when SSH key is used)
 
 LaZagne 0.5 (21/05/2015)
 - For Windows
-	* Fix chrome bug
+    * Fix chrome bug
 
 LaZagne 0.5 (20/05/2015)
-- For Windows / Linux 
-	* 2 levels of verbosity added for debugs
-	* try / except more verbose depending on the verbosity levels
-	* dico file moved from browsers to config repository (used for dictionary attack)
-	* new Filezilla versions managed
+- For Windows / Linux
+    * 2 levels of verbosity added for debugs
+    * try / except more verbose depending on the verbosity levels
+    * dico file moved from browsers to config repository (used for dictionary attacks)
+    * new Filezilla versions managed
 
 - Only Windows
-	* check weak passwords (logins equal to password) for windows account when hashes (nthash) have been found
-	* function to write the output modified on windows module
-	* WConio replaced by colorama for the window color
-	* Skype: try a dictionary attack (500 famous password) when the hash has been retrieved
+    * check weak passwords (logins equal to password) for windows account when hashes (nthash) have been found
+    * function to write the output modified on windows module
+    * WConio replaced by colorama for the window color
+    * Skype: try a dictionary attack (500 famous passwords) when the hash has been retrieved
 
 LaZagne 0.4 (12/05/2015)
 - For Linux
-	* Kwallet module implemented (by quentin hardy)
+    * Kwallet module implemented (by quentin hardy)
 
 LaZagne 0.4 (05/05/2015)
 - For Windows
-	* Fix ie bugs
-	* Fix thunderbird bug
+    * Fix ie bugs
+    * Fix Thunderbird bug
 
 LaZagne 0.3 (30/04/2015)
 - For Windows
-	* Flexibility on the code: much more easy to add modules
-	* Passwords found previously are used to test firefox masterpassword if set
+    * Flexibility on the code: much more easy to add modules
+    * Passwords found previously are used to test Firefox master password if set
 
 - For Linux
-	* Flexibility on the code: much more easy to add modules
-	* Passwords found previously are used to test firefox masterpassword if set
-	* 2 different standalones (32 bits / 64 bits)
+    * Flexibility on the code: much more easy to add modules
+    * Passwords found previously are used to test Firefox master password if set
+    * 2 different standalone binaries (32 bits / 64 bits)
 
 LaZagne 0.2 (27/04/2015)
 - For Windows
-	* New modules: Windows hashes + LSA Secrets
-	* Passwords found previously are used to test windows hashes and firefox masterpassword
-	* 500 most famous passwords are used to retrieve the windows password (once we get the hashes)
-	* Wifi bug fixed: only one password was printed
-	* I.E bug fixed
-
-
+    * New modules: Windows hashes + LSA Secrets
+    * Passwords found previously are used to test windows hashes and Firefox master password
+    * 500 most famous passwords are used to retrieve the windows password (once we get the hashes)
+    * Wifi bug fixed: only one password was printed
+    * I.E bug fixed

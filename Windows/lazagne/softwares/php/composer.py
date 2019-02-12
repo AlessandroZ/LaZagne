@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import json
-
-from lazagne.config.module_info import ModuleInfo
-from lazagne.config.constant import constant
-
 import os
+
+from lazagne.config.constant import constant
+from lazagne.config.module_info import ModuleInfo
 
 
 class Composer(ModuleInfo):
@@ -25,8 +24,8 @@ class Composer(ModuleInfo):
             for cred_type in creds:
                 for domain in creds[cred_type]:
                     values = {
-                        "AuthenticationType" : cred_type,
-                        "Domain" : domain,
+                        "AuthenticationType": cred_type,
+                        "Domain": domain,
                     }
                     # Extract basic authentication if we are on a "http-basic" section
                     # otherwise extract authentication token
@@ -49,13 +48,13 @@ class Composer(ModuleInfo):
         # See "https://seld.be/notes/authentication-management-in-composer"
         location = ''
         tmp_location = [
-            os.path.join(constant.profile["COMPOSER_HOME"], u'auth.json'), 
+            os.path.join(constant.profile["COMPOSER_HOME"], u'auth.json'),
             os.path.join(constant.profile["APPDATA"], u'Composer\\auth.json')
         ]
         for tmp in tmp_location:
             if os.path.isfile(tmp):
                 location = tmp
                 break
-            
+
         if location:
             return self.extract_credentials(location)

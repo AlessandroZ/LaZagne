@@ -13,6 +13,7 @@ except NameError:
 
 # HEADER_LENGTH = 4+32+4
 
+
 def read_int(stream, length):
     try:
         return struct.unpack('<I', stream.read(length))[0]
@@ -27,13 +28,13 @@ class HashedBlockIO(io.BytesIO):
     block data. The block index starts counting at 0. The block hash is a
     SHA-256 hash of the block data. A block has a maximum length of
     BLOCK_LENGTH, but can be shorter.
-    
+
     Provide a I/O stream containing the hashed block data as the `block_stream`
     argument when creating a HashedBlockReader. Alternatively the `bytes`
     argument can be used to hand over data as a string/bytearray/etc. The data
     is verified upon initialization and an IOError is raised when a hash does
     not match.
-    
+
     HashedBlockReader is a subclass of io.BytesIO. The inherited read, seek, ...
     functions shall be used to access the verified data.
     """
@@ -83,9 +84,9 @@ class HashedBlockIO(io.BytesIO):
         """
         Write all data in this buffer, starting at stream position 0, formatted
         in hashed blocks to the given `stream`.
-        
+
         For example, writing data from one file into another as hashed blocks::
-            
+
             # create new hashed block io without input stream or data
             hb = HashedBlockIO()
             # read from a file, write into the empty hb

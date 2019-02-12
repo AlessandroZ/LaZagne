@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # portable decryption functions and BSD DB parsing by Laurent Clevy (@lorenzo2472)
 # from https://github.com/lclevy/firepwd/blob/master/firepwd.py
 
 import hmac
 import json
+import os
 import sqlite3
 import struct
 import traceback
@@ -15,16 +16,16 @@ from hashlib import sha1
 from pyasn1.codec.der import decoder
 
 from lazagne.config.constant import constant
-from lazagne.config.crypto.pyDes import triple_des, CBC
+from lazagne.config.crypto.pyDes import CBC, triple_des
 from lazagne.config.dico import get_dic
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.winstructure import char_to_int, convert_to_byte, python_version
+from lazagne.config.winstructure import (char_to_int, convert_to_byte,
+                                         python_version)
 
 try:
     from ConfigParser import RawConfigParser  # Python 2.7
 except ImportError:
     from configparser import RawConfigParser  # Python 3
-import os
 
 
 def l(n):
@@ -85,18 +86,21 @@ class Mozilla(ModuleInfo):
 
                     if cp.has_option(section, 'IsRelative'):
                         if cp.get(section, 'IsRelative') == '1':
-                            profile_path = os.path.join(directory, cp.get(section, 'Path').strip())
+                            profile_path = os.path.join(
+                                directory, cp.get(section, 'Path').strip())
                         elif cp.get(section, 'IsRelative') == '0':
                             profile_path = cp.get(section, 'Path').strip()
 
-                    else: # No "IsRelative" in profiles.ini
-                        profile_path = os.path.join(directory, cp.get(section, 'Path').strip())
-                    
+                    else:  # No "IsRelative" in profiles.ini
+                        profile_path = os.path.join(
+                            directory, cp.get(section, 'Path').strip())
+
                     if profile_path:
                         profile_list.append(profile_path)
 
         except Exception as e:
-            self.error(u'An error occurred while reading profiles.ini: {}'.format(e))
+            self.error(
+                u'An error occurred while reading profiles.ini: {}'.format(e))
         return profile_list
 
     def get_key(self, profile):
@@ -107,14 +111,16 @@ class Mozilla(ModuleInfo):
         try:
             row = None
             # Remove error when file is empty
-            with open(os.path.join(profile, 'key4.db'), 'rb') as f: 
+            with open(os.path.join(profile, 'key4.db'), 'rb') as f:
                 content = f.read()
-            
+
             if content:
-                conn = sqlite3.connect(os.path.join(profile, 'key4.db'))  # Firefox 58.0.2 / NSS 3.35 with key4.db in SQLite
+                # Firefox 58.0.2 / NSS 3.35 with key4.db in SQLite
+                conn = sqlite3.connect(os.path.join(profile, 'key4.db'))
                 c = conn.cursor()
                 # First check password
-                c.execute("SELECT item1,item2 FROM metadata WHERE id = 'password';")
+                c.execute(
+                    "SELECT item1,item2 FROM metadata WHERE id = 'password';")
                 try:
                     row = c.next()  # Python 2
                 except Exception:
@@ -124,7 +130,8 @@ class Mozilla(ModuleInfo):
             self.debug(traceback.format_exc())
         else:
             if row:
-                (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password='', key_data=row)
+                (global_salt, master_password, entry_salt) = self.manage_masterpassword(
+                    master_password='', key_data=row)
 
                 if global_salt:
                     # Decrypt 3DES key to decrypt "logins.json" content
@@ -149,7 +156,8 @@ class Mozilla(ModuleInfo):
                     decoded_a11 = decoder.decode(a11)
                     entry_salt = decoded_a11[0][0][1][0].asOctets()
                     cipher_t = decoded_a11[0][1].asOctets()
-                    key = self.decrypt_3des(global_salt, master_password, entry_salt, cipher_t)
+                    key = self.decrypt_3des(
+                        global_salt, master_password, entry_salt, cipher_t)
                     if key:
                         self.debug(u'key: {key}'.format(key=repr(key)))
                         yield key[:24]
@@ -198,7 +206,8 @@ class Mozilla(ModuleInfo):
             seq_len = length
             read_len = 0
             while seq_len > 0:
-                len2 = self.print_asn1(d[2 + skip + read_len:], seq_len, rl + 1)
+                len2 = self.print_asn1(
+                    d[2 + skip + read_len:], seq_len, rl + 1)
                 seq_len = seq_len - len2
                 read_len = read_len + len2
             return length + 2
@@ -287,17 +296,20 @@ class Mozilla(ModuleInfo):
         if unhexlify('f8000000000000000000000000000001') not in key_data:
             return None
 
-        priv_key_entry = key_data[unhexlify('f8000000000000000000000000000001')]
+        priv_key_entry = key_data[unhexlify(
+            'f8000000000000000000000000000001')]
         salt_len = char_to_int(priv_key_entry[1])
         name_len = char_to_int(priv_key_entry[2])
-        priv_key_entry_asn1 = decoder.decode(priv_key_entry[3 + salt_len + name_len:])
+        priv_key_entry_asn1 = decoder.decode(
+            priv_key_entry[3 + salt_len + name_len:])
         data = priv_key_entry[3 + salt_len + name_len:]
         self.print_asn1(data, len(data), 0)
 
         # See https://github.com/philsmd/pswRecovery4Moz/blob/master/pswRecovery4Moz.txt
         entry_salt = priv_key_entry_asn1[0][0][1][0].asOctets()
         priv_key_data = priv_key_entry_asn1[0][1].asOctets()
-        priv_key = self.decrypt_3des(global_salt, master_password, entry_salt, priv_key_data)
+        priv_key = self.decrypt_3des(
+            global_salt, master_password, entry_salt, priv_key_data)
         self.print_asn1(priv_key, len(priv_key), 0)
         priv_key_asn1 = decoder.decode(priv_key)
         pr_key = priv_key_asn1[0][2].asOctets()
@@ -309,7 +321,8 @@ class Mozilla(ModuleInfo):
 
     @staticmethod
     def decode_login_data(data):
-        asn1data = decoder.decode(b64decode(data))  # First base64 decoding, then ASN1DERdecode
+        # First base64 decoding, then ASN1DERdecode
+        asn1data = decoder.decode(b64decode(data))
         # For login and password, keep :(key_id, iv, ciphertext)
         return asn1data[0][0].asOctets(), asn1data[0][1][1].asOctets(), asn1data[0][2].asOctets()
 
@@ -343,7 +356,8 @@ class Mozilla(ModuleInfo):
         for row in c:
             enc_username = row[6]
             enc_password = row[7]
-            logins.append((self.decode_login_data(enc_username), self.decode_login_data(enc_password), row[1]))
+            logins.append((self.decode_login_data(enc_username),
+                           self.decode_login_data(enc_password), row[1]))
         return logins
 
     def manage_masterpassword(self, master_password='', key_data=None, new_version=True):
@@ -394,7 +408,8 @@ class Mozilla(ModuleInfo):
                 entry_salt = decoded_item2[0][0][1][0].asOctets()
                 encrypted_passwd = decoded_item2[0][1].asOctets()
 
-            cleartext_data = self.decrypt_3des(global_salt, master_password, entry_salt, encrypted_passwd)
+            cleartext_data = self.decrypt_3des(
+                global_salt, master_password, entry_salt, encrypted_passwd)
             if cleartext_data != convert_to_byte('password-check\x02\x02'):
                 return '', '', ''
 
@@ -416,7 +431,8 @@ class Mozilla(ModuleInfo):
                                                                                        master_password=word.strip(),
                                                                                        new_version=new_version)
             if master_password:
-                self.debug(u'Master password found: {}'.format(master_password))
+                self.debug(
+                    u'Master password found: {}'.format(master_password))
                 return global_salt, master_password, entry_salt
 
         self.warning(u'No password has been found using the default list')
@@ -453,7 +469,8 @@ class Mozilla(ModuleInfo):
         self.path = self.path.format(**constant.profile)
         if os.path.exists(self.path):
             for profile in self.get_firefox_profiles(self.path):
-                self.debug(u'Profile path found: {profile}'.format(profile=profile))
+                self.debug(
+                    u'Profile path found: {profile}'.format(profile=profile))
 
                 for key in self.get_key(profile):
                     credentials = self.get_login_data(profile)
@@ -466,7 +483,8 @@ class Mozilla(ModuleInfo):
                                 'Password': self.decrypt(key=key, iv=passw[1], ciphertext=passw[2]).decode("utf-8"),
                             })
                         except Exception as e:
-                            self.debug(u'An error occurred decrypting the password: {error}'.format(error=e))
+                            self.debug(
+                                u'An error occurred decrypting the password: {error}'.format(error=e))
 
         return pwd_found
 
@@ -481,4 +499,5 @@ firefox_browsers = [
     (u'icecat', u'{APPDATA}\\Mozilla\\icecat'),
 ]
 
-firefox_browsers = [Mozilla(browser_name=name, path=path) for name, path in firefox_browsers]
+firefox_browsers = [Mozilla(browser_name=name, path=path)
+                    for name, path in firefox_browsers]

@@ -2,14 +2,15 @@
 
 import os
 
-try: 
+import lazagne.config.winstructure as win
+from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import string_to_unicode
+
+try:
     import _winreg as winreg
 except ImportError:
     import winreg
 
-import lazagne.config.winstructure as win
-from lazagne.config.module_info import ModuleInfo
-from lazagne.config.winstructure import string_to_unicode
 
 
 class Turba(ModuleInfo):

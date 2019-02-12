@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*- 
-from .creddump7.win32.domcachedump import dump_file_hashes
+# -*- coding: utf-8 -*-
+from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import get_os_version
-from lazagne.config.constant import constant
+
+from .creddump7.win32.domcachedump import dump_file_hashes
 
 
 class Cachedump(ModuleInfo):
@@ -14,6 +15,7 @@ class Cachedump(ModuleInfo):
         if float(get_os_version()) >= 6.0:
             is_vista_or_higher = True
 
-        mscache = dump_file_hashes(constant.hives['system'], constant.hives['security'], is_vista_or_higher)
+        mscache = dump_file_hashes(
+            constant.hives['system'], constant.hives['security'], is_vista_or_higher)
         if mscache:
             return ['__MSCache__', mscache]

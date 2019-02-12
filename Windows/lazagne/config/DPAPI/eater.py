@@ -41,12 +41,12 @@ class Eater(object):
 
         """
         if fmt[0] not in ["<", ">", "!", "@"]:
-            fmt = self.endianness+fmt
+            fmt = self.endianness + fmt
         return fmt, struct.calcsize(fmt)
 
     def read(self, fmt):
         """Parses data with the given format string without taking away bytes.
-        
+
         Returns an array of elements or just one element depending on fmt.
 
         """
@@ -58,7 +58,7 @@ class Eater(object):
 
     def eat(self, fmt):
         """Parses data with the given format string.
-        
+
         Returns an array of elements or just one element depending on fmt.
 
         """
@@ -101,14 +101,15 @@ class Eater(object):
         """
         l = self.pop(fmt)
         return self.pop_string(l)
-    
+
     def remain(self):
         """Returns all the bytes that have not been eated nor poped yet."""
         return self.raw[self.ofs:self.end]
 
     def eat_sub(self, length):
         """Eats a sub-structure that is contained in the next length bytes"""
-        sub = self.__class__(self.raw[self.ofs:self.ofs+length], endianness=self.endianness)
+        sub = self.__class__(
+            self.raw[self.ofs:self.ofs + length], endianness=self.endianness)
         self.ofs += length
         return sub
 
@@ -124,5 +125,5 @@ class DataStruct(object):
             self.parse(Eater(raw, endianness="<"))
 
     def parse(self, eater_obj):
-        raise NotImplementedError("This function must be implemented in subclasses")
-
+        raise NotImplementedError(
+            "This function must be implemented in subclasses")

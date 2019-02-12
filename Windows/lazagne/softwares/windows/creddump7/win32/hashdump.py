@@ -19,16 +19,16 @@
 @contact:      bdolangavitt@wesleyan.edu
 """
 
-import hashlib
 import codecs
+import hashlib
 from struct import pack
+
+from lazagne.config.crypto.pyDes import ECB, des
+from lazagne.config.crypto.rc4 import RC4
+from lazagne.config.winstructure import char_to_int
 
 from ..addrspace import HiveFileAddressSpace
 from .rawreg import *
-from lazagne.config.crypto.rc4 import RC4
-from lazagne.config.crypto.pyDes import des, ECB
-from lazagne.config.winstructure import char_to_int
-
 
 odd_parity = [
     1, 1, 2, 2, 4, 4, 7, 7, 8, 8, 11, 11, 13, 13, 14, 14,
@@ -213,12 +213,14 @@ def get_user_hashes(user_key, hbootkey):
     for v in values(user_key):
         if v.Name == 'V':
             V = samaddr.read(v.Data.value, v.DataLength.value)
-    if not V: return None
+    if not V:
+        return None
 
     hash_offset = unpack("<L", V[0x9c:0x9c + 4])[0] + 0xCC
 
     lm_exists = True if unpack("<L", V[0x9c + 4:0x9c + 8])[0] == 20 else False
-    nt_exists = True if unpack("<L", V[0x9c + 16:0x9c + 20])[0] == 20 else False
+    nt_exists = True if unpack(
+        "<L", V[0x9c + 16:0x9c + 20])[0] == 20 else False
 
     enc_lm_hash = V[hash_offset + 4:hash_offset + 20] if lm_exists else ""
     enc_nt_hash = V[hash_offset + (24 if lm_exists else 8):hash_offset + (

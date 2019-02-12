@@ -19,8 +19,9 @@
 @contact:      bdolangavitt@wesleyan.edu
 """
 
-from ..newobj import Obj,Pointer
 from struct import unpack
+
+from ..newobj import Obj, Pointer
 
 ROOT_INDEX = 0x20
 LH_SIG = unpack("<H", b"lh")[0]
@@ -35,7 +36,7 @@ def get_root(address_space):
 def open_key(root, key):
     if key == []:
         return root
-    
+
     keyname = key.pop(0)
     for s in subkeys(root):
         if s.Name.upper() == keyname.upper():
@@ -44,10 +45,12 @@ def open_key(root, key):
     return None
 
 
-def subkeys(key,stable=True):
-    if stable: k = 0
-    else: k = 1
-    sk = (key.SubKeyLists[k]/["pointer", ["_CM_KEY_INDEX"]]).value
+def subkeys(key, stable=True):
+    if stable:
+        k = 0
+    else:
+        k = 1
+    sk = (key.SubKeyLists[k] / ["pointer", ["_CM_KEY_INDEX"]]).value
     sub_list = []
     if (sk.Signature.value == LH_SIG or
             sk.Signature.value == LF_SIG):
@@ -55,9 +58,9 @@ def subkeys(key,stable=True):
     elif sk.Signature.value == RI_SIG:
         lfs = []
         for i in range(sk.Count.value):
-            off,tp = sk.get_offset(['List', i])
-            lfs.append(Pointer("pointer", sk.address+off, sk.space,
-                ["_CM_KEY_INDEX"]))
+            off, tp = sk.get_offset(['List', i])
+            lfs.append(Pointer("pointer", sk.address + off, sk.space,
+                               ["_CM_KEY_INDEX"]))
         for lf in lfs:
             sub_list += lf.List
 

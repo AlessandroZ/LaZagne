@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import array
 import base64
 import binascii
@@ -8,7 +8,7 @@ import re
 from xml.etree.cElementTree import ElementTree
 
 from lazagne.config.constant import constant
-from lazagne.config.crypto.pyDes import des, CBC
+from lazagne.config.crypto.pyDes import CBC, des
 from lazagne.config.module_info import ModuleInfo
 
 
@@ -36,18 +36,21 @@ class Dbvisualizer(ModuleInfo):
 
     def decrypt(self, msg):
         enc_text = base64.b64decode(msg)
-        (dk, iv) = self.get_derived_key(self._passphrase, self._salt, self._iteration)
+        (dk, iv) = self.get_derived_key(
+            self._passphrase, self._salt, self._iteration)
         crypter = des(dk, CBC, iv)
         text = crypter.decrypt(enc_text)
         return re.sub(r'[\x01-\x08]', '', text)
 
     def run(self):
-        path = os.path.join(constant.profile['HOMEPATH'], u'.dbvis', u'config70', u'dbvis.xml')
+        path = os.path.join(
+            constant.profile['HOMEPATH'], u'.dbvis', u'config70', u'dbvis.xml')
         if os.path.exists(path):
             tree = ElementTree(file=path)
 
             pwd_found = []
-            elements = {'Alias': 'Name', 'Userid': 'Login', 'Password': 'Password', 'UrlVariables//Driver': 'Driver'}
+            elements = {'Alias': 'Name', 'Userid': 'Login',
+                        'Password': 'Password', 'UrlVariables//Driver': 'Driver'}
 
             for e in tree.findall('Databases/Database'):
                 values = {}
@@ -56,7 +59,8 @@ class Dbvisualizer(ModuleInfo):
                         if elem != "Password":
                             values[elements[elem]] = e.find(elem).text
                         else:
-                            values[elements[elem]] = self.decrypt(e.find(elem).text)
+                            values[elements[elem]] = self.decrypt(
+                                e.find(elem).text)
                     except Exception:
                         pass
 

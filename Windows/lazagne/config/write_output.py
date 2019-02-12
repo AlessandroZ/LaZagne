@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-from time import gmtime, strftime
+import ctypes
 import getpass
 import json
 import logging
-import ctypes
-import socket
 import os
+import socket
 import sys
+from time import gmtime, strftime
 
-from lazagne.config.winstructure import string_to_unicode, char_to_int, python_version
+from lazagne.config.winstructure import (char_to_int, python_version,
+                                         string_to_unicode)
+
 from .constant import constant
 
 # --------------------------- Standard output functions ---------------------------
@@ -30,7 +32,8 @@ class StandardOutput(object):
 |====================================================================|
 '''
 
-        self.FILTER = ''.join([(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])
+        self.FILTER = ''.join(
+            [(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])
 
     def set_color(self, color='white', intensity=False):
         c = None
@@ -60,14 +63,17 @@ class StandardOutput(object):
     # debug option for the logging
     def title_info(self, title):
         t = u'------------------- ' + title + ' passwords -----------------\n'
-        self.print_logging(function=logging.info, prefix='', message=t, color='white', intensity=True)
+        self.print_logging(function=logging.info, prefix='',
+                           message=t, color='white', intensity=True)
 
     def print_user(self, user, force_print=False):
         if logging.getLogger().isEnabledFor(logging.INFO) or force_print:
-            self.do_print(u'########## User: {user} ##########\n'.format(user=user))
+            self.do_print(
+                u'########## User: {user} ##########\n'.format(user=user))
 
     def print_footer(self, elapsed_time=None):
-        footer = '\n[+] %s passwords have been found.\n' % str(constant.nb_password_found)
+        footer = '\n[+] %s passwords have been found.\n' % str(
+            constant.nb_password_found)
         if not logging.getLogger().isEnabledFor(logging.INFO):
             footer += 'For more information launch it again with the -v option\n'
         if elapsed_time:
@@ -196,7 +202,8 @@ class StandardOutput(object):
             # Other passwords
             else:
                 # Remove duplicated password
-                pwd_found = [dict(t) for t in set([tuple(d.items()) for d in pwd_found])]
+                pwd_found = [dict(t) for t in set(
+                    [tuple(d.items()) for d in pwd_found])]
 
                 for pwd in pwd_found:
                     password_category = False
@@ -206,7 +213,8 @@ class StandardOutput(object):
                     if password:
                         password_category = password
                     else:
-                        key = [s for s in lower_list if "key" in s]  # for the wifi
+                        # for the wifi
+                        key = [s for s in lower_list if "key" in s]
                         if key:
                             password_category = key
                         else:
@@ -229,7 +237,8 @@ class StandardOutput(object):
                         constant.nb_password_found += 1
                         passwd = None
                         try:
-                            passwd = string_to_unicode(pwd[password_category[0].capitalize()])
+                            passwd = string_to_unicode(
+                                pwd[password_category[0].capitalize()])
                             if passwd and passwd not in constant.password_found:
                                 constant.password_found.append(passwd)
                         except Exception as e:
@@ -264,14 +273,17 @@ class StandardOutput(object):
             f.write(header.encode("UTF-8"))
 
     def write_footer(self):
-        footer = '\n[+] %s passwords have been found.\r\n\r\n' % str(constant.nb_password_found)
-        open(os.path.join(constant.folder_name, '%s.txt' % constant.file_name_results), "a+b").write(footer)
+        footer = '\n[+] %s passwords have been found.\r\n\r\n' % str(
+            constant.nb_password_found)
+        open(os.path.join(constant.folder_name, '%s.txt' %
+                          constant.file_name_results), "a+b").write(footer)
 
     def checks_write(self, values, category):
         if values:
             if "Passwords" not in constant.finalResults:
                 constant.finalResults["Passwords"] = []
-            constant.finalResults["Passwords"].append([{"Category": category}, values])
+            constant.finalResults["Passwords"].append(
+                [{"Category": category}, values])
 
 
 def print_debug(error_level, message):
@@ -281,23 +293,29 @@ def print_debug(error_level, message):
 
     # print when password is found
     if error_level == 'OK':
-        constant.st.do_print(message='[+] {message}'.format(message=message), color='green')
+        constant.st.do_print(
+            message='[+] {message}'.format(message=message), color='green')
 
     # print when password is not found
     elif error_level == 'FAILED':
-        constant.st.do_print(message='[-] {message}'.format(message=message), color='red', intensity=True)
+        constant.st.do_print(
+            message='[-] {message}'.format(message=message), color='red', intensity=True)
 
     elif error_level == 'CRITICAL' or error_level == 'ERROR':
-        constant.st.print_logging(function=logging.error, prefix='[-]', message=message, color='red', intensity=True)
+        constant.st.print_logging(
+            function=logging.error, prefix='[-]', message=message, color='red', intensity=True)
 
     elif error_level == 'WARNING':
-        constant.st.print_logging(function=logging.warning, prefix='[!]', message=message, color='cyan')
+        constant.st.print_logging(
+            function=logging.warning, prefix='[!]', message=message, color='cyan')
 
     elif error_level == 'DEBUG':
-        constant.st.print_logging(function=logging.debug, message=message, prefix='[!]')
+        constant.st.print_logging(
+            function=logging.debug, message=message, prefix='[!]')
 
     else:
-        constant.st.print_logging(function=logging.info, message=message, prefix='[!]')
+        constant.st.print_logging(
+            function=logging.info, message=message, prefix='[!]')
 
 
 # --------------------------- End of output functions ---------------------------
@@ -307,7 +325,8 @@ def parse_json_result_to_buffer(json_string):
     try:
         for json in json_string:
             if json:
-                buffer += u'##################  User: {username} ################## \r\n'.format(username=json['User'])
+                buffer += u'##################  User: {username} ################## \r\n'.format(
+                    username=json['User'])
                 if 'Passwords' not in json:
                     buffer += u'No passwords found for this user !\r\n\r\n'
                 else:
@@ -318,21 +337,25 @@ def parse_json_result_to_buffer(json_string):
                             for dic in all_passwords[1]:
                                 if all_passwords[0]['Category'].lower() == 'lsa':
                                     for d in dic:
-                                        buffer += u'%s\r\n' % (constant.st.try_unicode(d))
+                                        buffer += u'%s\r\n' % (
+                                            constant.st.try_unicode(d))
                                 else:
-                                    buffer += u'%s\r\n' % (constant.st.try_unicode(dic))
+                                    buffer += u'%s\r\n' % (
+                                        constant.st.try_unicode(dic))
                         else:
                             for password_by_category in all_passwords[1]:
                                 buffer += u'\r\nPassword found !!!\r\n'
                                 for dic in password_by_category.keys():
                                     try:
                                         buffer += u'%s: %s\r\n' % (
-                                        dic, constant.st.try_unicode(password_by_category[dic]))
+                                            dic, constant.st.try_unicode(password_by_category[dic]))
                                     except Exception as e:
-                                        print_debug(u'ERROR', u'Error retrieving the password encoding: %s' % e)
+                                        print_debug(
+                                            u'ERROR', u'Error retrieving the password encoding: %s' % e)
                         buffer += u'\r\n'
     except Exception as e:
-        print_debug('ERROR', u'Error parsing the json results: {error}'.format(error=e))
+        print_debug(
+            'ERROR', u'Error parsing the json results: {error}'.format(error=e))
 
     return buffer
 
@@ -345,15 +368,18 @@ def write_in_file(result):
         if constant.output == 'json' or constant.output == 'all':
             try:
                 # Human readable Json format
-                pretty_json = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '))
+                pretty_json = json.dumps(
+                    result, sort_keys=True, indent=4, separators=(',', ': '))
                 with open(os.path.join(constant.folder_name, constant.file_name_results + '.json'), 'a+b') as f:
-                    f.write(pretty_json.decode('unicode-escape').encode('UTF-8'))
+                    f.write(pretty_json.decode(
+                        'unicode-escape').encode('UTF-8'))
 
                 constant.st.do_print(u'[+] File written: {file}'.format(
                     file=os.path.join(constant.folder_name, constant.file_name_results + '.json'))
                 )
             except Exception as e:
-                print_debug('ERROR', u'Error writing the output file: {error}'.format(error=e))
+                print_debug(
+                    'ERROR', u'Error writing the output file: {error}'.format(error=e))
 
         if constant.output == 'txt' or constant.output == 'all':
             try:
@@ -367,4 +393,5 @@ def write_in_file(result):
                     file=os.path.join(constant.folder_name, constant.file_name_results + '.txt'))
                 )
             except Exception as e:
-                print_debug('ERROR', u'Error writing the output file: {error}'.format(error=e))
+                print_debug(
+                    'ERROR', u'Error writing the output file: {error}'.format(error=e))

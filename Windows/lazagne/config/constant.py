@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*- 
-import tempfile
+# -*- coding: utf-8 -*-
+import os
 import random
 import string
+import tempfile
 import time
-import os
 
 date = time.strftime("%d%m%Y_%H%M%S")
 tmp = tempfile.gettempdir()

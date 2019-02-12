@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/python
+import getpass
 import subprocess
 import traceback
-import getpass
 
 from lazagne.config.constant import constant
-from lazagne.config.write_output import print_debug, StandardOutput
 from lazagne.config.manage_modules import get_categories, get_modules
+from lazagne.config.write_output import StandardOutput, print_debug
 from lazagne.softwares.browsers.chrome import Chrome
 
 
@@ -40,7 +40,8 @@ def get_safe_storage_key(key):
 
 
 def run_cmd(cmd):
-    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p = subprocess.Popen(
+        cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     result, _ = p.communicate()
     if result:
         return result
@@ -67,7 +68,8 @@ def run_module(module, subcategories):
         try:
             constant.st.title_info(i.capitalize())  # print title
             pwd_found = module[i].run()  # run the module
-            constant.st.print_output(i.capitalize(), pwd_found)  # print the results
+            constant.st.print_output(
+                i.capitalize(), pwd_found)  # print the results
 
             # Return value - not used but needed
             yield True, i.capitalize(), pwd_found
@@ -82,7 +84,8 @@ def run_modules(category_selected, subcategories):
     Run modules
     """
     modules = create_module_dic()
-    categories = [category_selected] if category_selected != 'all' else get_categories()
+    categories = [
+        category_selected] if category_selected != 'all' else get_categories()
     for category in categories:
         for r in run_module(modules[category], subcategories):
             yield r
@@ -126,8 +129,8 @@ def run_lazagne(category_selected='all', subcategories={}, password=None, intera
             cmd = 'osascript -e \'tell app "{application}" to activate\' -e \'tell app "{application}" ' \
                   'to activate\' -e \'tell app "{application}" to display dialog "{msg}" & return & ' \
                   'return  default answer "" with icon 1 with hidden answer with title "{application} Alert"\''.format(
-                    application=application, msg=msg
-            )
+                      application=application, msg=msg
+                  )
             pwd = run_cmd(cmd)
             if pwd.split(':')[1].startswith('OK'):
                 constant.user_password = pwd.split(':')[2].strip()

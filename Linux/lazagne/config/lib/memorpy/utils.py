@@ -17,6 +17,7 @@
 import re
 import struct
 
+
 def re_to_unicode(s):
     newstring = ''
     for c in s:
@@ -59,7 +60,7 @@ def type_unpack(type):
     return ('<' + s, l)
 
 
-def hex_dump(data, addr = 0, prefix = '', ftype = 'bytes'):
+def hex_dump(data, addr=0, prefix='', ftype='bytes'):
     """
     function originally from pydbg, modified to display other types
     """

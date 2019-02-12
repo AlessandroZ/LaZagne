@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 import base64
+import codecs
 import gzip
 import io
 import xml.etree.ElementTree as ElementTree
 import zlib
-import codecs
 
-from .common import KDBFile, HeaderDictionary
-from .common import stream_unpack
-from .crypto import transform_key, pad, unpad
-from .crypto import xor, sha256, aes_cbc_decrypt, aes_cbc_encrypt
+from .common import HeaderDictionary, KDBFile, stream_unpack
+from .crypto import (aes_cbc_decrypt, aes_cbc_encrypt, pad, sha256,
+                     transform_key, unpad, xor)
 from .hbio import HashedBlockIO
 from .pureSalsa20 import Salsa20
-
 
 KDB4_SALSA20_IV = codecs.decode('e830094b97205d2a', 'hex')
 KDB4_SIGNATURE = (0x9AA2D903, 0xB54BFB67)
@@ -31,13 +29,13 @@ class KDB4Header(HeaderDictionary):
         'CipherID': 2,
         # indicates whether decrypted data stream is gzip compressed
         'CompressionFlags': 3,
-        # 
+        #
         'MasterSeed': 4,
-        # 
+        #
         'TransformSeed': 5,
-        # 
+        #
         'TransformRounds': 6,
-        # 
+        #
         'EncryptionIV': 7,
         # key used to protect data in xml
         'ProtectedStreamKey': 8,
@@ -67,7 +65,7 @@ class KDB4File(KDBFile):
     def read_from(self, stream):
         """
         Read, parse, decrypt, decompress a KeePass file from a stream.
-        
+
         :arg stream: A file-like object (opened in 'rb' mode) or IO buffer
             containing a KeePass file.
         """
@@ -78,7 +76,7 @@ class KDB4File(KDBFile):
     # def write_to(self, stream):
     #     """
     #     Write the KeePass database back to a KeePass2 compatible file.
-        
+
     #     :arg stream: A writeable file-like object or IO buffer.
     #     """
     #     if not (isinstance(stream, io.IOBase) or isinstance(stream, file_types)):
@@ -113,7 +111,8 @@ class KDB4File(KDBFile):
             # two byte (short) length of field data
             length = stream_unpack(stream, None, 2, 'h')
             if length > 0:
-                data = stream_unpack(stream, None, length, '{}s'.format(length))
+                data = stream_unpack(stream, None, length,
+                                     '{}s'.format(length))
                 self.header.b[field_id] = data
 
             # set position in data stream of end of header
@@ -171,7 +170,7 @@ class KDB4File(KDBFile):
     def _decrypt(self, stream):
         """
         Build the master key from header settings and key-hash list.
-        
+
         Start reading from `stream` after the header and decrypt all the data.
         Remove padding as needed and feed into hashed block reader, set as
         in-buffer.
@@ -240,9 +239,9 @@ class KDB4File(KDBFile):
 
     def _make_master_key(self):
         """
-        Make the master key by (1) combining the credentials to create 
+        Make the master key by (1) combining the credentials to create
         a composite hash, (2) transforming the hash using the transform seed
-        for a specific number of rounds and (3) finally hashing the result in 
+        for a specific number of rounds and (3) finally hashing the result in
         combination with the master seed.
         """
         super(KDB4File, self)._make_master_key()
@@ -257,7 +256,7 @@ class KDBXmlExtension:
     """
     The KDB4 payload is a XML document. For easier use this class provides
     a lxml.objectify'ed version of the XML-tree as the `obj_root` attribute.
-    
+
     More importantly though in the XML document text values can be protected
     using Salsa20. Protected elements are unprotected by default (passwords are
     in clear). You can override this with the `unprotect=False` argument.
@@ -314,7 +313,7 @@ class KDBXmlExtension:
 
     # def pretty_print(self):
     #     """Return a serialization of the element tree."""
-    #     return etree.tostring(self.obj_root, pretty_print=True, 
+    #     return etree.tostring(self.obj_root, pretty_print=True,
     #         encoding='utf-8', standalone=True)
 
     def to_dic(self):
@@ -350,7 +349,7 @@ class KDBXmlExtension:
 
     def _get_salsa(self, length):
         """
-        Returns the next section of the "random" Salsa20 bytes with the 
+        Returns the next section of the "random" Salsa20 bytes with the
         requested `length`.
         """
         while length > len(self._salsa_buffer):
@@ -381,19 +380,19 @@ class KDB4Reader(KDB4File, KDBXmlExtension):
     """
     Usually you would want to use the `keepass.open` context manager to open a
     file. It checks the file signature and creates a suitable reader-instance.
-    
+
     doing it by hand is also possible::
-    
+
         kdb = keepass.KDB4Reader()
         kdb.add_credentials(password='secret')
         with open('passwords.kdb', 'rb') as fh:
             kdb.read_from(fh)
-    
+
     or...::
-    
+
         with open('passwords.kdb', 'rb') as fh:
             kdb = keepass.KDB4Reader(fh, password='secret')
-    
+
     """
 
     def __init__(self, stream=None, **credentials):

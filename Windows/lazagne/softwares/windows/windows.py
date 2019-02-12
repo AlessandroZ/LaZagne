@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-try: 
+try:
     import _winreg as winreg
 except ImportError:
     import winreg
@@ -7,9 +7,9 @@ except ImportError:
 import getpass
 import sys
 
-from lazagne.config.module_info import ModuleInfo
-from lazagne.config.winstructure import OpenKey, HKEY_LOCAL_MACHINE
 from lazagne.config.constant import constant
+from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import HKEY_LOCAL_MACHINE, OpenKey
 
 
 class WindowsPassword(ModuleInfo):
@@ -23,7 +23,8 @@ class WindowsPassword(ModuleInfo):
         If a domain controller is set we are in an active directory.
         """
         try:
-            key = OpenKey(HKEY_LOCAL_MACHINE, r'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Group Policy\\History\\')
+            key = OpenKey(
+                HKEY_LOCAL_MACHINE, r'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Group Policy\\History\\')
             val, _ = winreg.QueryValueEx(key, 'DCName')
             winreg.CloseKey(key)
             return val
@@ -73,7 +74,7 @@ class WindowsPassword(ModuleInfo):
                     if h:
                         pwd_found.append({
                             'Dpapi_hash_{context}'.format(context=context): constant.user_dpapi.get_dpapi_hash(
-                                                                                                    context=context)
+                                context=context)
                         })
 
         return pwd_found

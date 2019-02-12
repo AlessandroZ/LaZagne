@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import os
-from xml.etree.cElementTree import ElementTree
 from glob import glob
 from itertools import cycle
+from xml.etree.cElementTree import ElementTree
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
@@ -52,7 +52,8 @@ class PSI(ModuleInfo):
                         elif x.tag == '{http://psi-im.org/options}password':
                             values['Password'] = x.text
 
-                    values['Password'] = self.decode_password(values['Password'], values['Login'])
+                    values['Password'] = self.decode_password(
+                        values['Password'], values['Login'])
 
                     if values:
                         self.pwd_found.append(values)

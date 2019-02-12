@@ -22,8 +22,8 @@ class RC4(object):
     def bytes_to_text(self, byte_list):
         s = ''
         for byte in byte_list:
-            s += chr(byte) # chr should not work with Python 3 (will be fixed)
-        
+            s += chr(byte)  # chr should not work with Python 3 (will be fixed)
+
         return s
 
     def encrypt(self, data):
@@ -54,5 +54,5 @@ class RC4(object):
             k = S[(S[i] + S[j]) % 256]
             keystream_list.append(k)
             cipher_list.append(k ^ plain_bytes[m])
-        
+
         return keystream_list, cipher_list

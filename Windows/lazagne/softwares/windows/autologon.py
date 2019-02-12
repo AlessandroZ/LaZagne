@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*- 
-try: 
+# -*- coding: utf-8 -*-
+try:
     import _winreg as winreg
 except ImportError:
     import winreg
@@ -13,12 +13,14 @@ from lazagne.config.winstructure import *
 
 class Autologon(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'autologon', 'windows', registry_used=True, system_module=True)
+        ModuleInfo.__init__(self, 'autologon', 'windows',
+                            registry_used=True, system_module=True)
 
     def run(self):
         pwd_found = []
         try:
-            hkey = OpenKey(HKEY_LOCAL_MACHINE, 'SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon')
+            hkey = OpenKey(
+                HKEY_LOCAL_MACHINE, 'SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon')
             if int(winreg.QueryValueEx(hkey, 'AutoAdminLogon')[0]) == 1:
                 self.debug(u'Autologin enabled')
 

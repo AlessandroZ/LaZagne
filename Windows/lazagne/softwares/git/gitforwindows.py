@@ -1,14 +1,15 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import os
-
-try: 
-    from urlparse import urlparse
-except ImportError: 
-    from urllib import parse as urlparse
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import string_to_unicode
+
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib import parse as urlparse
+
 
 
 class GitForWindows(ModuleInfo):
@@ -47,10 +48,12 @@ class GitForWindows(ModuleInfo):
         # Build a list of locations in which git credentials can be stored
         locations = [
             os.path.join(constant.profile["USERPROFILE"], u'.git-credentials'),
-            os.path.join(constant.profile["USERPROFILE"], u'.config\\git\\credentials'),
+            os.path.join(
+                constant.profile["USERPROFILE"], u'.config\\git\\credentials'),
         ]
         if "XDG_CONFIG_HOME" in os.environ:
-            locations.append(os.path.join(string_to_unicode(os.environ.get('XDG_CONFIG_HOME')), u'git\\credentials'))
+            locations.append(os.path.join(string_to_unicode(
+                os.environ.get('XDG_CONFIG_HOME')), u'git\\credentials'))
 
         # Apply the password extraction on the defined locations
         pwd_found = []

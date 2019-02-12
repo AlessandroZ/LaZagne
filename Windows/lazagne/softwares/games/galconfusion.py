@@ -2,14 +2,15 @@
 
 import os
 
-try: 
+import lazagne.config.winstructure as win
+from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import string_to_unicode
+
+try:
     import _winreg as winreg
 except ImportError:
     import winreg
 
-import lazagne.config.winstructure as win
-from lazagne.config.module_info import ModuleInfo
-from lazagne.config.winstructure import string_to_unicode
 
 
 class GalconFusion(ModuleInfo):
@@ -39,7 +40,8 @@ class GalconFusion(ModuleInfo):
 
             # Now look for Galcon Fusion in every user
             for f in os.listdir(userdata):
-                filepath = os.path.join(userdata, string_to_unicode(f), u'44200\\remote\\galcon.cfg')
+                filepath = os.path.join(userdata, string_to_unicode(
+                    f), u'44200\\remote\\galcon.cfg')
                 if not os.path.exists(filepath):
                     continue
 

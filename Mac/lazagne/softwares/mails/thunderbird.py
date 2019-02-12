@@ -1,6 +1,8 @@
+import os
+
 from lazagne.config.module_info import ModuleInfo
 from lazagne.softwares.browsers.mozilla import Mozilla
-import os
+
 
 class Thunderbird(Mozilla):
 

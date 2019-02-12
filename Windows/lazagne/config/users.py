@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/python
-import os
 import ctypes
+import os
 import sys
 
-from lazagne.config.winstructure import get_os_version
 from lazagne.config.constant import constant
+from lazagne.config.winstructure import get_os_version
 
 
 def get_user_list_on_filesystem(impersonated_user=[]):
@@ -15,11 +15,13 @@ def get_user_list_on_filesystem(impersonated_user=[]):
     # Check users existing on the system (get only directories)
     user_path = u'{drive}:\\Users'.format(drive=constant.drive)
     if float(get_os_version()) < 6:
-        user_path = u'{drive}:\\Documents and Settings'.format(drive=constant.drive)
+        user_path = u'{drive}:\\Documents and Settings'.format(
+            drive=constant.drive)
 
     all_users = []
     if os.path.exists(user_path):
-        all_users = [filename for filename in os.listdir(user_path) if os.path.isdir(os.path.join(user_path, filename))]
+        all_users = [filename for filename in os.listdir(
+            user_path) if os.path.isdir(os.path.join(user_path, filename))]
 
         # Remove default users
         for user in ['All Users', 'Default User', 'Default', 'Public', 'desktop.ini']:
@@ -52,11 +54,13 @@ def set_env_variables(user, to_impersonate=False):
         for env in constant.profile:
             if os.environ.get(env):
                 # constant.profile[env] = os.environ.get(env)
-                constant.profile[env] = os.environ.get(env).decode(sys.getfilesystemencoding())
+                constant.profile[env] = os.environ.get(
+                    env).decode(sys.getfilesystemencoding())
 
     # Replace "drive" and "user" with the correct values
     for env in constant.profile:
-        constant.profile[env] = constant.profile[env].format(drive=constant.drive, user=user)
+        constant.profile[env] = constant.profile[env].format(
+            drive=constant.drive, user=user)
 
 
 def get_username_winapi():
@@ -70,10 +74,10 @@ def get_username_winapi():
         # WinError.h
         # define ERROR_INSUFFICIENT_BUFFER        122L    // dderror
         if ctypes.GetLastError() == 122:
-            _buffer = ctypes.create_unicode_buffer(len(_buffer)*2)
+            _buffer = ctypes.create_unicode_buffer(len(_buffer) * 2)
             size.value = len(_buffer)
-        
+
         else:
-            return # Unusual error
+            return  # Unusual error
 
     return _buffer.value

@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 # Original code from https://github.com/joren485/PyWinPrivEsc/blob/master/RunAsSystem.py
 
+import os
 import sys
 import traceback
 
-from lazagne.config.write_output import print_debug
 from lazagne.config.winstructure import *
-
-import os
+from lazagne.config.write_output import print_debug
 
 
 def get_token_info(hToken):
@@ -21,11 +20,14 @@ def get_token_info(hToken):
     if GetTokenInformation(hToken, TokenUser, byref(TOKEN_USER()), 0, byref(dwSize)) == 0:
         address = LocalAlloc(0x0040, dwSize)
         if address:
-            GetTokenInformation(hToken, TokenUser, address, dwSize, byref(dwSize))
+            GetTokenInformation(hToken, TokenUser, address,
+                                dwSize, byref(dwSize))
             pToken_User = cast(address, POINTER(TOKEN_USER))
             if pToken_User.contents.User.Sid:
-                ConvertSidToStringSid(pToken_User.contents.User.Sid, byref(pStringSid))
-                owner, domaine, _ = LookupAccountSidW(None, pToken_User.contents.User.Sid)
+                ConvertSidToStringSid(
+                    pToken_User.contents.User.Sid, byref(pStringSid))
+                owner, domaine, _ = LookupAccountSidW(
+                    None, pToken_User.contents.User.Sid)
                 if pStringSid:
                     sid = pStringSid.value
                     LocalFree(address)
@@ -46,7 +48,8 @@ def enable_privilege(privilegeStr, hToken=None):
         if not hProcess:
             return False
 
-        OpenProcessToken(hProcess, (TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY), byref(hToken))
+        OpenProcessToken(hProcess, (TOKEN_ADJUST_PRIVILEGES |
+                                    TOKEN_QUERY), byref(hToken))
         e = GetLastError()
         if e != 0:
             return False
@@ -114,13 +117,16 @@ def get_sid_token(token_sid):
         for sid in sids:
             if "winlogon" in sid[1].lower():
                 try:
-                    hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, False, sid[0])
+                    hProcess = OpenProcess(
+                        PROCESS_QUERY_INFORMATION, False, sid[0])
                     if hProcess:
                         hToken = HANDLE(INVALID_HANDLE_VALUE)
                         if hToken:
-                            OpenProcessToken(hProcess, tokenprivs, byref(hToken))
+                            OpenProcessToken(
+                                hProcess, tokenprivs, byref(hToken))
                             if hToken:
-                                print_debug('INFO', u'Using PID: ' + str(sid[0]))
+                                print_debug(
+                                    'INFO', u'Using PID: ' + str(sid[0]))
                                 CloseHandle(hProcess)
                                 return hToken
 
@@ -144,7 +150,8 @@ def get_sid_token(token_sid):
                     if hToken:
                         sid, owner = get_token_info(hToken)
                         if sid == token_sid:
-                            print_debug('INFO', u'Impersonate token from pid: ' + str(pid))
+                            print_debug(
+                                'INFO', u'Impersonate token from pid: ' + str(pid))
                             CloseHandle(hProcess)
                             return hToken
                     CloseHandle(hToken)

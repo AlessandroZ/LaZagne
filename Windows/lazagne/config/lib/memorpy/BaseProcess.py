@@ -5,11 +5,12 @@ import struct
 
 from .utils import *
 
-
 """ Base class for process not linked to any platform """
+
 
 class ProcessException(Exception):
     pass
+
 
 class BaseProcess(object):
 
@@ -26,18 +27,20 @@ class BaseProcess(object):
 
     def close(self):
         pass
+
     def iter_region(self, *args, **kwargs):
         raise NotImplementedError
+
     def write_bytes(self, address, data):
         raise NotImplementedError
 
-    def read_bytes(self, address, bytes = 4):
+    def read_bytes(self, address, bytes=4):
         raise NotImplementedError
 
     def get_symbolic_name(self, address):
         return '0x%08X' % int(address)
 
-    def read(self, address, type = 'uint', maxlen = 50, errors='raise'):
+    def read(self, address, type='uint', maxlen=50, errors='raise'):
         if type == 's' or type == 'string':
             s = self.read_bytes(int(address), bytes=maxlen)
 
@@ -56,11 +59,9 @@ class BaseProcess(object):
             s, l = type_unpack(type)
             return struct.unpack(s, self.read_bytes(int(address), bytes=l))[0]
 
-    def write(self, address, data, type = 'uint'):
+    def write(self, address, data, type='uint'):
         if type != 'bytes':
             s, l = type_unpack(type)
             return self.write_bytes(int(address), struct.pack(s, data))
         else:
             return self.write_bytes(int(address), data)
-   
-

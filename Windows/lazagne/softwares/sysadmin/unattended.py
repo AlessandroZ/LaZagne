@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
 import base64
-
+import os
 from xml.etree.cElementTree import ElementTree
 
-from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
+from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import string_to_unicode
-
-import os
 
 
 class Unattended(ModuleInfo):
@@ -24,7 +22,8 @@ class Unattended(ModuleInfo):
 
     def run(self):
 
-        windir = os.path.join(constant.profile['HOMEDRIVE'], string_to_unicode(os.sep), u'Windows')
+        windir = os.path.join(
+            constant.profile['HOMEDRIVE'], string_to_unicode(os.sep), u'Windows')
         files = [
             'Panther\\Unattend.xml',
             'Panther\\Unattended.xml',
@@ -60,11 +59,13 @@ class Unattended(ModuleInfo):
 
                     user_accounts = component.find('%suser_accounts' % xmlns)
                     if user_accounts:
-                        local_accounts = user_accounts.find('%slocal_accounts' % xmlns)
+                        local_accounts = user_accounts.find(
+                            '%slocal_accounts' % xmlns)
                         if local_accounts:
                             for local_account in local_accounts.findall('%slocal_account' % xmlns):
                                 username = local_account.find('%sName' % xmlns)
-                                password = local_account.find('%sPassword' % xmlns)
+                                password = local_account.find(
+                                    '%sPassword' % xmlns)
                                 if all((username, password)):
                                     if 'deleted' not in password.text.lower():
                                         pwd_found.append({

@@ -1,13 +1,15 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import binascii
-try: 
+
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationECB
+from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import HKEY_CURRENT_USER, OpenKey
+
+try:
     import _winreg as winreg
 except ImportError:
     import winreg
 
-from lazagne.config.crypto.pyaes.aes import AESModeOfOperationECB
-from lazagne.config.module_info import ModuleInfo
-from lazagne.config.winstructure import OpenKey, HKEY_CURRENT_USER
 
 
 class CoreFTP(ModuleInfo):
@@ -26,7 +28,8 @@ class CoreFTP(ModuleInfo):
         key = None
         pwd_found = []
         try:
-            key = OpenKey(HKEY_CURRENT_USER, 'Software\\FTPware\\CoreFTP\\Sites')
+            key = OpenKey(HKEY_CURRENT_USER,
+                          'Software\\FTPware\\CoreFTP\\Sites')
         except Exception as e:
             self.debug(str(e))
 

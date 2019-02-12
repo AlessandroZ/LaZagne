@@ -3,9 +3,9 @@
 import getpass
 import traceback
 
-from lazagne.config.write_output import print_debug, StandardOutput
 from lazagne.config.constant import constant
 from lazagne.config.manage_modules import get_categories, get_modules
+from lazagne.config.write_output import StandardOutput, print_debug
 
 
 def create_module_dic():
@@ -45,7 +45,8 @@ def run_module(module, subcategories):
         try:
             constant.st.title_info(i.capitalize())  # Print title
             pwd_found = module[i].run()  # Run the module
-            constant.st.print_output(i.capitalize(), pwd_found)  # Print the results
+            constant.st.print_output(
+                i.capitalize(), pwd_found)  # Print the results
 
             # Return value - not used but needed
             yield True, i.capitalize(), pwd_found
@@ -60,7 +61,8 @@ def run_modules(category_selected, subcategories):
     Run modules
     """
     modules = create_module_dic()
-    categories = [category_selected] if category_selected != 'all' else get_categories()
+    categories = [
+        category_selected] if category_selected != 'all' else get_categories()
     for cat in categories:
         for r in run_module(modules[cat], subcategories):
             yield r

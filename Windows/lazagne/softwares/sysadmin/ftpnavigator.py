@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
+import os
 import struct
 
-from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
-
-import os
+from lazagne.config.module_info import ModuleInfo
 
 
 class FtpNavigator(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'ftpnavigator', 'sysadmin', system_module=True)
+        ModuleInfo.__init__(self, 'ftpnavigator',
+                            'sysadmin', system_module=True)
 
     def decode(self, encode_password):
         password = ''
@@ -18,8 +18,10 @@ class FtpNavigator(ModuleInfo):
         return password
 
     def run(self):
-        path = os.path.join(constant.profile['HOMEDRIVE'], u'\\FTP Navigator', u'Ftplist.txt')
-        elements = {'Name': 'Name', 'Server': 'Host', 'Port': 'Port', 'User': 'Login', 'Password': 'Password'}
+        path = os.path.join(
+            constant.profile['HOMEDRIVE'], u'\\FTP Navigator', u'Ftplist.txt')
+        elements = {'Name': 'Name', 'Server': 'Host',
+                    'Port': 'Port', 'User': 'Login', 'Password': 'Password'}
         if os.path.exists(path):
             pwd_found = []
             with open(path, 'r') as f:

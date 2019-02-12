@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-Code based from these two awesome projects: 
+Code based from these two awesome projects:
 - DPAPICK 	: https://bitbucket.org/jmichel/dpapick
 - DPAPILAB 	: https://github.com/dfirfpi/dpapilab
 """
 
-import struct
 import hashlib
+import struct
 
 from . import crypto
 from .eater import DataStruct
@@ -18,6 +18,7 @@ class RPC_SID(DataStruct):
     """
     Represents a RPC_SID structure. See MSDN for documentation
     """
+
     def __init__(self, raw=None):
         self.version = None
         self.idAuth = None
@@ -90,7 +91,8 @@ class CredhistEntry(DataStruct):
         cleartxt = crypto.dataDecrypt(self.cipherAlgo, self.hashAlgo, self.encrypted, enckey,
                                       self.iv, self.rounds)
         self.pwdhash = cleartxt[:self.shaHashLen]
-        self.ntlm = cleartxt[self.shaHashLen:self.shaHashLen + self.ntHashLen].rstrip("\x00")
+        self.ntlm = cleartxt[self.shaHashLen:self.shaHashLen +
+                             self.ntHashLen].rstrip("\x00")
         if len(self.ntlm) != 16:
             self.ntlm = None
 
@@ -113,7 +115,8 @@ class CredHistFile(DataStruct):
             self.addEntry(data.pop_string(l - 4))
 
         self.footmagic = data.eat("L")
-        self.curr_guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")
+        self.curr_guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat(
+            "L2H8B")
 
     def addEntry(self, blob):
         """
@@ -139,4 +142,5 @@ class CredHistFile(DataStruct):
         Decrypts this credhist entry with the given user's password.
         Simply computes the password hash then calls self.decrypt_with_hash()
         """
-        self.decrypt_with_hash(hashlib.sha1(password.encode("UTF-16LE")).digest())
+        self.decrypt_with_hash(hashlib.sha1(
+            password.encode("UTF-16LE")).digest())

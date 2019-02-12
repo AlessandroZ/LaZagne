@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import os
 import sys
 import traceback
-
+from subprocess import PIPE, Popen
 from xml.etree.cElementTree import ElementTree
-from subprocess import Popen, PIPE
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
@@ -79,9 +78,11 @@ class Wifi(ModuleInfo):
                                     if elem.tag.endswith('keyMaterial'):
                                         key = elem.text
                                         try:
-                                            password = self.decrypt_using_lsa_secret(key=key)
+                                            password = self.decrypt_using_lsa_secret(
+                                                key=key)
                                             if not password:
-                                                password = self.decrypt_using_netsh(ssid=values['SSID'])
+                                                password = self.decrypt_using_netsh(
+                                                    ssid=values['SSID'])
 
                                             if password:
                                                 values['Password'] = password

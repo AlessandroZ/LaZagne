@@ -6,9 +6,8 @@
 # (c) 2004 Matt Johnston <matt @ ucc asn au>
 # This code may be freely used and modified for any purpose.
 
-import sha
 import hmac
-
+import sha
 from struct import pack
 
 BLOCKLEN = 20

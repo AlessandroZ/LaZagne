@@ -18,7 +18,8 @@ class KeeThief():
         return powershell_execute(SCRIPT, func)
 
     def check_if_version_2x(self, full_exe_path):
-        dirname = os.path.dirname(full_exe_path.decode(sys.getfilesystemencoding()))
+        dirname = os.path.dirname(
+            full_exe_path.decode(sys.getfilesystemencoding()))
         # version 1 use an ini configuration file
         if os.path.exists(os.path.join(dirname, u'KeePass.config.xml')):
             return True
@@ -41,7 +42,7 @@ class KeeThief():
 SCRIPT = '''
 #requires -version 2
 function Get-KeePassDatabaseKey {
-    [CmdletBinding()] 
+    [CmdletBinding()]
     param (
         [Parameter(Position = 0, ValueFromPipeline = $True)]
         [System.Diagnostics.Process[]]

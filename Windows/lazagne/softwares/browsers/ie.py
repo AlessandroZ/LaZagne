@@ -3,10 +3,10 @@ import subprocess
 import traceback
 
 import lazagne.config.winstructure as win
-from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
+from lazagne.config.module_info import ModuleInfo
 
-try: 
+try:
     import _subprocess as sub
     STARTF_USESHOWWINDOW = sub.STARTF_USESHOWWINDOW  # Not work on Python 3
     SW_HIDE = sub.SW_HIDE
@@ -14,7 +14,7 @@ except ImportError:
     STARTF_USESHOWWINDOW = subprocess.STARTF_USESHOWWINDOW
     SW_HIDE = subprocess.SW_HIDE
 
-try: 
+try:
     import _winreg as winreg
 except ImportError:
     import winreg
@@ -22,7 +22,8 @@ except ImportError:
 
 class IE(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'ie', 'browsers', registry_used=True, winapi_used=True)
+        ModuleInfo.__init__(self, 'ie', 'browsers',
+                            registry_used=True, winapi_used=True)
 
     def get_hash_table(self):
         # get the url list
@@ -55,25 +56,25 @@ class IE(ModuleInfo):
         function get-iehistory {
         [CmdletBinding()]
         param ()
-        
+
         $shell = New-Object -ComObject Shell.Application
         $hist = $shell.NameSpace(34)
         $folder = $hist.Self
-        
-        $hist.Items() | 
+
+        $hist.Items() |
         foreach {
             if ($_.IsFolder) {
             $siteFolder = $_.GetFolder
-            $siteFolder.Items() | 
+            $siteFolder.Items() |
             foreach {
                 $site = $_
-            
+
                 if ($site.IsFolder) {
                 $pageFolder  = $site.GetFolder
-                $pageFolder.Items() | 
+                $pageFolder.Items() |
                 foreach {
-                    $visit = New-Object -TypeName PSObject -Property @{        
-                        URL = $($pageFolder.GetDetailsOf($_,0))           
+                    $visit = New-Object -TypeName PSObject -Property @{
+                        URL = $($pageFolder.GetDetailsOf($_,0))
                     }
                     $visit
                 }
@@ -101,7 +102,8 @@ class IE(ModuleInfo):
     def history_from_regedit(self):
         urls = []
         try:
-            hkey = win.OpenKey(win.HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\TypedURLs')
+            hkey = win.OpenKey(
+                win.HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\TypedURLs')
         except Exception:
             self.debug(traceback.format_exc())
             return []
@@ -117,7 +119,8 @@ class IE(ModuleInfo):
     def decipher_password(self, cipher_text, u):
         pwd_found = []
         # deciper the password
-        pwd = win.Win32CryptUnprotectData(cipher_text, u, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+        pwd = win.Win32CryptUnprotectData(
+            cipher_text, u, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
         a = ''
         if pwd:
             for i in range(len(pwd)):
@@ -159,12 +162,14 @@ class IE(ModuleInfo):
 
     def run(self):
         if float(win.get_os_version()) > 6.1:
-            self.debug(u'Internet Explorer passwords are stored in Vault (check vault module)')
+            self.debug(
+                u'Internet Explorer passwords are stored in Vault (check vault module)')
             return
 
         pwd_found = []
         try:
-            hkey = win.OpenKey(win.HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2')
+            hkey = win.OpenKey(
+                win.HKEY_CURRENT_USER, 'Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2')
         except Exception:
             self.debug(traceback.format_exc())
         else:
@@ -184,7 +189,8 @@ class IE(ModuleInfo):
                         if h[1] == k[0][:40].lower():
                             nb_pass_found += 1
                             cipher_text = k[1]
-                            pwd_found += self.decipher_password(cipher_text, h[0])
+                            pwd_found += self.decipher_password(
+                                cipher_text, h[0])
                             break
 
             winreg.CloseKey(hkey)

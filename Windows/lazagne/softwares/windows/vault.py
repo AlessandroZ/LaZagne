@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
+from ctypes.wintypes import *
+
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import *
-from ctypes.wintypes import *
 
 
 class Vault(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'vault', 'windows',  only_from_current_user=True)
+        ModuleInfo.__init__(self, 'vault', 'windows',
+                            only_from_current_user=True)
 
     def run(self):
 
@@ -34,7 +36,8 @@ class Vault(ModuleInfo):
 
                                 for j in range(cbItems.value):
 
-                                    items8 = cast(items, POINTER(VAULT_ITEM_WIN8))
+                                    items8 = cast(
+                                        items, POINTER(VAULT_ITEM_WIN8))
                                     pItem8 = PVAULT_ITEM_WIN8()
                                     try:
                                         values = {

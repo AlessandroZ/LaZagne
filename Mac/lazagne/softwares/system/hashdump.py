@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # !/usr/bin/python
 
 # Inspired from :
@@ -8,19 +8,18 @@
 # TO DO: retrieve hash on mac os Lion without need root access:
 # https://hackademics.fr/forum/hacking-connaissances-avancées/unhash/1098-mac-os-x-python-os-x-lion-password-cracker
 
+import base64
+import binascii
+import hashlib
+import os
+import platform
 import subprocess
 import traceback
-import binascii
-import platform
-import hashlib
-import base64
-import os
-
 from xml.etree import ElementTree
 
-from lazagne.config.module_info import ModuleInfo
-from lazagne.config.dico import get_dic
 from lazagne.config.constant import constant
+from lazagne.config.dico import get_dic
+from lazagne.config.module_info import ModuleInfo
 
 
 class HashDump(ModuleInfo):
@@ -51,7 +50,8 @@ class HashDump(ModuleInfo):
         return int(major), int(minor)
 
     def run_cmd(self, cmd):
-        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen(
+            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         result, _ = p.communicate()
         if result:
             return result
@@ -84,7 +84,8 @@ class HashDump(ModuleInfo):
     # this technique works only for OS X 10.3 and 10.4
     def get_user_hash_using_niutil(self, username):
         # get guid
-        cmd = 'niutil -readprop . /users/{username} generateduid'.format(username=username)
+        cmd = 'niutil -readprop . /users/{username} generateduid'.format(
+            username=username)
         guid = self.run_cmd(cmd)
         if guid:
             guid = guid.strip()
@@ -100,7 +101,8 @@ class HashDump(ModuleInfo):
     # this technique works only for OS X 10.5 and 10.6
     def get_user_hash_using_dscl(self, username):
         # get guid
-        cmd = 'dscl localhost -read /Search/Users/{username} | grep GeneratedUID | cut -c15-'.format(username=username)
+        cmd = 'dscl localhost -read /Search/Users/{username} | grep GeneratedUID | cut -c15-'.format(
+            username=username)
         guid = self.run_cmd(cmd)
         if guid:
             guid = guid.strip()
@@ -118,8 +120,8 @@ class HashDump(ModuleInfo):
         try:
             cmd = 'sudo defaults read /var/db/dslocal/nodes/Default/users/{username}.plist ' \
                   'ShadowHashData|tr -dc 0-9a-f|xxd -r -p|plutil -convert xml1 - -o - 2> /dev/null'.format(
-                    username=username
-            )
+                      username=username
+                  )
             raw = self.run_cmd(cmd)
 
             if len(raw) > 100:
@@ -204,7 +206,8 @@ class HashDump(ModuleInfo):
             # TO DO: manage version 10.7
 
             elif major == 10 and minor >= 8:
-                user_names = [plist.split(".")[0] for plist in os.listdir(u'/var/db/dslocal/nodes/Default/users/') if not plist.startswith(u'_')]
+                user_names = [plist.split(".")[0] for plist in os.listdir(
+                    u'/var/db/dslocal/nodes/Default/users/') if not plist.startswith(u'_')]
                 for username in user_names:
                     user_hash = self.get_user_hash_from_plist(username)
                     if user_hash:
@@ -212,8 +215,10 @@ class HashDump(ModuleInfo):
 
                         # try to get the password in clear text
 
-                        passwords = constant.passwordFound  # check if previous passwords are used as system password
-                        passwords.insert(0, username)  # check for weak password (login equal password)
+                        # check if previous passwords are used as system password
+                        passwords = constant.passwordFound
+                        # check for weak password (login equal password)
+                        passwords.insert(0, username)
                         if constant.user_password:
                             passwords.insert(0, constant.user_password)
 

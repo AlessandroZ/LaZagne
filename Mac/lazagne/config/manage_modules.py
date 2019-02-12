@@ -1,16 +1,14 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # !/usr/bin/python
 
+from lazagne.softwares.browsers.chrome import Chrome
 # browsers
 from lazagne.softwares.browsers.mozilla import firefox_browsers
-from lazagne.softwares.browsers.chrome import Chrome
-
-# mails 
+# mails
 from lazagne.softwares.mails.thunderbird import Thunderbird
-
+from lazagne.softwares.system.chainbreaker import ChainBreaker
 # system
 from lazagne.softwares.system.hashdump import HashDump
-from lazagne.softwares.system.chainbreaker import ChainBreaker
 from lazagne.softwares.system.system import System
 
 

@@ -1,9 +1,11 @@
+
 # -*- coding: utf-8 -*-
-from lazagne.config.module_info import ModuleInfo
-from lazagne.config.constant import constant
 # from Crypto.PublicKey import RSA
 # from Crypto.PublicKey import DSA
 import os
+
+from lazagne.config.constant import constant
+from lazagne.config.module_info import ModuleInfo
 
 
 class OpenSSHForWindows(ModuleInfo):
@@ -68,7 +70,8 @@ class OpenSSHForWindows(ModuleInfo):
                             if key_algorithm:
                                 keys.append(key_content_encoded)
                         except Exception as e:
-                            self.error(u"Cannot load key file '%s' '%s'" % (key_file_path, e))
+                            self.error(u"Cannot load key file '%s' '%s'" %
+                                       (key_file_path, e))
                             pass
 
         return keys
@@ -77,7 +80,8 @@ class OpenSSHForWindows(ModuleInfo):
         """
         Main function
         """
-        self.key_files_location = os.path.join(constant.profile["USERPROFILE"], u'.ssh')
+        self.key_files_location = os.path.join(
+            constant.profile["USERPROFILE"], u'.ssh')
         # Extract all DSA/RSA private keys that are not protected with a passphrase
         unprotected_private_keys = self.extract_private_keys_unprotected()
 

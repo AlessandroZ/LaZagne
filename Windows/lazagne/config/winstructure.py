@@ -4,7 +4,7 @@ from ctypes import *
 import sys
 import os
 
-try: 
+try:
     import _winreg as winreg
 except ImportError:
     import winreg
@@ -34,7 +34,7 @@ CRYPTPROTECT_UI_FORBIDDEN 			= 0x01
 CRED_TYPE_GENERIC 					= 0x1
 CRED_TYPE_DOMAIN_VISIBLE_PASSWORD	= 0x4
 
-# Regedit 
+# Regedit
 HKEY_CURRENT_USER 					= -2147483647
 HKEY_LOCAL_MACHINE					= -2147483646
 KEY_READ 							= 131097
@@ -42,7 +42,7 @@ KEY_ENUMERATE_SUB_KEYS				= 8
 KEY_QUERY_VALUE						= 1
 
 # custom key to read registry (not from msdn)
-ACCESS_READ = KEY_READ | KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE 
+ACCESS_READ = KEY_READ | KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE
 
 # Token manipulation
 PROCESS_QUERY_INFORMATION   = 0x0400
@@ -195,9 +195,9 @@ PVAULT_ITEM_WIN8 = POINTER(VAULT_ITEM_WIN8)
 # 		('pName', 			PWSTR),
 # 		('pResource', 		PVAULT_ITEM_DATA),
 # 		('pUsername', 		PVAULT_ITEM_DATA),
-# 		('pPassword', 		PVAULT_ITEM_DATA), 
-# 		('LastWritten', 	FILETIME), 
-# 		('Flags', 			DWORD),  
+# 		('pPassword', 		PVAULT_ITEM_DATA),
+# 		('LastWritten', 	FILETIME),
+# 		('Flags', 			DWORD),
 # 		('cbProperties', 	DWORD),
 # 		('Properties', 		PVAULT_ITEM_DATA),
 # 	]
@@ -349,7 +349,7 @@ CloseHandle.argtypes    		= [HANDLE]
 CredEnumerate 					= advapi32.CredEnumerateA
 CredEnumerate.restype 			= BOOL
 CredEnumerate.argtypes 			= [LPCTSTR, DWORD, POINTER(DWORD), POINTER(POINTER(PCREDENTIAL))]
- 
+
 CredFree 						= advapi32.CredFree
 CredFree.restype 				= PVOID
 CredFree.argtypes 				= [PVOID]
@@ -483,11 +483,11 @@ def RtlAdjustPrivilege(privilege_id):
     Enable = True
     CurrentThread = False #enable for whole process
     Enabled = BOOL()
-    
+
     status = _RtlAdjustPrivilege(privilege_id, Enable, CurrentThread, byref(Enabled))
     if status != 0:
         return False
-    
+
     return True
 
 
@@ -526,7 +526,7 @@ def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, use
         cipherText = str(cipherText)
 
     if is_current_user:
-        bufferIn 	= c_buffer(cipherText, len(cipherText))  
+        bufferIn 	= c_buffer(cipherText, len(cipherText))
         blobIn 		= DATA_BLOB(len(cipherText), bufferIn)
         blobOut 	= DATA_BLOB()
 
@@ -549,7 +549,7 @@ def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, use
 def get_os_version():
     """
     return major anr minor version
-    https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx 
+    https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx
     """
     os_version = OSVERSIONINFOEXW()
     os_version.dwOSVersionInfoSize = sizeof(os_version)
@@ -600,4 +600,3 @@ def convert_to_byte(string):
         return string
     else:
         return string.encode()  # Python 3
-

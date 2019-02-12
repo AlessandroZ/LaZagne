@@ -2,10 +2,12 @@
 # -*- coding: UTF8 -*-
 
 import sys
+
 from .BaseProcess import *
-if sys.platform=='win32':
+
+if sys.platform == 'win32':
     from .WinProcess import WinProcess as Process
-elif sys.platform=='darwin':
+elif sys.platform == 'darwin':
     from .OSXProcess import OSXProcess as Process
 elif 'sunos' in sys.platform:
     from .SunProcess import SunProcess as Process

@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # !/usr/bin/python
 
-from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
+from lazagne.config.module_info import ModuleInfo
 
 
 class System(ModuleInfo):

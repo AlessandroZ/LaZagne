@@ -1,20 +1,20 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # !/usr/bin/python
 
 # Awesome work from @manwhoami
 # check the github repo: https://github.com/manwhoami/OSXChromeDecrypt
 
-import subprocess
-import itertools
-import binascii
-import operator
-import tempfile
-import sqlite3
-import shutil
 import base64
-import struct
+import binascii
 import glob
 import hmac
+import itertools
+import operator
+import shutil
+import sqlite3
+import struct
+import subprocess
+import tempfile
 
 from lazagne.config.module_info import ModuleInfo
 
@@ -115,8 +115,10 @@ class Chrome(ModuleInfo):
                     continue
                 else:
                     decrypted_list.append((
-                        str(values[2]).encode('ascii', 'ignore'), values[0].encode('ascii', 'ignore'),
-                        str(self.chrome_decrypt(values[1], iv, key)).encode('ascii', 'ignore'),
+                        str(values[2]).encode('ascii', 'ignore'), values[0].encode(
+                            'ascii', 'ignore'),
+                        str(self.chrome_decrypt(values[1], iv, key)).encode(
+                            'ascii', 'ignore'),
                         values[3])
                     )
 
@@ -127,7 +129,8 @@ class Chrome(ModuleInfo):
 
         pwd_found = []
         if not self.safe_storage_key:
-            self.error('Chrome safe storage key has not been retrieved, cannot decrypt passwords')
+            self.error(
+                'Chrome safe storage key has not been retrieved, cannot decrypt passwords')
             return
         else:
             self.info('Chrome safe storage key has been retrieved: {safe_storage_key}'.format(

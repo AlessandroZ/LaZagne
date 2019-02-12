@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import struct
 
-from .creddump7.win32.lsasecrets import get_file_secrets
+from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import get_os_version
-from lazagne.config.constant import constant
+
+from .creddump7.win32.lsasecrets import get_file_secrets
 
 
 class LSASecrets(ModuleInfo):
@@ -22,9 +23,10 @@ class LSASecrets(ModuleInfo):
             is_vista_or_higher = True
 
         # Get LSA Secrets
-        secrets = get_file_secrets(constant.hives['system'], constant.hives['security'], is_vista_or_higher)
+        secrets = get_file_secrets(
+            constant.hives['system'], constant.hives['security'], is_vista_or_higher)
         if secrets:
-            # Clear DPAPI master key 
+            # Clear DPAPI master key
             clear = secrets['DPAPI_SYSTEM']
             size = struct.unpack_from("<L", clear)[0]
             secrets['DPAPI_SYSTEM'] = clear[16:16 + 44]

@@ -13,20 +13,21 @@
 # You should have received a copy of the GNU General Public License
 # along with memorpy.  If not, see <http://www.gnu.org/licenses/>.
 
-from .BaseProcess import BaseProcess, ProcessException
-import struct
 import os
+import struct
 
-MA_READ      =    0x04
-MA_WRITE     =    0x02
-MA_EXEC      =    0x01
-MA_SHARED    =    0x08
-MA_ANON      =    0x40
-MA_ISM       =    0x80
-MA_NORESERVE =    0x100
-MA_SHM       =    0x200
-MA_RESERVED1 =    0x400
-MA_OSM       =    0x800
+from .BaseProcess import BaseProcess, ProcessException
+
+MA_READ = 0x04
+MA_WRITE = 0x02
+MA_EXEC = 0x01
+MA_SHARED = 0x08
+MA_ANON = 0x40
+MA_ISM = 0x80
+MA_NORESERVE = 0x100
+MA_SHM = 0x200
+MA_RESERVED1 = 0x400
+MA_OSM = 0x800
 
 PSINFO_T = struct.Struct(
     'iiiIIIIIIIILLLLHHLLLLLL16s80siiLLciILLcccchi8sLLIIIIII'
@@ -35,6 +36,7 @@ PSINFO_T = struct.Struct(
 MAP_T = struct.Struct(
     'LL64sQiiii'
 )
+
 
 class SunProcess(BaseProcess):
     def __init__(self, pid=None, name=None, debug=True, ptrace=None):
@@ -46,7 +48,8 @@ class SunProcess(BaseProcess):
         if name and not self.pid:
             self.pid = SunProcess.pid_from_name(name)
         if not name and not self.pid:
-            raise ValueError('You need to instanciate process with at least a name or a pid')
+            raise ValueError(
+                'You need to instanciate process with at least a name or a pid')
         try:
             self._open()
         except:
@@ -61,22 +64,22 @@ class SunProcess(BaseProcess):
 
     def _open(self):
         try:
-            self.pas = open('/proc/%d/as'%(self.pid), 'w+')
+            self.pas = open('/proc/%d/as' % (self.pid), 'w+')
             self.writable = True
         except IOError:
-            self.pas = open('/proc/%d/as'%(self.pid))
+            self.pas = open('/proc/%d/as' % (self.pid))
 
         self.isProcessOpen = True
 
     @staticmethod
     def _name_args(pid):
-        with open('/proc/%d/psinfo'%(int(pid))) as psinfo:
+        with open('/proc/%d/psinfo' % (int(pid))) as psinfo:
             items = PSINFO_T.unpack_from(psinfo.read())
             return items[23].rstrip('\x00'), items[24].rstrip('\x00')
 
     @staticmethod
     def list():
-        processes=[]
+        processes = []
         for pid in os.listdir('/proc'):
             try:
                 pid = int(pid)
@@ -92,7 +95,7 @@ class SunProcess(BaseProcess):
 
     @staticmethod
     def pid_from_name(name):
-        processes=[]
+        processes = []
         for pid in os.listdir('/proc'):
             try:
                 pid = int(pid)
@@ -104,7 +107,7 @@ class SunProcess(BaseProcess):
             except:
                 pass
 
-        raise ProcessException('No process with such name: %s'%name)
+        raise ProcessException('No process with such name: %s' % name)
 
     def iter_region(self, start_offset=None, end_offset=None, protec=None, optimizations=None):
         """
@@ -117,14 +120,15 @@ class SunProcess(BaseProcess):
         if not self.isProcessOpen:
             return
 
-        with open('/proc/%d/map'%(self.pid)) as maps_file:
+        with open('/proc/%d/map' % (self.pid)) as maps_file:
             while True:
                 mapping = maps_file.read(MAP_T.size)
 
                 if not mapping:
                     break
 
-                start, size, name, offset, flags, pagesize, shmid, filler = MAP_T.unpack(mapping)
+                start, size, name, offset, flags, pagesize, shmid, filler = MAP_T.unpack(
+                    mapping)
 
                 if start_offset is not None:
                     if start < start_offset:
@@ -159,7 +163,7 @@ class SunProcess(BaseProcess):
 
         return True
 
-    def read_bytes(self, address, bytes = 4):
+    def read_bytes(self, address, bytes=4):
         if not self.pas:
             return
 

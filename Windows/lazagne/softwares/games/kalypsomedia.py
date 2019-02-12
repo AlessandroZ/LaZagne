@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import base64
 import os
 
@@ -25,7 +25,8 @@ class KalypsoMedia(ModuleInfo):
     def run(self):
         creds = []
         key = 'lwSDFSG34WE8znDSmvtwGSDF438nvtzVnt4IUv89'
-        inifile = os.path.join(constant.profile['APPDATA'], u'Kalypso Media\\Launcher\\launcher.ini')
+        inifile = os.path.join(
+            constant.profile['APPDATA'], u'Kalypso Media\\Launcher\\launcher.ini')
 
         # The actual user details are stored in *.userdata files
         if os.path.exists(inifile):

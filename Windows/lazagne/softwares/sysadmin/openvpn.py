@@ -3,15 +3,16 @@ try:
 except ImportError:
     import winreg
 
-from lazagne.config.winstructure import *
-from lazagne.config.module_info import ModuleInfo
-from lazagne.config.winstructure import Win32CryptUnprotectData
 from lazagne.config.constant import constant
+from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import *
+from lazagne.config.winstructure import Win32CryptUnprotectData
 
 
 class OpenVPN(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, name='openvpn', category='sysadmin', registry_used=True, winapi_used=True)
+        ModuleInfo.__init__(
+            self, name='openvpn', category='sysadmin', registry_used=True, winapi_used=True)
 
     def check_openvpn_installed(self):
         try:

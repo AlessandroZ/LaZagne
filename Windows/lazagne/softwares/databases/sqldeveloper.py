@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import array
 import base64
 import binascii
@@ -8,7 +8,7 @@ import re
 from xml.etree.cElementTree import ElementTree
 
 from lazagne.config.constant import constant
-from lazagne.config.crypto.pyDes import des, CBC
+from lazagne.config.crypto.pyDes import CBC, des
 from lazagne.config.module_info import ModuleInfo
 
 
@@ -35,7 +35,8 @@ class SQLDeveloper(ModuleInfo):
 
     def decrypt(self, msg):
         enc_text = base64.b64decode(msg)
-        (dk, iv) = self.get_derived_key(self._passphrase, self._salt, self._iteration)
+        (dk, iv) = self.get_derived_key(
+            self._passphrase, self._salt, self._iteration)
         crypter = des(dk, CBC, iv)
         text = crypter.decrypt(enc_text)
         return re.sub(r'[\x01-\x08]', '', text)
@@ -54,7 +55,8 @@ class SQLDeveloper(ModuleInfo):
                     for pp in os.listdir(new_directory):
                         if pp.startswith(u'o.sqldeveloper'):
                             if os.path.exists(os.path.join(new_directory, pp, xml_name)):
-                                xml_file = os.path.join(new_directory, pp, xml_name)
+                                xml_file = os.path.join(
+                                    new_directory, pp, xml_name)
                             break
         if xml_file:
             tree = ElementTree(file=xml_file)
@@ -68,7 +70,8 @@ class SQLDeveloper(ModuleInfo):
         if os.path.exists(path):
             self._passphrase = self.get_passphrase(path)
             if self._passphrase:
-                self.debug(u'Passphrase found: {passphrase}'.format(passphrase=self._passphrase))
+                self.debug(u'Passphrase found: {passphrase}'.format(
+                    passphrase=self._passphrase))
                 xml_name = u'connections.xml'
                 xml_file = None
 
@@ -82,7 +85,8 @@ class SQLDeveloper(ModuleInfo):
                             for pp in os.listdir(new_directory):
                                 if pp.startswith(u'o.jdeveloper.db.connection'):
                                     if os.path.exists(os.path.join(new_directory, pp, xml_name)):
-                                        xml_file = os.path.join(new_directory, pp, xml_name)
+                                        xml_file = os.path.join(
+                                            new_directory, pp, xml_name)
                                     break
 
                 if xml_file:

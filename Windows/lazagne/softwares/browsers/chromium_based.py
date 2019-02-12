@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import json
 import os
 import random
@@ -71,10 +71,11 @@ class ChromiumBased(ModuleInfo):
         for url, login, password in cursor.fetchall():
             try:
                 # Decrypt the Password
-                password = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+                password = Win32CryptUnprotectData(
+                    password, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
                 if not url and not login and not password:
                     continue
-                    
+
                 credentials.append((url, login, password))
             except Exception:
                 self.debug(traceback.format_exc())
@@ -86,19 +87,21 @@ class ChromiumBased(ModuleInfo):
         """
         Copying db will bypass lock errors
         Using user tempfile will produce an error when impersonating users (Permission denied)
-        A public directory should be used if this error occured (e.g C:\\Users\\Public) 
+        A public directory should be used if this error occured (e.g C:\\Users\\Public)
         """
-        random_name = ''.join([random.choice(string.ascii_lowercase) for i in range(9)])
+        random_name = ''.join(
+            [random.choice(string.ascii_lowercase) for i in range(9)])
         root_dir = [
             tempfile.gettempdir(),
             os.environ.get('PUBLIC', None),
             os.environ.get('SystemDrive', None) + '\\',
         ]
-        for r in root_dir: 
+        for r in root_dir:
             try:
                 temp = os.path.join(r, random_name)
                 shutil.copy(database_path, temp)
-                self.debug(u'Temporary db copied: {db_path}'.format(db_path=temp))
+                self.debug(
+                    u'Temporary db copied: {db_path}'.format(db_path=temp))
                 return temp
             except Exception:
                 self.debug(traceback.format_exc())
@@ -141,9 +144,11 @@ chromium_browsers = [
     (u'chrome canary', u'{LOCALAPPDATA}\\Google\\Chrome SxS\\User Data'),
     (u'chromium', u'{LOCALAPPDATA}\\Chromium\\User Data'),
     (u'coccoc', u'{LOCALAPPDATA}\\CocCoc\\Browser\\User Data'),
-    (u'comodo dragon', u'{LOCALAPPDATA}\\Comodo\\Dragon\\User Data'),  # Comodo IceDragon is Firefox-based
+    # Comodo IceDragon is Firefox-based
+    (u'comodo dragon', u'{LOCALAPPDATA}\\Comodo\\Dragon\\User Data'),
     (u'elements browser', u'{LOCALAPPDATA}\\Elements Browser\\User Data'),
-    (u'epic privacy browser', u'{LOCALAPPDATA}\\Epic Privacy Browser\\User Data'),
+    (u'epic privacy browser',
+     u'{LOCALAPPDATA}\\Epic Privacy Browser\\User Data'),
     (u'google chrome', u'{LOCALAPPDATA}\\Google\\Chrome\\User Data'),
     (u'kometa', u'{LOCALAPPDATA}\\Kometa\\User Data'),
     (u'opera', u'{APPDATA}\\Opera Software\\Opera Stable'),
@@ -155,4 +160,5 @@ chromium_browsers = [
     (u'yandexBrowser', u'{LOCALAPPDATA}\\Yandex\\YandexBrowser\\User Data')
 ]
 
-chromium_browsers = [ChromiumBased(browser_name=name, paths=paths) for name, paths in chromium_browsers]
+chromium_browsers = [ChromiumBased(
+    browser_name=name, paths=paths) for name, paths in chromium_browsers]

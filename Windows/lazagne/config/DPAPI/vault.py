@@ -2,19 +2,19 @@
 # -*- coding: utf-8 -*-
 
 """
-Code based from these two awesome projects: 
+Code based from these two awesome projects:
 - DPAPICK 	: https://bitbucket.org/jmichel/dpapick
 - DPAPILAB 	: https://github.com/dfirfpi/dpapilab
 """
 
+import os
 import struct
 
-from .blob import DPAPIBlob
-from .eater import DataStruct, Eater
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from lazagne.config.winstructure import char_to_int
 
-import os
+from .blob import DPAPIBlob
+from .eater import DataStruct, Eater
 
 AES_BLOCK_SIZE = 16
 
@@ -27,6 +27,7 @@ class VaultPolicyKey(DataStruct):
     """
     Structure containing the AES key used to decrypt the vcrd files
     """
+
     def __init__(self, raw=None):
         # self.size = None
         self.unknown1 = None
@@ -49,13 +50,13 @@ class VaultPolicyKey(DataStruct):
             self.key = data.eat(str(self.cbKeyData) + "s")
 
 
-
 class VaultPolicyKeys(DataStruct):
     """
     Structure containing two AES keys used to decrypt the vcrd files
     - First key is an AES 128
     - Second key is an AES 256
     """
+
     def __init__(self, raw=None):
         self.vpol_key1_size = None
         self.vpol_key1 = None
@@ -81,6 +82,7 @@ class VaultPolicy(DataStruct):
     and a GUID that should match the Vault folder name
     Once the blob is decrypted, we get two AES keys to be used in decrypting the vcrd files.
     """
+
     def __init__(self, raw=None):
         self.version = None
         self.guid = None
@@ -99,15 +101,21 @@ class VaultPolicy(DataStruct):
 
     def parse(self, data):
         self.version = data.eat("L")
-        self.guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
-        self.description = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
+        # data.eat("16s")
+        self.guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")
+        self.description = data.eat_length_and_string(
+            "L").decode("UTF-16LE").encode("utf-8")  # Unicode
         self.unknown1 = data.eat("L")
         self.unknown2 = data.eat("L")
         self.unknown3 = data.eat("L")
         # VPOL_STORE
         self.size = data.eat("L")
-        self.unknown4 = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
-        self.unknown5 = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
+        # data.eat("16s")
+        self.unknown4 = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat(
+            "L2H8B")
+        # data.eat("16s")
+        self.unknown5 = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat(
+            "L2H8B")
         # DPAPI_BLOB_STORE
         self.blob_store_size = data.eat("L")
         if self.blob_store_size > 0:
@@ -123,6 +131,7 @@ class VaultAttribute(DataStruct):
     """
     This class contains the encrypted data we are looking for (data + iv)
     """
+
     def __init__(self, raw=None):
         self.id = None
         self.attr_unknown_1 = None
@@ -149,11 +158,13 @@ class VaultAttribute(DataStruct):
             self.attr_unknown_4 = data.eat("L")
         self.size = data.eat("L")
         if self.size > 0:
-            self.has_iv = char_to_int(data.eat("1s"))  # To change for Python 3 compatibility
+            # To change for Python 3 compatibility
+            self.has_iv = char_to_int(data.eat("1s"))
             if self.has_iv == 1:
                 self.iv_size = data.eat("L")
-                self.iv = data.eat(str(self.iv_size)+ "s")
-                self.data = data.eat(str(self.size - 1 - 4 - self.iv_size) + "s")
+                self.iv = data.eat(str(self.iv_size) + "s")
+                self.data = data.eat(
+                    str(self.size - 1 - 4 - self.iv_size) + "s")
             else:
                 self.data = data.eat(str(self.size - 1) + "s")
 
@@ -162,6 +173,7 @@ class VaultAttributeMapEntry(DataStruct):
     """
     This class contains a pointer on VaultAttribute structure
     """
+
     def __init__(self, raw=None):
         self.id = None
         self.offset = None
@@ -180,6 +192,7 @@ class VaultVcrd(DataStruct):
     """
     vcrd files contain encrypted attributes encrypted with the previous AES keys which represents the target secret
     """
+
     def __init__(self, raw=None):
         self.schema_guid = None
         self.vcrd_unknown_1 = None
@@ -193,12 +206,15 @@ class VaultVcrd(DataStruct):
         DataStruct.__init__(self, raw)
 
     def parse(self, data):
-        self.schema_guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
+        # data.eat("16s")
+        self.schema_guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat(
+            "L2H8B")
         self.vcrd_unknown_1 = data.eat("L")
         self.last_update = data.eat("Q")
         self.vcrd_unknown_2 = data.eat("L")
         self.vcrd_unknown_3 = data.eat("L")
-        self.description = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
+        self.description = data.eat_length_and_string(
+            "L").decode("UTF-16LE").encode("utf-8")  # Unicode
         self.attributes_array_size = data.eat("L")
         # 12 is the size of the VAULT_ATTRIBUTE_MAP_ENTRY
         self.attributes_num = self.attributes_array_size / 12
@@ -217,6 +233,7 @@ class VaultVsch(DataStruct):
     Vault Schemas
     Vault file partial parsing
     """
+
     def __init__(self, raw=None):
         self.version = None
         self.schema_guid = None
@@ -227,10 +244,12 @@ class VaultVsch(DataStruct):
 
     def parse(self, data):
         self.version = data.eat("L")
-        self.schema_guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")
+        self.schema_guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat(
+            "L2H8B")
         self.vault_vsch_unknown_1 = data.eat("L")
         self.count = data.eat("L")
-        self.schema_name = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.schema_name = data.eat_length_and_string("L").decode(
+            "UTF-16LE").encode("utf-8").rstrip('\x00\x00')
 
 
 class VaultAttributeItem(object):
@@ -243,6 +262,7 @@ class VaultSchemaGeneric(DataStruct):
     """
     Generic Vault Schema
     """
+
     def __init__(self, raw=None):
         self.version = None
         self.count = None
@@ -258,7 +278,8 @@ class VaultSchemaGeneric(DataStruct):
             self.attribute_item.append(
                 VaultAttributeItem(
                     id_=data.eat("L"),
-                    item=data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")
+                    item=data.eat_length_and_string(
+                        "L").decode("UTF-16LE").encode("utf-8")
                 )
             )
 
@@ -275,6 +296,7 @@ class VaultSchemaPin(DataStruct):
     """
     PIN Logon Vault Resource Schema
     """
+
     def __init__(self, raw=None):
         self.version = None
         self.count = None
@@ -299,9 +321,11 @@ class VaultSchemaPin(DataStruct):
         if self.sid_len > 0:
             self.sid = data.eat_sub(self.sid_len)
         self.id_resource = data.eat("L")
-        self.resource = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.resource = data.eat_length_and_string("L").decode(
+            "UTF-16LE").encode("utf-8").rstrip('\x00\x00')
         self.id_password = data.eat("L")
-        self.authenticator = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')  # Password
+        self.authenticator = data.eat_length_and_string("L").decode(
+            "UTF-16LE").encode("utf-8").rstrip('\x00\x00')  # Password
         self.id_pin = data.eat("L")
         self.pin = data.eat_length_and_string("L")
 
@@ -310,6 +334,7 @@ class VaultSchemaWebPassword(DataStruct):
     """
     Windows Web Password Credential Schema
     """
+
     def __init__(self, raw=None):
         self.version = None
         self.count = None
@@ -327,17 +352,21 @@ class VaultSchemaWebPassword(DataStruct):
         self.count = data.eat("L")
         self.vault_schema_web_password_unknown1 = data.eat("L")
         self.id_identity = data.eat("L")
-        self.identity = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.identity = data.eat_length_and_string("L").decode(
+            "UTF-16LE").encode("utf-8").rstrip('\x00\x00')
         self.id_resource = data.eat("L")
-        self.resource = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.resource = data.eat_length_and_string("L").decode(
+            "UTF-16LE").encode("utf-8").rstrip('\x00\x00')
         self.id_authenticator = data.eat("L")
-        self.authenticator = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.authenticator = data.eat_length_and_string("L").decode(
+            "UTF-16LE").encode("utf-8").rstrip('\x00\x00')
 
 
 class VaultSchemaActiveSync(DataStruct):
     """
     Active Sync Credential Schema
     """
+
     def __init__(self, raw=None):
         self.version = None
         self.count = None
@@ -355,11 +384,14 @@ class VaultSchemaActiveSync(DataStruct):
         self.count = data.eat("L")
         self.vault_schema_activesync_unknown1 = data.eat("L")
         self.id_identity = data.eat("L")
-        self.identity = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.identity = data.eat_length_and_string("L").decode(
+            "UTF-16LE").encode("utf-8").rstrip('\x00\x00')
         self.id_resource = data.eat("L")
-        self.resource = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.resource = data.eat_length_and_string("L").decode(
+            "UTF-16LE").encode("utf-8").rstrip('\x00\x00')
         self.id_authenticator = data.eat("L")
-        self.authenticator = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00').encode('hex')
+        self.authenticator = data.eat_length_and_string("L").decode(
+            "UTF-16LE").encode("utf-8").rstrip('\x00').encode('hex')
 
 
 # Vault Schema Dict
@@ -379,6 +411,7 @@ class Vault(object):
     """
     Contains all process to decrypt Vault files
     """
+
     def __init__(self, vaults_dir):
         self.vaults_dir = vaults_dir
 
@@ -389,7 +422,7 @@ class Vault(object):
         if not vault_attr.size:
             return '', False
 
-        if vault_attr.has_iv:  
+        if vault_attr.has_iv:
             cipher = AESModeOfOperationCBC(key_aes256, iv=vault_attr.iv)
             is_attribute_ex = True
         else:
@@ -397,7 +430,8 @@ class Vault(object):
             is_attribute_ex = False
 
         data = vault_attr.data
-        decypted = b"".join([cipher.decrypt(data[i:i + AES_BLOCK_SIZE]) for i in range(0, len(data), AES_BLOCK_SIZE)])
+        decypted = b"".join([cipher.decrypt(data[i:i + AES_BLOCK_SIZE])
+                             for i in range(0, len(data), AES_BLOCK_SIZE)])
         return decypted, is_attribute_ex
 
     def get_vault_schema(self, guid, base_dir, default_schema):
@@ -461,7 +495,8 @@ class Vault(object):
                         # print '-has_iv: ', v_attribute.has_iv
                         # print '-iv: ', repr(v_attribute.iv)
 
-                        decrypted, is_attribute_ex = self.decrypt_vault_attribute(v_attribute, key_aes128, key_aes256)
+                        decrypted, is_attribute_ex = self.decrypt_vault_attribute(
+                            v_attribute, key_aes128, key_aes256)
                         if is_attribute_ex:
                             schema = current_vault_schema
                         else:
@@ -478,12 +513,12 @@ class Vault(object):
                         # Parse decrypted data depending on its schema
                         dataout = v['schema'](v['data'])
 
-                        if dataout: 
+                        if dataout:
                             return True, {
-                                    'URL': dataout.resource,
-                                    'Login': dataout.identity,
-                                    'Password': dataout.authenticator,
-                                    'File': filepath,
-                                }
+                                'URL': dataout.resource,
+                                'Login': dataout.identity,
+                                'Password': dataout.authenticator,
+                                'File': filepath,
+                            }
 
         return False, 'No .vcrd file found. Nothing to decrypt.'

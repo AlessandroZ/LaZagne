@@ -5,13 +5,16 @@ import logging
 import sys
 import traceback
 
-from lazagne.config.change_privileges import list_sids, rev2self, impersonate_sid_long_handle
-from lazagne.config.users import get_user_list_on_filesystem, set_env_variables, get_username_winapi
-from lazagne.config.dpapi_structure import SystemDpapi, are_masterkeys_retrieved
-from lazagne.config.execute_cmd import save_hives, delete_hives
-from lazagne.config.write_output import print_debug, StandardOutput
+from lazagne.config.change_privileges import (impersonate_sid_long_handle,
+                                              list_sids, rev2self)
 from lazagne.config.constant import constant
+from lazagne.config.dpapi_structure import (SystemDpapi,
+                                            are_masterkeys_retrieved)
+from lazagne.config.execute_cmd import delete_hives, save_hives
 from lazagne.config.manage_modules import get_categories, get_modules
+from lazagne.config.users import (get_user_list_on_filesystem,
+                                  get_username_winapi, set_env_variables)
+from lazagne.config.write_output import StandardOutput, print_debug
 
 # Useful for the Pupy project
 # workaround to this error: RuntimeError: maximum recursion depth exceeded while calling a Python object
@@ -21,7 +24,7 @@ sys.setrecursionlimit(10000)
 def create_module_dic():
     if constant.modules_dic:
         return constant.modules_dic
-    
+
     modules = {}
 
     # Define a dictionary for all modules
@@ -43,7 +46,8 @@ def run_module(title, module):
     try:
         constant.st.title_info(title.capitalize())  # print title
         pwd_found = module.run()  # run the module
-        constant.st.print_output(title.capitalize(), pwd_found)  # print the results
+        constant.st.print_output(
+            title.capitalize(), pwd_found)  # print the results
 
         # Return value - not used but needed
         yield True, title.capitalize(), pwd_found
@@ -58,7 +62,7 @@ def run_modules(module, subcategories={}, system_module=False):
     Run modules inside a category (could be one or multiple modules)
     """
     modules_to_launch = []
-    
+
     # Launch only a specific module
     for i in subcategories:
         if subcategories[i] and i in module:
@@ -102,7 +106,8 @@ def run_category(category_selected, subcategories={}, system_module=False):
         "dpapi": [],
     }
     modules = create_module_dic()
-    categories = [category_selected] if category_selected != 'all' else get_categories()
+    categories = [
+        category_selected] if category_selected != 'all' else get_categories()
     for category in categories:
         for r in run_modules(modules[category], subcategories, system_module):
             yield r
@@ -136,7 +141,7 @@ def run_lazagne(category_selected='all', subcategories={}, password=None):
         - Execute system modules to retrieve LSA Secrets and user passwords if possible
             - These secret could be useful for further decryption (e.g Wifi)
         - If a process of another user is launched try to impersone it (impersonating his token)
-            - TO DO: if hashdump retrieved other local account, launch a new process using psexec techniques 
+            - TO DO: if hashdump retrieved other local account, launch a new process using psexec techniques
     - From our user:
         - Retrieve all passwords using their own password storage algorithm (Firefox, Pidgin, etc.)
         - Retrieve all passwords using Windows API - CryptUnprotectData (Chrome, etc.)
@@ -188,7 +193,7 @@ def run_lazagne(category_selected='all', subcategories={}, password=None):
     # constant.username = getpass.getuser().decode(sys.getfilesystemencoding())
     constant.username = get_username_winapi()
     if not constant.username.endswith('$'):
-        
+
         constant.finalResults = {'User': constant.username}
         constant.st.print_user(constant.username)
         yield 'User', constant.username
@@ -198,7 +203,7 @@ def run_lazagne(category_selected='all', subcategories={}, password=None):
         for r in run_category(category_selected, subcategories):
             yield r
         constant.stdout_result.append(constant.finalResults)
-    
+
     # Check if admin to impersonate
     if ctypes.windll.shell32.IsUserAnAdmin() != 0:
 
@@ -245,7 +250,8 @@ def run_lazagne(category_selected='all', subcategories={}, password=None):
 
         constant.is_current_user = False
         # Ready to check for all users remaining
-        all_users = get_user_list_on_filesystem(impersonated_user=[constant.username])
+        all_users = get_user_list_on_filesystem(
+            impersonated_user=[constant.username])
         for user in all_users:
             # Fix value by default for user environment (APPDATA and USERPROFILE)
             set_env_variables(user, to_impersonate=True)

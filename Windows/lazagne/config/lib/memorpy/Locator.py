@@ -15,19 +15,19 @@
 # along with memorpy.  If not, see <http://www.gnu.org/licenses/>.
 
 import copy
-import time
 import struct
+import time
 
 from .Address import Address
 
 
 class Locator(object):
-    """ 
+    """
             take a memoryworker and a type to search
             then you can feed the locator with values and it will reduce the addresses possibilities
     """
 
-    def __init__(self, mw, type = 'unknown', start = None, end = None):
+    def __init__(self, mw, type='unknown', start=None, end=None):
         self.mw = mw
         self.type = type
         self.last_iteration = {}
@@ -35,27 +35,28 @@ class Locator(object):
         self.start = start
         self.end = end
 
-    def find(self, value, erase_last = True):
+    def find(self, value, erase_last=True):
         return self.feed(value, erase_last)
 
-    def feed(self, value, erase_last = True):
+    def feed(self, value, erase_last=True):
         self.last_value = value
         new_iter = copy.copy(self.last_iteration)
         if self.type == 'unknown':
             all_types = ['uint',
-             'int',
-             'long',
-             'ulong',
-             'float',
-             'double',
-             'short',
-             'ushort']
+                         'int',
+                         'long',
+                         'ulong',
+                         'float',
+                         'double',
+                         'short',
+                         'ushort']
         else:
             all_types = [self.type]
         for type in all_types:
             if type not in new_iter:
                 try:
-                    new_iter[type] = [ Address(x, self.mw.process, type) for x in self.mw.mem_search(value, type, start_offset=self.start, end_offset=self.end) ]
+                    new_iter[type] = [Address(x, self.mw.process, type) for x in self.mw.mem_search(
+                        value, type, start_offset=self.start, end_offset=self.end)]
                 except struct.error:
                     new_iter[type] = []
             else:
@@ -78,10 +79,10 @@ class Locator(object):
     def get_addresses(self):
         return self.last_iteration
 
-    def diff(self, erase_last = False):
+    def diff(self, erase_last=False):
         return self.get_modified_addr(erase_last)
 
-    def get_modified_addr(self, erase_last = False):
+    def get_modified_addr(self, erase_last=False):
         last = self.last_iteration
         new = self.feed(self.last_value, erase_last=erase_last)
         ret = {}

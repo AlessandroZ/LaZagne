@@ -35,7 +35,8 @@ from lazagne.softwares.php.composer import Composer
 # Svn
 from lazagne.softwares.svn.tortoise import Tortoise
 # Sysadmin
-from lazagne.softwares.sysadmin.apachedirectorystudio import ApacheDirectoryStudio
+from lazagne.softwares.sysadmin.apachedirectorystudio import \
+    ApacheDirectoryStudio
 from lazagne.softwares.sysadmin.coreftp import CoreFTP
 from lazagne.softwares.sysadmin.cyberduck import Cyberduck
 from lazagne.softwares.sysadmin.filezilla import Filezilla
@@ -53,11 +54,11 @@ from lazagne.softwares.wifi.wifi import Wifi
 # Windows
 from lazagne.softwares.windows.autologon import Autologon
 from lazagne.softwares.windows.cachedump import Cachedump
-from lazagne.softwares.windows.credman import Credman
 from lazagne.softwares.windows.credfiles import CredFiles
+from lazagne.softwares.windows.credman import Credman
 from lazagne.softwares.windows.hashdump import Hashdump
-from lazagne.softwares.windows.ppypykatz import Pypykatz
 from lazagne.softwares.windows.lsa_secrets import LSASecrets
+from lazagne.softwares.windows.ppypykatz import Pypykatz
 from lazagne.softwares.windows.vault import Vault
 from lazagne.softwares.windows.vaultfiles import VaultFiles
 from lazagne.softwares.windows.windows import WindowsPassword

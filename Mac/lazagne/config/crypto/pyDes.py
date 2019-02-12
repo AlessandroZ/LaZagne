@@ -9,7 +9,7 @@
 # Homepage: http://twhiteman.netfirms.com/des.html
 #
 # This is a pure python implementation of the DES encryption algorithm.
-# It's pure python to avoid portability issues, since most DES 
+# It's pure python to avoid portability issues, since most DES
 # implementations are programmed in C (for performance reasons).
 #
 # Triple DES class is also implemented, utilizing the DES base. Triple DES
@@ -59,7 +59,7 @@ pad     -> Optional argument. Only when using padmode of PAD_NORMAL. For
        bytes of the unencrypted data block.
 padmode -> Optional argument, set the padding mode, must be one of PAD_NORMAL
        or PAD_PKCS5). Defaults to PAD_NORMAL.
-      
+
 
 Example
 -------
@@ -116,7 +116,8 @@ class _baseDes(object):
         if pad and padmode == PAD_PKCS5:
             raise ValueError("Cannot use a pad character with PAD_PKCS5")
         if IV and len(IV) != self.block_size:
-            raise ValueError("Invalid Initial Value (IV), must be a multiple of " + str(self.block_size) + " bytes")
+            raise ValueError(
+                "Invalid Initial Value (IV), must be a multiple of " + str(self.block_size) + " bytes")
 
         # Set the passed in variables
         self._mode = mode
@@ -166,7 +167,8 @@ class _baseDes(object):
     def setIV(self, IV):
         """Will set the Initial Value, used in conjunction with CBC mode"""
         if not IV or len(IV) != self.block_size:
-            raise ValueError("Invalid Initial Value (IV), must be a multiple of " + str(self.block_size) + " bytes")
+            raise ValueError(
+                "Invalid Initial Value (IV), must be a multiple of " + str(self.block_size) + " bytes")
         IV = self._guardAgainstUnicode(IV)
         self._iv = IV
 
@@ -216,7 +218,7 @@ class _baseDes(object):
                 pad = self.getPadding()
             if pad:
                 data = data[:-self.block_size] + \
-                       data[-self.block_size:].rstrip(pad)
+                    data[-self.block_size:].rstrip(pad)
 
         elif padmode == PAD_PKCS5:
             if _pythonMajorVersion < 3:
@@ -232,7 +234,8 @@ class _baseDes(object):
         # there is no way to correctly decode the data into bytes.
         if _pythonMajorVersion < 3:
             if isinstance(data, unicode):
-                raise ValueError("pyDes can only work with bytes, not Unicode strings.")
+                raise ValueError(
+                    "pyDes can only work with bytes, not Unicode strings.")
         else:
             if isinstance(data, str):
                 # Only accept ascii unicode values.
@@ -240,7 +243,8 @@ class _baseDes(object):
                     return data.encode('ascii')
                 except UnicodeEncodeError:
                     pass
-                raise ValueError("pyDes can only work with encoded strings, not Unicode.")
+                raise ValueError(
+                    "pyDes can only work with encoded strings, not Unicode.")
         return data
 
 
@@ -398,7 +402,8 @@ class des(_baseDes):
     def __init__(self, key, mode=ECB, IV=None, pad=None, padmode=PAD_NORMAL):
         # Sanity checking of arguments.
         if len(key) != 8:
-            raise ValueError("Invalid DES key size. Key must be exactly 8 bytes long.")
+            raise ValueError(
+                "Invalid DES key size. Key must be exactly 8 bytes long.")
         _baseDes.__init__(self, mode, IV, pad, padmode)
         self.key_size = 8
 
@@ -460,7 +465,8 @@ class des(_baseDes):
     # Create the 16 subkeys, K[1] - K[16]
     def __create_sub_keys(self):
         """Create the 16 subkeys K[1] to K[16] from the given key"""
-        key = self.__permutate(des.__pc1, self.__String_to_BitList(self.getKey()))
+        key = self.__permutate(
+            des.__pc1, self.__String_to_BitList(self.getKey()))
         i = 0
         # Split into Left and Right sections
         self.L = key[:28]
@@ -576,14 +582,16 @@ class des(_baseDes):
                 raise ValueError("Invalid data length, data must be a multiple of " + str(
                     self.block_size) + " bytes\n. Try setting the optional padding character")
             else:
-                data += (self.block_size - (len(data) % self.block_size)) * self.getPadding()
+                data += (self.block_size - (len(data) %
+                                            self.block_size)) * self.getPadding()
             # print "Len of data: %f" % (len(data) / self.block_size)
 
         if self.getMode() == CBC:
             if self.getIV():
                 iv = self.__String_to_BitList(self.getIV())
             else:
-                raise ValueError("For CBC mode, you must supply the Initial Value (IV) for ciphering")
+                raise ValueError(
+                    "For CBC mode, you must supply the Initial Value (IV) for ciphering")
 
         # Split the data into blocks, crypting each one seperately
         i = 0
@@ -615,7 +623,8 @@ class des(_baseDes):
                 processed_block = self.__des_crypt(block, crypt_type)
 
                 if crypt_type == des.DECRYPT:
-                    processed_block = list(map(lambda x, y: x ^ y, processed_block, iv))
+                    processed_block = list(
+                        map(lambda x, y: x ^ y, processed_block, iv))
                     # j = 0
                     # while j < len(processed_block):
                     #   processed_block[j] = processed_block[j] ^ iv[j]
@@ -718,7 +727,8 @@ class triple_des(_baseDes):
             if len(key) == 16:  # Use DES-EDE2 mode
                 self.key_size = 16
             else:
-                raise ValueError("Invalid triple DES key size. Key must be either 16 or 24 bytes long")
+                raise ValueError(
+                    "Invalid triple DES key size. Key must be either 16 or 24 bytes long")
         if self.getMode() == CBC:
             if not self.getIV():
                 # Use the first 8 bytes of the key

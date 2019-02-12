@@ -1,11 +1,12 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import *
 
 
 class Credman(ModuleInfo):
     def __init__(self):
-        ModuleInfo.__init__(self, 'credman', 'windows', only_from_current_user=True)
+        ModuleInfo.__init__(self, 'credman', 'windows',
+                            only_from_current_user=True)
 
     def run(self):
         pwd_found = []

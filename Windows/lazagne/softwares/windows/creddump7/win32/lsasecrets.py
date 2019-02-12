@@ -19,14 +19,16 @@
 @contact:      bdolangavitt@wesleyan.edu
 """
 
-import hashlib, os
+import hashlib
+import os
 
-from .rawreg import *
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
+from lazagne.config.crypto.pyDes import ECB, des
+from lazagne.config.crypto.rc4 import RC4
+
 from ..addrspace import HiveFileAddressSpace
 from .hashdump import get_bootkey, str_to_key
-from lazagne.config.crypto.rc4 import RC4
-from lazagne.config.crypto.pyDes import des, ECB
-from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
+from .rawreg import *
 
 
 def get_lsa_key(secaddr, bootkey, vista):
@@ -47,7 +49,7 @@ def get_lsa_key(secaddr, bootkey, vista):
         return None
 
     obf_lsa_key = secaddr.read(enc_reg_value.Data.value,
-            enc_reg_value.DataLength.value)
+                               enc_reg_value.DataLength.value)
     if not obf_lsa_key:
         return None
 
@@ -74,9 +76,9 @@ def decrypt_secret(secret, key):
     Note that key can be longer than 7 bytes."""
     decrypted_data = ''
     j = 0   # key index
-    for i in range(0,len(secret),8):
-        enc_block = secret[i:i+8]
-        block_key = key[j:j+7]
+    for i in range(0, len(secret), 8):
+        enc_block = secret[i:i + 8]
+        block_key = key[j:j + 7]
         des_key = str_to_key(block_key)
         crypter = des(des_key, ECB)
 
@@ -86,26 +88,26 @@ def decrypt_secret(secret, key):
             continue
 
         j += 7
-        if len(key[j:j+7]) < 7:
-            j = len(key[j:j+7])
+        if len(key[j:j + 7]) < 7:
+            j = len(key[j:j + 7])
 
     (dec_data_len,) = unpack("<L", decrypted_data[:4])
-    return decrypted_data[8:8+dec_data_len]
+    return decrypted_data[8:8 + dec_data_len]
 
 
 def decrypt_aes(secret, key):
     sha = hashlib.sha256()
     sha.update(key)
-    for _i in range(1, 1000+1):
+    for _i in range(1, 1000 + 1):
         sha.update(secret[28:60])
     aeskey = sha.digest()
 
     data = ""
     for i in range(60, len(secret), 16):
-        aes = AESModeOfOperationCBC(aeskey, iv="\x00"*16)
-        buf = secret[i : i + 16]
+        aes = AESModeOfOperationCBC(aeskey, iv="\x00" * 16)
+        buf = secret[i: i + 16]
         if len(buf) < 16:
-            buf += (16-len(buf)) * "\00"
+            buf += (16 - len(buf)) * "\00"
 
         data += aes.decrypt(buf)
 
@@ -126,7 +128,7 @@ def get_secret_by_name(secaddr, name, lsakey, vista):
         return None
 
     enc_secret = secaddr.read(enc_secret_value.Data.value,
-            enc_secret_value.DataLength.value)
+                              enc_secret_value.DataLength.value)
     if not enc_secret:
         return None
 
@@ -161,7 +163,7 @@ def get_secrets(sysaddr, secaddr, vista):
             continue
 
         enc_secret = secaddr.read(enc_secret_value.Data.value,
-                enc_secret_value.DataLength.value)
+                                  enc_secret_value.DataLength.value)
         if not enc_secret:
             continue
 
@@ -178,7 +180,7 @@ def get_secrets(sysaddr, secaddr, vista):
 def get_file_secrets(sysfile, secfile, vista):
     if not os.path.isfile(sysfile) or not os.path.isfile(secfile):
         return
-        
+
     sysaddr = HiveFileAddressSpace(sysfile)
     secaddr = HiveFileAddressSpace(secfile)
 

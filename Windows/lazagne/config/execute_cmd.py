@@ -2,13 +2,13 @@
 # !/usr/bin/python
 import base64
 import os
-import subprocess
 import re
+import subprocess
 
-from lazagne.config.write_output import print_debug
 from lazagne.config.constant import constant
+from lazagne.config.write_output import print_debug
 
-try: 
+try:
     import _subprocess as sub
     STARTF_USESHOWWINDOW = sub.STARTF_USESHOWWINDOW  # Not work on Python 3
     SW_HIDE = sub.SW_HIDE
@@ -44,11 +44,13 @@ def powershell_execute(script, func):
             p.stdin.write("$base64+=\"%s\"\n" % t)
             p.stdin.flush()
 
-        p.stdin.write("$d=[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($base64))\n")
+        p.stdin.write(
+            "$d=[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($base64))\n")
         p.stdin.write("Invoke-Expression $d\n")
 
         p.stdin.write("\n$a=Invoke-Expression \"%s\" | Out-String\n" % func)
-        p.stdin.write("$b=[System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(\"$a\"))\n")
+        p.stdin.write(
+            "$b=[System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(\"$a\"))\n")
         p.stdin.write("Write-Host \"[BEGIN]\"\n")
         p.stdin.write("Write-Host $b\n")
 
@@ -80,7 +82,8 @@ def save_hives():
                                      stdout=subprocess.PIPE, universal_newlines=True)
                 results, _ = p.communicate()
             except Exception as e:
-                print_debug('ERROR', u'Failed to save system hives: {error}'.format(error=e))
+                print_debug(
+                    'ERROR', u'Failed to save system hives: {error}'.format(error=e))
                 return False
     return True
 
@@ -94,7 +97,8 @@ def delete_hives():
         if os.path.exists(constant.hives[h]):
             try:
                 os.remove(constant.hives[h])
-                print_debug('DEBUG', u'Temporary file removed: {filename}'.format(filename=constant.hives[h]))
+                print_debug('DEBUG', u'Temporary file removed: {filename}'.format(
+                    filename=constant.hives[h]))
             except Exception:
-                print_debug('DEBUG', u'Temporary file failed to removed: {filename}'.format(filename=constant.hives[h]))
-
+                print_debug('DEBUG', u'Temporary file failed to removed: {filename}'.format(
+                    filename=constant.hives[h]))

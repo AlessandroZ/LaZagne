@@ -1,5 +1,5 @@
-import pwd
 import os
+import pwd
 
 
 def directories():

@@ -117,7 +117,7 @@ CSSM_ALGORITHMS = {
 }
 
 # CSSM TYPE
-## http://www.opensource.apple.com/source/libsecurity_cssm/libsecurity_cssm-36064/lib/cssmtype.h
+# http://www.opensource.apple.com/source/libsecurity_cssm/libsecurity_cssm-36064/lib/cssmtype.h
 
 ########## CSSM_DB_RECORDTYPE #############
 
@@ -133,7 +133,7 @@ CSSM_DL_DB_RECORD_UNLOCK_REFERRAL = CSSM_DB_RECORDTYPE_APP_DEFINED_START + 5
 CSSM_DL_DB_RECORD_EXTENDED_ATTRIBUTE = CSSM_DB_RECORDTYPE_APP_DEFINED_START + 6
 
 CSSM_DL_DB_RECORD_X509_CERTIFICATE = CSSM_DB_RECORDTYPE_APP_DEFINED_START + 0x1000
-CSSM_DL_DB_RECORD_METADATA = CSSM_DB_RECORDTYPE_APP_DEFINED_START + 0x8000  ## DBBlob
+CSSM_DL_DB_RECORD_METADATA = CSSM_DB_RECORDTYPE_APP_DEFINED_START + 0x8000  # DBBlob
 CSSM_DB_RECORDTYPE_APP_DEFINED_END = 0xffffffff
 
 # /* Record Types defined in the Schema Management Name Space */

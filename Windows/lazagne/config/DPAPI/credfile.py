@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Code based from these two awesome projects: 
+Code based from these two awesome projects:
 - DPAPICK 	: https://bitbucket.org/jmichel/dpapick
 - DPAPILAB 	: https://github.com/dfirfpi/dpapilab
 """
@@ -16,6 +16,7 @@ class CredentialDecryptedHeader(DataStruct):
     Header of the structure returned once the blob has been decrypted
     Header of the CredentialDecrypted class
     """
+
     def __init__(self, raw=None):
         self.total_size = None
         self.unknown1 = None
@@ -46,6 +47,7 @@ class CredentialDecrypted(DataStruct):
     """
     Structure returned once the blob has been decrypted
     """
+
     def __init__(self, raw=None):
         self.header_size = None
         self.header = None
@@ -62,18 +64,25 @@ class CredentialDecrypted(DataStruct):
         if self.header_size > 0:
             self.header = CredentialDecryptedHeader()
             self.header.parse(data.eat_sub(self.header_size - 4))
-        self.domain = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
-        self.unk_string1 = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
-        self.unk_string2 = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
-        self.unk_string3 = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
-        self.username = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
-        self.password = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
+        self.domain = data.eat_length_and_string("L").decode(
+            "UTF-16LE").encode("utf-8")  # Unicode
+        self.unk_string1 = data.eat_length_and_string(
+            "L").decode("UTF-16LE").encode("utf-8")  # Unicode
+        self.unk_string2 = data.eat_length_and_string(
+            "L").decode("UTF-16LE").encode("utf-8")  # Unicode
+        self.unk_string3 = data.eat_length_and_string(
+            "L").decode("UTF-16LE").encode("utf-8")  # Unicode
+        self.username = data.eat_length_and_string(
+            "L").decode("UTF-16LE").encode("utf-8")  # Unicode
+        self.password = data.eat_length_and_string(
+            "L").decode("UTF-16LE").encode("utf-8")  # Unicode
 
 
 class CredFile(DataStruct):
     """
     Decrypt Credentials Files stored on ...\\Microsoft\\Credentials\\...
     """
+
     def __init__(self, raw=None):
         self.unknown1 = None
         self.blob_size = None

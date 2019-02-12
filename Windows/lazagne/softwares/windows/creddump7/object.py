@@ -9,11 +9,11 @@
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details. 
+# General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 
 """
@@ -38,7 +38,7 @@ builtin_types = {
     'long long': (8, 'q'),
     'unsigned long long': (8, 'Q'),
     'pointer': (4, 'I'),
-    }
+}
 
 
 def obj_size(types, objname):
@@ -57,7 +57,7 @@ def builtin_size(builtin):
 
 def read_value(addr_space, value_type, vaddr):
     """
-    Read the low-level value for a built-in type. 
+    Read the low-level value for a built-in type.
     """
 
     if not builtin_types.has_key(value_type):
@@ -83,8 +83,10 @@ def read_unicode_string(addr_space, types, member_list, vaddr):
     if len(member_list) > 1:
         (offset, current_type) = get_obj_offset(types, member_list)
 
-    buf = read_obj(addr_space, types, ['_UNICODE_STRING', 'Buffer'], vaddr + offset)
-    length = read_obj(addr_space, types, ['_UNICODE_STRING', 'Length'], vaddr + offset)
+    buf = read_obj(addr_space, types, [
+                   '_UNICODE_STRING', 'Buffer'], vaddr + offset)
+    length = read_obj(addr_space, types, [
+                      '_UNICODE_STRING', 'Length'], vaddr + offset)
 
     if length == 0x0:
         return ""
@@ -158,7 +160,8 @@ def get_obj_offset(types, member_list):
 
         current_member = member_list.pop()
         if not member_dict.has_key(current_member):
-            raise Exception('Invalid member %s in type %s' % (current_member, current_type))
+            raise Exception('Invalid member %s in type %s' %
+                            (current_member, current_type))
 
         offset += member_dict[current_member][0]
 

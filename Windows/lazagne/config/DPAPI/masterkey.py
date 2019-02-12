@@ -2,21 +2,21 @@
 # -*- coding: utf-8 -*-
 
 """
-Code based from these two awesome projects: 
+Code based from these two awesome projects:
 - DPAPICK : https://bitbucket.org/jmichel/dpapick
 - DPAPILAB : https://github.com/dfirfpi/dpapilab
 """
 
-from . import crypto
-from .credhist import CredHistFile
-from .system import CredSystem
-from .eater import DataStruct, Eater
-from collections import defaultdict
-
 import codecs
 import hashlib
-import struct
 import os
+import struct
+from collections import defaultdict
+
+from . import crypto
+from .credhist import CredHistFile
+from .eater import DataStruct, Eater
+from .system import CredSystem
 
 
 class MasterKey(DataStruct):
@@ -65,7 +65,8 @@ class MasterKey(DataStruct):
             return
 
         for algo in ["sha1", "md4"]:
-            self.decrypt_with_hash(sid=sid, pwdhash=hashlib.new(algo, pwd).digest())
+            self.decrypt_with_hash(
+                sid=sid, pwdhash=hashlib.new(algo, pwd).digest())
             if self.decrypted:
                 break
 
@@ -84,7 +85,8 @@ class MasterKey(DataStruct):
         self.key = cleartxt[-64:]
         hmacSalt = cleartxt[:16]
         hmac = cleartxt[16:16 + self.hashAlgo.digestLength]
-        hmacComputed = crypto.DPAPIHmac(self.hashAlgo, pwdhash, hmacSalt, self.key)
+        hmacComputed = crypto.DPAPIHmac(
+            self.hashAlgo, pwdhash, hmacSalt, self.key)
         self.decrypted = hmac == hmacComputed
         if self.decrypted:
             self.key_hash = hashlib.sha1(self.key).digest()
@@ -110,6 +112,7 @@ class DomainKey(DataStruct):
     still on progress.
 
     """
+
     def __init__(self, raw=None):
         self.version = None
         self.secretLen = None
@@ -123,7 +126,9 @@ class DomainKey(DataStruct):
         self.version = data.eat("L")
         self.secretLen = data.eat("L")
         self.accesscheckLen = data.eat("L")
-        self.guidKey = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
+        # data.eat("16s")
+        self.guidKey = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat(
+            "L2H8B")
         self.encryptedSecret = data.eat("%us" % self.secretLen)
         self.accessCheck = data.eat("%us" % self.accesscheckLen)
 
@@ -132,6 +137,7 @@ class MasterKeyFile(DataStruct):
     """
     This class represents a masterkey file.
     """
+
     def __init__(self, raw=None):
         self.masterkey = None
         self.backupkey = None
@@ -247,7 +253,8 @@ class MasterKeyPool(object):
         self.keys[mkf.guid]['mkf'].append(mkf)
 
         # Store mkfile object
-        self.mkfiles.append(mkf)    # TO DO000000 => use only self.keys variable
+        # TO DO000000 => use only self.keys variable
+        self.mkfiles.append(mkf)
 
     def load_directory(self, directory):
         """
@@ -303,10 +310,11 @@ class MasterKeyPool(object):
                 with open(preferred_file, 'rb') as pfile:
                     GUID1 = pfile.read(8)
                     GUID2 = pfile.read(8)
-                
+
                 GUID = struct.unpack("<LHH", GUID1)
                 GUID2 = struct.unpack(">HLH", GUID2)
-                self.preferred_guid = "%s-%s-%s-%s-%s%s" % (format(GUID[0], '08x'), format(GUID[1], '04x'), format(GUID[2], '04x'), format(GUID2[0], '04x'), format(GUID2[1], '08x'), format(GUID2[2], '04x'))
+                self.preferred_guid = "%s-%s-%s-%s-%s%s" % (format(GUID[0], '08x'), format(GUID[1], '04x'), format(
+                    GUID[2], '04x'), format(GUID2[0], '04x'), format(GUID2[1], '08x'), format(GUID2[2], '04x'))
                 return self.preferred_guid
 
         return False
@@ -378,11 +386,11 @@ class MasterKeyPool(object):
                             self.nb_mkf_decrypted += 1
 
                             yield True, u'{password} ok for masterkey {masterkey}'.format(password=password,
-                                                                                    masterkey=mkf.guid)
+                                                                                          masterkey=mkf.guid)
 
                         else:
                             yield False, u'{password} not ok for masterkey {masterkey}'.format(password=password,
-                                                                                        masterkey=mkf.guid)
+                                                                                               masterkey=mkf.guid)
 
     def try_credential_hash(self, sid, pwdhash=None):
         """

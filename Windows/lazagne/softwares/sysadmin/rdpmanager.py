@@ -1,13 +1,11 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import base64
-
+import os
 from xml.etree.cElementTree import ElementTree
 
+from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import Win32CryptUnprotectData
-from lazagne.config.constant import constant
-
-import os
 
 
 class RDPManager(ModuleInfo):
@@ -17,7 +15,8 @@ class RDPManager(ModuleInfo):
     def decrypt_password(self, encrypted_password):
         try:
             decoded = base64.b64decode(encrypted_password)
-            password_decrypted = Win32CryptUnprotectData(decoded, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+            password_decrypted = Win32CryptUnprotectData(
+                decoded, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
             password_decrypted = password_decrypted.replace('\x00', '')
         except Exception:
             password_decrypted = encrypted_password.replace('\x00', '')
@@ -70,7 +69,8 @@ class RDPManager(ModuleInfo):
 
         for setting in settings:
             if os.path.exists(setting):
-                self.debug(u'Setting file found: {setting}'.format(setting=setting))
+                self.debug(
+                    u'Setting file found: {setting}'.format(setting=setting))
 
                 tree = ElementTree(file=setting)
                 root = tree.getroot()

@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 
 """
-Code based from these two awesome projects: 
+Code based from these two awesome projects:
 - DPAPICK 	: https://bitbucket.org/jmichel/dpapick
 - DPAPILAB 	: https://github.com/dfirfpi/dpapilab
 """
 
-from .eater import DataStruct
-from . import crypto
-
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from lazagne.config.crypto.pyDes import CBC
 from lazagne.config.winstructure import char_to_int
+
+from . import crypto
+from .eater import DataStruct
 
 AES_BLOCK_SIZE = 16
 
@@ -54,15 +54,18 @@ class DPAPIBlob(DataStruct):
 
         """
         self.version = data.eat("L")
-        self.provider = "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x" % data.eat("L2H8B")
-        
+        self.provider = "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x" % data.eat(
+            "L2H8B")
+
         # For HMAC computation
         blobStart = data.ofs
 
         self.mkversion = data.eat("L")
-        self.mkguid = "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x" % data.eat("L2H8B")
+        self.mkguid = "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x" % data.eat(
+            "L2H8B")
         self.flags = data.eat("L")
-        self.description = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")
+        self.description = data.eat_length_and_string(
+            "L").decode("UTF-16LE").encode("utf-8")
         self.cipherAlgo = crypto.CryptoAlgo(data.eat("L"))
         self.keyLen = data.eat("L")
         self.salt = data.eat_length_and_string("L")
@@ -85,14 +88,19 @@ class DPAPIBlob(DataStruct):
         """
         for algo in [crypto.CryptSessionKeyXP, crypto.CryptSessionKeyWin7]:
             try:
-                sessionkey = algo(masterkey, self.salt, self.hashAlgo, entropy=entropy, strongPassword=strongPassword)
-                key = crypto.CryptDeriveKey(sessionkey, self.cipherAlgo, self.hashAlgo)
+                sessionkey = algo(masterkey, self.salt, self.hashAlgo,
+                                  entropy=entropy, strongPassword=strongPassword)
+                key = crypto.CryptDeriveKey(
+                    sessionkey, self.cipherAlgo, self.hashAlgo)
 
                 if "AES" in self.cipherAlgo.name:
-                    cipher = AESModeOfOperationCBC(key[:self.cipherAlgo.keyLength], iv="\x00" * self.cipherAlgo.ivLength)
-                    self.cleartext = b"".join([cipher.decrypt(self.cipherText[i:i + AES_BLOCK_SIZE]) for i in range(0, len(self.cipherText), AES_BLOCK_SIZE)])
+                    cipher = AESModeOfOperationCBC(
+                        key[:self.cipherAlgo.keyLength], iv="\x00" * self.cipherAlgo.ivLength)
+                    self.cleartext = b"".join([cipher.decrypt(
+                        self.cipherText[i:i + AES_BLOCK_SIZE]) for i in range(0, len(self.cipherText), AES_BLOCK_SIZE)])
                 else:
-                    cipher = self.cipherAlgo.module.new(key, CBC, "\x00" * self.cipherAlgo.ivLength)
+                    cipher = self.cipherAlgo.module.new(
+                        key, CBC, "\x00" * self.cipherAlgo.ivLength)
                     self.cleartext = cipher.decrypt(self.cipherText)
 
                 padding = char_to_int(self.cleartext[-1])
@@ -100,9 +108,10 @@ class DPAPIBlob(DataStruct):
                     self.cleartext = self.cleartext[:-padding]
 
                 # check against provided HMAC
-                self.signComputed = algo(masterkey, self.hmac, self.hashAlgo, entropy=entropy, verifBlob=self.blob)
+                self.signComputed = algo(
+                    masterkey, self.hmac, self.hashAlgo, entropy=entropy, verifBlob=self.blob)
                 self.decrypted = self.signComputed == self.sign
-                
+
                 if self.decrypted:
                     return True
             except Exception:

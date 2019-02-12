@@ -2,7 +2,8 @@
 import hashlib
 import struct
 
-from lazagne.config.crypto.pyaes.aes import AESModeOfOperationECB, AESModeOfOperationCBC
+from lazagne.config.crypto.pyaes.aes import (AESModeOfOperationCBC,
+                                             AESModeOfOperationECB)
 from lazagne.config.winstructure import char_to_int
 
 AES_BLOCK_SIZE = 16
@@ -19,7 +20,8 @@ def transform_key(key, seed, rounds):
     cipher = AESModeOfOperationECB(seed)
     # transform composite key rounds times
     for n in range(0, rounds):
-        key = b"".join([cipher.encrypt(key[i:i + AES_BLOCK_SIZE]) for i in range(0, len(key), AES_BLOCK_SIZE)])
+        key = b"".join([cipher.encrypt(key[i:i + AES_BLOCK_SIZE])
+                        for i in range(0, len(key), AES_BLOCK_SIZE)])
     # return hash of transformed key
     return sha256(key)
 

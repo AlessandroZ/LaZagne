@@ -1,19 +1,19 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # Author: Nicolas VERDIER (contact@n1nj4.eu)
 
-""" 
+"""
 This script uses memorpy to dumps cleartext passwords from browser's memory
 It has been tested on both windows 10 and ubuntu 16.04
 The regex have been taken from the mimikittenz https://github.com/putterpanda/mimikittenz
 """
 
-from .keethief import KeeThief
-from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
-from lazagne.config.winstructure import get_full_path_from_pid
 from lazagne.config.lib.memorpy import *
+from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import get_full_path_from_pid
 
+from .keethief import KeeThief
 
 # Memorpy has been removed because it takes to much time to execute - could return one day
 
@@ -59,7 +59,8 @@ from lazagne.config.lib.memorpy import *
 # 	("Cpanel","user=(?P<Login>.{1,50})&pass=(?P<Password>.{1,50})"),
 # ]
 
-browser_list = ["iexplore.exe", "firefox.exe", "chrome.exe", "opera.exe", "MicrosoftEdge.exe", "microsoftedgecp.exe"]
+browser_list = ["iexplore.exe", "firefox.exe", "chrome.exe",
+                "opera.exe", "MicrosoftEdge.exe", "microsoftedgecp.exe"]
 keepass_process = 'keepass.exe'
 
 
@@ -106,7 +107,7 @@ class MemoryDump(ModuleInfo):
                 if k.run(full_exe_path=full_exe_path):
                     for keepass in constant.keepass:
                         data = keepass.get('KcpPassword', None)
-                        if data: 
+                        if data:
                             pwd_found.append({
                                 'Category': 'KeePass',
                                 'KeyType': data['KeyType'],

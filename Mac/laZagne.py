@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # !/usr/bin/python
 
 ##############################################################################
@@ -11,16 +11,15 @@
 
 import argparse
 import logging
-import sys
 import os
+import sys
 import time
 
-# Configuration
-from lazagne.config.write_output import write_in_file, StandardOutput
-from lazagne.config.manage_modules import get_categories
 from lazagne.config.constant import constant
-from lazagne.config.run import run_lazagne, create_module_dic
-
+from lazagne.config.manage_modules import get_categories
+from lazagne.config.run import create_module_dic, run_lazagne
+# Configuration
+from lazagne.config.write_output import StandardOutput, write_in_file
 
 # Object used to manage the output / write functions (cf write_output file)
 constant.st = StandardOutput()
@@ -113,7 +112,8 @@ def runLaZagne(category_selected='all', subcategories={}, password=None, interac
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description=constant.st.banner, formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=constant.st.banner, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION),
                         help='laZagne version')
 
@@ -121,7 +121,8 @@ if __name__ == '__main__':
     # Version and verbosity
     PPoptional = argparse.ArgumentParser(
         add_help=False,
-        formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION)
+        formatter_class=lambda prog: argparse.HelpFormatter(
+            prog, max_help_position=constant.MAX_HELP_POSITION)
     )
     PPoptional._optionals.title = 'optional arguments'
     PPoptional.add_argument('-i', '--interactive', default=False, action='store_true',
@@ -130,19 +131,24 @@ if __name__ == '__main__':
                             help='user password used to decrypt the keychain')
     PPoptional.add_argument('-attack', dest='attack', action='store_true',
                             help='500 well known passwords used to check the user hash (could take a while)')
-    PPoptional.add_argument('-v', dest='verbose', action='count', help='increase verbosity level', default=0)
+    PPoptional.add_argument('-v', dest='verbose', action='count',
+                            help='increase verbosity level', default=0)
     PPoptional.add_argument('-quiet', dest='quiet', action='store_true',
                             help='quiet mode: nothing is printed to the output', default=False, )
 
     # Output
     PWrite = argparse.ArgumentParser(
         add_help=False,
-        formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION)
+        formatter_class=lambda prog: argparse.HelpFormatter(
+            prog, max_help_position=constant.MAX_HELP_POSITION)
     )
     PWrite._optionals.title = 'Output'
-    PWrite.add_argument('-oN', dest='write_normal', action='store_true', help='output file in a readable format')
-    PWrite.add_argument('-oJ', dest='write_json', action='store_true', help='output file in a json format')
-    PWrite.add_argument('-oA', dest='write_all', action='store_true', help='output file in all format')
+    PWrite.add_argument('-oN', dest='write_normal',
+                        action='store_true', help='output file in a readable format')
+    PWrite.add_argument('-oJ', dest='write_json',
+                        action='store_true', help='output file in a json format')
+    PWrite.add_argument('-oA', dest='write_all',
+                        action='store_true', help='output file in all format')
     PWrite.add_argument('-output', dest='output', action='store', help='destination path to store results (default:.)',
                         default='.')
 
@@ -152,7 +158,8 @@ if __name__ == '__main__':
     for c in categories:
         categories[c]['parser'] = argparse.ArgumentParser(
             add_help=False,
-            formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION)
+            formatter_class=lambda prog: argparse.HelpFormatter(
+                prog, max_help_position=constant.MAX_HELP_POSITION)
         )
         categories[c]['parser']._optionals.title = categories[c]['help']
 
@@ -161,7 +168,7 @@ if __name__ == '__main__':
         for module in modules[c]:
             m = modules[c][module]
             categories[c]['parser'].add_argument(m.options['command'], action=m.options['action'], dest=m.options['dest'],
-                                               help=m.options['help'])
+                                                 help=m.options['help'])
 
             # Manage all sub options by modules
             if m.suboptions:
@@ -169,7 +176,8 @@ if __name__ == '__main__':
                 for sub in m.suboptions:
                     tmp_subparser = argparse.ArgumentParser(
                         add_help=False,
-                        formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.MAX_HELP_POSITION)
+                        formatter_class=lambda prog: argparse.HelpFormatter(
+                            prog, max_help_position=constant.MAX_HELP_POSITION)
                     )
                     tmp_subparser._optionals.title = sub['title']
                     if 'type' in sub:
@@ -196,7 +204,8 @@ if __name__ == '__main__':
 
     subparsers = parser.add_subparsers(help='Choose a main command')
     for d in dic:
-        subparsers.add_parser(d, parents=dic[d]['parents'], help=dic[d]['help']).set_defaults(auditType=d)
+        subparsers.add_parser(
+            d, parents=dic[d]['parents'], help=dic[d]['help']).set_defaults(auditType=d)
 
     # ------------------------------------------- Parse arguments -------------------------------------------
 
@@ -215,7 +224,8 @@ if __name__ == '__main__':
         all_format=args['write_all']
     )
     verbosity(verbose=args['verbose'])
-    manage_advanced_options(user_password=args.get('password', None), dictionary_attack=args.get('attack', None))
+    manage_advanced_options(user_password=args.get(
+        'password', None), dictionary_attack=args.get('attack', None))
     quiet_mode(is_quiet_mode=args['quiet'])
 
     # Print the title

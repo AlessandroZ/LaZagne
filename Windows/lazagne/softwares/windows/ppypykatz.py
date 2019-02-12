@@ -5,8 +5,8 @@
 
 import codecs
 
-from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
+from lazagne.config.module_info import ModuleInfo
 from pypykatz.pypykatz import pypykatz
 
 
@@ -58,11 +58,14 @@ class Pypykatz(ModuleInfo):
                         results[login] = {}
 
                     if data['SHAHash']:
-                        results[login]['Shahash'] = codecs.encode(data['SHAHash'], 'hex')
+                        results[login]['Shahash'] = codecs.encode(
+                            data['SHAHash'], 'hex')
                     if data['LMHash']:
-                        results[login]['Lmhash'] = codecs.encode(data['LMHash'], 'hex')
+                        results[login]['Lmhash'] = codecs.encode(
+                            data['LMHash'], 'hex')
                     if data['NThash']:
-                        results[login]['Nthash'] = codecs.encode(data['NThash'], 'hex')
+                        results[login]['Nthash'] = codecs.encode(
+                            data['NThash'], 'hex')
 
             constant.pypykatz_result = results
             pwd_found = []

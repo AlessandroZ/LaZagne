@@ -11,7 +11,8 @@ class MavenRepositories(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'mavenrepositories', 'maven')
         # Interesting XML nodes in Maven repository configuration
-        self.nodes_to_extract = ["id", "username", "password", "privateKey", "passphrase"]
+        self.nodes_to_extract = ["id", "username",
+                                 "password", "privateKey", "passphrase"]
         self.settings_namespace = "{http://maven.apache.org/SETTINGS/1.0.0}"
 
     def extract_master_password(self):
@@ -23,10 +24,12 @@ class MavenRepositories(ModuleInfo):
         :return: The master password value or None if no master password exists.
         """
         master_password = None
-        master_password_file_location = constant.profile["USERPROFILE"] + u'\\.m2\\settings-security.xml'
+        master_password_file_location = constant.profile["USERPROFILE"] + \
+            u'\\.m2\\settings-security.xml'
         if os.path.isfile(master_password_file_location):
             try:
-                config = ElementTree.parse(master_password_file_location).getroot()
+                config = ElementTree.parse(
+                    master_password_file_location).getroot()
                 master_password_node = config.find(".//master")
                 if master_password_node is not None:
                     master_password = master_password_node.text
@@ -45,21 +48,26 @@ class MavenRepositories(ModuleInfo):
         :return: List of dict in which one dict contains all information for a repository.
         """
         repos_creds = []
-        maven_settings_file_location = constant.profile["USERPROFILE"] + u'\\.m2\\settings.xml'
+        maven_settings_file_location = constant.profile["USERPROFILE"] + \
+            u'\\.m2\\settings.xml'
         if os.path.isfile(maven_settings_file_location):
             try:
-                settings = ElementTree.parse(maven_settings_file_location).getroot()
-                server_nodes = settings.findall(".//%sserver" % self.settings_namespace)
+                settings = ElementTree.parse(
+                    maven_settings_file_location).getroot()
+                server_nodes = settings.findall(
+                    ".//%sserver" % self.settings_namespace)
                 for server_node in server_nodes:
                     creds = {}
                     for child_node in server_node:
-                        tag_name = child_node.tag.replace(self.settings_namespace, "")
+                        tag_name = child_node.tag.replace(
+                            self.settings_namespace, "")
                         if tag_name in self.nodes_to_extract:
                             creds[tag_name] = child_node.text.strip()
                     if len(creds) > 0:
                         repos_creds.append(creds)
             except Exception as e:
-                self.error(u"Cannot retrieve repositories credentials '%s'" % e)
+                self.error(
+                    u"Cannot retrieve repositories credentials '%s'" % e)
 
         return repos_creds
 
@@ -73,7 +81,8 @@ class MavenRepositories(ModuleInfo):
         state = False
         if "privateKey" in creds_dict:
             pk_file_location = creds_dict["privateKey"]
-            pk_file_location = pk_file_location.replace("${user.home}", constant.profile["USERPROFILE"])
+            pk_file_location = pk_file_location.replace(
+                "${user.home}", constant.profile["USERPROFILE"])
             state = os.path.isfile(pk_file_location)
 
         return state
@@ -121,7 +130,8 @@ class MavenRepositories(ModuleInfo):
             else:
                 # Case for authentication using private key
                 pk_file_location = creds["privateKey"]
-                pk_file_location = pk_file_location.replace("${user.home}", constant.profile["USERPROFILE"])
+                pk_file_location = pk_file_location.replace(
+                    "${user.home}", constant.profile["USERPROFILE"])
                 with open(pk_file_location, "r") as pk_file:
                     values["PrivateKey"] = pk_file.read()
                 if "passphrase" in creds:

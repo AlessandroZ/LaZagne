@@ -9,19 +9,19 @@
 
 # Disclaimer: Do Not Use this program for illegal purposes ;)
 
-import sys
-import os
 import argparse
 import logging
-
-from lazagne.config.write_output import write_in_file, StandardOutput
-from lazagne.config.manage_modules import get_categories
-from lazagne.config.constant import constant
-from lazagne.config.run import create_module_dic, run_lazagne
-
+import os
+import sys
 import time
 
-constant.st = StandardOutput()  # Object used to manage the output / write functions (cf write_output file)
+from lazagne.config.constant import constant
+from lazagne.config.manage_modules import get_categories
+from lazagne.config.run import create_module_dic, run_lazagne
+from lazagne.config.write_output import StandardOutput, write_in_file
+
+# Object used to manage the output / write functions (cf write_output file)
+constant.st = StandardOutput()
 modules = create_module_dic()
 
 
@@ -98,7 +98,8 @@ def runLaZagne(category_selected='all', subcategories={}):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description=constant.st.banner, formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=constant.st.banner, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--version', action='version', version='Version ' + str(constant.CURRENT_VERSION),
                         help='laZagne version')
 
@@ -108,21 +109,24 @@ if __name__ == '__main__':
         add_help=False,
         formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.max_help))
     PPoptional._optionals.title = 'optional arguments'
-    PPoptional.add_argument('-v', dest='verbose', action='count', default=0, help='increase verbosity level')
+    PPoptional.add_argument('-v', dest='verbose', action='count',
+                            default=0, help='increase verbosity level')
     PPoptional.add_argument('-quiet', dest='quiet', action='store_true', default=False,
                             help='quiet mode: nothing is printed to the output')
 
     # Output
     PWrite = argparse.ArgumentParser(
         add_help=False,
-        formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=constant.max_help)
+        formatter_class=lambda prog: argparse.HelpFormatter(
+            prog, max_help_position=constant.max_help)
     )
     PWrite._optionals.title = 'Output'
     PWrite.add_argument('-oN', dest='write_normal', action='store_true', default=None,
                         help='output file in a readable format')
     PWrite.add_argument('-oJ', dest='write_json', action='store_true', default=None,
                         help='output file in a json format')
-    PWrite.add_argument('-oA', dest='write_all', action='store_true', default=None, help='output file in all format')
+    PWrite.add_argument('-oA', dest='write_all', action='store_true',
+                        default=None, help='output file in all format')
     PWrite.add_argument('-output', dest='output', action='store', default='.',
                         help='destination path to store results (default:.)')
 
@@ -141,7 +145,7 @@ if __name__ == '__main__':
         for module in modules[c]:
             m = modules[c][module]
             all_categories[c]['parser'].add_argument(m.options['command'], action=m.options['action'],
-                                                 dest=m.options['dest'], help=m.options['help'])
+                                                     dest=m.options['dest'], help=m.options['help'])
 
             # Manage all sub options by modules
             if m.suboptions:
@@ -180,7 +184,8 @@ if __name__ == '__main__':
     # 2- Main commands
     subparsers = parser.add_subparsers(help='Choose a main command')
     for d in dic:
-        subparsers.add_parser(d, parents=dic[d]['parents'], help=dic[d]['help']).set_defaults(auditType=d)
+        subparsers.add_parser(
+            d, parents=dic[d]['parents'], help=dic[d]['help']).set_defaults(auditType=d)
 
     # ------------------------------------------- Parse arguments -------------------------------------------
 

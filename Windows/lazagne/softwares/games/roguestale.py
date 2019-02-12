@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import os
 import re
 from xml.etree.cElementTree import ElementTree
@@ -13,7 +13,8 @@ class RoguesTale(ModuleInfo):
 
     def run(self):
         creds = []
-        directory = constant.profile['USERPROFILE'] + u'\\Documents\\Rogue\'s Tale\\users'
+        directory = constant.profile['USERPROFILE'] + \
+            u'\\Documents\\Rogue\'s Tale\\users'
 
         # The actual user details are stored in *.userdata files
         if os.path.exists(directory):
@@ -29,7 +30,8 @@ class RoguesTale(ModuleInfo):
 
                     # Double check to make sure that the file is valid
                     if root.tag != 'user':
-                        self.warning(u'Profile %s does not appear to be valid' % f)
+                        self.warning(
+                            u'Profile %s does not appear to be valid' % f)
                         continue
 
                     # Now save it to credentials

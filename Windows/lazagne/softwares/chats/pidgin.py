@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import os
 from xml.etree.cElementTree import ElementTree
 
@@ -11,7 +11,8 @@ class Pidgin(ModuleInfo):
         ModuleInfo.__init__(self, 'pidgin', 'chats')
 
     def run(self):
-        path = os.path.join(constant.profile['APPDATA'], u'.purple', u'accounts.xml')
+        path = os.path.join(
+            constant.profile['APPDATA'], u'.purple', u'accounts.xml')
         if os.path.exists(path):
             tree = ElementTree(file=path)
             root = tree.getroot()

@@ -15,24 +15,29 @@
 # along with memorpy.  If not, see <http://www.gnu.org/licenses/>.
 
 import copy
-import struct
-import utils
-import platform
-import ctypes, re, sys
+import ctypes
 import ctypes.util
 import errno
+import logging
 import os
+import platform
+import re
 import signal
+import struct
+import subprocess
+import sys
+
+import utils
+
 from .BaseProcess import BaseProcess, ProcessException
 from .structures import *
-import logging
-import subprocess
 
 logger = logging.getLogger('memorpy')
 
 libc = ctypes.CDLL(ctypes.util.find_library('c'))
 
-VM_REGION_BASIC_INFO_64    = 9
+VM_REGION_BASIC_INFO_64 = 9
+
 
 class vm_region_basic_info_64(ctypes.Structure):
     _fields_ = [
@@ -43,27 +48,30 @@ class vm_region_basic_info_64(ctypes.Structure):
         ('reserved',        ctypes.c_uint32),
         ('offset',          ctypes.c_ulonglong),
         ('behavior',        ctypes.c_uint32),
-        ('user_wired_count',ctypes.c_ushort),
-]
+        ('user_wired_count', ctypes.c_ushort),
+    ]
+
 
 VM_REGION_BASIC_INFO_COUNT_64 = ctypes.sizeof(vm_region_basic_info_64) / 4
 
-VM_PROT_READ    = 1
-VM_PROT_WRITE    = 2
-VM_PROT_EXECUTE    = 4
+VM_PROT_READ = 1
+VM_PROT_WRITE = 2
+VM_PROT_EXECUTE = 4
+
 
 class OSXProcess(BaseProcess):
     def __init__(self, pid=None, name=None, debug=True):
         """ Create and Open a process object from its pid or from its name """
         super(OSXProcess, self).__init__()
         if pid is not None:
-            self.pid=pid
+            self.pid = pid
         elif name is not None:
-            self.pid=OSXProcess.pid_from_name(name)
+            self.pid = OSXProcess.pid_from_name(name)
         else:
-            raise ValueError("You need to instanciate process with at least a name or a pid")
-        self.task=None
-        self.mytask=None
+            raise ValueError(
+                "You need to instanciate process with at least a name or a pid")
+        self.task = None
+        self.mytask = None
         self._open()
 
     def close(self):
@@ -75,22 +83,24 @@ class OSXProcess(BaseProcess):
     def _open(self):
         self.isProcessOpen = True
         self.task = ctypes.c_uint32()
-        self.mytask=libc.mach_task_self()
-        ret=libc.task_for_pid(self.mytask, ctypes.c_int(self.pid), ctypes.pointer(self.task))
-        if ret!=0:
-            raise ProcessException("task_for_pid failed with error code : %s"%ret)
+        self.mytask = libc.mach_task_self()
+        ret = libc.task_for_pid(self.mytask, ctypes.c_int(
+            self.pid), ctypes.pointer(self.task))
+        if ret != 0:
+            raise ProcessException(
+                "task_for_pid failed with error code : %s" % ret)
 
     @staticmethod
     def list():
-        #TODO list processes with ctypes
-        processes=[]
-        res=subprocess.check_output("ps A", shell=True)
+        # TODO list processes with ctypes
+        processes = []
+        res = subprocess.check_output("ps A", shell=True)
         for line in res.split('\n'):
             try:
-                tab=line.split()
-                pid=int(tab[0])
-                exe=' '.join(tab[4:])
-                processes.append({"pid":int(pid), "name":exe})
+                tab = line.split()
+                pid = int(tab[0])
+                exe = ' '.join(tab[4:])
+                processes.append({"pid": int(pid), "name": exe})
             except:
                 pass
         return processes
@@ -100,7 +110,6 @@ class OSXProcess(BaseProcess):
         for dic in OSXProcess.list():
             if name in dic['exe']:
                 return dic['pid']
-
 
     def iter_region(self, start_offset=None, end_offset=None, protec=None, optimizations=None):
         """
@@ -113,21 +122,24 @@ class OSXProcess(BaseProcess):
         maps = []
         address = ctypes.c_ulong(0)
         mapsize = ctypes.c_ulong(0)
-        name    = ctypes.c_uint32(0)
-        count   = ctypes.c_uint32(VM_REGION_BASIC_INFO_COUNT_64)
-        info    = vm_region_basic_info_64()
+        name = ctypes.c_uint32(0)
+        count = ctypes.c_uint32(VM_REGION_BASIC_INFO_COUNT_64)
+        info = vm_region_basic_info_64()
 
         while True:
             r = libc.mach_vm_region(self.task, ctypes.pointer(address),
-                                   ctypes.pointer(mapsize), VM_REGION_BASIC_INFO_64,
-                                   ctypes.pointer(info), ctypes.pointer(count),
-                                   ctypes.pointer(name))
+                                    ctypes.pointer(
+                                        mapsize), VM_REGION_BASIC_INFO_64,
+                                    ctypes.pointer(
+                                        info), ctypes.pointer(count),
+                                    ctypes.pointer(name))
             # If we get told "invalid address", we have crossed into kernel land...
             if r == 1:
                 break
 
             if r != 0:
-                raise ProcessException('mach_vm_region failed with error code %s' % r)
+                raise ProcessException(
+                    'mach_vm_region failed with error code %s' % r)
             if start_offset is not None:
                 if address.value < start_offset:
                     address.value += mapsize.value
@@ -150,25 +162,23 @@ class OSXProcess(BaseProcess):
                         address.value += mapsize.value
                         continue
                 yield address.value, mapsize.value
-            
-            address.value += mapsize.value
 
+            address.value += mapsize.value
 
     def write_bytes(self, address, data):
         raise NotImplementedError("write not implemented on OSX")
         return True
 
-    def read_bytes(self, address, bytes = 4):
+    def read_bytes(self, address, bytes=4):
         pdata = ctypes.c_void_p(0)
         data_cnt = ctypes.c_uint32(0)
-        
-        ret = libc.mach_vm_read(self.task, ctypes.c_ulonglong(address), ctypes.c_longlong(bytes), ctypes.pointer(pdata), ctypes.pointer(data_cnt));
-        #if ret==1:
+
+        ret = libc.mach_vm_read(self.task, ctypes.c_ulonglong(address), ctypes.c_longlong(
+            bytes), ctypes.pointer(pdata), ctypes.pointer(data_cnt))
+        # if ret==1:
         #    return ""
-        if ret!=0:
-            raise ProcessException("mach_vm_read returned : %s"%ret)
-        buf=ctypes.string_at(pdata.value, data_cnt.value)
+        if ret != 0:
+            raise ProcessException("mach_vm_read returned : %s" % ret)
+        buf = ctypes.string_at(pdata.value, data_cnt.value)
         libc.vm_deallocate(self.mytask, pdata, data_cnt)
         return buf
-
-

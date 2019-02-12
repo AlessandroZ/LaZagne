@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # Thanks to the awesome work done by harmjoy
 # For more information http://www.harmj0y.net/blog/redteaming/keethief-a-case-study-in-attacking-keepass-part-2/
 
@@ -7,9 +7,10 @@
 
 import traceback
 
-from . import libkeepass
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
+
+from . import libkeepass
 
 
 class Keepass(ModuleInfo):
@@ -23,7 +24,8 @@ class Keepass(ModuleInfo):
             for db in constant.keepass:
                 try:
                     with libkeepass.open(db.values()[0][u'Database'],
-                                         password=db.get(u"KcpPassword", {}).get(u'Password'),
+                                         password=db.get(u"KcpPassword", {}).get(
+                                             u'Password'),
                                          keyfile=db.get(u"KcpKeyFile", {}).get(u'KeyFilePath')) as kdb:
                         res.extend(kdb.to_dic())
                 except Exception:

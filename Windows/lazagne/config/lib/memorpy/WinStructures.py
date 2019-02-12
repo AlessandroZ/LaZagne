@@ -14,7 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with memorpy.  If not, see <http://www.gnu.org/licenses/>.
 
-from ctypes import Structure, c_long, c_int, c_uint, c_char, c_void_p, c_ubyte, c_ushort, c_ulong, c_ulonglong, windll, POINTER, sizeof, c_bool, c_size_t, c_longlong
+from ctypes import (POINTER, Structure, c_bool, c_char, c_int, c_long,
+                    c_longlong, c_size_t, c_ubyte, c_uint, c_ulong,
+                    c_ulonglong, c_ushort, c_void_p, sizeof, windll)
 from ctypes.wintypes import *
 
 if sizeof(c_void_p) == 8:
@@ -23,7 +25,7 @@ else:
     ULONG_PTR = c_ulong
 
 
-class SECURITY_DESCRIPTOR(Structure): 
+class SECURITY_DESCRIPTOR(Structure):
     _fields_ = [
         ('SID', DWORD),
         ('group', DWORD),
@@ -31,82 +33,86 @@ class SECURITY_DESCRIPTOR(Structure):
         ('sacl', DWORD),
         ('test', DWORD)
     ]
+
+
 PSECURITY_DESCRIPTOR = POINTER(SECURITY_DESCRIPTOR)
+
 
 class MEMORY_BASIC_INFORMATION(Structure):
     _fields_ = [('BaseAddress', c_void_p),
-     ('AllocationBase', c_void_p),
-     ('AllocationProtect', DWORD),
-     ('RegionSize', c_size_t),
-     ('State', DWORD),
-     ('Protect', DWORD),
-     ('Type', DWORD)]
+                ('AllocationBase', c_void_p),
+                ('AllocationProtect', DWORD),
+                ('RegionSize', c_size_t),
+                ('State', DWORD),
+                ('Protect', DWORD),
+                ('Type', DWORD)]
 
 # https://msdn.microsoft.com/fr-fr/library/windows/desktop/aa366775(v=vs.85).aspx
+
+
 class MEMORY_BASIC_INFORMATION64(Structure):
     _fields_ = [('BaseAddress', c_ulonglong),
-     ('AllocationBase', c_ulonglong),
-     ('AllocationProtect', DWORD),
-     ('alignement1', DWORD),
-     ('RegionSize', c_ulonglong),
-     ('State', DWORD),
-     ('Protect', DWORD),
-     ('Type', DWORD),
-     ('alignement2', DWORD)]
-
+                ('AllocationBase', c_ulonglong),
+                ('AllocationProtect', DWORD),
+                ('alignement1', DWORD),
+                ('RegionSize', c_ulonglong),
+                ('State', DWORD),
+                ('Protect', DWORD),
+                ('Type', DWORD),
+                ('alignement2', DWORD)]
 
 
 class SYSTEM_INFO(Structure):
     _fields_ = [('wProcessorArchitecture', WORD),
-     ('wReserved', WORD),
-     ('dwPageSize', DWORD),
-     ('lpMinimumApplicationAddress', LPVOID),
-     ('lpMaximumApplicationAddress', LPVOID),
-     ('dwActiveProcessorMask', ULONG_PTR),
-     ('dwNumberOfProcessors', DWORD),
-     ('dwProcessorType', DWORD),
-     ('dwAllocationGranularity', DWORD),
-     ('wProcessorLevel', WORD),
-     ('wProcessorRevision', WORD)]
+                ('wReserved', WORD),
+                ('dwPageSize', DWORD),
+                ('lpMinimumApplicationAddress', LPVOID),
+                ('lpMaximumApplicationAddress', LPVOID),
+                ('dwActiveProcessorMask', ULONG_PTR),
+                ('dwNumberOfProcessors', DWORD),
+                ('dwProcessorType', DWORD),
+                ('dwAllocationGranularity', DWORD),
+                ('wProcessorLevel', WORD),
+                ('wProcessorRevision', WORD)]
 
 
 class PROCESSENTRY32(Structure):
     _fields_ = [('dwSize', c_uint),
-     ('cntUsage', c_uint),
-     ('th32ProcessID', c_uint),
-     ('th32DefaultHeapID', c_uint),
-     ('th32ModuleID', c_uint),
-     ('cntThreads', c_uint),
-     ('th32ParentProcessID', c_uint),
-     ('pcPriClassBase', c_long),
-     ('dwFlags', DWORD),
-     #('dwFlags', ULONG_PTR),
-     ('szExeFile', c_char * 260),
-     ('th32MemoryBase', c_long),
-     ('th32AccessKey', c_long)]
+                ('cntUsage', c_uint),
+                ('th32ProcessID', c_uint),
+                ('th32DefaultHeapID', c_uint),
+                ('th32ModuleID', c_uint),
+                ('cntThreads', c_uint),
+                ('th32ParentProcessID', c_uint),
+                ('pcPriClassBase', c_long),
+                ('dwFlags', DWORD),
+                #('dwFlags', ULONG_PTR),
+                ('szExeFile', c_char * 260),
+                ('th32MemoryBase', c_long),
+                ('th32AccessKey', c_long)]
 
 
 class MODULEENTRY32(Structure):
     _fields_ = [('dwSize', c_uint),
-     ('th32ModuleID', c_uint),
-     ('th32ProcessID', c_uint),
-     ('GlblcntUsage', c_uint),
-     ('ProccntUsage', c_uint),
-     ('modBaseAddr', c_uint),
-     ('modBaseSize', c_uint),
-     ('hModule', c_uint),
-     ('szModule', c_char * 256),
-     ('szExePath', c_char * 260)]
+                ('th32ModuleID', c_uint),
+                ('th32ProcessID', c_uint),
+                ('GlblcntUsage', c_uint),
+                ('ProccntUsage', c_uint),
+                ('modBaseAddr', c_uint),
+                ('modBaseSize', c_uint),
+                ('hModule', c_uint),
+                ('szModule', c_char * 256),
+                ('szExePath', c_char * 260)]
 
 
 class THREADENTRY32(Structure):
     _fields_ = [('dwSize', c_uint),
-     ('cntUsage', c_uint),
-     ('th32ThreadID', c_uint),
-     ('th32OwnerProcessID', c_uint),
-     ('tpBasePri', c_uint),
-     ('tpDeltaPri', c_uint),
-     ('dwFlags', c_uint)]
+                ('cntUsage', c_uint),
+                ('th32ThreadID', c_uint),
+                ('th32OwnerProcessID', c_uint),
+                ('tpBasePri', c_uint),
+                ('tpDeltaPri', c_uint),
+                ('dwFlags', c_uint)]
 
 
 class TH32CS_CLASS(object):
@@ -149,25 +155,30 @@ OpenProcessToken.argtypes = (HANDLE, DWORD, POINTER(HANDLE))
 OpenProcessToken.restype = BOOL
 
 ReadProcessMemory = windll.kernel32.ReadProcessMemory
-ReadProcessMemory.argtypes = [HANDLE, LPCVOID, LPVOID, c_size_t, POINTER(c_size_t)]
+ReadProcessMemory.argtypes = [HANDLE, LPCVOID,
+                              LPVOID, c_size_t, POINTER(c_size_t)]
 ReadProcessMemory = windll.kernel32.ReadProcessMemory
 
 WriteProcessMemory = windll.kernel32.WriteProcessMemory
-WriteProcessMemory.argtypes = [HANDLE, LPVOID, LPCVOID, c_size_t, POINTER(c_size_t)]
+WriteProcessMemory.argtypes = [HANDLE, LPVOID,
+                               LPCVOID, c_size_t, POINTER(c_size_t)]
 WriteProcessMemory.restype = BOOL
 
 if sizeof(c_void_p) == 8:
-    NtWow64ReadVirtualMemory64=None
+    NtWow64ReadVirtualMemory64 = None
 else:
     try:
         NtWow64ReadVirtualMemory64 = windll.ntdll.NtWow64ReadVirtualMemory64
-        NtWow64ReadVirtualMemory64.argtypes = [HANDLE, c_longlong, LPVOID, c_ulonglong, POINTER(c_ulong)] # NTSTATUS (__stdcall *NtWow64ReadVirtualMemory64)(HANDLE ProcessHandle, PVOID64 BaseAddress, PVOID Buffer, ULONGLONG BufferSize, PULONGLONG NumberOfBytesRead);
+        # NTSTATUS (__stdcall *NtWow64ReadVirtualMemory64)(HANDLE ProcessHandle, PVOID64 BaseAddress, PVOID Buffer, ULONGLONG BufferSize, PULONGLONG NumberOfBytesRead);
+        NtWow64ReadVirtualMemory64.argtypes = [
+            HANDLE, c_longlong, LPVOID, c_ulonglong, POINTER(c_ulong)]
         NtWow64ReadVirtualMemory64.restype = BOOL
     except:
-        NtWow64ReadVirtualMemory64=None
+        NtWow64ReadVirtualMemory64 = None
 
 VirtualQueryEx = windll.kernel32.VirtualQueryEx
-VirtualQueryEx.argtypes = [HANDLE, LPCVOID, POINTER(MEMORY_BASIC_INFORMATION), c_size_t]
+VirtualQueryEx.argtypes = [HANDLE, LPCVOID,
+                           POINTER(MEMORY_BASIC_INFORMATION), c_size_t]
 VirtualQueryEx.restype = c_size_t
 
 #VirtualQueryEx64 = windll.kernel32.VirtualQueryEx

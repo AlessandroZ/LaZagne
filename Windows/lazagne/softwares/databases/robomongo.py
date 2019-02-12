@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import json
 import os
 
@@ -82,7 +82,8 @@ class Robomongo(ModuleInfo):
                             })
                     repos_creds.append(creds)
                 except Exception as e:
-                    self.error(u"Cannot retrieve connections credentials '{error}'".format(error=e))
+                    self.error(
+                        u"Cannot retrieve connections credentials '{error}'".format(error=e))
 
         return repos_creds
 

@@ -11,7 +11,8 @@ class PostgreSQL(ModuleInfo):
         ModuleInfo.__init__(self, name='postgresql', category='databases')
 
     def run(self):
-        path = os.path.join(constant.profile['APPDATA'], u'postgresql', u'pgpass.conf')
+        path = os.path.join(
+            constant.profile['APPDATA'], u'postgresql', u'pgpass.conf')
         if os.path.exists(path):
             with open(path) as f:
                 pwd_found = []

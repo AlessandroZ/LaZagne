@@ -16,6 +16,7 @@
 
 from .utils import *
 
+
 class AddressException(Exception):
     pass
 
@@ -23,13 +24,13 @@ class AddressException(Exception):
 class Address(object):
     """ this class is used to have better representation of memory addresses """
 
-    def __init__(self, value, process, default_type = 'uint'):
+    def __init__(self, value, process, default_type='uint'):
         self.value = int(value)
         self.process = process
         self.default_type = default_type
         self.symbolic_name = None
 
-    def read(self, type = None, maxlen = None, errors='raise'):
+    def read(self, type=None, maxlen=None, errors='raise'):
         if maxlen is None:
             try:
                 int(type)
@@ -45,7 +46,7 @@ class Address(object):
         else:
             return self.process.read(self.value, type=type, maxlen=maxlen, errors=errors)
 
-    def write(self, data, type = None):
+    def write(self, data, type=None):
         if not type:
             type = self.default_type
         return self.process.write(self.value, data, type=type)
@@ -56,7 +57,7 @@ class Address(object):
     def get_instruction(self):
         return self.process.get_instruction(self.value)
 
-    def dump(self, ftype = 'bytes', size = 512, before = 32):
+    def dump(self, ftype='bytes', size=512, before=32):
         buf = self.process.read_bytes(self.value - before, size)
         print(hex_dump(buf, self.value - before, ftype=ftype))
 
@@ -108,4 +109,3 @@ class Address(object):
 
     def __ge__(self, other):
         return self.value >= int(other)
-

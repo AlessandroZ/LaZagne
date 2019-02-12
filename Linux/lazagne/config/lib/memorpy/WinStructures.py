@@ -23,7 +23,7 @@ else:
     ULONG_PTR = c_ulong
 
 
-class SECURITY_DESCRIPTOR(Structure): 
+class SECURITY_DESCRIPTOR(Structure):
     _fields_ = [
         ('SID', DWORD),
         ('group', DWORD),

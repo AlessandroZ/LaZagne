@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*- 
-try: 
+# -*- coding: utf-8 -*-
+try:
     import _winreg as winreg
 except ImportError:
     import winreg
 
+import os
 from xml.etree.cElementTree import ElementTree
 
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.winstructure import OpenKey, HKEY_CURRENT_USER, string_to_unicode
-
-import os
+from lazagne.config.winstructure import (HKEY_CURRENT_USER, OpenKey,
+                                         string_to_unicode)
 
 
 class Puttycm(ModuleInfo):
@@ -23,8 +23,10 @@ class Puttycm(ModuleInfo):
 
     def get_default_database(self):
         try:
-            key = OpenKey(HKEY_CURRENT_USER, 'Software\\ACS\\PuTTY Connection Manager')
-            db = string_to_unicode(winreg.QueryValueEx(key, 'DefaultDatabase')[0])
+            key = OpenKey(HKEY_CURRENT_USER,
+                          'Software\\ACS\\PuTTY Connection Manager')
+            db = string_to_unicode(
+                winreg.QueryValueEx(key, 'DefaultDatabase')[0])
             winreg.CloseKey(key)
             return db
         except Exception:
@@ -36,7 +38,8 @@ class Puttycm(ModuleInfo):
         root = tree.getroot()
 
         pwd_found = []
-        elements = ['name', 'protocol', 'host', 'port', 'description', 'login', 'password']
+        elements = ['name', 'protocol', 'host',
+                    'port', 'description', 'login', 'password']
         for connection in root.iter('connection'):
             children = connection.getchildren()
             values = {}

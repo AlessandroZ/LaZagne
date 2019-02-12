@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*- 
-try: 
+# -*- coding: utf-8 -*-
+try:
     import _winreg as winreg
 except ImportError:
     import winreg
 
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.winstructure import OpenKey, HKEY_CURRENT_USER
+from lazagne.config.winstructure import HKEY_CURRENT_USER, OpenKey
 
 
 class WinSCP(ModuleInfo):
@@ -32,7 +32,8 @@ class WinSCP(ModuleInfo):
 
     def check_winscp_installed(self):
         try:
-            key = OpenKey(HKEY_CURRENT_USER, 'Software\\Martin Prikryl\\WinSCP 2\\Configuration\\Security')
+            key = OpenKey(
+                HKEY_CURRENT_USER, 'Software\\Martin Prikryl\\WinSCP 2\\Configuration\\Security')
             return key
         except Exception as e:
             self.debug(str(e))
@@ -48,7 +49,8 @@ class WinSCP(ModuleInfo):
 
     def get_credentials(self):
         try:
-            key = OpenKey(HKEY_CURRENT_USER, 'Software\\Martin Prikryl\\WinSCP 2\\Sessions')
+            key = OpenKey(HKEY_CURRENT_USER,
+                          'Software\\Martin Prikryl\\WinSCP 2\\Sessions')
         except Exception as e:
             self.debug(str(e))
             return False
@@ -61,7 +63,8 @@ class WinSCP(ModuleInfo):
             num = winreg.QueryInfoKey(skey)[1]
 
             values = {}
-            elements = {'HostName': 'URL', 'UserName': 'Login', 'PortNumber': 'Port', 'Password': 'Password'}
+            elements = {'HostName': 'URL', 'UserName': 'Login',
+                        'PortNumber': 'Port', 'Password': 'Password'}
             for nn in range(num):
                 k = winreg.EnumValue(skey, nn)
 
@@ -126,4 +129,5 @@ class WinSCP(ModuleInfo):
                 if results:
                     return results
             else:
-                self.warning(u'A master password is used. Passwords cannot been retrieved')
+                self.warning(
+                    u'A master password is used. Passwords cannot been retrieved')

@@ -6,7 +6,7 @@
     ====================================================================
     There are comments here by two authors about three pieces of software:
         comments by Larry Bugbee about
-            Salsa20, the stream cipher by Daniel J. Bernstein 
+            Salsa20, the stream cipher by Daniel J. Bernstein
                  (including comments about the speed of the C version) and
             pySalsa20, Bugbee's own Python wrapper for salsa20.c
                  (including some references), and
@@ -17,64 +17,64 @@
     Salsa20: a Fast Streaming Cipher (comments by Larry Bugbee)
     -----------------------------------------------------------
 
-    Salsa20 is a fast stream cipher written by Daniel Bernstein 
-    that basically uses a hash function and XOR making for fast 
-    encryption.  (Decryption uses the same function.)  Salsa20 
-    is simple and quick.  
-    
+    Salsa20 is a fast stream cipher written by Daniel Bernstein
+    that basically uses a hash function and XOR making for fast
+    encryption.  (Decryption uses the same function.)  Salsa20
+    is simple and quick.
+
     Some Salsa20 parameter values...
         design strength    128 bits
         key length         128 or 256 bits, exactly
         IV, aka nonce      64 bits, always
         chunk size         must be in multiples of 64 bytes
-    
+
     Salsa20 has two reduced versions, 8 and 12 rounds each.
-    
+
     One benchmark (10 MB):
         1.5GHz PPC G4     102/97/89 MB/sec for 8/12/20 rounds
         AMD Athlon 2500+   77/67/53 MB/sec for 8/12/20 rounds
           (no I/O and before Python GC kicks in)
-    
-    Salsa20 is a Phase 3 finalist in the EU eSTREAM competition 
-    and appears to be one of the fastest ciphers.  It is well 
-    documented so I will not attempt any injustice here.  Please 
+
+    Salsa20 is a Phase 3 finalist in the EU eSTREAM competition
+    and appears to be one of the fastest ciphers.  It is well
+    documented so I will not attempt any injustice here.  Please
     see "References" below.
-    
-    ...and Salsa20 is "free for any use".  
-    
-    
+
+    ...and Salsa20 is "free for any use".
+
+
     pySalsa20: a Python wrapper for Salsa20 (Comments by Larry Bugbee)
     ------------------------------------------------------------------
 
-    pySalsa20.py is a simple ctypes Python wrapper.  Salsa20 is 
-    as it's name implies, 20 rounds, but there are two reduced 
-    versions, 8 and 12 rounds each.  Because the APIs are 
-    identical, pySalsa20 is capable of wrapping all three 
-    versions (number of rounds hardcoded), including a special 
-    version that allows you to set the number of rounds with a 
-    set_rounds() function.  Compile the version of your choice 
-    as a shared library (not as a Python extension), name and 
+    pySalsa20.py is a simple ctypes Python wrapper.  Salsa20 is
+    as it's name implies, 20 rounds, but there are two reduced
+    versions, 8 and 12 rounds each.  Because the APIs are
+    identical, pySalsa20 is capable of wrapping all three
+    versions (number of rounds hardcoded), including a special
+    version that allows you to set the number of rounds with a
+    set_rounds() function.  Compile the version of your choice
+    as a shared library (not as a Python extension), name and
     install it as libsalsa20.so.
-    
+
     Sample usage:
         from pySalsa20 import Salsa20
         s20 = Salsa20(key, IV)
         dataout = s20.encryptBytes(datain)   # same for decrypt
-    
-    This is EXPERIMENTAL software and intended for educational 
-    purposes only.  To make experimentation less cumbersome, 
-    pySalsa20 is also free for any use.      
-    
+
+    This is EXPERIMENTAL software and intended for educational
+    purposes only.  To make experimentation less cumbersome,
+    pySalsa20 is also free for any use.
+
     THIS PROGRAM IS PROVIDED WITHOUT WARRANTY OR GUARANTEE OF
-    ANY KIND.  USE AT YOUR OWN RISK.  
-    
+    ANY KIND.  USE AT YOUR OWN RISK.
+
     Enjoy,
-      
+
     Larry Bugbee
     bugbee@seanet.com
     April 2007
 
-    
+
     References:
     -----------
       http://en.wikipedia.org/wiki/Salsa20
@@ -83,7 +83,7 @@
       http://www.ecrypt.eu.org/stream/salsa20p3.html
       http://www.ecrypt.eu.org/stream/p3ciphers/salsa20/salsa20_p3source.zip
 
-     
+
     Prerequisites for pySalsa20:
     ----------------------------
       - Python 2.5 (haven't tested in 2.4)
@@ -112,7 +112,7 @@
         dataout = s20.encryptBytes(datain)   # same for decrypt
 
     I took the test code from pySalsa20, added a bunch of tests including
-    rough speed tests, and moved them into the file testSalsa20.py.  
+    rough speed tests, and moved them into the file testSalsa20.py.
     To test both pySalsa20 and pureSalsa20, type
         python testSalsa20.py
 
@@ -125,11 +125,11 @@
         with pySalsa20, both s1 and s2 will do 8 rounds of encryption.
         with pureSalsa20, s1 will do 20 rounds and s2 will do 8 rounds.
     Perhaps giving each instance its own nRounds variable, which
-    is passed to the salsa20wordtobyte() function, is insecure.  I'm not a 
+    is passed to the salsa20wordtobyte() function, is insecure.  I'm not a
     cryptographer.
 
-    pureSalsa20.py and testSalsa20.py are EXPERIMENTAL software and 
-    intended for educational purposes only.  To make experimentation less 
+    pureSalsa20.py and testSalsa20.py are EXPERIMENTAL software and
+    intended for educational purposes only.  To make experimentation less
     cumbersome, pureSalsa20.py and testSalsa20.py are free for any use.
 
     Revisions:
@@ -152,9 +152,9 @@
       http://cr.yp.to/snuffle.html        [The original name of Salsa20]
       http://cr.yp.to/snuffle/salsafamily-20071225.pdf [ Salsa20 design]
       http://www.tiac.net/~sw/2010/02/PureSalsa20
-    
+
     THIS PROGRAM IS PROVIDED WITHOUT WARRANTY OR GUARANTEE OF
-    ANY KIND.  USE AT YOUR OWN RISK.  
+    ANY KIND.  USE AT YOUR OWN RISK.
 
     Cheers,
 
@@ -164,6 +164,7 @@
 
 from array import array
 from struct import Struct
+
 from lazagne.config.winstructure import char_to_int
 
 little_u64 = Struct("<Q")  # little-endian 64-bit unsigned.
@@ -243,7 +244,8 @@ class Salsa20(object):
             self.set_counter((self.get_counter() + 1) % 2 ** 64)
             # Stopping at 2^70 bytes per nonce is user's responsibility.
             for j in xrange(min(64, lendata - i)):
-                munged[i + j] = chr(char_to_int(data[i + j]) ^ char_to_int(h[j]))
+                munged[i + j] = chr(char_to_int(data[i + j])
+                                    ^ char_to_int(h[j]))
 
         self._lastChunk64 = not lendata % 64
         return munged.tostring()
@@ -254,7 +256,7 @@ class Salsa20(object):
 # --------------------------------------------------------------------------
 
 def salsa20_wordtobyte(input, n_rounds=20, check_rounds=True):
-    """ Do nRounds Salsa20 rounds on a copy of 
+    """ Do nRounds Salsa20 rounds on a copy of
             input: list or tuple of 16 ints treated as little-endian unsigneds.
         Returns a 64-byte string.
         """

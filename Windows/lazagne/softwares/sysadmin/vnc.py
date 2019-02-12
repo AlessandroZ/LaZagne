@@ -1,17 +1,18 @@
 # Code based on vncpasswd.py by trinitronx
 # https://github.com/trinitronx/vncpasswd.py
-import d3des as d
 import binascii
 import traceback
+
+import d3des as d
+from lazagne.config.crypto.pyDes import ECB, des
+from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import *
 
 try:
     import _winreg as winreg
 except ImportError:
     import winreg
 
-from lazagne.config.crypto.pyDes import des, ECB
-from lazagne.config.winstructure import *
-from lazagne.config.module_info import ModuleInfo
 
 
 class Vnc(ModuleInfo):
@@ -34,7 +35,8 @@ class Vnc(ModuleInfo):
             s = s.decode('hex')
         except TypeError as e:
             if e.message == 'Odd-length string':
-                self.debug('%s . Chopping last char off... "%s"' % (e.message, s[:-1]))
+                self.debug('%s . Chopping last char off... "%s"' %
+                           (e.message, s[:-1]))
                 s = s[:-1].decode('hex')
             else:
                 return False
@@ -52,7 +54,8 @@ class Vnc(ModuleInfo):
                 splitstr = self.split_len(hash.encode('hex'), 16)
                 cryptedblocks = []
                 for sblock in splitstr:
-                    cryptedblocks.append(self.do_crypt(sblock.decode('hex'), True))
+                    cryptedblocks.append(self.do_crypt(
+                        sblock.decode('hex'), True))
                     pwd = ''.join(cryptedblocks)
             elif len(hexpasswd) <= 16:
                 pwd = self.do_crypt(encpasswd, True)
@@ -69,10 +72,13 @@ class Vnc(ModuleInfo):
             ('RealVNC 4.x', 'HKEY_CURRENT_USER\\SOFTWARE\\RealVNC\\WinVNC4', 'Password'),
             ('RealVNC 3.x', 'HKEY_CURRENT_USER\\Software\\ORL\\WinVNC3', 'Password'),
             ('TightVNC', 'HKEY_CURRENT_USER\\Software\\TightVNC\\Server', 'Password'),
-            ('TightVNC', 'HKEY_CURRENT_USER\\Software\\TightVNC\\Server', 'PasswordViewOnly'),
+            ('TightVNC', 'HKEY_CURRENT_USER\\Software\\TightVNC\\Server',
+             'PasswordViewOnly'),
             ('TightVNC', 'HKEY_LOCAL_MACHINE\\Software\\TightVNC\\Server', 'Password'),
-            ('TightVNC ControlPassword', 'HKEY_LOCAL_MACHINE\\Software\\TightVNC\\Server', 'ControlPassword'),
-            ('TightVNC', 'HKEY_LOCAL_MACHINE\\Software\\TightVNC\\Server', 'PasswordViewOnly'),
+            ('TightVNC ControlPassword',
+             'HKEY_LOCAL_MACHINE\\Software\\TightVNC\\Server', 'ControlPassword'),
+            ('TightVNC', 'HKEY_LOCAL_MACHINE\\Software\\TightVNC\\Server',
+             'PasswordViewOnly'),
             ('TigerVNC', 'HKEY_LOCAL_MACHINE\\Software\\TigerVNC\\Server', 'Password'),
             ('TigerVNC', 'HKEY_CURRENT_USER\\Software\\TigerVNC\\Server', 'Password'),
         )
@@ -80,20 +86,24 @@ class Vnc(ModuleInfo):
         for vnc in vncs:
             try:
                 if vnc[1].startswith('HKEY_LOCAL_MACHINE'):
-                    hkey = OpenKey(HKEY_LOCAL_MACHINE, vnc[1].replace('HKEY_LOCAL_MACHINE\\', ''))
+                    hkey = OpenKey(HKEY_LOCAL_MACHINE, vnc[1].replace(
+                        'HKEY_LOCAL_MACHINE\\', ''))
 
                 elif vnc[1].startswith('HKEY_CURRENT_USER'):
-                    hkey = OpenKey(HKEY_CURRENT_USER, vnc[1].replace('HKEY_CURRENT_USER\\', ''))
+                    hkey = OpenKey(HKEY_CURRENT_USER, vnc[1].replace(
+                        'HKEY_CURRENT_USER\\', ''))
 
                 reg_key = winreg.QueryValueEx(hkey, vnc[2])[0]
             except Exception:
-                self.debug(u'Problems with key:: {reg_key}'.format(reg_key=vnc[1]))
+                self.debug(
+                    u'Problems with key:: {reg_key}'.format(reg_key=vnc[1]))
                 continue
 
             try:
                 enc_pwd = binascii.hexlify(reg_key).decode()
             except Exception:
-                self.debug(u'Problems with decoding: {reg_key}'.format(reg_key=reg_key))
+                self.debug(
+                    u'Problems with decoding: {reg_key}'.format(reg_key=reg_key))
                 continue
 
             values = {}
@@ -102,7 +112,8 @@ class Vnc(ModuleInfo):
                 if password:
                     values['Password'] = password
             except Exception:
-                self.info(u'Problems with reverse_vncpassword: {reg_key}'.format(reg_key=reg_key))
+                self.info(u'Problems with reverse_vncpassword: {reg_key}'.format(
+                    reg_key=reg_key))
                 self.debug()
                 continue
 
@@ -116,14 +127,22 @@ class Vnc(ModuleInfo):
         # os.environ could be used here because paths are identical between users
         pfound = []
         vncs = (
-            ('UltraVNC', os.environ['ProgramFiles(x86)'] + '\\uvnc bvba\\UltraVNC\\ultravnc.ini', 'passwd'),
-            ('UltraVNC', os.environ['ProgramFiles(x86)'] + '\\uvnc bvba\\UltraVNC\\ultravnc.ini', 'passwd2'),
-            ('UltraVNC', os.environ['PROGRAMFILES'] + '\\uvnc bvba\\UltraVNC\\ultravnc.ini', 'passwd'),
-            ('UltraVNC', os.environ['PROGRAMFILES'] + '\\uvnc bvba\\UltraVNC\\ultravnc.ini', 'passwd2'),
-            ('UltraVNC', os.environ['PROGRAMFILES'] + '\\UltraVNC\\ultravnc.ini', 'passwd'),
-            ('UltraVNC', os.environ['PROGRAMFILES'] + '\\UltraVNC\\ultravnc.ini', 'passwd2'),
-            ('UltraVNC', os.environ['ProgramFiles(x86)'] + '\\UltraVNC\\ultravnc.ini', 'passwd'),
-            ('UltraVNC', os.environ['ProgramFiles(x86)'] + '\\UltraVNC\\ultravnc.ini', 'passwd2'),
+            ('UltraVNC', os.environ['ProgramFiles(x86)'] +
+             '\\uvnc bvba\\UltraVNC\\ultravnc.ini', 'passwd'),
+            ('UltraVNC', os.environ['ProgramFiles(x86)'] +
+             '\\uvnc bvba\\UltraVNC\\ultravnc.ini', 'passwd2'),
+            ('UltraVNC', os.environ['PROGRAMFILES'] +
+             '\\uvnc bvba\\UltraVNC\\ultravnc.ini', 'passwd'),
+            ('UltraVNC', os.environ['PROGRAMFILES'] +
+             '\\uvnc bvba\\UltraVNC\\ultravnc.ini', 'passwd2'),
+            ('UltraVNC', os.environ['PROGRAMFILES'] +
+             '\\UltraVNC\\ultravnc.ini', 'passwd'),
+            ('UltraVNC', os.environ['PROGRAMFILES'] +
+             '\\UltraVNC\\ultravnc.ini', 'passwd2'),
+            ('UltraVNC', os.environ['ProgramFiles(x86)'] +
+             '\\UltraVNC\\ultravnc.ini', 'passwd'),
+            ('UltraVNC', os.environ['ProgramFiles(x86)'] +
+             '\\UltraVNC\\ultravnc.ini', 'passwd2'),
         )
 
         for vnc in vncs:
@@ -133,7 +152,8 @@ class Vnc(ModuleInfo):
                 with open(vnc[1], 'r') as file:
                     for line in file:
                         if string_to_match in line:
-                            enc_pwd = line.replace(string_to_match, '').replace('\n', '')
+                            enc_pwd = line.replace(
+                                string_to_match, '').replace('\n', '')
             except Exception:
                 self.debug('Problems with file: {file}'.format(file=vnc[1]))
                 continue
@@ -144,7 +164,8 @@ class Vnc(ModuleInfo):
                 if password:
                     values['Password'] = password
             except Exception:
-                self.debug(u'Problems with reverse_vncpassword: {enc_pwd}'.format(enc_pwd=enc_pwd))
+                self.debug(
+                    u'Problems with reverse_vncpassword: {enc_pwd}'.format(enc_pwd=enc_pwd))
                 self.debug(traceback.format_exc())
                 continue
 

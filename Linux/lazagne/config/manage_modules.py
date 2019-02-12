@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # keyring
 from lazagne.softwares.wallet.kde import Kde
 from lazagne.softwares.wallet.libsecret import Libsecret
@@ -35,7 +35,6 @@ try:
     from lazagne.softwares.memory.memorydump import MemoryDump
 except ImportError:
     pass
-
 
 def get_categories():
     category = {
@@ -73,7 +72,7 @@ def get_modules():
         Wifi(),
         Wpa_supplicant(),
         Kde(),
-        Libsecret(), 
+        Libsecret(),
         Mimipy()
     ]
 

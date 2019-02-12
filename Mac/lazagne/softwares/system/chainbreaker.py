@@ -1,18 +1,17 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # !/usr/bin/python
 
 # Awesome work done by @n0fate
 # check the chainbreaker tool: https://github.com/n0fate/chainbreaker
 
-import subprocess
 import binascii
+import os
+import subprocess
 import traceback
 
-from lazagne.softwares.system.chainbreaker_module.chainbreaker import *
-from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
-
-import os
+from lazagne.config.module_info import ModuleInfo
+from lazagne.softwares.system.chainbreaker_module.chainbreaker import *
 
 
 class ChainBreaker(ModuleInfo):
@@ -50,7 +49,8 @@ class ChainBreaker(ModuleInfo):
 
         # Users keychains
         for user in self.list_users():
-            keychains += self.list_keychains('/Users/{user}/Library/Keychains/'.format(user=user))
+            keychains += self.list_keychains(
+                '/Users/{user}/Library/Keychains/'.format(user=user))
 
         # system key needs admin privilege to open the file
         system_key = ''
@@ -59,15 +59,18 @@ class ChainBreaker(ModuleInfo):
             key = open('/private/var/db/SystemKey').read()
             system_key = binascii.hexlify(str(key[8:32])).upper()
         except Exception as e:
-            self.debug('SystemKey file could not be openned: {error}'.format(error=str(e)))
+            self.debug(
+                'SystemKey file could not be openned: {error}'.format(error=str(e)))
             try:
                 # try to open the file using a password found (supposing a password is also used as a system password)
                 for pwd in passwords:
                     c = 'sudo hexdump -e \'16/1 "%02x" ""\' -s 8 -n 24 /private/var/db/SystemKey |' \
                         'xargs python -c \'import sys;print sys.argv[1].upper()\''
-                    cmd = 'echo {password}|sudo -S {cmd}'.format(password=pwd, cmd=c)
+                    cmd = 'echo {password}|sudo -S {cmd}'.format(
+                        password=pwd, cmd=c)
 
-                    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    p = subprocess.Popen(
+                        cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     stdout, stderr = p.communicate()
                     if stdout:
                         system_key = stdout.strip()
@@ -96,7 +99,8 @@ class ChainBreaker(ModuleInfo):
                             }
                         )
                 except Exception:
-                    self.error('Check the password entered, this one not work (pwd: %s)' % str(password))
+                    self.error(
+                        'Check the password entered, this one not work (pwd: %s)' % str(password))
                     self.error(traceback.format_exc())
 
                 if pwd_ok:
@@ -115,7 +119,8 @@ class ChainBreaker(ModuleInfo):
                             }
                         )
                 except Exception:
-                    self.error('Check the system key found, this one not work (key: %s)' % str(system_key))
+                    self.error(
+                        'Check the system key found, this one not work (key: %s)' % str(system_key))
                     self.debug(traceback.format_exc())
 
         # keep in memory all passwords stored on the keychain

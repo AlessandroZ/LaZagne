@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 import base64
-
+import os
 from xml.etree.cElementTree import ElementTree
 
-from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
-
-import os
+from lazagne.config.module_info import ModuleInfo
 
 
 class Filezilla(ModuleInfo):
@@ -32,7 +30,7 @@ class Filezilla(ModuleInfo):
                         port = server.find('Port')
                         login = server.find('User')
                         password = server.find('Pass')
-                        
+
                         # if all((host, port, login)) does not work
                         if host is not None and port is not None and login is not None:
                             values = {
@@ -43,11 +41,12 @@ class Filezilla(ModuleInfo):
 
                         if password:
                             if 'encoding' in password.attrib and password.attrib['encoding'] == 'base64':
-                                values['Password'] = base64.b64decode(password.text)
+                                values['Password'] = base64.b64decode(
+                                    password.text)
                             else:
                                 values['Password'] = password.text
 
-                        if values: 
+                        if values:
                             pwd_found.append(values)
 
             return pwd_found

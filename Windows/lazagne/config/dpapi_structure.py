@@ -1,18 +1,17 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*- 
-
-from lazagne.config.DPAPI.masterkey import MasterKeyPool
-from lazagne.config.DPAPI.credfile import CredFile
-from lazagne.config.DPAPI.vault import Vault
-from lazagne.config.DPAPI.blob import DPAPIBlob
-
-from lazagne.config.write_output import print_debug
-from lazagne.config.constant import constant
-from lazagne.softwares.windows.lsa_secrets import LSASecrets
+# -*- coding: utf-8 -*-
 
 import getpass
 import os
 import sys
+
+from lazagne.config.constant import constant
+from lazagne.config.DPAPI.blob import DPAPIBlob
+from lazagne.config.DPAPI.credfile import CredFile
+from lazagne.config.DPAPI.masterkey import MasterKeyPool
+from lazagne.config.DPAPI.vault import Vault
+from lazagne.config.write_output import print_debug
+from lazagne.softwares.windows.lsa_secrets import LSASecrets
 
 
 def are_masterkeys_retrieved():
@@ -33,7 +32,8 @@ def are_masterkeys_retrieved():
         constant.user_dpapi = UserDpapi(password=constant.user_password)
 
         # Add username to check username equals passwords
-        constant.user_dpapi.check_credentials([constant.username] + constant.password_found)
+        constant.user_dpapi.check_credentials(
+            [constant.username] + constant.password_found)
 
     # Return True if at least one masterkey has been decrypted
     return constant.user_dpapi.unlocked
@@ -51,14 +51,17 @@ class UserDpapi(object):
     """
     User class for DPAPI functions
     """
+
     def __init__(self, password=None, pwdhash=None):
         self.sid = None
         self.umkp = None
         self.unlocked = False
 
-        protect_folder = os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Protect')
-        credhist_file = os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Protect', u'CREDHIST')
-        
+        protect_folder = os.path.join(
+            constant.profile['APPDATA'], u'Microsoft', u'Protect')
+        credhist_file = os.path.join(
+            constant.profile['APPDATA'], u'Microsoft', u'Protect', u'CREDHIST')
+
         if os.path.exists(protect_folder):
             for folder in os.listdir(protect_folder):
                 if folder.startswith('S-'):
@@ -70,7 +73,8 @@ class UserDpapi(object):
                 if os.path.exists(masterkeydir):
                     self.umkp = MasterKeyPool()
                     self.umkp.load_directory(masterkeydir)
-                    self.umkp.add_credhist_file(sid=self.sid, credfile=credhist_file)
+                    self.umkp.add_credhist_file(
+                        sid=self.sid, credfile=credhist_file)
 
                     if password:
                         for ok,  r in self.umkp.try_credential(sid=self.sid, password=password):
@@ -132,7 +136,8 @@ class UserDpapi(object):
         """
         if self.umkp:
             blob = DPAPIBlob(ciphered)
-            ok, msg = blob.decrypt_encrypted_blob(mkp=self.umkp, entropy_hex=entropy_hex)
+            ok, msg = blob.decrypt_encrypted_blob(
+                mkp=self.umkp, entropy_hex=entropy_hex)
             return manage_response(ok, msg)
 
     def get_dpapi_hash(self, context='local'):
@@ -156,6 +161,7 @@ class SystemDpapi(object):
     System class for DPAPI functions
     Need to have high privilege
     """
+
     def __init__(self):
         self.smkp = None
         self.unlocked = False
@@ -169,7 +175,8 @@ class SystemDpapi(object):
             if os.path.exists(masterkeydir):
                 self.smkp = MasterKeyPool()
                 self.smkp.load_directory(masterkeydir)
-                self.smkp.add_system_credential(constant.lsa_secrets['DPAPI_SYSTEM'])
+                self.smkp.add_system_credential(
+                    constant.lsa_secrets['DPAPI_SYSTEM'])
                 for ok, r in self.smkp.try_system_credential():
                     if ok:
                         print_debug('OK', r)
