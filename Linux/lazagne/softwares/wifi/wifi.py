@@ -27,12 +27,15 @@ class Wifi(ModuleInfo):
                 for w in wireless_ssid:
                     cp = RawConfigParser()
                     cp.read(os.path.join(directory, w))
-                    values = {'SSID': w}
+                    values = {}
                     try:
                         values['SSID'] = cp.get('wifi', 'ssid')
                         values['Password'] = cp.get('wifi-security', 'psk')
                         pwd_found.append(values)
                     except Exception:
                         pass
+
+            else:
+                self.info('You need sudo privileges')
 
                 return pwd_found
