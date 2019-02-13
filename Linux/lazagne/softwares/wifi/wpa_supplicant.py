@@ -47,5 +47,8 @@ class Wpa_supplicant(ModuleInfo):
                                     'SSID': ssid,
                                     'Password': password,
                                 })
+            else:
+                self.info('You need sudo privileges')
+
 
         return pwd_found
