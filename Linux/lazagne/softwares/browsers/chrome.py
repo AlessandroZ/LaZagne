@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
 
-import tempfile
+import shutil
 import sqlite3
 import os
 
@@ -54,7 +54,7 @@ class Chrome(ModuleInfo):
 
         for path in self.get_paths():
             tmp = u'/tmp/chrome.db'
-            copyfile(path, tmp)
+            shutil.copyfile(path, tmp)
 
             for pw in self.get_passwords(tmp):
                 all_passwords.append(pw)
