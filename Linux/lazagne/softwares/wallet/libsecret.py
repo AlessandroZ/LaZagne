@@ -83,7 +83,7 @@ class Libsecret(ModuleInfo):
                         'modified': str(datetime.datetime.fromtimestamp(item.get_modified())),
                         'content-type': item.get_secret_content_type(),
                         'label': item.get_label(),
-                        'Password': item.get_secret(),
+                        'Password': item.get_secret().decode('utf8'),
                         'collection': label,
                     }
 

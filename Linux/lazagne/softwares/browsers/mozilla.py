@@ -486,8 +486,8 @@ class Mozilla(ModuleInfo):
                         pwd_found.append(
                             {
                                 'URL': url,
-                                'Login': self.decrypt(key=key, iv=user[1], ciphertext=user[2]),
-                                'Password': self.decrypt(key=key, iv=password[1], ciphertext=password[2]),
+                                'Login': self.decrypt(key=key, iv=user[1], ciphertext=user[2]).decode('utf8'),
+                                'Password': self.decrypt(key=key, iv=password[1], ciphertext=password[2]).decode('utf8'),
                             }
                         )
                     except Exception:
