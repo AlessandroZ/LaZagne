@@ -37,13 +37,6 @@ def convert_to_byte(s):
         return s.encode()
 
 
-def l(n):
-    if python_version == 2:
-        return long(n)
-    else:
-        return int(n)
-
-
 def o(c):
     if python_version == 2:
         return ord(c)
@@ -60,7 +53,6 @@ def long_to_bytes(n, blocksize=0):
     """
     # after much testing, this algorithm was deemed to be the fastest
     s = convert_to_byte('')
-    n = l(n)
     while n > 0:
         s = struct.pack('>I', n & 0xffffffff) + s
         n = n >> 32
