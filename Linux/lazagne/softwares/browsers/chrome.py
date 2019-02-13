@@ -47,16 +47,16 @@ class Chrome(ModuleInfo):
         finally:
             cursor.close()
             conn.close()
+            os.remove(path)
 
     def run(self):
         all_passwords = []
 
         for path in self.get_paths():
-            with tempfile.NamedTemporaryFile() as tmp:
-                with open(path, 'rb') as infile:
-                    tmp.write(infile.read())
+            tmp = u'/tmp/chrome.db'
+            copyfile(path, tmp)
 
-                for pw in self.get_passwords(tmp.name):
-                    all_passwords.append(pw)
+            for pw in self.get_passwords(tmp):
+                all_passwords.append(pw)
 
         return all_passwords
