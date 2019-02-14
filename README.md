@@ -94,17 +94,20 @@ Supported software
 
 |  | Windows    | Linux  | Mac |
 | -- | -- | -- | -- |
-| Browser | Chrome, firefox, IE, Opera | Firefox, Opera | Firefox, Chrome |
-| Chats | Pigdin, Psi, Skype| Pigdin, Psi |  |
-| Databases | DBVisualizer, Postgresql, Robomongo, Squirrel, SQLdevelopper | DBVisualizer, Squirrel, SQLdevelopper  |  |
-| Games | GalconFusion, Kalypsomedia, RogueTale, Turba |  |  |
+| Browsers | 7Star<br> Amigo<br> BlackHawk<br> Brave<br> Centbrowser<br> Chedot<br> Chrome Canary<br> Chromium<br> Coccoc<br> Comodo Dragon<br> Comodo IceDragon<br> Cyberfox<br> Elements Browser<br> Epic Privacy Browser<br> Firefox<br> Google Chrome<br> Icecat<br> K-Meleon<br> Kometa<br> Opera<br> Orbitum<br> Sputnik<br> Torch<br> Uran<br> Vivaldi<br> YandexBrowser<br> | Chrome<br> Firefox<br> Opera | Chrome<br> Firefox |
+| Chats | Pigdin<br> Psi<br> Skype| Pigdin<br> Psi |  |
+| Databases | DBVisualizer<br> Postgresql<br> Robomongo<br> Squirrel<br> SQLdevelopper | DBVisualizer<br> Squirrel<br> SQLdevelopper  |  |
+| Games | GalconFusion<br> Kalypsomedia<br> RogueTale<br> Turba |  |  |
 | Git | Git for Windows |  |  |
-| Mails | Outlook, Thunderbird  | Clawsmail, Thunderbird |  |
-| Dumps from memory | Keepass, Wdigest (mimikatz method) | system password |  |
+| Mails | Outlook<br> Thunderbird  | Clawsmail<br> Thunderbird |  |
+| Maven | Maven Apache<br> |  |  |
+| Dumps from memory | Keepass<br> Mimikatz method | System Password |  |
+| Multimedia | EyeCON<br> |  |  |
+| PHP | Composer<br> |  |  |
 | SVN | Tortoise  | | |
-| Sysadmin | Apache Directory studio, CoreFTP, CyberDuck, fileZilla, FTPNavigator, OpenSSH, OpenVPN, PuttyCMRDPManager, WinSCP, Windows Subsystem for Linux | AWS,  Docker, Environnement variable, FileZilla, History files, SSH private keys |  |
-| Wifi | Wireless Network | Network Manager | * CF Keychains |
-| Internal mechanism passwords storage | .NET Passport, Generic Network Hashdump (LM/NT), LSA secret | GNOME Keyring, Kwallet,hashdump | Keychains, hashdump |
+| Sysadmin | Apache Directory Studio<br> CoreFTP<br> CyberDuck<br> FileZilla<br> FTPNavigator<br> OpenSSH<br> OpenVPN<br> PuttyCM<br>RDPManager<br> VNC<br> WinSCP<br> Windows Subsystem for Linux | AWS<br>  Docker<br> Environnement variable<br> FileZilla<br> History files<br> Shares <br> SSH private keys |  |
+| Wifi | Wireless Network | Network Manager<br> WPA Supplicant |  |
+| Internal mechanism passwords storage | Autologon<br> MSCache<br> Credential Files<br> Credman <br> DPAPI Hash <br> Hashdump (LM/NT)<br> LSA secret<br> Vault Files | GNOME Keyring<br> Kwallet<br> Hashdump | Keychains<br> Hashdump |
 
 (*) used by many tools to store passwords: Chrome, Owncloud, Evolution, KMail, etc.
 
