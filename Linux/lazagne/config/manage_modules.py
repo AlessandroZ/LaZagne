@@ -18,6 +18,7 @@ from lazagne.softwares.sysadmin.docker import Docker
 from lazagne.softwares.sysadmin.cli import Cli
 # chats
 from lazagne.softwares.chats.pidgin import Pidgin
+from lazagne.softwares.chats.psi import PSI
 # mails
 from lazagne.softwares.mails.clawsmail import ClawsMail
 from lazagne.softwares.mails.thunderbird import Thunderbird
@@ -63,6 +64,7 @@ def get_modules():
         Opera(),
         Chrome(),
         Pidgin(),
+        PSI(),
         Shadow(),
         Aws(),
         Docker(),
