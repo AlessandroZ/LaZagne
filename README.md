@@ -24,11 +24,6 @@ pip install -r requirement.txt
 
 Usage
 ----
-* Retrieve version
-```
-laZagne.exe --version
-```
-
 * Launch all modules
 ```
 laZagne.exe all
@@ -109,7 +104,6 @@ Supported software
 | Wifi | Wireless Network | Network Manager<br> WPA Supplicant |  |
 | Internal mechanism passwords storage | Autologon<br> MSCache<br> Credential Files<br> Credman <br> DPAPI Hash <br> Hashdump (LM/NT)<br> LSA secret<br> Vault Files | GNOME Keyring<br> Kwallet<br> Hashdump | Keychains<br> Hashdump |
 
-(*) used by many tools to store passwords: Chrome, Owncloud, Evolution, KMail, etc.
 
 For developers
 ----
