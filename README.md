@@ -95,7 +95,7 @@ Supported software
 |  | Windows    | Linux  | Mac |
 | -- | -- | -- | -- |
 | Browser | Chrome, firefox, IE, Opera | Firefox, Opera | Firefox, Chrome |
-| Chats | Jitsy, Pigdin, Skype| Jitsy, Pigdin |  |
+| Chats | Pigdin, Psi, Skype| Pigdin, Psi |  |
 | Databases | DBVisualizer, Postgresql, Robomongo, Squirrel, SQLdevelopper | DBVisualizer, Squirrel, SQLdevelopper  |  |
 | Games | GalconFusion, Kalypsomedia, RogueTale, Turba |  |  |
 | Git | Git for Windows |  |  |
