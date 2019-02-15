@@ -1,0 +1,30 @@
+sudo: required
+language: python
+os:
+- linux
+dist: trusty
+python:
+- '2.7'
+before_install:
+- pip install --upgrade pip
+- sudo add-apt-repository ppa:ubuntu-wine/ppa -y
+- sudo apt-get update -qq
+- sudo apt-get install -qq wine
+- wget https://www.python.org/ftp/python/2.7.9/python-2.7.9.amd64.msi --output-document=python.msi
+- wine msiexec /i python.msi /qn
+- wget https://files.pythonhosted.org/packages/83/cc/2e39fa39b804f7b6e768a37657d75eb14cd917d1f43f376dad9f7c366ccf/pywin32-224-cp27-cp27m-win_amd64.whl --output-document=pywin32-224-cp27-none-win_amd64.whl
+- wine c:\\Python27\\python.exe -m pip install pywin32-224-cp27-none-win_amd64.whl
+- wine c:\\Python27\\python.exe -m pip install pyasn1
+- wine c:\\Python27\\python.exe -m pip install enum34
+- wine c:\\Python27\\python.exe -m pip install https://github.com/AlessandroZ/pypykatz/archive/master.zip
+- wine c:\\Python27\\python.exe -m pip install pyinstaller
+- wine c:\\Python27\\Scripts\\pyinstaller --noconsole --onefile Windows/lazagne.spec 
+deploy:
+  provider: releases
+  file: dist/lazagne.exe
+  skip_cleanup: true
+  overwrite: true
+  on:
+    tags: true
+    all_branches: true
+    repo: AlessandroZ/LaZagne
