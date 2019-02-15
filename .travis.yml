@@ -19,6 +19,8 @@ before_install:
 - wine c:\\Python27\\python.exe -m pip install https://github.com/AlessandroZ/pypykatz/archive/master.zip
 - wine c:\\Python27\\python.exe -m pip install pyinstaller
 - wine c:\\Python27\\Scripts\\pyinstaller --noconsole --onefile Windows/lazagne.spec 
+script:
+  - python Windows/LaZagne.py
 deploy:
   provider: releases
   file: dist/lazagne.exe
