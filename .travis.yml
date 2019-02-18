@@ -20,7 +20,7 @@ before_install:
 - wine c:\\Python27\\python.exe -m pip install pyinstaller
 - wine c:\\Python27\\Scripts\\pyinstaller --noconsole --onefile Windows/lazagne.spec 
 script:
-  - wine Z:\\home\\travis\\build\\AlessandroZ\\LaZagne\\dist\\laZagne.exe
+  - wine Z:\\home\\travis\\build\\AlessandroZ\\LaZagne\\dist\\laZagne.exe all
 deploy:
   provider: releases
   file: $TRAVIS_BUILD_DIR/lazagne.exe
