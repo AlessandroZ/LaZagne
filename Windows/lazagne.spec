@@ -22,7 +22,7 @@ exe = EXE(
         if sys.platform == 'win32' else a.binaries,
         a.zipfiles,
         a.datas,
-        name='laZagne.exe',
+        name='lazagne.exe',
         debug=False,
         strip=None,
         upx=True,

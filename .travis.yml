@@ -23,7 +23,7 @@ script:
   - wine Z:\\home\\travis\\build\\AlessandroZ\\LaZagne\\dist\\laZagne.exe all
 deploy:
   provider: releases
-  file: $TRAVIS_BUILD_DIR/lazagne.exe
+  file: dist/lazagne.exe
   skip_cleanup: true
   overwrite: true
   on:
