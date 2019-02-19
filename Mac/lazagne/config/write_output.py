@@ -281,7 +281,7 @@ def write_in_file(result):
             # Human readable Json format
             pretty_json = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '))
             with open(os.path.join(constant.folder_name, constant.file_name_results + '.json'), 'a+b') as f:
-                f.write(pretty_json.decode('unicode-escape').encode('UTF-8'))
+                f.write(pretty_json.encode('UTF-8'))
             constant.st.do_print(
                 '[+] File written: ' + constant.folder_name + os.sep + constant.file_name_results + '.json')
         except Exception as e:
