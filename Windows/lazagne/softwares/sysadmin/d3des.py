@@ -22,10 +22,10 @@
 #  
 #  A portable, public domain, version of the Data Encryption Standard.
 #  
-#  Written with Symantec's THINK (ightspeed) C by Richard Outerbridge.
+#  Written with Symantec's THINK (Lightspeed) C by Richard Outerbridge.
 #  Thanks to: Dan Hoey for his excellent Initial and Inverse permutation
 #  code;  Jim Gillogly & Phil Karn for the DES key schedule code; Dennis
-#  Ferguson, Eric Young and Dana How for comparing notes; and Ray au,
+#  Ferguson, Eric Young and Dana How for comparing notes; and Ray Lau,
 #  for humouring me on.
 #  
 #  Copyright (c) 1988,1989,1990,1991,1992 by Richard Outerbridge.
