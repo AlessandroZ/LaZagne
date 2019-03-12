@@ -1,6 +1,6 @@
 # Code based on vncpasswd.py by trinitronx
 # https://github.com/trinitronx/vncpasswd.py
-import d3des as d
+from . import d3des as d
 import binascii
 import traceback
 
