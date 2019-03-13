@@ -106,10 +106,10 @@ class Obj(object):
         else:
             return Obj(tp, self.address+off, self.space)
     
-    def __div__(self, other):
-        if isinstance(other,tuple) or isinstance(other,list):
+    def __truediv__(self, other):
+        if isinstance(other, (tuple, list)):
             return Pointer(other[0], self.address, self.space, other[1])
-        elif isinstance(other,str):
+        elif isinstance(other, str):
             return Obj(other, self.address, self.space)
         else:
             raise ValueError("Must provide a type name as string for casting")
@@ -118,7 +118,7 @@ class Obj(object):
         """Return a list of this object's members, sorted by offset."""
 
         # Could also just return the list
-        membs = [ (k, v[0]) for k,v in types[self.name][1].items()]
+        membs = [(k, v[0]) for k,v in types[self.name][1].items()]
         membs.sort(key=itemgetter(1))
         return map(itemgetter(0),membs) + self.extra_members
 

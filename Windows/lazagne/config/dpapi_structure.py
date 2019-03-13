@@ -81,7 +81,7 @@ class UserDpapi(object):
                                 print_debug('ERROR', r)
 
                     elif pwdhash:
-                        for ok, r in self.umkp.try_credential_hash(self.sid, pwdhash=pwdhash.decode('hex')):
+                        for ok, r in self.umkp.try_credential_hash(self.sid, pwdhash=pwdhash.hex().encode()):
                             if ok:
                                 self.unlocked = True
                                 print_debug('OK', r)

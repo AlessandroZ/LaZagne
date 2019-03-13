@@ -70,8 +70,7 @@ def parse_cache_entry(cache_data):
     return (uname_len, domain_len, domain_name_len, enc_data, ch) 
 
 
-def parse_decrypted_cache(dec_data, uname_len,
-        domain_len, domain_name_len):
+def parse_decrypted_cache(dec_data, uname_len, domain_len, domain_name_len):
     uname_off = 72
     pad = 2 * ( ( uname_len / 2 ) % 2 )
     domain_off = uname_off + uname_len + pad
@@ -131,8 +130,9 @@ def dump_hashes(sysaddr, secaddr, vista):
         else:
             dec_data = decrypt_hash(enc_data, nlkm, ch)
 
-        (username, domain, domain_name, hash) = parse_decrypted_cache(dec_data, uname_len,
-                                                                        domain_len, domain_name_len)
+        (username, domain, domain_name, hash) = parse_decrypted_cache(
+            dec_data, uname_len,domain_len, domain_name_len
+        )
 
         hashes.append((username, domain, domain_name, hash))
 

@@ -83,7 +83,7 @@ class MasterKey(DataStruct):
                                       self.rounds)
         self.key = cleartxt[-64:]
         hmacSalt = cleartxt[:16]
-        hmac = cleartxt[16:16 + self.hashAlgo.digestLength]
+        hmac = cleartxt[16:16 + int(self.hashAlgo.digestLength)]
         hmacComputed = crypto.DPAPIHmac(self.hashAlgo, pwdhash, hmacSalt, self.key)
         self.decrypted = hmac == hmacComputed
         if self.decrypted:

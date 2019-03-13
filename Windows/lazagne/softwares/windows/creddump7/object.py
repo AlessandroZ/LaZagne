@@ -42,14 +42,14 @@ builtin_types = {
 
 
 def obj_size(types, objname):
-    if not types.has_key(objname):
+    if objname not in types:
         raise Exception('Invalid type %s not in types' % (objname))
 
     return types[objname][0]
 
 
 def builtin_size(builtin):
-    if not builtin_types.has_key(builtin):
+    if builtin not in builtin_types:
         raise Exception('Invalid built-in type %s' % (builtin))
 
     return builtin_types[builtin][0]
@@ -57,10 +57,10 @@ def builtin_size(builtin):
 
 def read_value(addr_space, value_type, vaddr):
     """
-    Read the low-level value for a built-in type. 
+    Read the low-level value for a built-in type.
     """
 
-    if not builtin_types.has_key(value_type):
+    if value_type not in builtin_types:
         raise Exception('Invalid built-in type %s' % (value_type))
 
     type_unpack_char = builtin_types[value_type][1]
@@ -129,7 +129,7 @@ def read_null_string(addr_space, types, member_list, vaddr, max_length=256):
 
 def get_obj_offset(types, member_list):
     """
-    Returns the (offset, type) pair for a given list
+    Returns the (offset, type) pair for a given list.
     """
     member_list.reverse()
 
@@ -151,13 +151,13 @@ def get_obj_offset(types, member_list):
             offset += index * current_type_size
             continue
 
-        elif not types.has_key(current_type):
+        elif current_type not in types:
             raise Exception('Invalid type ' + current_type)
 
         member_dict = types[current_type][1]
 
         current_member = member_list.pop()
-        if not member_dict.has_key(current_member):
+        if current_member not in member_dict:
             raise Exception('Invalid member %s in type %s' % (current_member, current_type))
 
         offset += member_dict[current_member][0]
