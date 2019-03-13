@@ -15,7 +15,7 @@ from lazagne.config.constant import constant
 class WindowsPassword(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'windows', 'windows')
-        self.current_user = getpass.getuser().decode(sys.getfilesystemencoding())
+        self.current_user = getpass.getuser()
 
     def is_in_domain(self):
         """
