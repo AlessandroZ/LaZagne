@@ -100,12 +100,12 @@ def decrypt_aes(secret, key):
         sha.update(secret[28:60])
     aeskey = sha.digest()
 
-    data = ""
+    data = b""
     for i in range(60, len(secret), 16):
         aes = AESModeOfOperationCBC(aeskey, iv="\x00"*16)
         buf = secret[i : i + 16]
         if len(buf) < 16:
-            buf += (16-len(buf)) * "\00"
+            buf += (16-len(buf)) * b"\0"
 
         data += aes.decrypt(buf)
 
@@ -170,7 +170,7 @@ def get_secrets(sysaddr, secaddr, vista):
         else:
             secret = decrypt_secret(enc_secret[0xC:], lsakey)
 
-        secrets[key.Name] = secret
+        secrets[key.Name.decode()] = secret
 
     return secrets
 

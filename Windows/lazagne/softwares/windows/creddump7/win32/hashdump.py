@@ -19,6 +19,7 @@
 @contact:      bdolangavitt@wesleyan.edu
 """
 
+import binascii
 import hashlib
 import codecs
 from struct import pack
@@ -104,7 +105,7 @@ def find_control_set(sysaddr):
         return 1
 
     for v in values(csselect):
-        if v.Name == "Current":
+        if v.Name.decode() == "Current":
             return v.Data.value
 
 
@@ -121,16 +122,16 @@ def get_bootkey(sysaddr):
     if not lsa:
         return None
 
-    bootkey = ""
+    bootkey = b""
 
     for lk in lsa_keys:
         key = open_key(lsa, [lk])
         class_data = sysaddr.read(key.Class.value, key.ClassLength.value)
-        bootkey += class_data.decode('utf-16-le').decode('hex')
+        bootkey += binascii.unhexlify(class_data.decode('utf-16-le'))
 
-    bootkey_scrambled = ""
+    bootkey_scrambled = b""
     for i in range(len(bootkey)):
-        bootkey_scrambled += bootkey[p[i]]
+        bootkey_scrambled += bootkey[p[i]:p[i]+1]
 
     return bootkey_scrambled
 

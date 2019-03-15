@@ -305,16 +305,16 @@ def pbkdf2(passphrase, salt, keylen, iterations, digest='sha1'):
     Implementation of PBKDF2 that allows specifying digest algorithm.
     Returns the corresponding expanded key which is keylen long.
     """
-    buff = ""
+    buff = b""
     i = 1
     while len(buff) < keylen:
         U = salt + struct.pack("!L", i)
         i += 1
         derived = hmac.new(passphrase, U, digestmod=lambda: hashlib.new(digest)).digest()
-        for r in xrange(iterations - 1):
+        for r in range(iterations - 1):
             actual = hmac.new(passphrase, derived, digestmod=lambda: hashlib.new(digest)).digest()
             derived = ''.join([chr(char_to_int(x) ^ char_to_int(y)) for (x, y) in zip(derived, actual)]).encode()
-        buff += derived.decode()
+        buff += derived
     return buff[:int(keylen)]
 
 
@@ -331,7 +331,7 @@ def dataDecrypt(cipherAlgo, hashAlgo, raw, encKey, iv, rounds):
     """
     hname = {"HMAC": "sha1"}.get(hashAlgo.name, hashAlgo.name)
     derived = pbkdf2(encKey, iv, cipherAlgo.keyLength + cipherAlgo.ivLength, rounds, hname)
-    key, iv = derived[:int(cipherAlgo.keyLength)].encode(), derived[int(cipherAlgo.keyLength):].encode()
+    key, iv = derived[:int(cipherAlgo.keyLength)], derived[int(cipherAlgo.keyLength):]
     key = key[:int(cipherAlgo.keyLength)]
     iv = iv[:int(cipherAlgo.ivLength)]
 

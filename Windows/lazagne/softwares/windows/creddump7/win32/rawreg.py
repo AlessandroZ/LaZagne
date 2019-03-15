@@ -38,7 +38,7 @@ def open_key(root, key):
     
     keyname = key.pop(0)
     for s in subkeys(root):
-        if s.Name.upper() == keyname.upper():
+        if s.Name.decode().upper() == keyname.upper():
             return open_key(s, key)
     # print "ERR: Couldn't find subkey %s of %s" % (keyname, root.Name)
     return None
