@@ -114,7 +114,7 @@ def sessions(setenv=True):
                         except Exception:
                             continue
 
-                    if 'DBUS_SESSION_BUS_ADDRESS' is os.environ:
+                    if 'DBUS_SESSION_BUS_ADDRESS' in os.environ:
                         previous = os.environ['DBUS_SESSION_BUS_ADDRESS']
 
                     os.environ['DBUS_SESSION_BUS_ADDRESS'] = address
