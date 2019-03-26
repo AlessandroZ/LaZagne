@@ -42,6 +42,8 @@ from lazagne.softwares.sysadmin.filezilla import Filezilla
 from lazagne.softwares.sysadmin.ftpnavigator import FtpNavigator
 from lazagne.softwares.sysadmin.opensshforwindows import OpenSSHForWindows
 from lazagne.softwares.sysadmin.openvpn import OpenVPN
+# Agregado IISCentralCertP:
+from lazagne.softwares.sysadmin.iiscentralcertp import IISCentralCertP
 from lazagne.softwares.sysadmin.puttycm import Puttycm
 from lazagne.softwares.sysadmin.rdpmanager import RDPManager
 from lazagne.softwares.sysadmin.unattended import Unattended
@@ -140,6 +142,7 @@ def get_modules():
         Puttycm(),
         OpenSSHForWindows(),
         OpenVPN(),
+		IISCentralCertP(),
         RDPManager(),
         Unattended(),
         WinSCP(),
