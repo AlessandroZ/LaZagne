@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-from time import gmtime, strftime
+import ctypes
 import getpass
 import json
 import logging
-import ctypes
-import socket
 import os
+import socket
 import sys
+import traceback
+
+from time import gmtime, strftime
 
 from lazagne.config.winstructure import string_to_unicode, char_to_int, python_version
 from .constant import constant
@@ -243,7 +245,7 @@ class StandardOutput(object):
                                 password_category=password_category[0].title()))
                             to_write.append(pwd)
 
-                    for p in pwd.keys():
+                    for p in pwd:
                         self.do_print('%s: %s' % (p, pwd[p]))
                     self.do_print()
 
@@ -314,9 +316,9 @@ def parse_json_result_to_buffer(json_string):
                     for all_passwords in json['Passwords']:
                         buffer += u'\r\n------------------- {password_category} -----------------\r\n'.format(
                             password_category=all_passwords[0]['Category'])
-                        if all_passwords[0]['Category'].lower() in ['lsa', 'hashdump', 'cachedump']:
+                        if all_passwords[0]['Category'].lower() in ['lsa_secrets', 'hashdump', 'cachedump']:
                             for dic in all_passwords[1]:
-                                if all_passwords[0]['Category'].lower() == 'lsa':
+                                if all_passwords[0]['Category'].lower() == 'lsa_secrets':
                                     for d in dic:
                                         buffer += u'%s\r\n' % (constant.st.try_unicode(d))
                                 else:
@@ -324,15 +326,15 @@ def parse_json_result_to_buffer(json_string):
                         else:
                             for password_by_category in all_passwords[1]:
                                 buffer += u'\r\nPassword found !!!\r\n'
-                                for dic in password_by_category.keys():
+                                for dic in password_by_category:
                                     try:
                                         buffer += u'%s: %s\r\n' % (
                                         dic, constant.st.try_unicode(password_by_category[dic]))
                                     except Exception as e:
                                         print_debug(u'ERROR', u'Error retrieving the password encoding: %s' % e)
                         buffer += u'\r\n'
-    except Exception as e:
-        print_debug('ERROR', u'Error parsing the json results: {error}'.format(error=e))
+    except Exception:
+        print_debug('ERROR', u'Error parsing the json results: {error}'.format(error=traceback.format_exc()))
 
     return buffer
 
@@ -357,7 +359,6 @@ def write_in_file(result):
 
         if constant.output == 'txt' or constant.output == 'all':
             try:
-
                 with open(os.path.join(constant.folder_name, constant.file_name_results + '.txt'), 'a+b') as f:
                     a = parse_json_result_to_buffer(result)
                     f.write(a.encode("UTF-8"))
