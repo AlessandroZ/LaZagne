@@ -29,7 +29,7 @@ from lazagne.config.winstructure import char_to_int
 
 try:
     xrange
-except Exception:
+except NameError:
     xrange = range
 
 AES_BLOCK_SIZE = 16
