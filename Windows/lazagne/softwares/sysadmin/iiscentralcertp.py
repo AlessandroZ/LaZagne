@@ -113,7 +113,7 @@ class IISCentralCertP(ModuleInfo):
 			if (len(exe_files) == 0):
 				print_debug('DEBUG', u'File not found aspnet_regiis.exe')
 				return
-        print_debug('DEBUG', u'Files aspnet_regiis.exe founded: {files}'.format(files=exe_files))
+        print_debug('DEBUG', u'aspnet_regiis.exe files found: {files}'.format(files=exe_files))
 
 
         rsa_xml_file = self.create_RSAKeyValueFile(exe_files[-1], "iisWASKey")
