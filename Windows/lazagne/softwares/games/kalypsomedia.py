@@ -7,9 +7,9 @@ from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import char_to_int
 
 try:
-    from ConfigParser import RawConfigParser  # Python 2.7
+    from ConfigParser import ConfigParser  # Python 2.7
 except ImportError:
-    from configparser import RawConfigParser  # Python 3
+    from configparser import ConfigParser  # Python 3
 
 
 class KalypsoMedia(ModuleInfo):
@@ -29,7 +29,7 @@ class KalypsoMedia(ModuleInfo):
 
         # The actual user details are stored in *.userdata files
         if os.path.exists(inifile):
-            config = ConfigParser.ConfigParser()
+            config = ConfigParser()
             config.read(inifile)
 
             # get the encoded password
