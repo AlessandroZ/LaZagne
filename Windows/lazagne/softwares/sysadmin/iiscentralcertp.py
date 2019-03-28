@@ -1,7 +1,4 @@
-from Crypto.Util import number
-from Crypto.Cipher import PKCS1_v1_5
-from Crypto.PublicKey import RSA
-from base64 import standard_b64encode, b64decode
+import rsa
 import base64
 from xml.dom import minidom
 import os
@@ -14,8 +11,6 @@ try:
     import _winreg as winreg
 except ImportError:
     import winreg
-
-
 
 
 from lazagne.config.module_info import ModuleInfo
@@ -62,15 +57,16 @@ class IISCentralCertP(ModuleInfo):
         return data
 
         
-    def decrypt_hash_b64(self, hash_b64,rsa):
+    def decrypt_hash_b64(self, hash_b64,privkey):
         hash = bytearray(base64.b64decode(hash_b64))
         hash.reverse()
         
         hash_b64 = base64.b64encode(hash)
         hash = base64.b64decode(hash_b64)
         
-        KEY_CIPHER = PKCS1_v1_5.new(rsa)
-        return KEY_CIPHER.decrypt(hash,'').decode('UTF-16')
+		
+        message = rsa.decrypt(hash,privkey)
+        return message.decode('UTF-16')
 
 
     def GetLong(self, nodelist):
@@ -80,8 +76,9 @@ class IISCentralCertP(ModuleInfo):
              rc.append(node.data)
              
        string = ''.join(rc) 
-       
-       return number.bytes_to_long(b64decode(string))
+       raw = base64.b64decode(string)
+       return int(raw.encode('hex'), 16)
+
 
 
     def read_RSAKeyValue(self, rsa_key_xml):
@@ -93,10 +90,12 @@ class IISCentralCertP(ModuleInfo):
         P = self.GetLong(xmlStructure.getElementsByTagName('P')[0].childNodes)
         Q = self.GetLong(xmlStructure.getElementsByTagName('Q')[0].childNodes)
         InverseQ = self.GetLong(xmlStructure.getElementsByTagName('InverseQ')[0].childNodes)
-        
-        rsa = RSA.construct((MODULUS, EXPONENT, D, P, Q))
-        print_debug('DEBUG', u'RSA Key Value - PEM:\n {RSAkey}'.format(RSAkey=rsa.exportKey()))
-        return rsa
+
+        privkey = rsa.PrivateKey(MODULUS, EXPONENT, D, P, Q)
+        print_debug('DEBUG', u'RSA Key Value - PEM:\n {RSAkey}'.format(RSAkey=privkey.save_pkcs1(format='PEM')))
+
+        return privkey
+
 
 
     def run(self):
@@ -110,9 +109,12 @@ class IISCentralCertP(ModuleInfo):
 
         exe_files = self.find_files(os.environ['WINDIR'] + '\Microsoft.NET\Framework64\\','aspnet_regiis.exe')
         if (len(exe_files) == 0):
-            print_debug('DEBUG', u'File not found aspnet_regiis.exe')
-            return
-        
+			exe_files = self.find_files(os.environ['WINDIR'] + '\Microsoft.NET\Framework\\','aspnet_regiis.exe')
+			if (len(exe_files) == 0):
+				print_debug('DEBUG', u'File not found aspnet_regiis.exe')
+				return
+        print_debug('DEBUG', u'Files aspnet_regiis.exe founded: {files}'.format(files=exe_files))
+
 
         rsa_xml_file = self.create_RSAKeyValueFile(exe_files[-1], "iisWASKey")
         if (rsa_xml_file == ''):
@@ -127,7 +129,7 @@ class IISCentralCertP(ModuleInfo):
         print_debug('DEBUG', u'Temporary file removed: {filename}'.format(filename=rsa_xml_file))
 
 
-        rsa = self.read_RSAKeyValue(rsa_key_xml)
+        privkey = self.read_RSAKeyValue(rsa_key_xml)
 
 		
         values = {}
@@ -139,10 +141,10 @@ class IISCentralCertP(ModuleInfo):
         values['Username'] = username
         
         pass64 = self.get_registry_key('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\IIS\CentralCertProvider' ,'Password')
-        values['Password'] = self.decrypt_hash_b64(pass64,rsa)
+        values['Password'] = self.decrypt_hash_b64(pass64,privkey)
 
         privpass64 = self.get_registry_key('HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\IIS\\CentralCertProvider' ,'PrivateKeyPassword')
-        values['Private Key Password'] = self.decrypt_hash_b64(privpass64,rsa)
+        values['Private Key Password'] = self.decrypt_hash_b64(privpass64,privkey)
 
         pfound.append(values)
         return pfound 
