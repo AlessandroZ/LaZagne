@@ -475,20 +475,21 @@ class Mozilla(ModuleInfo):
         for profile in profile_list:
             self.info(u'Profile path found: {profile}'.format(profile=profile))
 
-            for key in self.get_key(profile):
-                credentials = self.get_login_data(profile)
-                for user, password, url in credentials:
-                    try:
-                        pwd_found.append(
-                            {
-                                'URL': url,
-                                'Login': self.decrypt(key=key, iv=user[1], ciphertext=user[2]).decode('utf8'),
-                                'Password': self.decrypt(key=key, iv=password[1], ciphertext=password[2]).decode('utf8'),
-                            }
-                        )
-                    except Exception:
-                        self.debug(u'An error occured decrypting the password: {error}'.format(
-                            error=traceback.format_exc()))
+            credentials = self.get_login_data(profile)
+            if credentials:
+                for key in self.get_key(profile):
+                    for user, password, url in credentials:
+                        try:
+                            pwd_found.append(
+                                {
+                                    'URL': url,
+                                    'Login': self.decrypt(key=key, iv=user[1], ciphertext=user[2]).decode('utf8'),
+                                    'Password': self.decrypt(key=key, iv=password[1], ciphertext=password[2]).decode('utf8'),
+                                }
+                            )
+                        except Exception:
+                            self.debug(u'An error occured decrypting the password: {error}'.format(
+                                error=traceback.format_exc()))
 
         return pwd_found
 
