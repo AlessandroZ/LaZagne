@@ -88,8 +88,7 @@ class Mozilla(ModuleInfo):
         self.path = os.path.expanduser(path)
         ModuleInfo.__init__(self, browser_name, category='browsers')
 
-    @staticmethod
-    def get_firefox_profiles(directory):
+    def get_firefox_profiles(self, directory):
         """
         List all profiles
         """
