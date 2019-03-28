@@ -84,7 +84,7 @@ class OpenSSHForWindows(ModuleInfo):
         # Parse and process the list of keys
         key_found = []
         for key in unprotected_private_keys:
-            values = {"PrivateKey": key}
+            values = {"Privatekey": key}
             key_found.append(values)
 
         return key_found
