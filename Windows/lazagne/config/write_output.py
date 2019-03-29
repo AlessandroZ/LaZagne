@@ -262,12 +262,12 @@ class StandardOutput(object):
             username=getpass.getuser().decode(sys.getfilesystemencoding()),
             hostname=socket.gethostname().decode(sys.getfilesystemencoding())
         )
-        with open(os.path.join(constant.folder_name, '{}.txt'.format(constant.file_name_results)), "a+b") as f:
+        with open(os.path.join(constant.folder_name, '{}.txt'.format(constant.file_name_results)), "a+") as f:
             f.write(header.encode("UTF-8"))
 
     def write_footer(self):
         footer = '\n[+] %s passwords have been found.\r\n\r\n' % str(constant.nb_password_found)
-        open(os.path.join(constant.folder_name, '%s.txt' % constant.file_name_results), "a+b").write(footer)
+        open(os.path.join(constant.folder_name, '%s.txt' % constant.file_name_results), "a+").write(footer)
 
     def checks_write(self, values, category):
         if values:

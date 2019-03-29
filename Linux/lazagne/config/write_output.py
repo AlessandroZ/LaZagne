@@ -69,12 +69,12 @@ class StandardOutput():
             hostname=socket.gethostname()
         )
         open(os.path.join(constant.folder_name, '{filename}.txt'.format(filename=constant.file_name_results)),
-             "a+b").write(header)
+             "a+").write(header)
 
     def write_footer(self):
         footer = '\n[+] %s passwords have been found.\r\n\r\n' % str(constant.nbPasswordFound)
         open(os.path.join(constant.folder_name, '{filename}.txt'.format(filename=constant.file_name_results)),
-             "a+b").write(footer)
+             "a+").write(footer)
 
     def print_footer(self, elapsed_time=None):
         footer = '\n[+] %s passwords have been found.\n' % str(constant.nbPasswordFound)
@@ -150,7 +150,7 @@ class StandardOutput():
             for pwd in pwd_found:
                 password_category = False
                 # Detect which kinds of password has been found
-                lower_list = [s.lower() for s in pwd.keys()]
+                lower_list = [s.lower() for s in pwd]
                 password = [s for s in lower_list if "password" in s]
 
                 if password:
@@ -179,11 +179,9 @@ class StandardOutput():
                 if not password_category:
                     print_debug("ERROR", "Password not found !!!")
                 else:
-                    print_debug("OK", '%s found !!!' % password_category[0].title())
-                    to_write.append(pwd)
-
                     # Store all passwords found on a table => for dictionary attack if master password set
                     constant.nbPasswordFound += 1
+                    passwd = None
                     try:
                         passwd = pwd[password_category[0].capitalize()]
                         if passwd not in constant.passwordFound:
@@ -191,7 +189,15 @@ class StandardOutput():
                     except Exception:
                         pass
 
-                for p in pwd.keys():
+                    # Password field is empty
+                    if not passwd:
+                        print_debug("FAILED", u'Password not found !!!')
+                    else:
+                        print_debug("OK", u'{password_category} found !!!'.format(
+                            password_category=password_category[0].title()))
+                        to_write.append(pwd)
+
+                for p in pwd:
                     self.do_print('%s: %s' % (p, pwd[p]))
                 self.do_print()
 
@@ -256,7 +262,7 @@ def parse_json_result_to_buffer(json_string, color=False):
                         for password_by_category in all_passwords[1]:
                             buffer += '\r\n{green_color}Password found !!!{reset_color}\r\n'.format(green_color=green,
                                                                                                     reset_color=reset)
-                            for dic in password_by_category.keys():
+                            for dic in password_by_category:
                                 try:
                                     buffer += '%s: %s\r\n' % (dic, password_by_category[dic].encode('utf-8'))
                                 except Exception:
