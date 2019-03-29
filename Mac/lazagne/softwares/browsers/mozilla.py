@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # portable decryption functions and BSD DB parsing by Laurent Clevy (@lorenzo2472)
 # from https://github.com/lclevy/firepwd/blob/master/firepwd.py
 
@@ -38,13 +38,13 @@ def convert_to_byte(s):
 
 
 def l(n):
-    if python_version == 2:
+    try:
         return long(n)
-    else:
+    except NameError:
         return int(n)
 
 
-def o(c): 
+def o(c):
     if python_version == 2:
         return ord(c)
     else:
@@ -108,7 +108,7 @@ class Mozilla(ModuleInfo):
 
                     else: # No "IsRelative" in profiles.ini
                         profile_path = os.path.join(directory, cp.get(section, 'Path').strip())
-                    
+
                     if profile_path:
                         profile_list.append(profile_path)
 
@@ -124,9 +124,9 @@ class Mozilla(ModuleInfo):
         try:
             row = None
             # Remove error when file is empty
-            with open(os.path.join(profile, 'key4.db'), 'rb') as f: 
+            with open(os.path.join(profile, 'key4.db'), 'rb') as f:
                 content = f.read()
-            
+
             if content:
                 conn = sqlite3.connect(os.path.join(profile, 'key4.db'))  # Firefox 58.0.2 / NSS 3.35 with key4.db in SQLite
                 c = conn.cursor()
