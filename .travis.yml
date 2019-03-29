@@ -21,7 +21,9 @@ matrix:
       before_install:
       - choco install python2
       - python -m pip install --upgrade pip
-      - pip install enum34 pyasn1 pyinstaller pywin32 rsa https://github.com/AlessandroZ/pypykatz/archive/master.zip
+      - wget https://files.pythonhosted.org/packages/83/cc/2e39fa39b804f7b6e768a37657d75eb14cd917d1f43f376dad9f7c366ccf/pywin32-224-cp27-cp27m-win_amd64.whl --output-document=pywin32-224-cp27-none-win_amd64.whl
+      - pip install enum34 pyasn1 pyinstaller pywin32-224-cp27-none-win_amd64.whl rsa
+      - pip install https://github.com/AlessandroZ/pypykatz/archive/master.zip
       - cp Windows/lazagne.spec Windows/lazagne_built_on_win.spec  # Avoid overwriting the other build
       script: pyinstaller --noconsole --onefile Windows/lazagne_built_on_win.spec
     - name: "Lint on Python 2.7"
