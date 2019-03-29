@@ -14,6 +14,8 @@ matrix:
   allow_failures:
     - python: '3.7'
   include:
+    - name: "Test and deploy on Python 2.7"
+      python: '2.7'
     - name: "Lint on Python 2.7"
       python: '2.7'
       <<: *lint_steps
@@ -21,8 +23,6 @@ matrix:
       python: '3.7'
       dist: xenial  # required for Python >= 3.7
       <<: *lint_steps
-    - name: "Test and deploy on Python 2.7"
-      python: '2.7'
 
 before_install:
 - pip install --upgrade pip
