@@ -176,8 +176,10 @@ little2_i32 = Struct("<2i")  # 2 little-endian 32-bit signed ints.
 _version = 'p3.2'
 
 try:
+    long
     xrange
-except Exception:
+except NameError:
+    long = int
     xrange = range
 
 
