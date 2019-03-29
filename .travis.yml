@@ -52,5 +52,5 @@ matrix:
       python: '3.7'
       dist: xenial  # required for Python >= 3.7
       <<: *lint_steps
-   allow_failures:
+  allow_failures:
     - python: '3.7'
