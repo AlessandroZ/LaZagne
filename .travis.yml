@@ -7,8 +7,6 @@ lint_steps: &lint_steps
     - pip install --upgrade pip
     - pip install flake8
   script: flake8 . --count --select=E9,F63,F72,F82 --show-source --statistics
-  before_deploy: true  # override
-  deploy: true  # override
 
 matrix:
   allow_failures:
