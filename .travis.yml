@@ -22,7 +22,7 @@ matrix:
       dist: xenial  # required for Python >= 3.7
       <<: *lint_steps
     - name: "Test and deploy on Python 2.7"
-      python:'2.7'
+      python: '2.7'
 
 before_install:
 - pip install --upgrade pip
