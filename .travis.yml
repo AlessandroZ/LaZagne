@@ -14,6 +14,16 @@ matrix:
   include:
     - name: "Test and deploy on Python 2.7"
       python: '2.7'
+    - name: "Build on Python 2.7 on Windows"
+      os: windows      # Windows Server, version 1803 -- Platform: Windows-10-10.0.17134-SP0
+      language: shell  # 'language: python' is not yet supported on Travis CI Windows
+      env: PATH=/c/Python27:/c/Python27/Scripts:$PATH
+      before_install:
+      - choco install python2
+      - python -m pip install --upgrade pip
+      - pip install enum34 pyasn1 pyinstaller pywin32 rsa https://github.com/AlessandroZ/pypykatz/archive/master.zip
+      - cp Windows/lazagne.spec Windows/lazagne_built_on_win.spec  # Avoid overwriting the other build
+      script: pyinstaller --noconsole --onefile Windows/lazagne_built_on_win.spec
     - name: "Lint on Python 2.7"
       python: '2.7'
       <<: *lint_steps
@@ -33,7 +43,7 @@ before_install:
 - wine c:\\Python27\\python.exe -m pip install pywin32-224-cp27-none-win_amd64.whl
 - wine c:\\Python27\\python.exe -m pip install pyasn1
 - wine c:\\Python27\\python.exe -m pip install enum34
-- wine c:\\Python27\\python.exe -m pip install rsa
+- wine c:\\Python27\\python.exe -m pip install 
 - wine c:\\Python27\\python.exe -m pip install https://github.com/AlessandroZ/pypykatz/archive/master.zip
 - wine c:\\Python27\\python.exe -m pip install pyinstaller
 - wine c:\\Python27\\Scripts\\pyinstaller --noconsole --onefile Windows/lazagne.spec
