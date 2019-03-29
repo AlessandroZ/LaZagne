@@ -493,6 +493,8 @@ class Mozilla(ModuleInfo):
                         except Exception:
                             self.debug(u'An error occured decrypting the password: {error}'.format(
                                 error=traceback.format_exc()))
+            else:
+                self.info(u'Database empty')
 
         return pwd_found
 

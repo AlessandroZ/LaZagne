@@ -144,32 +144,33 @@ class Mozilla(ModuleInfo):
             if row:
                 (global_salt, master_password, entrySalt) = self.manage_masterpassword(master_password=u'', key_data=row)
                 if global_salt:
-                    # Decrypt 3DES key to decrypt "logins.json" content
-                    c.execute("SELECT a11,a102 FROM nssPrivate;")
                     try:
-                        a11, a102 = c.next()    # Python 2
+                        # Decrypt 3DES key to decrypt "logins.json" content
+                        c.execute("SELECT a11,a102 FROM nssPrivate;")
+                        for row in c:
+                            if row[0]:
+                                break
+                        a11 = row[0]  # CKA_VALUE
+                        a102 = row[1]  # f8000000000000000000000000000001, CKA_ID
+                        # SEQUENCE {
+                        #     SEQUENCE {
+                        #         OBJECTIDENTIFIER 1.2.840.113549.1.12.5.1.3
+                        #         SEQUENCE {
+                        #             OCTETSTRING entry_salt_for_3des_key
+                        #             INTEGER 01
+                        #         }
+                        #     }
+                        #     OCTETSTRING encrypted_3des_key (with 8 bytes of PKCS#7 padding)
+                        # }
+                        decoded_a11 = decoder.decode(a11)
+                        entry_salt = decoded_a11[0][0][1][0].asOctets()
+                        cipher_t = decoded_a11[0][1].asOctets()
+                        key = self.decrypt_3des(global_salt, master_password, entry_salt, cipher_t)
+                        if key:
+                            self.debug(u'key: {key}'.format(key=repr(key)))
+                            yield key[:24]
                     except Exception:
-                        a11, a102 = next(c)     # Python 3
-                    # a11  : CKA_VALUE
-                    # a102 : f8000000000000000000000000000001, CKA_ID
-                    self.printASN1(a11, len(a11), 0)
-                    # SEQUENCE {
-                    #     SEQUENCE {
-                    #         OBJECTIDENTIFIER 1.2.840.113549.1.12.5.1.3
-                    #         SEQUENCE {
-                    #             OCTETSTRING entry_salt_for_3des_key
-                    #             INTEGER 01
-                    #         }
-                    #     }
-                    #     OCTETSTRING encrypted_3des_key (with 8 bytes of PKCS#7 padding)
-                    # }
-                    decoded_a11 = decoder.decode(a11)
-                    entry_salt = decoded_a11[0][0][1][0].asOctets()
-                    cipher_t = decoded_a11[0][1].asOctets()
-                    key = self.decrypt_3des(global_salt, master_password, entry_salt, cipher_t)
-                    if key:
-                        self.debug(u'key: {key}'.format(key=repr(key)))
-                        yield key[:24]
+                        self.debug(traceback.format_exc())
 
         try:
             key3_file = os.path.join(profile, 'key3.db')
@@ -311,16 +312,16 @@ class Mozilla(ModuleInfo):
         name_len = o(priv_key_entry[2])
         priv_key_entry_asn1 = decoder.decode(priv_key_entry[3 + salt_len + name_len:])
         data = priv_key_entry[3 + salt_len + name_len:]
-        self.print_asn1(data, len(data), 0)
+        # self.print_asn1(data, len(data), 0)
 
         # See https://github.com/philsmd/pswRecovery4Moz/blob/master/pswRecovery4Moz.txt
         entry_salt = priv_key_entry_asn1[0][0][1][0].asOctets()
         priv_key_data = priv_key_entry_asn1[0][1].asOctets()
         priv_key = self.decrypt_3des(global_salt, master_password, entry_salt, priv_key_data)
-        self.print_asn1(priv_key, len(priv_key), 0)
+        # self.print_asn1(priv_key, len(priv_key), 0)
         priv_key_asn1 = decoder.decode(priv_key)
         pr_key = priv_key_asn1[0][2].asOctets()
-        self.print_asn1(pr_key, len(pr_key), 0)
+        # self.print_asn1(pr_key, len(pr_key), 0)
         pr_key_asn1 = decoder.decode(pr_key)
         # id = pr_key_asn1[0][1]
         key = long_to_bytes(pr_key_asn1[0][3])
@@ -342,21 +343,25 @@ class Mozilla(ModuleInfo):
         try:
             c.execute('SELECT * FROM moz_logins;')
         except sqlite3.OperationalError:  # Since Firefox 32, json is used instead of sqlite3
-            logins_json = os.path.join(profile, 'logins.json')
-            if os.path.isfile(logins_json):
-                with open(logins_json) as f:
-                    loginf = f.read()
-                    if loginf:
-                        json_logins = json.loads(loginf)
-                        if 'logins' not in json_logins:
-                            self.debug('No logins key in logins.json')
+            try:
+                logins_json = os.path.join(profile, 'logins.json')
+                if os.path.isfile(logins_json):
+                    with open(logins_json) as f:
+                        loginf = f.read()
+                        if loginf:
+                            json_logins = json.loads(loginf)
+                            if 'logins' not in json_logins:
+                                self.debug('No logins key in logins.json')
+                                return logins
+                            for row in json_logins['logins']:
+                                enc_username = row['encryptedUsername']
+                                enc_password = row['encryptedPassword']
+                                logins.append((self.decode_login_data(enc_username),
+                                               self.decode_login_data(enc_password), row['hostname']))
                             return logins
-                        for row in json_logins['logins']:
-                            enc_username = row['encryptedUsername']
-                            enc_password = row['encryptedPassword']
-                            logins.append((self.decode_login_data(enc_username),
-                                           self.decode_login_data(enc_password), row['hostname']))
-                        return logins
+            except Exception:
+                self.debug(traceback.format_exc())
+                return []
 
         # Using sqlite3 database
         for row in c:
@@ -398,7 +403,7 @@ class Mozilla(ModuleInfo):
             else:
                 global_salt = key_data[0]  # Item1
                 item2 = key_data[1]
-                self.print_asn1(item2, len(item2), 0)
+                # self.print_asn1(item2, len(item2), 0)
                 # SEQUENCE {
                 # 	SEQUENCE {
                 # 		OBJECTIDENTIFIER 1.2.840.113549.1.12.5.1.3
@@ -474,18 +479,20 @@ class Mozilla(ModuleInfo):
             for profile in self.get_firefox_profiles(self.path):
                 self.info(u'Profile path found: {profile}'.format(profile=profile))
 
-                for key in self.get_key(profile):
-                    credentials = self.getLoginData(profile)
-
-                    for user, password, url in credentials:
-                        try:
-                            pwd_found.append({
-                                'URL': url,
-                                'Login': self.decrypt(key=key, iv=user[1], ciphertext=user[2]).decode("utf-8"),
-                                'Password': self.decrypt(key=key, iv=password[1], ciphertext=password[2]).decode("utf-8"),
-                            })
-                        except Exception as e:
-                            self.debug(u'An error occurred decrypting the password: {error}'.format(error=e))
+                credentials = self.getLoginData(profile)
+                if credentials:
+                    for key in self.get_key(profile):
+                        for user, password, url in credentials:
+                            try:
+                                pwd_found.append({
+                                    'URL': url,
+                                    'Login': self.decrypt(key=key, iv=user[1], ciphertext=user[2]).decode("utf-8"),
+                                    'Password': self.decrypt(key=key, iv=password[1], ciphertext=password[2]).decode("utf-8"),
+                                })
+                            except Exception as e:
+                                self.debug(u'An error occurred decrypting the password: {error}'.format(error=e))
+                else:
+                    self.info(u'Database empty')
 
             return pwd_found
 
