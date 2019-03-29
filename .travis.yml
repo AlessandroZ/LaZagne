@@ -34,3 +34,23 @@ deploy:
     tags: true
     all_branches: true
     repo: AlessandroZ/LaZagne
+
+lint_steps: &lint_steps
+  before_install:
+    - pip install --upgrade pip
+    - pip install flake8
+  script: flake8 . --count --select=E9,F63,F72,F82 --show-source --statistics
+  before_deploy: true  # override
+  deploy: true  # override
+
+matrix:
+  include:
+    - name: "Lint on Python 2.7"
+      python: '2.7'
+      <<: *lint_steps
+    - name: "Lint on Python 3.7"
+      python: '3.7'
+      dist: xenial  # required for Python >= 3.7
+      <<: *lint_steps
+   allow_failures:
+    - python: '3.7'
