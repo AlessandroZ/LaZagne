@@ -23,9 +23,9 @@ matrix:
       script:
        - pyinstaller --noconsole --onefile Mac/laZagne.py
        - ls -l dist  # See file size, etc.
-       - cp dist/laZagn* /Applications || true
+       - cp -R dist/laZagn* /Applications || true
        - ls -l /Applications/laZagn*  # See file size, etc.
-       - sudo cp dist/laZagn* /Applications
+       - sudo cp -R dist/laZagn* /Applications
        - ls -l /Applications/laZagn*  # See file size, etc.
        - open -a /Applications/laZagne --args all || true
        - open -a /Applications/laZagne.app --args all || true
