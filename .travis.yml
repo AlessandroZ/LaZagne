@@ -21,14 +21,14 @@ matrix:
       - python -m pip install --upgrade pip
       - pip install enum34 pyasn1 pyinstaller rsa https://github.com/AlessandroZ/pypykatz/archive/master.zip
       script:
-       - pyinstaller --noconsole --onefile Mac/laZagne.py
+       - pyinstaller --onefile Mac/laZagne.py  # --noconsole ?
+       - sw_vers  # Mac OS X 10.13.3
        - ls -l dist  # See file size, etc.
-       - cp -R dist/laZagn* /Applications || true
-       - ls -l /Applications/laZagn*  # See file size, etc.
-       - sudo cp -R dist/laZagn* /Applications
-       - ls -l /Applications/laZagn*  # See file size, etc.
-       - open -a /Applications/laZagne --args all || true
-       - open -a /Applications/laZagne.app --args all || true
+       - open -a dist/laZagne.app --args all
+       - cp -R dist/laZagne.app /Applications  # try moving it to Applications
+       - ls -l /Applications/laZagne.app  # See file size, etc.
+        - open -a laZagne.app --args all
+        - open -a /Applications/laZagne.app --args all
     - name: "Lint on Python 2.7"
       python: '2.7'
       <<: *lint_steps
