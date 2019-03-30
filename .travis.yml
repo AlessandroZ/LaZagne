@@ -24,11 +24,12 @@ matrix:
        - pyinstaller --onefile Mac/laZagne.py  # --noconsole ?
        - sw_vers  # Mac OS X 10.13.3
        - ls -l dist  # See file size, etc.
-       - open -a dist/laZagne.app --args all
-       - cp -R dist/laZagne.app /Applications  # try moving it to Applications
-       - ls -l /Applications/laZagne.app  # See file size, etc.
-       - open -a laZagne.app --args all
-       - open -a /Applications/laZagne.app --args all
+       - open -a dist/laZagne --args all
+       #- open -a dist/laZagne.app --args all
+       #- cp -R dist/laZagne.app /Applications  # try moving it to Applications
+       #- ls -l /Applications/laZagne.app  # See file size, etc.
+       #- open -a laZagne.app --args all
+       #- open -a /Applications/laZagne.app --args all
     - name: "Lint on Python 2.7"
       python: '2.7'
       <<: *lint_steps
