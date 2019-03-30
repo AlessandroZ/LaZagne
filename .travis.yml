@@ -23,8 +23,8 @@ matrix:
       script:
        - pyinstaller --onefile Mac/laZagne.py  # --noconsole ?
        - sw_vers  # Mac OS X 10.13.3
-       - ls -l dist  # See file size, etc.
-       - open -a dist/laZagne --args all
+       - ls -l dist  # See file size (4.8 mb), etc.
+       - dist/laZagne all
        #- open -a dist/laZagne.app --args all
        #- cp -R dist/laZagne.app /Applications  # try moving it to Applications
        #- ls -l /Applications/laZagne.app  # See file size, etc.
