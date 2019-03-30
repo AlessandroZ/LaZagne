@@ -23,8 +23,10 @@ matrix:
       script:
        - pyinstaller --noconsole --onefile Mac/laZagne.py
        - ls -l dist  # See file size, etc.
-       - open -a dist/laZagne || true
-       - open -a dist/laZagne.app || true
+       - cp laZagn* /Applications || true
+       - sudo cp laZagn* /Applications
+       - open -a laZagne --args all || true
+       - open -a laZagne.app --args all || true
     - name: "Lint on Python 2.7"
       python: '2.7'
       <<: *lint_steps
