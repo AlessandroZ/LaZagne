@@ -23,8 +23,8 @@ matrix:
       script:
        - pyinstaller --noconsole --onefile Mac/laZagne.py
        - ls -l dist  # See file size, etc.
-       - open -a "dist/laZagne all" || true
-       - open -a "dist/laZagne.app all" || true
+       - open -a dist/laZagne || true
+       - open -a dist/laZagne.app || true
     - name: "Lint on Python 2.7"
       python: '2.7'
       <<: *lint_steps
