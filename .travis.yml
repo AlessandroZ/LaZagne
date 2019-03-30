@@ -14,6 +14,14 @@ matrix:
   include:
     - name: "Test and deploy on Python 2.7"
       python: '2.7'
+    - name: "Build on Python 2.7 on macOS"
+      os: osx
+      language: shell  # 'language: python' is not yet supported on Travis CI macOS
+      before_install:
+      - brew install python@2
+      - python -m pip install --upgrade pip
+      - pip install enum34 pyasn1 pyinstaller rsa https://github.com/AlessandroZ/pypykatz/archive/master.zip
+      script: pyinstaller --noconsole --onefile Mac/lazagne_built_on_win.spec
     - name: "Lint on Python 2.7"
       python: '2.7'
       <<: *lint_steps
@@ -40,6 +48,7 @@ before_install:
 script:
 - wine Z:\\home\\travis\\build\\AlessandroZ\\LaZagne\\dist\\laZagne.exe all
 before_deploy:
+- ls -l dist  # See file size, etc.
 - tar -zcvf lazagne.tar.gz dist/lazagne.exe
 deploy:
   provider: releases
@@ -47,7 +56,8 @@ deploy:
   overwrite: true
   api_key:
     secure: TDw9TTOMSJ+zMOVVrEcCCKG+6eDzrfOPz3dUN6EM0QgDZ0gstsf3T24JIV0wsZQYwY5ceYBlZu33/6Rb62b8U/tOaZXYSy9LWmFzqSRH15RvLBBA+2PtbojYNZw1YymGSiG2GBuNHu0VlkDvR/ogTvJ8lY731MPdxUdXibJMfsBVcoKped0ss+cXsKZV0C8FYz3RU6EJsx0oDLHJmLn30Lji1DA7nTO/SJ5AX6ZD7Qp34/YlwkWdih/x0v8uYUfqsiuqNhmfVcheJua7JaFlfwuJj1IDT0UDVaFQn+xkxkK+Bn+h7qjOUOKYzUEfxh78Q6iDd1YtCETR0NPTlNeDDv6LfJoP9gsE68WWBAFhijnRvF084yN1ciQ1Ch+hITANgpcF2cmMg8Tu+YLeYDWfLi8/G7u4TYAQ7Pmvce6PweP9sQ6WGvsC2H+6xNEAjMCdMoCldPfaDdGprIGtx3DD8NyqyVL6S31HkJ5gcPUcarqjGvUVWETkVUVuAQp9pgdYyx52SHifB0tbvie9NkjVdRjBCy3Oxp5bZvdzj19bAEGWu6QFwZibAtHXDq6IdsmKefktrUQd5QUbx0/Y0gpnMuD5ghSoUVdxA9FY8CyD853R13nMLJN5LedV6TFjx/8DgHRIATBSoiLi8L6/fdZAG0yeH/lBcqbLfTM6tLS5HBo=
-  file: 
+  file:
+    - dist/lazagne.app
     - dist/lazagne.exe
     - lazagne.tar.gz
   on:
