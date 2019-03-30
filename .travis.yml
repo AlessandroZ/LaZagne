@@ -20,7 +20,10 @@ matrix:
       before_install:
       - python -m pip install --upgrade pip
       - pip install enum34 pyasn1 pyinstaller rsa https://github.com/AlessandroZ/pypykatz/archive/master.zip
-      script: pyinstaller --noconsole --onefile Mac/laZagne.py
+      script:
+       - pyinstaller --noconsole --onefile Mac/laZagne.py
+       - ls -l dist  # See file size, etc.
+       - dist/laZagne.app all || true
     - name: "Lint on Python 2.7"
       python: '2.7'
       <<: *lint_steps
@@ -47,7 +50,6 @@ before_install:
 script:
 - wine Z:\\home\\travis\\build\\AlessandroZ\\LaZagne\\dist\\laZagne.exe all
 before_deploy:
-- ls -l dist  # See file size, etc.
 - tar -zcvf lazagne.tar.gz dist/lazagne.exe
 deploy:
   provider: releases
