@@ -18,7 +18,6 @@ matrix:
       os: osx
       language: shell  # 'language: python' is not yet supported on Travis CI macOS
       before_install:
-      - brew install python@2
       - python -m pip install --upgrade pip
       - pip install enum34 pyasn1 pyinstaller rsa https://github.com/AlessandroZ/pypykatz/archive/master.zip
       script: pyinstaller --noconsole --onefile Mac/lazagne_built_on_win.spec
