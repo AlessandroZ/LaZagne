@@ -32,6 +32,7 @@ before_install:
 - wine c:\\Python27\\python.exe -m pip install pywin32-224-cp27-none-win_amd64.whl
 - wine c:\\Python27\\python.exe -m pip install pyinstaller -r requirements.txt
 - wine c:\\Python27\\Scripts\\pyinstaller --noconsole --onefile Windows/lazagne.spec
+- sleep 1  # Give PyInstaller a second to finish writing to stdout
 script:
 - wine Z:\\home\\travis\\build\\AlessandroZ\\LaZagne\\dist\\laZagne.exe all
 before_deploy:
