@@ -3,7 +3,8 @@ os:
 - linux
 addons:
   apt:
-    sources: sourceline: 'ppa:ubuntu-wine/ppa'
+    sources:
+      - sourceline: 'ppa:ubuntu-wine/ppa'
     update: true
     packages: wine
 
