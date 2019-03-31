@@ -1,6 +1,6 @@
-enum34; sys.platform == "win32" and python_version < "3.4"
-psutil; sys.platform != "darwin" and sys.platform != "win32"
+enum34; python_version < '3.4' and sys_platform == 'win32'
+psutil; sys_platform not in ('darwin', 'win32')
 pyasn1
-rsa; sys.platform == "win32"
-secretstorage; sys.platform != "darwin" and sys.platform != "win32"
-https://github.com/AlessandroZ/pypykatz/archive/master.zip # should point to pypykatz if my PR is approved; sys.platform == "win32"
+rsa; sys_platform == 'win32'
+secretstorage; sys_platform not in ('darwin', 'win32')
+https://github.com/AlessandroZ/pypykatz/archive/master.zip; sys_platform == 'win32'  # should point to pypykatz if my PR is approved
