@@ -9,6 +9,8 @@ addons:
     packages: wine
 cache:
   apt: true
+services:
+  - xvfb 
 
 lint_steps: &lint_steps
   before_install:
