@@ -23,7 +23,11 @@ matrix:
       - python -m pip install --upgrade pip
       - pip install pyinstaller -r requirements.txt
       - cp Windows/lazagne.spec Windows/lazagne_built_on_win.spec  # Avoid overwriting the other build
-      script: pyinstaller --noconsole --onefile Windows/lazagne_built_on_win.spec
+      script:
+        - pyinstaller --noconsole --onefile Windows/lazagne_built_on_win.spec
+        - ls -l dist  # See file size (4.8 mb), etc.
+        - sleep 1  # Give PyInstaller a second to finish writing to stdout
+        - dist/lazagne.exe all
     - name: "Build on Python 2.7 on macOS"
       os: osx
       language: shell  # 'language: python' is not yet supported on Travis CI macOS
