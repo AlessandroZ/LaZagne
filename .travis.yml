@@ -19,7 +19,7 @@ matrix:
       language: shell  # 'language: python' is not yet supported on Travis CI macOS
       before_install:
       - python -m pip install --upgrade pip
-      - pip install pyinstaller -r Mac/requirement.txt
+      - pip install pyinstaller -r requirements.txt
       #- pip install enum34 pyasn1 pyinstaller rsa https://github.com/AlessandroZ/pypykatz/archive/master.zip
       script:
        - pyinstaller --onefile Mac/laZagne.py
@@ -44,6 +44,7 @@ before_install:
 - wine c:\\Python27\\python.exe -m pip install pywin32-224-cp27-none-win_amd64.whl
 - wine c:\\Python27\\python.exe -m pip install pyinstaller -r requirements.txt
 - wine c:\\Python27\\Scripts\\pyinstaller --noconsole --onefile Windows/lazagne.spec
+install: true  # do not repeat `pip install -r requirements.txt`
 script:
 - sleep 1  # Give PyInstaller a second to finish writing to stdout
 - wine Z:\\home\\travis\\build\\AlessandroZ\\LaZagne\\dist\\laZagne.exe all
