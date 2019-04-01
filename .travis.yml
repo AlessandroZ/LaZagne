@@ -22,9 +22,8 @@ matrix:
       - choco install python2 vcredist-all  # vcredist adds C:\\Windows\\System32\\msvcp100.dll
       - python -m pip install --upgrade pip
       - pip install pyinstaller -r requirements.txt
-      - cp Windows/lazagne.spec Windows/lazagne_built_on_win.spec  # Avoid overwriting the other build
       script:
-        - pyinstaller --noconsole --onefile Windows/lazagne_built_on_win.spec
+        - pyinstaller --noconsole --onefile Windows/lazagne.spec
         - ls -l dist  # See file size (4.8 mb), etc.
         - sleep 1  # Give PyInstaller a second to finish writing to stdout
         - dist/lazagne.exe all
