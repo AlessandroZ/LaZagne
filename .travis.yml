@@ -14,6 +14,18 @@ matrix:
   include:
     - name: "Test and deploy on Python 2.7"
       python: '2.7'
+    - name: "Build on Python 2.7 on macOS"
+      os: osx
+      language: shell  # 'language: python' is not yet supported on Travis CI macOS
+      before_install:
+      - python -m pip install --upgrade pip
+      - pip install pyinstaller -r Mac/requirement.txt
+      #- pip install enum34 pyasn1 pyinstaller rsa https://github.com/AlessandroZ/pypykatz/archive/master.zip
+      script:
+       - pyinstaller --onefile Mac/laZagne.py
+       - sw_vers  # Mac OS X 10.13.3
+       - ls -l dist  # See file size (4.8 mb), etc.
+       - dist/laZagne all
     - name: "Lint on Python 2.7"
       python: '2.7'
       <<: *lint_steps
