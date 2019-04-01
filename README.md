@@ -19,7 +19,7 @@ Installation
 ----
 Requirements are available here: https://github.com/AlessandroZ/LaZagne/wiki/Requirements
 ```
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 
 Usage
