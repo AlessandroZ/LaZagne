@@ -19,10 +19,7 @@ matrix:
       language: shell  # 'language: python' is not yet supported on Travis CI Windows
       env: PATH=/c/Python27:/c/Python27/Scripts:$PATH
       before_install:
-      - ls -l /c/Windows/System32/msvcp*.dll  # C:\\Windows\\System32\\msvcp100.dll not found
-      # Perhaps one of these could add it... https://chocolatey.org/packages?q=vcredis
-      - choco install python2 vcredist-all
-      - ls -l /c/Windows/System32/msvcp*.dll  # C:\\Windows\\System32\\msvcp100.dll not found
+      - choco install python2 vcredist-all  # vcredist adds C:\\Windows\\System32\\msvcp100.dll
       - python -m pip install --upgrade pip
       - wget https://files.pythonhosted.org/packages/83/cc/2e39fa39b804f7b6e768a37657d75eb14cd917d1f43f376dad9f7c366ccf/pywin32-224-cp27-cp27m-win_amd64.whl --output-document=pywin32-224-cp27-none-win_amd64.whl
       - pip install enum34 pyasn1 pyinstaller pywin32-224-cp27-none-win_amd64.whl rsa
