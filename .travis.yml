@@ -1,6 +1,5 @@
+os: linux
 language: python
-os:
-- linux
 
 lint_steps: &lint_steps
   before_install:
@@ -20,10 +19,8 @@ matrix:
       before_install:
       - python -m pip install --upgrade pip
       - pip install pyinstaller -r requirements.txt
-      #- pip install enum34 pyasn1 pyinstaller rsa https://github.com/AlessandroZ/pypykatz/archive/master.zip
       script:
        - pyinstaller --onefile Mac/laZagne.py
-       - sw_vers  # Mac OS X 10.13.3
        - ls -l dist  # See file size (4.8 mb), etc.
        - dist/laZagne all
     - name: "Lint on Python 2.7"
@@ -44,9 +41,9 @@ before_install:
 - wine c:\\Python27\\python.exe -m pip install pywin32-224-cp27-none-win_amd64.whl
 - wine c:\\Python27\\python.exe -m pip install pyinstaller -r requirements.txt
 - wine c:\\Python27\\Scripts\\pyinstaller --noconsole --onefile Windows/lazagne.spec
+- ls -l dist  # See file size (4.8 mb), etc.
 install: true  # do not repeat `pip install -r requirements.txt`
 script:
-- sleep 1  # Give PyInstaller a second to finish writing to stdout
 - wine Z:\\home\\travis\\build\\AlessandroZ\\LaZagne\\dist\\laZagne.exe all
 before_deploy:
 - tar -zcvf lazagne.tar.gz dist/lazagne.exe

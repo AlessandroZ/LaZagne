@@ -1,3 +1,0 @@
-pyasn1
-psutil
-secretstorage
