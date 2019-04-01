@@ -1,4 +1,0 @@
-pyasn1
-enum34
-rsa
-https://github.com/AlessandroZ/pypykatz/archive/master.zip # should point to pypykatz if my PR is approved
