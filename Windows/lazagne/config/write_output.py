@@ -9,6 +9,7 @@ import sys
 import traceback
 
 from time import gmtime, strftime
+from platform import uname
 
 from lazagne.config.winstructure import string_to_unicode, char_to_int, python_version
 from .constant import constant
@@ -30,23 +31,16 @@ class StandardOutput(object):
 |                          ! BANG BANG !                             |
 |                                                                    |
 |====================================================================|
-'''
+Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}".format(*uname())
+# Python 3.7.3 on Darwin x86_64: i386
 
         self.FILTER = ''.join([(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])
 
     def set_color(self, color='white', intensity=False):
-        c = None
-        if color == 'white':
-            c = 0x07
-        elif color == 'red':
-            c = 0x04
-        elif color == 'green':
-            c = 0x02
-        elif color == 'cyan':
-            c = 0x03
+        c = {'white': 0x07, 'red': 0x04, 'green': 0x02, 'cyan': 0x03}.get(color, None)
 
         if intensity:
-            c = c | 0x08
+            c |= 0x08
 
         ctypes.windll.kernel32.SetConsoleTextAttribute(std_out_handle, c)
 
@@ -91,9 +85,9 @@ class StandardOutput(object):
         if python_version == 3:
             return obj
         try:
-            if isinstance(obj, basestring):
-                if not isinstance(obj, unicode):
-                    obj = unicode(obj, encoding)
+            if isinstance(obj, basestring):       # noqa: F821
+                if not isinstance(obj, unicode):  # noqa: F821
+                    obj = unicode(obj, encoding)  # noqa: F821
         except UnicodeDecodeError:
             return repr(obj)
         return obj
@@ -234,7 +228,7 @@ class StandardOutput(object):
                             passwd = string_to_unicode(pwd[password_category[0].capitalize()])
                             if passwd and passwd not in constant.password_found:
                                 constant.password_found.append(passwd)
-                        except Exception as e:
+                        except Exception:
                             pass
 
                         # Password field is empty
@@ -329,7 +323,7 @@ def parse_json_result_to_buffer(json_string):
                                 for dic in password_by_category:
                                     try:
                                         buffer += u'%s: %s\r\n' % (
-                                        dic, constant.st.try_unicode(password_by_category[dic]))
+                                            dic, constant.st.try_unicode(password_by_category[dic]))
                                     except Exception as e:
                                         print_debug(u'ERROR', u'Error retrieving the password encoding: %s' % e)
                         buffer += u'\r\n'
@@ -344,7 +338,7 @@ def write_in_file(result):
     Write output to file (json and txt files)
     """
     if result:
-        if constant.output == 'json' or constant.output == 'all':
+        if constant.output in ('json', 'all'):
             try:
                 # Human readable Json format
                 pretty_json = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '))
@@ -357,7 +351,7 @@ def write_in_file(result):
             except Exception as e:
                 print_debug('ERROR', u'Error writing the output file: {error}'.format(error=e))
 
-        if constant.output == 'txt' or constant.output == 'all':
+        if constant.output in ('txt', 'all'):
             try:
                 with open(os.path.join(constant.folder_name, constant.file_name_results + '.txt'), 'a+b') as f:
                     a = parse_json_result_to_buffer(result)
