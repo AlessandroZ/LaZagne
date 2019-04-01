@@ -4,18 +4,16 @@ try:
 except ImportError:
     import winreg
 
-import getpass
-import sys
-
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import OpenKey, HKEY_LOCAL_MACHINE
 from lazagne.config.constant import constant
+from lazagne.config.users import get_username_winapi
 
 
 class WindowsPassword(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'windows', 'windows')
-        self.current_user = getpass.getuser().decode(sys.getfilesystemencoding())
+        self.current_user = get_username_winapi()
 
     def is_in_domain(self):
         """

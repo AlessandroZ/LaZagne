@@ -185,7 +185,6 @@ def run_lazagne(category_selected='all', subcategories={}, password=None):
     # ------ Part used for user impersonation ------
 
     constant.is_current_user = True
-    # constant.username = getpass.getuser().decode(sys.getfilesystemencoding())
     constant.username = get_username_winapi()
     if not constant.username.endswith('$'):
         

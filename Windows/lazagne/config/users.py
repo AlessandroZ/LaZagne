@@ -51,8 +51,10 @@ def set_env_variables(user, to_impersonate=False):
         # Get value from environment variables
         for env in constant.profile:
             if os.environ.get(env):
-                # constant.profile[env] = os.environ.get(env)
-                constant.profile[env] = os.environ.get(env).decode(sys.getfilesystemencoding())
+                try:
+                    constant.profile[env] = os.environ.get(env).decode(sys.getfilesystemencoding())
+                except Exception:
+                    constant.profile[env] = os.environ.get(env)
 
     # Replace "drive" and "user" with the correct values
     for env in constant.profile:

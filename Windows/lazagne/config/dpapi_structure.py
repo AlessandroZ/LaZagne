@@ -1,18 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*- 
+import os
 
 from lazagne.config.DPAPI.masterkey import MasterKeyPool
 from lazagne.config.DPAPI.credfile import CredFile
 from lazagne.config.DPAPI.vault import Vault
 from lazagne.config.DPAPI.blob import DPAPIBlob
-
 from lazagne.config.write_output import print_debug
 from lazagne.config.constant import constant
 from lazagne.softwares.windows.lsa_secrets import LSASecrets
-
-import getpass
-import os
-import sys
 
 
 def are_masterkeys_retrieved():

@@ -83,7 +83,7 @@ class MasterKey(DataStruct):
                                       self.rounds)
         self.key = cleartxt[-64:]
         hmacSalt = cleartxt[:16]
-        hmac = cleartxt[16:16 + self.hashAlgo.digestLength]
+        hmac = cleartxt[16:16 + int(self.hashAlgo.digestLength)]
         hmacComputed = crypto.DPAPIHmac(self.hashAlgo, pwdhash, hmacSalt, self.key)
         self.decrypted = hmac == hmacComputed
         if self.decrypted:
@@ -110,6 +110,7 @@ class DomainKey(DataStruct):
     still on progress.
 
     """
+
     def __init__(self, raw=None):
         self.version = None
         self.secretLen = None
@@ -132,6 +133,7 @@ class MasterKeyFile(DataStruct):
     """
     This class represents a masterkey file.
     """
+
     def __init__(self, raw=None):
         self.masterkey = None
         self.backupkey = None
@@ -247,7 +249,7 @@ class MasterKeyPool(object):
         self.keys[mkf.guid]['mkf'].append(mkf)
 
         # Store mkfile object
-        self.mkfiles.append(mkf)    # TO DO000000 => use only self.keys variable
+        self.mkfiles.append(mkf)  # TO DO000000 => use only self.keys variable
 
     def load_directory(self, directory):
         """
@@ -303,10 +305,12 @@ class MasterKeyPool(object):
                 with open(preferred_file, 'rb') as pfile:
                     GUID1 = pfile.read(8)
                     GUID2 = pfile.read(8)
-                
+
                 GUID = struct.unpack("<LHH", GUID1)
                 GUID2 = struct.unpack(">HLH", GUID2)
-                self.preferred_guid = "%s-%s-%s-%s-%s%s" % (format(GUID[0], '08x'), format(GUID[1], '04x'), format(GUID[2], '04x'), format(GUID2[0], '04x'), format(GUID2[1], '08x'), format(GUID2[2], '04x'))
+                self.preferred_guid = "%s-%s-%s-%s-%s%s" % (
+                format(GUID[0], '08x'), format(GUID[1], '04x'), format(GUID[2], '04x'), format(GUID2[0], '04x'),
+                format(GUID2[1], '08x'), format(GUID2[2], '04x'))
                 return self.preferred_guid
 
         return False
@@ -378,11 +382,11 @@ class MasterKeyPool(object):
                             self.nb_mkf_decrypted += 1
 
                             yield True, u'{password} ok for masterkey {masterkey}'.format(password=password,
-                                                                                    masterkey=mkf.guid)
+                                                                                          masterkey=mkf.guid)
 
                         else:
                             yield False, u'{password} not ok for masterkey {masterkey}'.format(password=password,
-                                                                                        masterkey=mkf.guid)
+                                                                                               masterkey=mkf.guid)
 
     def try_credential_hash(self, sid, pwdhash=None):
         """
@@ -416,9 +420,11 @@ class MasterKeyPool(object):
                     if mk.decrypted:
                         mkf.decrypted = True
                         self.nb_mkf_decrypted += 1
-                        yield True, u'{hash} ok for masterkey {masterkey}'.format(hash=codecs.encode(pwdhash, 'hex'), masterkey=mkf.guid)
+                        yield True, u'{hash} ok for masterkey {masterkey}'.format(hash=codecs.encode(pwdhash, 'hex'),
+                                                                                  masterkey=mkf.guid)
                     else:
-                        yield False, u'{hash} not ok for masterkey {masterkey}'.format(hash=codecs.encode(pwdhash, 'hex'), masterkey=mkf.guid)
+                        yield False, u'{hash} not ok for masterkey {masterkey}'.format(
+                            hash=codecs.encode(pwdhash, 'hex'), masterkey=mkf.guid)
 
     def try_system_credential(self):
         """

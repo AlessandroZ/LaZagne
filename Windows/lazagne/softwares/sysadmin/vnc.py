@@ -1,6 +1,5 @@
 # Code based on vncpasswd.py by trinitronx
 # https://github.com/trinitronx/vncpasswd.py
-import d3des as d
 import binascii
 import traceback
 
@@ -9,7 +8,7 @@ try:
 except ImportError:
     import winreg
 
-from lazagne.config.crypto.pyDes import des, ECB
+from . import d3des as d
 from lazagne.config.winstructure import *
 from lazagne.config.module_info import ModuleInfo
 
