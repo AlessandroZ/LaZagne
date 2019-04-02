@@ -26,6 +26,8 @@ from lazagne.config.crypto.rc4 import RC4
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC, AESModeOfOperationECB
 from lazagne.config.crypto.pyDes import triple_des, des, ECB, CBC
 from lazagne.config.winstructure import char_to_int
+from lazagne.config.write_output import encode, decode
+
 
 try:
     xrange
@@ -313,9 +315,9 @@ def pbkdf2(passphrase, salt, keylen, iterations, digest='sha1'):
         derived = hmac.new(passphrase, U, digestmod=lambda: hashlib.new(digest)).digest()
         for r in xrange(iterations - 1):
             actual = hmac.new(passphrase, derived, digestmod=lambda: hashlib.new(digest)).digest()
-            derived = ''.join([chr(char_to_int(x) ^ char_to_int(y)) for (x, y) in zip(derived, actual)])
-        buff += derived
-    return buff[:keylen]
+            derived = encode(''.join([chr(char_to_int(x) ^ char_to_int(y)) for (x, y) in zip(derived, actual)]))
+        buff += decode(derived)
+    return buff[:int(keylen)]
 
 
 def derivePwdHash(pwdhash, sid, digest='sha1'):
@@ -331,9 +333,9 @@ def dataDecrypt(cipherAlgo, hashAlgo, raw, encKey, iv, rounds):
     """
     hname = {"HMAC": "sha1"}.get(hashAlgo.name, hashAlgo.name)
     derived = pbkdf2(encKey, iv, cipherAlgo.keyLength + cipherAlgo.ivLength, rounds, hname)
-    key, iv = derived[:cipherAlgo.keyLength], derived[cipherAlgo.keyLength:]
-    key = key[:cipherAlgo.keyLength]
-    iv = iv[:cipherAlgo.ivLength]
+    key, iv = encode(derived[:int(cipherAlgo.keyLength)]), encode(derived[int(cipherAlgo.keyLength):])
+    key = key[:int(cipherAlgo.keyLength)]
+    iv = iv[:int(cipherAlgo.ivLength)]
 
     if "AES" in cipherAlgo.name:
         cipher = AESModeOfOperationCBC(key, iv=iv)
