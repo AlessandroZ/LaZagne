@@ -369,21 +369,3 @@ def write_in_file(result):
                 )
             except Exception as e:
                 print_debug('ERROR', u'Error writing the output file: {error}'.format(error=e))
-
-
-def encode(string):
-    if sys.version_info > (3, 0):
-        # Python 3
-        return string.encode()
-    else:
-        # Python 2
-        return string
-
-
-def decode(string):
-    if sys.version_info > (3, 0):
-        # Python 3
-        return string.decode()
-    else:
-        # Python 2
-        return string

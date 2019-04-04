@@ -2,31 +2,31 @@
 # -*- coding: utf-8 -*-
 
 #############################################################################
-##                                                                         ##
-## This file is part of DPAPIck                                            ##
-## Windows DPAPI decryption & forensic toolkit                             ##
-##                                                                         ##
-##                                                                         ##
-## Copyright (C) 2010, 2011 Cassidian SAS. All rights reserved.            ##
-## This document is the property of Cassidian SAS, it may not be copied or ##
-## circulated without prior licence                                        ##
-##                                                                         ##
-##  Author: Jean-Michel Picod <jmichel.p@gmail.com>                        ##
-##                                                                         ##
-## This program is distributed under GPLv3 licence (see LICENCE.txt)       ##
-##                                                                         ##
+#                                                                         ##
+# This file is part of DPAPIck                                            ##
+# Windows DPAPI decryption & forensic toolkit                             ##
+#                                                                         ##
+#                                                                         ##
+# Copyright (C) 2010, 2011 Cassidian SAS. All rights reserved.            ##
+# This document is the property of Cassidian SAS, it may not be copied or ##
+# circulated without prior licence                                        ##
+#                                                                         ##
+#  Author: Jean-Michel Picod <jmichel.p@gmail.com>                        ##
+#                                                                         ##
+# This program is distributed under GPLv3 licence (see LICENCE.txt)       ##
+#                                                                         ##
 #############################################################################
 
-import hashlib
-import struct
 import array
+import hashlib
 import hmac
+import struct
+import sys
 
 from lazagne.config.crypto.rc4 import RC4
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC, AESModeOfOperationECB
 from lazagne.config.crypto.pyDes import triple_des, des, ECB, CBC
 from lazagne.config.winstructure import char_to_int
-from lazagne.config.write_output import encode, decode
 
 
 try:
@@ -307,7 +307,7 @@ def pbkdf2(passphrase, salt, keylen, iterations, digest='sha1'):
     Implementation of PBKDF2 that allows specifying digest algorithm.
     Returns the corresponding expanded key which is keylen long.
     """
-    buff = ""
+    buff = b""
     i = 1
     while len(buff) < keylen:
         U = salt + struct.pack("!L", i)
@@ -315,8 +315,14 @@ def pbkdf2(passphrase, salt, keylen, iterations, digest='sha1'):
         derived = hmac.new(passphrase, U, digestmod=lambda: hashlib.new(digest)).digest()
         for r in xrange(iterations - 1):
             actual = hmac.new(passphrase, derived, digestmod=lambda: hashlib.new(digest)).digest()
-            derived = encode(''.join([chr(char_to_int(x) ^ char_to_int(y)) for (x, y) in zip(derived, actual)]))
-        buff += decode(derived)
+            tmp = b''
+            for x, y in zip(derived, actual):
+                if sys.version_info > (3, 0):
+                    tmp += struct.pack(">B", x ^ y)
+                else:
+                    tmp += chr(char_to_int(x) ^ char_to_int(y))
+            derived = tmp
+        buff += derived
     return buff[:int(keylen)]
 
 
@@ -333,7 +339,7 @@ def dataDecrypt(cipherAlgo, hashAlgo, raw, encKey, iv, rounds):
     """
     hname = {"HMAC": "sha1"}.get(hashAlgo.name, hashAlgo.name)
     derived = pbkdf2(encKey, iv, cipherAlgo.keyLength + cipherAlgo.ivLength, rounds, hname)
-    key, iv = encode(derived[:int(cipherAlgo.keyLength)]), encode(derived[int(cipherAlgo.keyLength):])
+    key, iv = derived[:int(cipherAlgo.keyLength)], derived[int(cipherAlgo.keyLength):]
     key = key[:int(cipherAlgo.keyLength)]
     iv = iv[:int(cipherAlgo.ivLength)]
 

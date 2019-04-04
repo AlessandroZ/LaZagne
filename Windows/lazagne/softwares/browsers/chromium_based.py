@@ -67,7 +67,7 @@ class ChromiumBased(ModuleInfo):
             try:
                 credman_passwords = Credman().run()
                 for credman_password in credman_passwords:
-                    if 'Yandex' in credman_password.get('URL', ''):
+                    if b'Yandex' in credman_password.get('URL', b''):
                         if credman_password.get('Password'):
                             yandex_enckey = credman_password.get('Password')
                             self.info('EncKey found: {encKey}'.format(encKey=repr(yandex_enckey)))
