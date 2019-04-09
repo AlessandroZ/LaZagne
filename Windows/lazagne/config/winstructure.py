@@ -4,68 +4,69 @@ from ctypes import *
 import sys
 import os
 
-try: 
+try:
     import _winreg as winreg
 except ImportError:
     import winreg
 
-
-LPTSTR 					= LPSTR
-LPCTSTR 				= LPSTR
-PHANDLE 				= POINTER(HANDLE)
-HANDLE      			= LPVOID
-LPDWORD   				= POINTER(DWORD)
-PVOID					= c_void_p
-INVALID_HANDLE_VALUE 	= c_void_p(-1).value
-NTSTATUS 				= ULONG()
-PWSTR					= c_wchar_p
-LPWSTR 					= c_wchar_p
-PBYTE 					= POINTER(BYTE)
-LPBYTE 					= POINTER(BYTE)
-PSID                    = PVOID
-LONG                    = c_long
-WORD                    = c_uint16
-
+LPTSTR = LPSTR
+LPCTSTR = LPSTR
+PHANDLE = POINTER(HANDLE)
+HANDLE = LPVOID
+LPDWORD = POINTER(DWORD)
+PVOID = c_void_p
+INVALID_HANDLE_VALUE = c_void_p(-1).value
+NTSTATUS = ULONG()
+PWSTR = c_wchar_p
+LPWSTR = c_wchar_p
+PBYTE = POINTER(BYTE)
+LPBYTE = POINTER(BYTE)
+PSID = PVOID
+LONG = c_long
+WORD = c_uint16
 
 # #############################- Constants ##############################
 
 # Credential Manager
-CRYPTPROTECT_UI_FORBIDDEN 			= 0x01
-CRED_TYPE_GENERIC 					= 0x1
-CRED_TYPE_DOMAIN_VISIBLE_PASSWORD	= 0x4
+CRYPTPROTECT_UI_FORBIDDEN = 0x01
+CRED_TYPE_GENERIC = 0x1
+CRED_TYPE_DOMAIN_VISIBLE_PASSWORD = 0x4
 
 # Regedit 
-HKEY_CURRENT_USER 					= -2147483647
-HKEY_LOCAL_MACHINE					= -2147483646
-KEY_READ 							= 131097
-KEY_ENUMERATE_SUB_KEYS				= 8
-KEY_QUERY_VALUE						= 1
+HKEY_CURRENT_USER = -2147483647
+HKEY_LOCAL_MACHINE = -2147483646
+KEY_READ = 131097
+KEY_ENUMERATE_SUB_KEYS = 8
+KEY_QUERY_VALUE = 1
 
 # custom key to read registry (not from msdn)
-ACCESS_READ = KEY_READ | KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE 
+ACCESS_READ = KEY_READ | KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE
 
 # Token manipulation
-PROCESS_QUERY_INFORMATION   = 0x0400
-STANDARD_RIGHTS_REQUIRED    = 0x000F0000
-READ_CONTROL                = 0x00020000
-STANDARD_RIGHTS_READ        = READ_CONTROL
-TOKEN_ASSIGN_PRIMARY        = 0x0001
-TOKEN_DUPLICATE             = 0x0002
-TOKEN_IMPERSONATE           = 0x0004
-TOKEN_QUERY                 = 0x0008
-TOKEN_QUERY_SOURCE          = 0x0010
-TOKEN_ADJUST_PRIVILEGES     = 0x0020
-TOKEN_ADJUST_GROUPS         = 0x0040
-TOKEN_ADJUST_DEFAULT        = 0x0080
-TOKEN_ADJUST_SESSIONID      = 0x0100
-TOKEN_READ                  = (STANDARD_RIGHTS_READ | TOKEN_QUERY)
-tokenprivs                  = (TOKEN_QUERY | TOKEN_READ | TOKEN_IMPERSONATE | TOKEN_QUERY_SOURCE | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY | (131072 | 4))
-TOKEN_ALL_ACCESS            = (STANDARD_RIGHTS_REQUIRED | TOKEN_ASSIGN_PRIMARY |
-        TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_QUERY_SOURCE |
-        TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT |
-        TOKEN_ADJUST_SESSIONID)
+PROCESS_QUERY_INFORMATION = 0x0400
+STANDARD_RIGHTS_REQUIRED = 0x000F0000
+READ_CONTROL = 0x00020000
+STANDARD_RIGHTS_READ = READ_CONTROL
+TOKEN_ASSIGN_PRIMARY = 0x0001
+TOKEN_DUPLICATE = 0x0002
+TOKEN_IMPERSONATE = 0x0004
+TOKEN_QUERY = 0x0008
+TOKEN_QUERY_SOURCE = 0x0010
+TOKEN_ADJUST_PRIVILEGES = 0x0020
+TOKEN_ADJUST_GROUPS = 0x0040
+TOKEN_ADJUST_DEFAULT = 0x0080
+TOKEN_ADJUST_SESSIONID = 0x0100
+TOKEN_READ = (STANDARD_RIGHTS_READ | TOKEN_QUERY)
+tokenprivs = (
+            TOKEN_QUERY | TOKEN_READ | TOKEN_IMPERSONATE | TOKEN_QUERY_SOURCE | TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY | (
+                131072 | 4))
+TOKEN_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED | TOKEN_ASSIGN_PRIMARY |
+                    TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_QUERY_SOURCE |
+                    TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT |
+                    TOKEN_ADJUST_SESSIONID)
 
-SE_DEBUG_PRIVILEGE=20
+SE_DEBUG_PRIVILEGE = 20
+
 
 # ############################# Structures ##############################
 
@@ -76,7 +77,10 @@ class CREDENTIAL_ATTRIBUTE(Structure):
         ('ValueSize', DWORD),
         ('Value', LPBYTE)
     ]
+
+
 PCREDENTIAL_ATTRIBUTE = POINTER(CREDENTIAL_ATTRIBUTE)
+
 
 class CREDENTIAL(Structure):
     _fields_ = [
@@ -94,13 +98,17 @@ class CREDENTIAL(Structure):
         ('TargetAlias', LPSTR),
         ('UserName', LPSTR)
     ]
+
+
 PCREDENTIAL = POINTER(CREDENTIAL)
+
 
 class DATA_BLOB(Structure):
     _fields_ = [
         ('cbData', DWORD),
         ('pbData', POINTER(c_char))
     ]
+
 
 class GUID(Structure):
     _fields_ = [
@@ -109,23 +117,30 @@ class GUID(Structure):
         ("data3", WORD),
         ("data4", BYTE * 6)
     ]
+
+
 LPGUID = POINTER(GUID)
+
 
 class VAULT_CREDENTIAL_ATTRIBUTEW(Structure):
     _fields_ = [
-        ('keyword', 		LPWSTR),
-        ('flags', 			DWORD),
-        ('badAlign', 		DWORD),
-        ('valueSize', 		DWORD),
-        ('value', 			LPBYTE),
+        ('keyword', LPWSTR),
+        ('flags', DWORD),
+        ('badAlign', DWORD),
+        ('valueSize', DWORD),
+        ('value', LPBYTE),
     ]
+
+
 PVAULT_CREDENTIAL_ATTRIBUTEW = POINTER(VAULT_CREDENTIAL_ATTRIBUTEW)
+
 
 class VAULT_BYTE_BUFFER(Structure):
     _fields_ = [
-        ('length', 		DWORD),
-        ('value', 		PBYTE),
+        ('length', DWORD),
+        ('value', PBYTE),
     ]
+
 
 class DATA(Structure):
     _fields_ = [
@@ -135,14 +150,15 @@ class DATA(Structure):
         # ('int', 			LONG),
         # ('unsignedInt', 	ULONG),
         # ('double', 			DOUBLE),
-        ('guid', 			GUID),
-        ('string', 			LPWSTR),
-        ('byteArray', 		VAULT_BYTE_BUFFER),
-        ('protectedArray', 	VAULT_BYTE_BUFFER),
-        ('attribute', 		PVAULT_CREDENTIAL_ATTRIBUTEW),
+        ('guid', GUID),
+        ('string', LPWSTR),
+        ('byteArray', VAULT_BYTE_BUFFER),
+        ('protectedArray', VAULT_BYTE_BUFFER),
+        ('attribute', PVAULT_CREDENTIAL_ATTRIBUTEW),
         # ('Sid', 			PSID)
-        ('sid', 			DWORD)
+        ('sid', DWORD)
     ]
+
 
 class Flag(Structure):
     _fields_ = [
@@ -162,6 +178,7 @@ class Flag(Structure):
         ('0x0d', DWORD)
     ]
 
+
 class VAULT_ITEM_DATA(Structure):
     _fields_ = [
         # ('schemaElementId', 	DWORD),
@@ -170,24 +187,30 @@ class VAULT_ITEM_DATA(Structure):
         # ('type', 				Flag),
         # ('type', 				DWORD * 14),
         # ('unk1', 				DWORD),
-        ('data', 				DATA),
+        ('data', DATA),
     ]
+
+
 PVAULT_ITEM_DATA = POINTER(VAULT_ITEM_DATA)
+
 
 class VAULT_ITEM_WIN8(Structure):
     _fields_ = [
-        ('id', 				GUID),
-        ('pName', 			PWSTR),
-        ('pResource', 		PVAULT_ITEM_DATA),
-        ('pUsername', 		PVAULT_ITEM_DATA),
-        ('pPassword', 		PVAULT_ITEM_DATA),
-        ('unknown0', 		PVAULT_ITEM_DATA),
-        ('LastWritten', 	FILETIME),
-        ('Flags', 			DWORD),
-        ('cbProperties', 	DWORD),
-        ('Properties', 		PVAULT_ITEM_DATA),
+        ('id', GUID),
+        ('pName', PWSTR),
+        ('pResource', PVAULT_ITEM_DATA),
+        ('pUsername', PVAULT_ITEM_DATA),
+        ('pPassword', PVAULT_ITEM_DATA),
+        ('unknown0', PVAULT_ITEM_DATA),
+        ('LastWritten', FILETIME),
+        ('Flags', DWORD),
+        ('cbProperties', DWORD),
+        ('Properties', PVAULT_ITEM_DATA),
     ]
+
+
 PVAULT_ITEM_WIN8 = POINTER(VAULT_ITEM_WIN8)
+
 
 # class VAULT_ITEM_WIN7(Structure):
 # 	_fields_ = [
@@ -210,7 +233,7 @@ class OSVERSIONINFOEXW(Structure):
         ('dwMinorVersion', c_ulong),
         ('dwBuildNumber', c_ulong),
         ('dwPlatformId', c_ulong),
-        ('szCSDVersion', c_wchar*128),
+        ('szCSDVersion', c_wchar * 128),
         ('wServicePackMajor', c_ushort),
         ('wServicePackMinor', c_ushort),
         ('wSuiteMask', c_ushort),
@@ -218,51 +241,66 @@ class OSVERSIONINFOEXW(Structure):
         ('wReserved', c_byte)
     ]
 
+
 class CRYPTPROTECT_PROMPTSTRUCT(Structure):
     _fields_ = [
-        ('cbSize', 			DWORD),
-        ('dwPromptFlags', 	DWORD),
-        ('hwndApp', 		HWND),
-        ('szPrompt', 		LPCWSTR),
+        ('cbSize', DWORD),
+        ('dwPromptFlags', DWORD),
+        ('hwndApp', HWND),
+        ('szPrompt', LPCWSTR),
     ]
+
+
 PCRYPTPROTECT_PROMPTSTRUCT = POINTER(CRYPTPROTECT_PROMPTSTRUCT)
+
 
 class LUID(Structure):
     _fields_ = [
-        ("LowPart",     DWORD),
-        ("HighPart",    LONG),
+        ("LowPart", DWORD),
+        ("HighPart", LONG),
     ]
+
+
 PLUID = POINTER(LUID)
+
 
 class SID_AND_ATTRIBUTES(Structure):
     _fields_ = [
-        ("Sid",         PSID),
-        ("Attributes",  DWORD),
+        ("Sid", PSID),
+        ("Attributes", DWORD),
     ]
+
 
 class TOKEN_USER(Structure):
     _fields_ = [
-        ("User", SID_AND_ATTRIBUTES),]
+        ("User", SID_AND_ATTRIBUTES), ]
+
 
 class LUID_AND_ATTRIBUTES(Structure):
     _fields_ = [
-        ("Luid",        LUID),
-        ("Attributes",  DWORD),
+        ("Luid", LUID),
+        ("Attributes", DWORD),
     ]
+
 
 class TOKEN_PRIVILEGES(Structure):
     _fields_ = [
-        ("PrivilegeCount",  DWORD),
-        ("Privileges",      LUID_AND_ATTRIBUTES),
+        ("PrivilegeCount", DWORD),
+        ("Privileges", LUID_AND_ATTRIBUTES),
     ]
+
+
 PTOKEN_PRIVILEGES = POINTER(TOKEN_PRIVILEGES)
+
 
 class SECURITY_ATTRIBUTES(Structure):
     _fields_ = [
-        ("nLength",  					DWORD),
-        ("lpSecurityDescriptor",      	LPVOID),
-        ("bInheritHandle",      		BOOL),
+        ("nLength", DWORD),
+        ("lpSecurityDescriptor", LPVOID),
+        ("bInheritHandle", BOOL),
     ]
+
+
 PSECURITY_ATTRIBUTES = POINTER(SECURITY_ATTRIBUTES)
 
 
@@ -285,109 +323,111 @@ class SID_NAME_USE(DWORD):
     def __repr__(self):
         return 'SID_NAME_USE(%s)' % self.value
 
+
 PSID_NAME_USE = POINTER(SID_NAME_USE)
 
 # ############################# Load dlls ##############################
 
-advapi32 	= WinDLL('advapi32', 	use_last_error=True)
-crypt32 	= WinDLL('crypt32', 	use_last_error=True)
-kernel32	= WinDLL('kernel32', 	use_last_error=True)
-psapi		= WinDLL('psapi', 		use_last_error=True)
-ntdll       = WinDLL('ntdll',      use_last_error=True)
-
+advapi32 = WinDLL('advapi32', use_last_error=True)
+crypt32 = WinDLL('crypt32', use_last_error=True)
+kernel32 = WinDLL('kernel32', use_last_error=True)
+psapi = WinDLL('psapi', use_last_error=True)
+ntdll = WinDLL('ntdll', use_last_error=True)
 
 # ############################# Functions ##############################
 
-RevertToSelf 					= advapi32.RevertToSelf
-RevertToSelf.restype 			= BOOL
-RevertToSelf.argtypes 			= []
+RevertToSelf = advapi32.RevertToSelf
+RevertToSelf.restype = BOOL
+RevertToSelf.argtypes = []
 
-ImpersonateLoggedOnUser 		= advapi32.ImpersonateLoggedOnUser
-ImpersonateLoggedOnUser.restype	= BOOL
-ImpersonateLoggedOnUser.argtypes= [HANDLE]
+ImpersonateLoggedOnUser = advapi32.ImpersonateLoggedOnUser
+ImpersonateLoggedOnUser.restype = BOOL
+ImpersonateLoggedOnUser.argtypes = [HANDLE]
 
-DuplicateTokenEx 				= advapi32.DuplicateTokenEx
-DuplicateTokenEx.restype 		= BOOL
-DuplicateTokenEx.argtypes 		= [HANDLE, DWORD, PSECURITY_ATTRIBUTES, DWORD, DWORD, POINTER(HANDLE)]
+DuplicateTokenEx = advapi32.DuplicateTokenEx
+DuplicateTokenEx.restype = BOOL
+DuplicateTokenEx.argtypes = [HANDLE, DWORD, PSECURITY_ATTRIBUTES, DWORD, DWORD, POINTER(HANDLE)]
 
-AdjustTokenPrivileges 			= advapi32.AdjustTokenPrivileges
-AdjustTokenPrivileges.restype 	= BOOL
-AdjustTokenPrivileges.argtypes 	= [HANDLE, BOOL, PTOKEN_PRIVILEGES, DWORD, PTOKEN_PRIVILEGES, POINTER(DWORD)]
+AdjustTokenPrivileges = advapi32.AdjustTokenPrivileges
+AdjustTokenPrivileges.restype = BOOL
+AdjustTokenPrivileges.argtypes = [HANDLE, BOOL, PTOKEN_PRIVILEGES, DWORD, PTOKEN_PRIVILEGES, POINTER(DWORD)]
 
-LookupPrivilegeValueA			= advapi32.LookupPrivilegeValueA
-LookupPrivilegeValueA.restype 	= BOOL
-LookupPrivilegeValueA.argtypes 	= [LPCTSTR, LPCTSTR, PLUID]
+LookupPrivilegeValueA = advapi32.LookupPrivilegeValueA
+LookupPrivilegeValueA.restype = BOOL
+LookupPrivilegeValueA.argtypes = [LPCTSTR, LPCTSTR, PLUID]
 
-ConvertSidToStringSid			= advapi32.ConvertSidToStringSidW
-ConvertSidToStringSid.restype 	= BOOL
+ConvertSidToStringSid = advapi32.ConvertSidToStringSidW
+ConvertSidToStringSid.restype = BOOL
 ConvertSidToStringSid.argtypes = [DWORD, POINTER(LPWSTR)]
 
-LookupAccountSid                = advapi32.LookupAccountSidW
-LookupAccountSid.restype        = BOOL
-LookupAccountSid.argtypes       = [LPCWSTR, PSID, LPCWSTR, LPDWORD, LPCWSTR, LPDWORD, PSID_NAME_USE]
+LookupAccountSid = advapi32.LookupAccountSidW
+LookupAccountSid.restype = BOOL
+LookupAccountSid.argtypes = [LPCWSTR, PSID, LPCWSTR, LPDWORD, LPCWSTR, LPDWORD, PSID_NAME_USE]
 
-LocalAlloc 						= kernel32.LocalAlloc
-LocalAlloc.restype 				= HANDLE
-LocalAlloc.argtypes    			= [PSID, DWORD]
+LocalAlloc = kernel32.LocalAlloc
+LocalAlloc.restype = HANDLE
+LocalAlloc.argtypes = [PSID, DWORD]
 
-GetTokenInformation 			= advapi32.GetTokenInformation
-GetTokenInformation.restype     = BOOL
-GetTokenInformation.argtypes    = [HANDLE, DWORD, LPVOID, DWORD, POINTER(DWORD)]
+GetTokenInformation = advapi32.GetTokenInformation
+GetTokenInformation.restype = BOOL
+GetTokenInformation.argtypes = [HANDLE, DWORD, LPVOID, DWORD, POINTER(DWORD)]
 
-OpenProcess             		= kernel32.OpenProcess
-OpenProcess.restype     		= HANDLE
-OpenProcess.argtypes    		= [DWORD, BOOL, DWORD]
+OpenProcess = kernel32.OpenProcess
+OpenProcess.restype = HANDLE
+OpenProcess.argtypes = [DWORD, BOOL, DWORD]
 
-OpenProcessToken             	= advapi32.OpenProcessToken
-OpenProcessToken.restype     	= BOOL
-OpenProcessToken.argtypes    	= [HANDLE, DWORD, POINTER(HANDLE)]
+OpenProcessToken = advapi32.OpenProcessToken
+OpenProcessToken.restype = BOOL
+OpenProcessToken.argtypes = [HANDLE, DWORD, POINTER(HANDLE)]
 
-CloseHandle             		= kernel32.CloseHandle
-CloseHandle.restype     		= BOOL
-CloseHandle.argtypes    		= [HANDLE]
+CloseHandle = kernel32.CloseHandle
+CloseHandle.restype = BOOL
+CloseHandle.argtypes = [HANDLE]
 
-CredEnumerate 					= advapi32.CredEnumerateA
-CredEnumerate.restype 			= BOOL
-CredEnumerate.argtypes 			= [LPCTSTR, DWORD, POINTER(DWORD), POINTER(POINTER(PCREDENTIAL))]
- 
-CredFree 						= advapi32.CredFree
-CredFree.restype 				= PVOID
-CredFree.argtypes 				= [PVOID]
+CredEnumerate = advapi32.CredEnumerateA
+CredEnumerate.restype = BOOL
+CredEnumerate.argtypes = [LPCTSTR, DWORD, POINTER(DWORD), POINTER(POINTER(PCREDENTIAL))]
 
-memcpy 							= cdll.msvcrt.memcpy
-memcpy.restype 					= PVOID
-memcpy.argtypes 				= [PVOID]
+CredFree = advapi32.CredFree
+CredFree.restype = PVOID
+CredFree.argtypes = [PVOID]
 
-LocalFree 						= kernel32.LocalFree
-LocalFree.restype 				= HANDLE
-LocalFree.argtypes				= [HANDLE]
+memcpy = cdll.msvcrt.memcpy
+memcpy.restype = PVOID
+memcpy.argtypes = [PVOID]
 
-CryptUnprotectData 				= crypt32.CryptUnprotectData
-CryptUnprotectData.restype 		= BOOL
-CryptUnprotectData.argtypes		= [POINTER(DATA_BLOB), POINTER(LPWSTR), POINTER(DATA_BLOB), PVOID, PCRYPTPROTECT_PROMPTSTRUCT, DWORD, POINTER(DATA_BLOB)]
+LocalFree = kernel32.LocalFree
+LocalFree.restype = HANDLE
+LocalFree.argtypes = [HANDLE]
+
+CryptUnprotectData = crypt32.CryptUnprotectData
+CryptUnprotectData.restype = BOOL
+CryptUnprotectData.argtypes = [POINTER(DATA_BLOB), POINTER(LPWSTR), POINTER(DATA_BLOB), PVOID,
+                               PCRYPTPROTECT_PROMPTSTRUCT, DWORD, POINTER(DATA_BLOB)]
 
 # these functions do not exist on XP workstations
 try:
-    prototype 						= WINFUNCTYPE(ULONG, DWORD, LPDWORD, POINTER(LPGUID))
-    vaultEnumerateVaults 			= prototype(("VaultEnumerateVaults", windll.vaultcli))
+    prototype = WINFUNCTYPE(ULONG, DWORD, LPDWORD, POINTER(LPGUID))
+    vaultEnumerateVaults = prototype(("VaultEnumerateVaults", windll.vaultcli))
 
-    prototype 						= WINFUNCTYPE(ULONG, LPGUID, DWORD, HANDLE)
-    vaultOpenVault 					= prototype(("VaultOpenVault", windll.vaultcli))
+    prototype = WINFUNCTYPE(ULONG, LPGUID, DWORD, HANDLE)
+    vaultOpenVault = prototype(("VaultOpenVault", windll.vaultcli))
 
-    prototype 						= WINFUNCTYPE(ULONG, HANDLE, DWORD, LPDWORD, POINTER(c_char_p))
-    vaultEnumerateItems 			= prototype(("VaultEnumerateItems", windll.vaultcli))
+    prototype = WINFUNCTYPE(ULONG, HANDLE, DWORD, LPDWORD, POINTER(c_char_p))
+    vaultEnumerateItems = prototype(("VaultEnumerateItems", windll.vaultcli))
 
-    prototype 						= WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN8))
-    vaultGetItem8 					= prototype(("VaultGetItem", windll.vaultcli))
+    prototype = WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD,
+                            POINTER(PVAULT_ITEM_WIN8))
+    vaultGetItem8 = prototype(("VaultGetItem", windll.vaultcli))
 
     # prototype = WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN7))
     # vaultGetItem7 = prototype(("VaultGetItem", windll.vaultcli))
 
-    prototype 						= WINFUNCTYPE(ULONG, LPVOID)
-    vaultFree 						= prototype(("VaultFree", windll.vaultcli))
+    prototype = WINFUNCTYPE(ULONG, LPVOID)
+    vaultFree = prototype(("VaultFree", windll.vaultcli))
 
-    prototype 						= WINFUNCTYPE(ULONG, PHANDLE)
-    vaultCloseVault 				= prototype(("VaultCloseVault", windll.vaultcli))
+    prototype = WINFUNCTYPE(ULONG, PHANDLE)
+    vaultCloseVault = prototype(("VaultCloseVault", windll.vaultcli))
 except Exception:
     pass
 
@@ -404,10 +444,10 @@ def EnumProcesses():
     _EnumProcesses.argtypes = [LPVOID, DWORD, LPDWORD]
     _EnumProcesses.restype = bool
 
-    size            = 0x1000
+    size = 0x1000
     cbBytesReturned = DWORD()
-    unit            = sizeof(DWORD)
-    dwOwnPid        = os.getpid()
+    unit = sizeof(DWORD)
+    dwOwnPid = os.getpid()
     while 1:
         ProcessIds = (DWORD * (size // unit))()
         cbBytesReturned.value = size
@@ -430,28 +470,30 @@ def LookupAccountSidW(lpSystemName, lpSid):
     # From https://github.com/MarioVilas/winappdbg/blob/master/winappdbg/win32/advapi32.py
     _LookupAccountSidW = advapi32.LookupAccountSidW
     _LookupAccountSidW.argtypes = [LPSTR, PSID, LPWSTR, LPDWORD, LPWSTR, LPDWORD, LPDWORD]
-    _LookupAccountSidW.restype  = BOOL
+    _LookupAccountSidW.restype = BOOL
 
     ERROR_INSUFFICIENT_BUFFER = 122
     cchName = DWORD(0)
     cchReferencedDomainName = DWORD(0)
     peUse = DWORD(0)
-    success = _LookupAccountSidW(lpSystemName, lpSid, None, byref(cchName), None, byref(cchReferencedDomainName), byref(peUse))
+    success = _LookupAccountSidW(lpSystemName, lpSid, None, byref(cchName), None, byref(cchReferencedDomainName),
+                                 byref(peUse))
     error = GetLastError()
     if not success or error == ERROR_INSUFFICIENT_BUFFER:
         lpName = create_unicode_buffer(u'', cchName.value + 1)
         lpReferencedDomainName = create_unicode_buffer(u'', cchReferencedDomainName.value + 1)
-        success = _LookupAccountSidW(lpSystemName, lpSid, lpName, byref(cchName), lpReferencedDomainName, byref(cchReferencedDomainName), byref(peUse))
+        success = _LookupAccountSidW(lpSystemName, lpSid, lpName, byref(cchName), lpReferencedDomainName,
+                                     byref(cchReferencedDomainName), byref(peUse))
         if success:
             return lpName.value, lpReferencedDomainName.value, peUse.value
 
     return None, None, None
 
 
-def QueryFullProcessImageNameW(hProcess, dwFlags = 0):
+def QueryFullProcessImageNameW(hProcess, dwFlags=0):
     _QueryFullProcessImageNameW = kernel32.QueryFullProcessImageNameW
     _QueryFullProcessImageNameW.argtypes = [HANDLE, DWORD, LPWSTR, POINTER(DWORD)]
-    _QueryFullProcessImageNameW.restype  = bool
+    _QueryFullProcessImageNameW.restype = bool
     ERROR_INSUFFICIENT_BUFFER = 122
 
     dwSize = MAX_PATH
@@ -478,27 +520,27 @@ def RtlAdjustPrivilege(privilege_id):
     """
     _RtlAdjustPrivilege = ntdll.RtlAdjustPrivilege
     _RtlAdjustPrivilege.argtypes = [ULONG, BOOL, BOOL, POINTER(BOOL)]
-    _RtlAdjustPrivilege.restype  = LONG
+    _RtlAdjustPrivilege.restype = LONG
 
     Enable = True
-    CurrentThread = False #enable for whole process
+    CurrentThread = False  # enable for whole process
     Enabled = BOOL()
-    
+
     status = _RtlAdjustPrivilege(privilege_id, Enable, CurrentThread, byref(Enabled))
     if status != 0:
         return False
-    
+
     return True
 
 
 def getData(blobOut):
-        cbData = int(blobOut.cbData)
-        pbData = blobOut.pbData
-        buffer = c_buffer(cbData)
+    cbData = int(blobOut.cbData)
+    pbData = blobOut.pbData
+    buffer = c_buffer(cbData)
 
-        memcpy(buffer, pbData, cbData)
-        LocalFree(pbData);
-        return buffer.raw
+    memcpy(buffer, pbData, cbData)
+    LocalFree(pbData);
+    return buffer.raw
 
 
 def get_full_path_from_pid(pid):
@@ -526,13 +568,13 @@ def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, use
         cipherText = str(cipherText)
 
     if is_current_user:
-        bufferIn 	= c_buffer(cipherText, len(cipherText))  
-        blobIn 		= DATA_BLOB(len(cipherText), bufferIn)
-        blobOut 	= DATA_BLOB()
+        bufferIn = c_buffer(cipherText, len(cipherText))
+        blobIn = DATA_BLOB(len(cipherText), bufferIn)
+        blobOut = DATA_BLOB()
 
         if entropy:
-            bufferEntropy 	= c_buffer(entropy, len(entropy))
-            blobEntropy 	= DATA_BLOB(len(entropy), bufferEntropy)
+            bufferEntropy = c_buffer(entropy, len(entropy))
+            blobEntropy = DATA_BLOB(len(entropy), bufferEntropy)
 
             if CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, 0, byref(blobOut)):
                 return getData(blobOut).decode("utf-8")
@@ -549,7 +591,7 @@ def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, use
 def get_os_version():
     """
     return major anr minor version
-    https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx 
+    https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx
     """
     os_version = OSVERSIONINFOEXW()
     os_version.dwOSVersionInfoSize = sizeof(os_version)
@@ -578,6 +620,7 @@ def OpenKey(key, path, index=0, access=KEY_READ):
     else:
         return winreg.OpenKey(key, path, index, access)
 
+
 isx64 = isx64machine()
 
 
@@ -588,11 +631,25 @@ def string_to_unicode(string):
         return string  # String on python 3 are already unicode
 
 
-def char_to_int(byte):
+def chr_or_byte(integer):
     if python_version == 2:
-        return ord(byte)
+        return chr(integer)
     else:
-        return byte  # Python 3
+        return bytes([integer])  # Python 3
+
+
+def int_or_bytes(integer):
+    if python_version == 2:
+        return integer
+    else:
+        return bytes([integer])  # Python 3
+
+
+def char_to_int(string):
+    if python_version == 2 or isinstance(string, str):
+        return ord(string)
+    else:
+        return string  # Python 3
 
 
 def convert_to_byte(string):
@@ -600,4 +657,3 @@ def convert_to_byte(string):
         return string
     else:
         return string.encode()  # Python 3
-
