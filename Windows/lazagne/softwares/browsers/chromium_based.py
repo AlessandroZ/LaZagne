@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*- 
-import ast
 import base64
 import json
 import os
@@ -90,7 +89,11 @@ class ChromiumBased(ModuleInfo):
                 # Yandex passwords use a masterkey stored on windows credential manager
                 # https://yandex.com/support/browser-passwords-crypto/without-master.html
                 if is_yandex and yandex_enckey:
-                    p = ast.literal_eval(str(password))
+                    try:
+                        p = json.loads(str(password))
+                    except Exception:
+                        p = json.loads(password)
+
                     password = base64.b64decode(p['p'])
 
                     # Passwords are stored using AES-256-GCM algorithm
@@ -101,7 +104,8 @@ class ChromiumBased(ModuleInfo):
                     # Failed...
                 else:
                     # Decrypt the Password
-                    password = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+                    password = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user,
+                                                       user_dpapi=constant.user_dpapi)
 
                 if not url and not login and not password:
                     continue
