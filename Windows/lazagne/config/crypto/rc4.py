@@ -1,7 +1,7 @@
 # Thanks to g2jun for his RC4-Python project
 # Code from https://github.com/g2jun/RC4-Python
 
-from lazagne.config.winstructure import char_to_int
+from lazagne.config.winstructure import char_to_int, chr_or_byte
 
 
 class RC4(object):
@@ -20,10 +20,9 @@ class RC4(object):
         return byte_list
 
     def bytes_to_text(self, byte_list):
-        s = ''
+        s = b''
         for byte in byte_list:
-            s += chr(byte) # chr should not work with Python 3 (will be fixed)
-        
+            s += chr_or_byte(byte)
         return s
 
     def encrypt(self, data):
@@ -38,7 +37,7 @@ class RC4(object):
 
         key_len = len(key_bytes)
         plain_len = len(plain_bytes)
-        S = range(256)
+        S = list(range(256))
 
         j = 0
         for i in range(256):
@@ -54,5 +53,5 @@ class RC4(object):
             k = S[(S[i] + S[j]) % 256]
             keystream_list.append(k)
             cipher_list.append(k ^ plain_bytes[m])
-        
+
         return keystream_list, cipher_list
