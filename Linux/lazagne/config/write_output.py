@@ -8,6 +8,7 @@ import sys
 import os
 
 from lazagne.config.constant import constant
+from platform import uname
 from time import gmtime, strftime
 
 
@@ -31,20 +32,15 @@ class StandardOutput():
 |                          ! BANG BANG !                             |
 |                                                                    |
 |====================================================================|
-'''
+Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}\n".format(*uname())
+# Python 3.7.3 on Darwin x86_64: i386
 
     def set_color(self, color=None):
         b = Bcolors()
-        if color == 'white':
-            sys.stdout.write(b.TITLE)
-        elif color == 'red':
-            sys.stdout.write(b.FAIL)
-        elif color == 'green':
-            sys.stdout.write(b.OK)
-        elif color == 'cyan':
-            sys.stdout.write(b.WARNING)
-        else:
-            sys.stdout.write(b.ENDC)
+        sys.stdout.write({'white': b.TITLE,
+                          'red': b.FAIL,
+                          'green': b.OK,
+                          'cyan': b.WARNING}.get(color, b.ENDC))
 
     # Print banner
     def first_title(self):
@@ -102,9 +98,9 @@ class StandardOutput():
 
     def try_unicode(self, obj, encoding='utf-8'):
         try:
-            if isinstance(obj, basestring):
-                if not isinstance(obj, unicode):
-                    obj = unicode(obj, encoding)
+            if isinstance(obj, basestring):       # noqa: F821
+                if not isinstance(obj, unicode):  # noqa: F821
+                    obj = unicode(obj, encoding)  # noqa: F821
         except Exception:
             pass
         return obj
@@ -136,7 +132,7 @@ class StandardOutput():
             constant.finalResults["Passwords"].append([{"Category": category}, values])
 
     def print_output(self, software_name, pwd_found):
-        
+
         if pwd_found:
             # If the debug logging level is not apply => print the title
             if not logging.getLogger().isEnabledFor(logging.INFO):
@@ -267,7 +263,7 @@ def parse_json_result_to_buffer(json_string, color=False):
                                     buffer += '%s: %s\r\n' % (dic, password_by_category[dic].encode('utf-8'))
                                 except Exception:
                                     buffer += '%s: %s\r\n' % (
-                                    dic, password_by_category[dic].encode(encoding='utf-8', errors='replace'))
+                                        dic, password_by_category[dic].encode(encoding='utf-8', errors='replace'))
                         buffer += '\r\n'
 
     except Exception as e:
@@ -280,7 +276,7 @@ def write_in_file(result):
     """
     Write output to file (json and txt files)
     """
-    if constant.output == 'json' or constant.output == 'all':
+    if constant.output in ('json', 'all'):
         try:
             # Human readable Json format
             pretty_json = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '))
@@ -293,7 +289,7 @@ def write_in_file(result):
         except Exception as e:
             print_debug('ERROR', u'Error writing the output file: {error}'.format(error=e))
 
-    if constant.output == 'txt' or constant.output == 'all':
+    if constant.output in ('txt', 'all'):
         try:
             with open(os.path.join(constant.folder_name, constant.file_name_results + '.txt'), 'a+b') as f:
                 a = parse_json_result_to_buffer(result)
