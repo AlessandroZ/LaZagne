@@ -252,7 +252,8 @@ def dump_hashes(sysaddr, samaddr):
         if not nthash:
             nthash = empty_nt
         results.append(
-            "%s:%d:%s:%s:::" % (get_user_name(user), int(user.Name, 16), codecs.encode(lmhash, 'hex').decode(), codecs.encode(nthash, 'hex').decode()))
+            "%s:%d:%s:%s:::" % (get_user_name(user), int(user.Name, 16), codecs.encode(lmhash, 'hex').decode(),
+                                codecs.encode(nthash, 'hex').decode()))
     return results
 
 

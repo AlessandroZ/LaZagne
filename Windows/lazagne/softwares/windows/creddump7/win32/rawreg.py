@@ -19,7 +19,7 @@
 @contact:      bdolangavitt@wesleyan.edu
 """
 
-from ..newobj import Obj,Pointer
+from ..newobj import Obj, Pointer
 from struct import unpack
 
 ROOT_INDEX = 0x20
@@ -33,7 +33,7 @@ def get_root(address_space):
 
 
 def open_key(root, key):
-    if key == []:
+    if not key:
         return root
     
     keyname = key.pop(0)
@@ -44,9 +44,12 @@ def open_key(root, key):
     return None
 
 
-def subkeys(key,stable=True):
-    if stable: k = 0
-    else: k = 1
+def subkeys(key, stable=True):
+    if stable:
+        k = 0
+    else:
+        k = 1
+
     sk = (key.SubKeyLists[k]/["pointer", ["_CM_KEY_INDEX"]]).value
     sub_list = []
     if (sk.Signature.value == LH_SIG or
@@ -55,7 +58,7 @@ def subkeys(key,stable=True):
     elif sk.Signature.value == RI_SIG:
         lfs = []
         for i in range(sk.Count.value):
-            off,tp = sk.get_offset(['List', i])
+            off, tp = sk.get_offset(['List', i])
             lfs.append(Pointer("pointer", sk.address+off, sk.space,
                 ["_CM_KEY_INDEX"]))
         for lf in lfs:

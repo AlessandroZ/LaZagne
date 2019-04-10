@@ -38,19 +38,19 @@ builtin_types = {
     'long long': (8, 'q'),
     'unsigned long long': (8, 'Q'),
     'pointer': (4, 'I'),
-    }
+}
 
 
 def obj_size(types, objname):
     if objname not in types:
-        raise Exception('Invalid type %s not in types' % (objname))
+        raise Exception('Invalid type %s not in types' % objname)
 
     return types[objname][0]
 
 
 def builtin_size(builtin):
     if builtin not in builtin_types:
-        raise Exception('Invalid built-in type %s' % (builtin))
+        raise Exception('Invalid built-in type %s' % builtin)
 
     return builtin_types[builtin][0]
 
@@ -61,7 +61,7 @@ def read_value(addr_space, value_type, vaddr):
     """
 
     if value_type not in builtin_types:
-        raise Exception('Invalid built-in type %s' % (value_type))
+        raise Exception('Invalid built-in type %s' % value_type)
 
     type_unpack_char = builtin_types[value_type][1]
     type_size = builtin_types[value_type][0]

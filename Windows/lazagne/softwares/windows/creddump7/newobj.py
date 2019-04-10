@@ -105,11 +105,19 @@ class Obj(object):
             return Pointer(tp, self.address+off, self.space, ptp)
         else:
             return Obj(tp, self.address+off, self.space)
-    
-    def __div__(self, other):
-        if isinstance(other,tuple) or isinstance(other,list):
+
+    def __truediv__(self, other):
+        if isinstance(other, (tuple, list)):
             return Pointer(other[0], self.address, self.space, other[1])
-        elif isinstance(other,str):
+        elif isinstance(other, str):
+            return Obj(other, self.address, self.space)
+        else:
+            raise ValueError("Must provide a type name as string for casting")
+
+    def __div__(self, other):
+        if isinstance(other, tuple) or isinstance(other, list):
+            return Pointer(other[0], self.address, self.space, other[1])
+        elif isinstance(other, str):
             return Obj(other, self.address, self.space)
         else:
             raise ValueError("Must provide a type name as string for casting")
@@ -118,7 +126,7 @@ class Obj(object):
         """Return a list of this object's members, sorted by offset."""
 
         # Could also just return the list
-        membs = [ (k, v[0]) for k,v in types[self.name][1].items()]
+        membs = [(k, v[0]) for k,v in types[self.name][1].items()]
         membs.sort(key=itemgetter(1))
         return map(itemgetter(0),membs) + self.extra_members
 
@@ -183,11 +191,13 @@ class Primitive(Obj):
         return obj
 
     def __init__(self, name, address, space):
-        super(Primitive,self).__init__(name, address, space)
+        super(Primitive, self).__init__(name, address, space)
         length, fmt = builtin_types[name]
-        data = space.read(address,length)
-        if not data: self.value = None
-        else: self.value = unpack(fmt,data)[0]
+        data = space.read(address, length)
+        if not data:
+            self.value = None
+        else:
+            self.value = unpack(fmt,data)[0]
     
     def __repr__(self):
         return repr(self.value)
@@ -210,7 +220,7 @@ class Pointer(Obj):
         return obj
 
     def __init__(self, name, address, space, ptr_type):
-        super(Pointer,self).__init__(name, address, space)
+        super(Pointer, self).__init__(name, address, space)
         ptr_address = read_value(space, name, address)
         if ptr_type[0] == 'pointer':
             self.value = Pointer(ptr_type[0], ptr_address, self.space, ptr_type[1])
@@ -223,7 +233,7 @@ class Pointer(Obj):
         # find an attribute via our superclass, just dereference the pointer
         # and return the attribute in the pointed-to type.
         try:
-            return super(Pointer,self).__getattribute__(attr)
+            return super(Pointer, self).__getattribute__(attr)
         except AttributeError:
             return getattr(self.value, attr)
     
@@ -262,8 +272,7 @@ class _CM_KEY_NODE(Obj):
         return obj
 
     def getName(self):
-        return read_string(self.space, types, ['_CM_KEY_NODE', 'Name'],
-            self.address, self.NameLength.value)
+        return read_string(self.space, types, ['_CM_KEY_NODE', 'Name'], self.address, self.NameLength.value)
     Name = property(fget=getName)
 
 
@@ -273,8 +282,7 @@ class _CM_KEY_VALUE(Obj):
         return obj
 
     def getName(self):
-        return read_string(self.space, types, ['_CM_KEY_VALUE', 'Name'],
-            self.address, self.NameLength.value)
+        return read_string(self.space, types, ['_CM_KEY_VALUE', 'Name'], self.address, self.NameLength.value)
     Name = property(fget=getName)
 
 
@@ -285,11 +293,9 @@ class _CHILD_LIST(Obj):
 
     def getList(self):
         lst = []
-        list_address = read_obj(self.space, types,
-            ['_CHILD_LIST', 'List'], self.address)
+        list_address = read_obj(self.space, types, ['_CHILD_LIST', 'List'], self.address)
         for i in range(self.Count.value):
-            lst.append(Pointer("pointer", list_address+(i*4), self.space,
-                ["_CM_KEY_VALUE"]))
+            lst.append(Pointer("pointer", list_address+(i*4), self.space, ["_CM_KEY_VALUE"]))
         return lst
     List = property(fget=getList)
 
@@ -303,8 +309,7 @@ class _CM_KEY_INDEX(Obj):
         lst = []
         for i in range(self.Count.value):
             # we are ignoring the hash value here
-            off,tp = get_obj_offset(types, ['_CM_KEY_INDEX', 'List', i*2])
-            lst.append(Pointer("pointer", self.address+off, self.space,
-                ["_CM_KEY_NODE"]))
+            off, tp = get_obj_offset(types, ['_CM_KEY_INDEX', 'List', i*2])
+            lst.append(Pointer("pointer", self.address+off, self.space, ["_CM_KEY_NODE"]))
         return lst
     List = property(fget=getList)

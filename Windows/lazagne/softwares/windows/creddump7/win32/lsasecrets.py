@@ -46,8 +46,7 @@ def get_lsa_key(secaddr, bootkey, vista):
     if not enc_reg_value:
         return None
 
-    obf_lsa_key = secaddr.read(enc_reg_value.Data.value,
-            enc_reg_value.DataLength.value)
+    obf_lsa_key = secaddr.read(enc_reg_value.Data.value, enc_reg_value.DataLength.value)
     if not obf_lsa_key:
         return None
 
@@ -74,7 +73,7 @@ def decrypt_secret(secret, key):
     Note that key can be longer than 7 bytes."""
     decrypted_data = ''
     j = 0   # key index
-    for i in range(0,len(secret),8):
+    for i in range(0, len(secret), 8):
         enc_block = secret[i:i+8]
         block_key = key[j:j+7]
         des_key = str_to_key(block_key)
@@ -82,7 +81,7 @@ def decrypt_secret(secret, key):
 
         try:
             decrypted_data += crypter.decrypt(enc_block)
-        except:
+        except Exception:
             continue
 
         j += 7
@@ -125,8 +124,7 @@ def get_secret_by_name(secaddr, name, lsakey, vista):
     if not enc_secret_value:
         return None
 
-    enc_secret = secaddr.read(enc_secret_value.Data.value,
-            enc_secret_value.DataLength.value)
+    enc_secret = secaddr.read(enc_secret_value.Data.value, enc_secret_value.DataLength.value)
     if not enc_secret:
         return None
 
@@ -160,8 +158,7 @@ def get_secrets(sysaddr, secaddr, vista):
         if not enc_secret_value:
             continue
 
-        enc_secret = secaddr.read(enc_secret_value.Data.value,
-                enc_secret_value.DataLength.value)
+        enc_secret = secaddr.read(enc_secret_value.Data.value, enc_secret_value.DataLength.value)
         if not enc_secret:
             continue
 
