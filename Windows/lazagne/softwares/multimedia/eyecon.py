@@ -1,11 +1,14 @@
+# -*- coding: utf-8 -*-
+import codecs
+
 try:
     import _winreg as winreg
 except ImportError:
     import winreg
 
-from lazagne.config.write_output import print_debug
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import *
+
 
 class EyeCON(ModuleInfo):
     """
@@ -19,9 +22,9 @@ class EyeCON(ModuleInfo):
              115, 38, 78, 68, 76, 76, 95, 72, 95, 95, 0 ]
         ModuleInfo.__init__(self, name='EyeCon', category='multimedia')
 
-
     def deobfuscate(self, ciphered_str):
-        return ''.join([chr(ord(c) ^ k) for c,k in zip(ciphered_str.decode('hex'), self.hex_key)])
+        # Should not work with python 3: need test
+        return ''.join([chr(ord(c) ^ k) for c,k in zip(codecs.decode(ciphered_str, 'hex'), self.hex_key)])
 
     def get_db_hosts(self):
         hosts =[]
@@ -35,12 +38,13 @@ class EyeCON(ModuleInfo):
         )
         for path in paths:
             try:
-                hkey = OpenKey(path[1],path[2])
+                hkey = OpenKey(path[1], path[2])
                 reg_key = winreg.QueryValueEx(hkey, path[3])[0]
-                if reg_key != '': hosts += [reg_key]
+                if reg_key != '':
+                    hosts += [reg_key]
             except Exception:
                 # skipping if value doesn't exist
-                #self.debug(u'Problems with key:: {reg_key}'.format(reg_key=path[1]+path[2]))
+                # self.debug(u'Problems with key:: {reg_key}'.format(reg_key=path[1]+path[2]))
                 pass
         return hosts
 
@@ -48,11 +52,13 @@ class EyeCON(ModuleInfo):
         found_passwords = []
         password_path = (
             {
-                'app':'EyeCON', 'reg_root': HKEY_LOCAL_MACHINE, 'reg_path': 'SOFTWARE\\WOW6432Node\\eyevis\\eyetool\\Default',
+                'app': 'EyeCON', 'reg_root': HKEY_LOCAL_MACHINE,
+                'reg_path': 'SOFTWARE\\WOW6432Node\\eyevis\\eyetool\\Default',
                 'user_key': 'registered', 'password_key': 'connection'
             },
             {
-                'app':'EyeCON', 'reg_root': HKEY_LOCAL_MACHINE, 'reg_path': 'SOFTWARE\\eyevis\\eyetool\\Default',
+                'app': 'EyeCON', 'reg_root': HKEY_LOCAL_MACHINE,
+                'reg_path': 'SOFTWARE\\eyevis\\eyetool\\Default',
                 'user_key': 'registered', 'password_key': 'connection'
             },
         )
@@ -61,30 +67,29 @@ class EyeCON(ModuleInfo):
             values = {}
             try:
                 try:
-                    hkey = OpenKey(path['reg_root'],path['reg_path'])
+                    hkey = OpenKey(path['reg_root'], path['reg_path'])
                     reg_user_key = winreg.QueryValueEx(hkey, path['user_key'])[0]
                     reg_password_key = winreg.QueryValueEx(hkey, path['password_key'])[0]
                 except Exception:
-                    self.debug(u'Problems with key:: {reg_key}'.format(reg_key=path['reg_root']+path['reg_path']))
+                    self.debug(u'Problems with key:: {reg_key}'.format(reg_key=path['reg_root'] + path['reg_path']))
                     continue
-
 
                 try:
                     user = self.deobfuscate(reg_user_key)
                 except Exception:
                     self.info(u'Problems with deobfuscate user : {reg_key}'.format(reg_key=path['reg_path']))
                     continue
+
                 try:
                     password = self.deobfuscate(reg_password_key)
                 except Exception:
                     self.info(u'Problems with deobfuscate password : {reg_key}'.format(reg_key=path['reg_path']))
                     continue
 
-                found_passwords.append({'username' : user, 'password' : password})
+                found_passwords.append({'username': user, 'password': password})
             except Exception:
                 pass
         return found_passwords
-
 
     def run(self):
         hosts = self.get_db_hosts()

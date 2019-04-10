@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*- 
+import codecs
 import os
 
 from lazagne.config.DPAPI.masterkey import MasterKeyPool
@@ -47,6 +48,7 @@ class UserDpapi(object):
     """
     User class for DPAPI functions
     """
+
     def __init__(self, password=None, pwdhash=None):
         self.sid = None
         self.umkp = None
@@ -54,7 +56,7 @@ class UserDpapi(object):
 
         protect_folder = os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Protect')
         credhist_file = os.path.join(constant.profile['APPDATA'], u'Microsoft', u'Protect', u'CREDHIST')
-        
+
         if os.path.exists(protect_folder):
             for folder in os.listdir(protect_folder):
                 if folder.startswith('S-'):
@@ -69,7 +71,7 @@ class UserDpapi(object):
                     self.umkp.add_credhist_file(sid=self.sid, credfile=credhist_file)
 
                     if password:
-                        for ok,  r in self.umkp.try_credential(sid=self.sid, password=password):
+                        for ok, r in self.umkp.try_credential(sid=self.sid, password=password):
                             if ok:
                                 self.unlocked = True
                                 print_debug('OK', r)
@@ -77,7 +79,7 @@ class UserDpapi(object):
                                 print_debug('ERROR', r)
 
                     elif pwdhash:
-                        for ok, r in self.umkp.try_credential_hash(self.sid, pwdhash=pwdhash.decode('hex')):
+                        for ok, r in self.umkp.try_credential_hash(self.sid, pwdhash=codecs.decode(pwdhash, 'hex')):
                             if ok:
                                 self.unlocked = True
                                 print_debug('OK', r)
@@ -152,6 +154,7 @@ class SystemDpapi(object):
     System class for DPAPI functions
     Need to have high privilege
     """
+
     def __init__(self):
         self.smkp = None
         self.unlocked = False
@@ -165,7 +168,7 @@ class SystemDpapi(object):
             if os.path.exists(masterkeydir):
                 self.smkp = MasterKeyPool()
                 self.smkp.load_directory(masterkeydir)
-                self.smkp.add_system_credential(constant.lsa_secrets['DPAPI_SYSTEM'])
+                self.smkp.add_system_credential(constant.lsa_secrets[b'DPAPI_SYSTEM'])
                 for ok, r in self.smkp.try_system_credential():
                     if ok:
                         print_debug('OK', r)

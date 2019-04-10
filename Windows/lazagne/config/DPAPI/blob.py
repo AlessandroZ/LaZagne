@@ -6,6 +6,7 @@ Code based from these two awesome projects:
 - DPAPICK 	: https://bitbucket.org/jmichel/dpapick
 - DPAPILAB 	: https://github.com/dfirfpi/dpapilab
 """
+import codecs
 
 from .eater import DataStruct
 from . import crypto
@@ -55,7 +56,7 @@ class DPAPIBlob(DataStruct):
         """
         self.version = data.eat("L")
         self.provider = "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x" % data.eat("L2H8B")
-        
+
         # For HMAC computation
         blobStart = data.ofs
 
@@ -89,8 +90,10 @@ class DPAPIBlob(DataStruct):
                 key = crypto.CryptDeriveKey(sessionkey, self.cipherAlgo, self.hashAlgo)
 
                 if "AES" in self.cipherAlgo.name:
-                    cipher = AESModeOfOperationCBC(key[:self.cipherAlgo.keyLength], iv="\x00" * self.cipherAlgo.ivLength)
-                    self.cleartext = b"".join([cipher.decrypt(self.cipherText[i:i + AES_BLOCK_SIZE]) for i in range(0, len(self.cipherText), AES_BLOCK_SIZE)])
+                    cipher = AESModeOfOperationCBC(key[:self.cipherAlgo.keyLength],
+                                                   iv="\x00" * self.cipherAlgo.ivLength)
+                    self.cleartext = b"".join([cipher.decrypt(self.cipherText[i:i + AES_BLOCK_SIZE]) for i in
+                                               range(0, len(self.cipherText), AES_BLOCK_SIZE)])
                 else:
                     cipher = self.cipherAlgo.module.new(key, CBC, "\x00" * self.cipherAlgo.ivLength)
                     self.cleartext = cipher.decrypt(self.cipherText)
@@ -102,7 +105,7 @@ class DPAPIBlob(DataStruct):
                 # check against provided HMAC
                 self.signComputed = algo(masterkey, self.hmac, self.hashAlgo, entropy=entropy, verifBlob=self.blob)
                 self.decrypted = self.signComputed == self.sign
-                
+
                 if self.decrypted:
                     return True
             except Exception:
@@ -122,7 +125,7 @@ class DPAPIBlob(DataStruct):
 
         entropy = None
         if entropy_hex:
-            entropy = entropy_hex.decode('hex')
+            entropy = codecs.decode(entropy_hex, 'hex')
 
         for mk in mks:
             if mk.decrypted:
