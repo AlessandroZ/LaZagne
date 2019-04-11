@@ -370,7 +370,7 @@ class MasterKeyPool(object):
 
                                     if mk.decrypted:
                                         yield u'masterkey {masterkey} decrypted using credhists key'.format(
-                                            masterkey=mk.guid)
+                                            masterkey=mk.guid.decode())
                                         self.credhists[sid].valid = True
 
                             if mk.decrypted:
@@ -380,11 +380,11 @@ class MasterKeyPool(object):
                                 self.nb_mkf_decrypted += 1
 
                                 yield True, u'{password} ok for masterkey {masterkey}'.format(password=password,
-                                                                                              masterkey=mkf.guid)
+                                                                                              masterkey=mkf.guid.decode())
 
                             else:
                                 yield False, u'{password} not ok for masterkey {masterkey}'.format(password=password,
-                                                                                                   masterkey=mkf.guid)
+                                                                                                   masterkey=mkf.guid.decode())
 
     def try_credential_hash(self, sid, pwdhash=None):
         """
@@ -416,11 +416,11 @@ class MasterKeyPool(object):
                         if mk.decrypted:
                             mkf.decrypted = True
                             self.nb_mkf_decrypted += 1
-                            yield True, u'{hash} ok for masterkey {masterkey}'.format(hash=codecs.encode(pwdhash, 'hex'),
-                                                                                      masterkey=mkf.guid)
+                            yield True, u'{hash} ok for masterkey {masterkey}'.format(hash=codecs.encode(pwdhash, 'hex').decode(),
+                                                                                      masterkey=mkf.guid.decode())
                         else:
                             yield False, u'{hash} not ok for masterkey {masterkey}'.format(
-                                hash=codecs.encode(pwdhash, 'hex'), masterkey=mkf.guid)
+                                hash=codecs.encode(pwdhash, 'hex').decode(), masterkey=mkf.guid.decode())
 
     def try_system_credential(self):
         """
@@ -439,7 +439,7 @@ class MasterKeyPool(object):
                         mkf.decrypted = True
                         self.nb_mkf_decrypted += 1
 
-                        yield True, u'System masterkey decrypted for {masterkey}'.format(masterkey=mkf.guid)
+                        yield True, u'System masterkey decrypted for {masterkey}'.format(masterkey=mkf.guid.decode())
                     else:
                         yield False, u'System masterkey not decrypted for masterkey {masterkey}'.format(
-                            masterkey=mkf.guid)
+                            masterkey=mkf.guid.decode())

@@ -7,10 +7,12 @@ Code based from these two awesome projects:
 - DPAPILAB 	: https://github.com/dfirfpi/dpapilab
 """
 import codecs
+import traceback
 
 from .eater import DataStruct
 from . import crypto
 
+from lazagne.config.write_output import print_debug
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from lazagne.config.crypto.pyDes import CBC
 from lazagne.config.winstructure import char_to_int
@@ -55,13 +57,13 @@ class DPAPIBlob(DataStruct):
 
         """
         self.version = data.eat("L")
-        self.provider = "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x" % data.eat("L2H8B")
+        self.provider = b"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x" % data.eat("L2H8B")
 
         # For HMAC computation
         blobStart = data.ofs
 
         self.mkversion = data.eat("L")
-        self.mkguid = "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x" % data.eat("L2H8B")
+        self.mkguid = b"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x" % data.eat("L2H8B")
         self.flags = data.eat("L")
         self.description = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")
         self.cipherAlgo = crypto.CryptoAlgo(data.eat("L"))
@@ -90,12 +92,12 @@ class DPAPIBlob(DataStruct):
                 key = crypto.CryptDeriveKey(sessionkey, self.cipherAlgo, self.hashAlgo)
 
                 if "AES" in self.cipherAlgo.name:
-                    cipher = AESModeOfOperationCBC(key[:self.cipherAlgo.keyLength],
-                                                   iv="\x00" * self.cipherAlgo.ivLength)
+                    cipher = AESModeOfOperationCBC(key[:int(self.cipherAlgo.keyLength)],
+                                                   iv="\x00" * int(self.cipherAlgo.ivLength))
                     self.cleartext = b"".join([cipher.decrypt(self.cipherText[i:i + AES_BLOCK_SIZE]) for i in
                                                range(0, len(self.cipherText), AES_BLOCK_SIZE)])
                 else:
-                    cipher = self.cipherAlgo.module.new(key, CBC, "\x00" * self.cipherAlgo.ivLength)
+                    cipher = self.cipherAlgo.module.new(key, CBC, "\x00" * int(self.cipherAlgo.ivLength))
                     self.cleartext = cipher.decrypt(self.cipherText)
 
                 padding = char_to_int(self.cleartext[-1])
@@ -109,7 +111,8 @@ class DPAPIBlob(DataStruct):
                 if self.decrypted:
                     return True
             except Exception:
-                pass
+                print_debug('DEBUG', traceback.format_exc())
+
         self.decrypted = False
         return self.decrypted
 

@@ -11,7 +11,8 @@ import traceback
 from time import gmtime, strftime
 from platform import uname
 
-from lazagne.config.winstructure import string_to_unicode, char_to_int, python_version
+from lazagne.config.users import get_username_winapi
+from lazagne.config.winstructure import string_to_unicode, char_to_int, chr_or_byte, python_version
 from .constant import constant
 
 # --------------------------- Standard output functions ---------------------------
@@ -31,10 +32,10 @@ class StandardOutput(object):
 |                          ! BANG BANG !                             |
 |                                                                    |
 |====================================================================|
-Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}".format(*uname())
-# Python 3.7.3 on Darwin x86_64: i386
-
-        self.FILTER = ''.join([(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])
+'''
+        self.FILTER = b''.join([((len(repr(chr_or_byte(x))) == 3 and python_version == 2) or
+                                 (len(repr(chr_or_byte(x))) == 4 and python_version == 3))
+                                and chr_or_byte(x) or b'.' for x in range(256)])
 
     def set_color(self, color='white', intensity=False):
         c = {'white': 0x07, 'red': 0x04, 'green': 0x02, 'cyan': 0x03}.get(color, None)
@@ -47,6 +48,9 @@ Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}".format(*uname(
     # print banner
     def first_title(self):
         self.do_print(message=self.banner, color='white', intensity=True)
+        # Python 3.7.3 on Darwin x86_64: i386
+        python_banner = 'Python {}.{}.{} on'.format(*sys.version_info) + " {0} {4}: {5}".format(*uname())
+        self.print_logging(function=logging.debug, message=python_banner, prefix='[!]', color='white', intensity=True)
 
     # info option for the logging
     def print_title(self, title):
@@ -60,7 +64,7 @@ Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}".format(*uname(
 
     def print_user(self, user, force_print=False):
         if logging.getLogger().isEnabledFor(logging.INFO) or force_print:
-            self.do_print(u'########## User: {user} ##########\n'.format(user=user))
+            self.do_print(u'\n########## User: {user} ##########\n'.format(user=user))
 
     def print_footer(self, elapsed_time=None):
         footer = '\n[+] %s passwords have been found.\n' % str(constant.nb_password_found)
@@ -72,18 +76,21 @@ Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}".format(*uname(
 
     def print_hex(self, src, length=8):
         N = 0
-        result = ''
+        result = b''
         while src:
             s, src = src[:length], src[length:]
-            hexa = ' '.join(["%02X" % char_to_int(x) for x in s])
+            hexa = b' '.join([b"%02X" % char_to_int(x) for x in s])
             s = s.translate(self.FILTER)
-            result += "%04X   %-*s   %s\n" % (N, length * 3, hexa, s)
+            result += b"%04X   %-*s   %s\n" % (N, length * 3, hexa, s)
             N += length
         return result
 
     def try_unicode(self, obj, encoding='utf-8'):
         if python_version == 3:
-            return obj
+            try:
+                return obj.decode()
+            except Exception:
+                return obj
         try:
             if isinstance(obj, basestring):       # noqa: F821
                 if not isinstance(obj, unicode):  # noqa: F821
@@ -107,14 +114,13 @@ Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}".format(*uname(
             self.print_without_error(message)
 
     def print_without_error(self, message):
-        # try:
-        #     print message.encode('cp850')
-        # except Exception as e:
-        #     print_debug('ERROR', u'error encoding: {error}'.format(error=e))
         try:
-            print(message)
+            print(message.decode())
         except Exception:
-            print(repr(message))
+            try:
+                print(message)
+            except Exception:
+                print(repr(message))
 
     def print_logging(self, function, prefix='[!]', message='', color=False, intensity=False):
         if constant.quiet_mode:
@@ -133,25 +139,7 @@ Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}".format(*uname(
             function(msg)
 
     def print_output(self, software_name, pwd_found):
-
-        # manage differently hashes / and hex value
         if pwd_found:
-            category = None
-            if '__LSASecrets__' in pwd_found:
-                pwd_found.remove('__LSASecrets__')
-                category = 'lsa'
-                pwd_found = pwd_found[0]
-            elif '__Hashdump__' in pwd_found:
-                pwd_found.remove('__Hashdump__')
-                category = 'hash'
-                pwd_found = pwd_found[0]
-            elif '__MSCache__' in pwd_found:
-                pwd_found.remove('__MSCache__')
-                category = 'mscache'
-                pwd_found = pwd_found[0]
-
-        if pwd_found:
-
             # if the debug logging level is not apply => print the title
             if not logging.getLogger().isEnabledFor(logging.INFO):
                 # print the username only if password have been found
@@ -164,29 +152,18 @@ Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}".format(*uname(
                 # if not title1:
                 self.print_title(software_name)
 
+            # Particular passwords representation
             to_write = []
-
-            # LSA Secrets will not be written on the output file
-            if category == 'lsa':
-                for k in pwd_found:
-                    hex = self.print_hex(pwd_found[k], length=16)
-                    to_write.append([k, hex])
-                    self.do_print(k)
-                    self.do_print(hex)
-                self.do_print()
-
-            # Windows Hashes
-            elif category == 'hash':
-                for pwd in pwd_found:
+            if software_name in ('Hashdump', 'Lsa_secrets', 'Mscache'):
+                pwds = pwd_found[1]
+                for pwd in pwds:
                     self.do_print(pwd)
-                    to_write.append(pwd)
-                self.do_print()
-
-            # Windows MSCache
-            elif category == 'mscache':
-                for pwd in pwd_found:
-                    self.do_print(pwd)
-                    to_write.append(pwd)
+                    if software_name == 'Lsa_secrets':
+                        hex_value = self.print_hex(pwds[pwd], length=16)
+                        to_write.append([pwd.decode(), hex_value.decode()])
+                        self.do_print(hex_value)
+                    else:
+                        to_write.append(pwd)
                 self.do_print()
 
             # Other passwords
@@ -194,70 +171,76 @@ Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}".format(*uname(
                 # Remove duplicated password
                 pwd_found = [dict(t) for t in set([tuple(d.items()) for d in pwd_found])]
 
+                # Loop through all passwords found
                 for pwd in pwd_found:
-                    password_category = False
+
                     # Detect which kinds of password has been found
                     lower_list = [s.lower() for s in pwd]
-                    password = [s for s in lower_list if "password" in s]
-                    if password:
-                        password_category = password
-                    else:
-                        key = [s for s in lower_list if "key" in s]  # for the wifi
-                        if key:
-                            password_category = key
-                        else:
-                            hash_ = [s for s in lower_list if "hash" in s]
-                            if hash_:
-                                password_category = hash_
+                    for p in ('password', 'key', 'hash'):
+                        pwd_category = [s for s in lower_list if p in s]
+                        if pwd_category:
+                            pwd_category = pwd_category[0]
+                            break
 
-                    # Do not print empty passwords
+                    write_it = False
+                    passwd = None
                     try:
-                        if not pwd[password_category[0].capitalize()]:
+                        # Do not print empty passwords
+                        if not pwd[pwd_category.capitalize()]:
                             continue
+
+                        passwd = string_to_unicode(pwd[pwd_category.capitalize()])
                     except Exception:
                         pass
 
                     # No password found
-                    if not password_category:
+                    if not passwd:
                         print_debug("FAILED", u'Password not found !!!')
                     else:
-                        # Store all passwords found on a table => for dictionary attack if master password set
                         constant.nb_password_found += 1
-                        passwd = None
-                        try:
-                            passwd = string_to_unicode(pwd[password_category[0].capitalize()])
-                            if passwd and passwd not in constant.password_found:
-                                constant.password_found.append(passwd)
-                        except Exception:
-                            pass
+                        write_it = True
+                        print_debug("OK", u'{pwd_category} found !!!'.format(
+                            pwd_category=pwd_category.title()))
 
-                        # Password field is empty
-                        if not passwd:
-                            print_debug("FAILED", u'Password not found !!!')
-                        else:
-                            print_debug("OK", u'{password_category} found !!!'.format(
-                                password_category=password_category[0].title()))
-                            to_write.append(pwd)
+                        # Store all passwords found on a table => for dictionary attack if master password set
+                        if passwd not in constant.password_found:
+                            constant.password_found.append(passwd)
 
+                    pwd_info = []
                     for p in pwd:
-                        self.do_print('%s: %s' % (p, pwd[p]))
+                        try:
+                            pwd_line = '%s: %s' % (p, pwd[p].decode())  # Manage bytes output (py 3)
+                        except Exception:
+                            pwd_line = '%s: %s' % (p, pwd[p])
+
+                        pwd_info.append(pwd_line)
+                        self.do_print(pwd_line)
+
                     self.do_print()
+
+                    if write_it:
+                        to_write.append(pwd_info)
 
             # write credentials into a text file
             self.checks_write(to_write, software_name)
         else:
-            print_debug("INFO", "No passwords found")
+            print_debug("INFO", "No passwords found\n")
 
     def write_header(self):
         time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+        try:
+            hostname = socket.gethostname().decode(sys.getfilesystemencoding())
+        except AttributeError:
+            hostname = socket.gethostname()
+
         header = u'{banner}\r\n- Date: {date}\r\n- Username: {username}\r\n- Hostname:{hostname}\r\n\r\n'.format(
             banner=self.banner.replace('\n', '\r\n'),
             date=str(time),
-            username=getpass.getuser().decode(sys.getfilesystemencoding()),
-            hostname=socket.gethostname().decode(sys.getfilesystemencoding())
+            username=get_username_winapi(),
+            hostname=hostname
         )
-        with open(os.path.join(constant.folder_name, '{}.txt'.format(constant.file_name_results)), "a+") as f:
-            f.write(header.encode("UTF-8"))
+        with open(os.path.join(constant.folder_name, '{}.txt'.format(constant.file_name_results)), "ab+") as f:
+            f.write(header.encode())
 
     def write_footer(self):
         footer = '\n[+] %s passwords have been found.\r\n\r\n' % str(constant.nb_password_found)
@@ -265,9 +248,9 @@ Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}".format(*uname(
 
     def checks_write(self, values, category):
         if values:
-            if "Passwords" not in constant.finalResults:
-                constant.finalResults["Passwords"] = []
-            constant.finalResults["Passwords"].append([{"Category": category}, values])
+            if 'Passwords' not in constant.finalResults:
+                constant.finalResults['Passwords'] = []
+            constant.finalResults['Passwords'].append((category, values))
 
 
 def print_debug(error_level, message):
@@ -295,42 +278,45 @@ def print_debug(error_level, message):
     else:
         constant.st.print_logging(function=logging.info, message=message, prefix='[!]')
 
-
 # --------------------------- End of output functions ---------------------------
 
-def parse_json_result_to_buffer(json_string):
-    buffer = u''
+def json_to_string(json_string):
+    string = u''
     try:
         for json in json_string:
             if json:
-                buffer += u'##################  User: {username} ################## \r\n'.format(username=json['User'])
+                string += u'##################  User: {username} ################## \r\n'.format(username=json['User'])
                 if 'Passwords' not in json:
-                    buffer += u'No passwords found for this user !\r\n\r\n'
+                    string += u'\r\nNo passwords found for this user !\r\n\r\n'
                 else:
-                    for all_passwords in json['Passwords']:
-                        buffer += u'\r\n------------------- {password_category} -----------------\r\n'.format(
-                            password_category=all_passwords[0]['Category'])
-                        if all_passwords[0]['Category'].lower() in ['lsa_secrets', 'hashdump', 'cachedump']:
-                            for dic in all_passwords[1]:
-                                if all_passwords[0]['Category'].lower() == 'lsa_secrets':
-                                    for d in dic:
-                                        buffer += u'%s\r\n' % (constant.st.try_unicode(d))
+                    for pwd_info in json['Passwords']:
+                        category, pwds_tab = pwd_info
+
+                        string += u'\r\n------------------- {category} -----------------\r\n'.format(
+                            category=category)
+
+                        if category.lower() in ('lsa_secrets', 'hashdump', 'cachedump'):
+                            for pwds in pwds_tab:
+                                if category.lower() == 'lsa_secrets':
+                                    for d in pwds:
+                                        string += u'%s\r\n' % (constant.st.try_unicode(d))
                                 else:
-                                    buffer += u'%s\r\n' % (constant.st.try_unicode(dic))
+                                    string += u'%s\r\n' % (constant.st.try_unicode(pwds))
                         else:
-                            for password_by_category in all_passwords[1]:
-                                buffer += u'\r\nPassword found !!!\r\n'
-                                for dic in password_by_category:
+                            for pwds in pwds_tab:
+                                string += u'\r\nPassword found !!!\r\n'
+                                for pwd in pwds:
                                     try:
-                                        buffer += u'%s: %s\r\n' % (
-                                            dic, constant.st.try_unicode(password_by_category[dic]))
-                                    except Exception as e:
-                                        print_debug(u'ERROR', u'Error retrieving the password encoding: %s' % e)
-                        buffer += u'\r\n'
+                                        name, value = pwd.split(':', 1)
+                                        string += u'%s: %s\r\n' % (
+                                            name.strip(), constant.st.try_unicode(value.strip()))
+                                    except Exception:
+                                        print_debug('DEBUG', traceback.format_exc())
+                        string += u'\r\n'
     except Exception:
         print_debug('ERROR', u'Error parsing the json results: {error}'.format(error=traceback.format_exc()))
 
-    return buffer
+    return string
 
 
 def write_in_file(result):
@@ -341,25 +327,25 @@ def write_in_file(result):
         if constant.output in ('json', 'all'):
             try:
                 # Human readable Json format
-                pretty_json = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '))
-                with open(os.path.join(constant.folder_name, constant.file_name_results + '.json'), 'a+b') as f:
-                    f.write(pretty_json.encode('UTF-8'))
+                pretty_json = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
+                with open(os.path.join(constant.folder_name, constant.file_name_results + '.json'), 'ab+') as f:
+                    f.write(pretty_json.encode())
 
                 constant.st.do_print(u'[+] File written: {file}'.format(
                     file=os.path.join(constant.folder_name, constant.file_name_results + '.json'))
                 )
             except Exception as e:
-                print_debug('ERROR', u'Error writing the output file: {error}'.format(error=e))
+                print_debug('DEBUGG', traceback.format_exc())
 
         if constant.output in ('txt', 'all'):
             try:
-                with open(os.path.join(constant.folder_name, constant.file_name_results + '.txt'), 'a+b') as f:
-                    a = parse_json_result_to_buffer(result)
-                    f.write(a.encode("UTF-8"))
+                with open(os.path.join(constant.folder_name, constant.file_name_results + '.txt'), 'ab+') as f:
+                    a = json_to_string(result)
+                    f.write(a.encode())
 
                 constant.st.write_footer()
                 constant.st.do_print(u'[+] File written: {file}'.format(
                     file=os.path.join(constant.folder_name, constant.file_name_results + '.txt'))
                 )
             except Exception as e:
-                print_debug('ERROR', u'Error writing the output file: {error}'.format(error=e))
+                print_debug('DEBUG', traceback.format_exc())

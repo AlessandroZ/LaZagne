@@ -95,10 +95,10 @@ class CredFile(DataStruct):
             cred_dec = CredentialDecrypted(msg)
             if cred_dec.header.unk_type == 3:
                 return True, {
-                    'File': '{file}'.format(file=credfile),
-                    'Domain': '{domain}'.format(domain=cred_dec.domain),
-                    'Username': '{username}'.format(username=cred_dec.username),
-                    'Password': '{password}'.format(password=cred_dec.password),
+                    'File': credfile,
+                    'Domain': cred_dec.domain,
+                    'Username': cred_dec.username,
+                    'Password': cred_dec.password,
                 }
             elif cred_dec.header.unk_type == 2:
                 return False, 'System credential type'

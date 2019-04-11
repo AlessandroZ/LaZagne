@@ -94,7 +94,7 @@ def delete_hives():
         if os.path.exists(constant.hives[h]):
             try:
                 os.remove(constant.hives[h])
-                print_debug('DEBUG', u'Temporary file removed: {filename}'.format(filename=constant.hives[h]))
+                print_debug('DEBUG', u'Temp {hive} removed: {filename}'.format(hive=h, filename=constant.hives[h]))
             except Exception:
-                print_debug('DEBUG', u'Temporary file failed to removed: {filename}'.format(filename=constant.hives[h]))
+                print_debug('DEBUG', u'Temp {hive} failed to removed: {filename}'.format(hive=h, filename=constant.hives[h]))
 

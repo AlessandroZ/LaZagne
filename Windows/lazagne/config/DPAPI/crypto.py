@@ -26,7 +26,7 @@ import sys
 from lazagne.config.crypto.rc4 import RC4
 from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC, AESModeOfOperationECB
 from lazagne.config.crypto.pyDes import triple_des, des, ECB, CBC
-from lazagne.config.winstructure import char_to_int
+from lazagne.config.winstructure import char_to_int, chr_or_byte
 
 
 try:
@@ -145,9 +145,9 @@ def CryptSessionKeyXP(masterkey, nonce, hashAlgo, entropy=None, strongPassword=N
     if len(masterkey) > 20:
         masterkey = hashlib.sha1(masterkey).digest()
 
-    masterkey += "\x00" * hashAlgo.blockSize
-    ipad = "".join(chr(char_to_int(masterkey[i]) ^ 0x36) for i in range(hashAlgo.blockSize))
-    opad = "".join(chr(char_to_int(masterkey[i]) ^ 0x5c) for i in range(hashAlgo.blockSize))
+    masterkey += b"\x00" * int(hashAlgo.blockSize)
+    ipad = b"".join(chr_or_byte(char_to_int(masterkey[i]) ^ 0x36) for i in range(int(hashAlgo.blockSize)))
+    opad = b"".join(chr_or_byte(char_to_int(masterkey[i]) ^ 0x5c) for i in range(int(hashAlgo.blockSize)))
     digest = hashlib.new(hashAlgo.name)
     digest.update(ipad)
     digest.update(nonce)
@@ -203,9 +203,9 @@ def CryptDeriveKey(h, cipherAlgo, hashAlgo):
         h = hashlib.new(hashAlgo.name, h).digest()
     if len(h) >= cipherAlgo.keyLength:
         return h
-    h += "\x00" * hashAlgo.blockSize
-    ipad = "".join(chr(char_to_int(h[i]) ^ 0x36) for i in range(hashAlgo.blockSize))
-    opad = "".join(chr(char_to_int(h[i]) ^ 0x5c) for i in range(hashAlgo.blockSize))
+    h += b"\x00" * int(hashAlgo.blockSize)
+    ipad = b"".join(chr_or_byte(char_to_int(h[i]) ^ 0x36) for i in range(int(hashAlgo.blockSize)))
+    opad = b"".join(chr_or_byte(char_to_int(h[i]) ^ 0x5c) for i in range(int(hashAlgo.blockSize)))
     k = hashlib.new(hashAlgo.name, ipad).digest() + hashlib.new(hashAlgo.name, opad).digest()
     k = cipherAlgo.do_fixup_key(k)
     return k
