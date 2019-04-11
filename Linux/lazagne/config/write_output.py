@@ -32,8 +32,7 @@ class StandardOutput():
 |                          ! BANG BANG !                             |
 |                                                                    |
 |====================================================================|
-Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}\n".format(*uname())
-# Python 3.7.3 on Darwin x86_64: i386
+'''
 
     def set_color(self, color=None):
         b = Bcolors()
@@ -45,6 +44,9 @@ Python {}.{}.{} on'''.format(*sys.version_info) + " {0} {4}: {5}\n".format(*unam
     # Print banner
     def first_title(self):
         self.do_print(message=self.banner, color='white')
+        # Python 3.7.3 on Darwin x86_64: i386
+        python_banner = 'Python {}.{}.{} on'.format(*sys.version_info) + " {0} {4}: {5}\n".format(*uname())
+        self.print_logging(function=logging.debug, prefix='[!]', message=python_banner, color='white')
 
     # Info option for the logging
     def print_title(self, title):

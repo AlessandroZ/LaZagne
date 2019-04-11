@@ -49,7 +49,7 @@ class StandardOutput(object):
     def first_title(self):
         self.do_print(message=self.banner, color='white', intensity=True)
         # Python 3.7.3 on Darwin x86_64: i386
-        python_banner = 'Python {}.{}.{} on'.format(*sys.version_info) + " {0} {4}: {5}".format(*uname())
+        python_banner = 'Python {}.{}.{} on'.format(*sys.version_info) + " {0} {4}: {5}\n".format(*uname())
         self.print_logging(function=logging.debug, message=python_banner, prefix='[!]', color='white', intensity=True)
 
     # info option for the logging
