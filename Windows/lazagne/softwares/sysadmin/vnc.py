@@ -24,7 +24,7 @@ class Vnc(ModuleInfo):
 
     def do_crypt(self, password, decrypt):
         passpadd = (password + '\x00' * 8)[:8]
-        strkey = ''.join([chr(x) for x in self.vnckey])
+        strkey = b''.join([chr_or_byte(x) for x in int(self.vnckey)])
         key = d.deskey(strkey, decrypt)
         crypted = d.desfunc(passpadd, key)
         return crypted
@@ -53,7 +53,7 @@ class Vnc(ModuleInfo):
                 cryptedblocks = []
                 for sblock in splitstr:
                     cryptedblocks.append(self.do_crypt(codecs.decode(sblock, 'hex'), True))
-                    pwd = ''.join(cryptedblocks)
+                    pwd = b''.join(cryptedblocks)
             elif len(hexpasswd) <= 16:
                 pwd = self.do_crypt(encpasswd, True)
             else:
