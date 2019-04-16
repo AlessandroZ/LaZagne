@@ -23,11 +23,10 @@ class EyeCON(ModuleInfo):
         ModuleInfo.__init__(self, name='EyeCon', category='multimedia')
 
     def deobfuscate(self, ciphered_str):
-        # Should not work with python 3: need test
-        return ''.join([chr(ord(c) ^ k) for c,k in zip(codecs.decode(ciphered_str, 'hex'), self.hex_key)])
+        return b''.join([chr_or_byte(char_to_int(c) ^ k) for c, k in zip(codecs.decode(ciphered_str, 'hex'), self.hex_key)])
 
     def get_db_hosts(self):
-        hosts =[]
+        hosts = []
         paths = (
             ('EyeCON DB Host', HKEY_LOCAL_MACHINE, 'SOFTWARE\\WOW6432Node\\eyevis\\eyeDB', 'DB1'),
             ('EyeCON DB Host', HKEY_LOCAL_MACHINE, 'SOFTWARE\\WOW6432Node\\eyevis\\eyeDB', 'DB2'),
@@ -40,7 +39,7 @@ class EyeCON(ModuleInfo):
             try:
                 hkey = OpenKey(path[1], path[2])
                 reg_key = winreg.QueryValueEx(hkey, path[3])[0]
-                if reg_key != '':
+                if reg_key:
                     hosts += [reg_key]
             except Exception:
                 # skipping if value doesn't exist
@@ -95,5 +94,5 @@ class EyeCON(ModuleInfo):
         hosts = self.get_db_hosts()
         credentials = self.credentials_from_registry()
         for cred in credentials:
-            cred['host(s)'] = ', '.join(hosts)
+            cred['host(s)'] = b', '.join(hosts)
         return credentials

@@ -36,7 +36,7 @@ class Wifi(ModuleInfo):
                         stdout=PIPE,
                         stderr=PIPE)
         stdout, stderr = process.communicate()
-        for st in stdout.split('\n'):
+        for st in stdout.deocde().split('\n'):
             if any(i in st.lower() for i in language_keys):
                 password = st.split(':')[1].strip()
                 return password

@@ -4,7 +4,7 @@ import os
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
-from lazagne.config.winstructure import char_to_int
+from lazagne.config.winstructure import char_to_int, chr_or_byte
 
 try:
     from ConfigParser import ConfigParser  # Python 2.7
@@ -20,11 +20,11 @@ class KalypsoMedia(ModuleInfo):
         """
         xors the two strings
         """
-        return "".join(chr(char_to_int(x) ^ char_to_int(y)) for x, y in zip(s, k))
+        return b''.join(chr_or_byte(char_to_int(x) ^ char_to_int(y)) for x, y in zip(s, k))
 
     def run(self):
         creds = []
-        key = 'lwSDFSG34WE8znDSmvtwGSDF438nvtzVnt4IUv89'
+        key = b'lwSDFSG34WE8znDSmvtwGSDF438nvtzVnt4IUv89'
         inifile = os.path.join(constant.profile['APPDATA'], u'Kalypso Media\\Launcher\\launcher.ini')
 
         # The actual user details are stored in *.userdata files
