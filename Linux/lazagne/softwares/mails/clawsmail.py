@@ -67,17 +67,20 @@ class ClawsMail(ModuleInfo):
         for s in p.sections():
             values = {}
             try:
-                try:
-                    address = p.get(s, 'address')
-                    account = p.get(s, 'account_name')
-                except Exception:
-                    address = '<unknown>'
-                    account = '<unknown>'
+                address = p.get(s, 'address')
+                account = p.get(s, 'account_name')
+            except Exception:
+                address = '<unknown>'
+                account = '<unknown>'
 
+            try:
                 password = self.pass_decrypt(p.get(s, 'password'), key, mode=mode)
                 values = {'Login': account, 'URL': address, 'Password': password}
             except Exception as e:
-                self.error('Error resolving password for account "%s": %s' % (s, e))
+                values = {'Login': account, 'URL': address}
+                self.debug('This version seems to not be supported')
+                self.debug(e)
+
 
             # write credentials into a text file
             if len(values) != 0:
