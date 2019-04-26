@@ -31,6 +31,11 @@ class ChromiumBased(ModuleInfo):
             if os.path.exists(profiles_path):
                 # List all users profile (empty string means current dir, without a profile)
                 profiles = {'Default', ''}
+                # Automatic join all other additional profiles
+                for dirs in os.listdir(path):
+                    dirs_path = os.path.join(path, dirs)
+                    if (os.path.isdir(dirs_path) == True) & (dirs.startswith('Profile')):
+                        profiles.extend(dirs)
                 with open(profiles_path) as f:
                     try:
                         data = json.load(f)
