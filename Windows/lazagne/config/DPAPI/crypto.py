@@ -207,6 +207,7 @@ def CryptDeriveKey(h, cipherAlgo, hashAlgo):
     ipad = b"".join(chr_or_byte(char_to_int(h[i]) ^ 0x36) for i in range(int(hashAlgo.blockSize)))
     opad = b"".join(chr_or_byte(char_to_int(h[i]) ^ 0x5c) for i in range(int(hashAlgo.blockSize)))
     k = hashlib.new(hashAlgo.name, ipad).digest() + hashlib.new(hashAlgo.name, opad).digest()
+    k = k[:cipherAlgo.keyLength]
     k = cipherAlgo.do_fixup_key(k)
     return k
 

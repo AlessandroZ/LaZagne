@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Code based from these two awesome projects: 
+Code based from these two awesome projects:
 - DPAPICK 	: https://bitbucket.org/jmichel/dpapick
 - DPAPILAB 	: https://github.com/dfirfpi/dpapilab
 """
@@ -97,7 +97,7 @@ class DPAPIBlob(DataStruct):
                     self.cleartext = b"".join([cipher.decrypt(self.cipherText[i:i + AES_BLOCK_SIZE]) for i in
                                                range(0, len(self.cipherText), AES_BLOCK_SIZE)])
                 else:
-                    cipher = self.cipherAlgo.module.new(key, CBC, "\x00" * int(self.cipherAlgo.ivLength))
+                    cipher = self.cipherAlgo.module(key, CBC, "\x00" * self.cipherAlgo.ivLength)
                     self.cleartext = cipher.decrypt(self.cipherText)
 
                 padding = char_to_int(self.cleartext[-1])
