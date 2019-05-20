@@ -31,11 +31,13 @@ class ChromiumBased(ModuleInfo):
             if os.path.exists(profiles_path):
                 # List all users profile (empty string means current dir, without a profile)
                 profiles = {'Default', ''}
+
                 # Automatic join all other additional profiles
                 for dirs in os.listdir(path):
                     dirs_path = os.path.join(path, dirs)
-                    if (os.path.isdir(dirs_path) == True) & (dirs.startswith('Profile')):
+                    if (os.path.isdir(dirs_path) == True) and (dirs.startswith('Profile')):
                         profiles.extend(dirs)
+
                 with open(profiles_path) as f:
                     try:
                         data = json.load(f)
@@ -43,6 +45,7 @@ class ChromiumBased(ModuleInfo):
                         profiles |= set(data['profile']['info_cache'])
                     except Exception:
                         pass
+
                 # Each profile has its own password database
                 for profile in profiles:
                     # Some browsers use names other than "Login Data"
