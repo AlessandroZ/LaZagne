@@ -1,6 +1,7 @@
 # Vault Structure has been taken from mimikatz
 from ctypes.wintypes import *
 from ctypes import *
+
 import sys
 import os
 
@@ -32,7 +33,7 @@ CRYPTPROTECT_UI_FORBIDDEN = 0x01
 CRED_TYPE_GENERIC = 0x1
 CRED_TYPE_DOMAIN_VISIBLE_PASSWORD = 0x4
 
-# Regedit 
+# Regedit
 HKEY_CURRENT_USER = -2147483647
 HKEY_LOCAL_MACHINE = -2147483646
 KEY_READ = 131097
@@ -144,18 +145,18 @@ class VAULT_BYTE_BUFFER(Structure):
 
 class DATA(Structure):
     _fields_ = [
-        # ('boolean', 		BOOL),
-        # ('short', 			SHORT),
-        # ('unsignedShort', 	WORD),
-        # ('int', 			LONG),
-        # ('unsignedInt', 	ULONG),
-        # ('double', 			DOUBLE),
+        # ('boolean',       BOOL),
+        # ('short',             SHORT),
+        # ('unsignedShort',     WORD),
+        # ('int',           LONG),
+        # ('unsignedInt',   ULONG),
+        # ('double',            DOUBLE),
         ('guid', GUID),
         ('string', LPWSTR),
         ('byteArray', VAULT_BYTE_BUFFER),
         ('protectedArray', VAULT_BYTE_BUFFER),
         ('attribute', PVAULT_CREDENTIAL_ATTRIBUTEW),
-        # ('Sid', 			PSID)
+        # ('Sid',           PSID)
         ('sid', DWORD)
     ]
 
@@ -181,12 +182,12 @@ class Flag(Structure):
 
 class VAULT_ITEM_DATA(Structure):
     _fields_ = [
-        # ('schemaElementId', 	DWORD),
-        # ('unk0', 				DWORD),
-        # ('Type', 				VAULT_ELEMENT_TYPE),
-        # ('type', 				Flag),
-        # ('type', 				DWORD * 14),
-        # ('unk1', 				DWORD),
+        # ('schemaElementId',   DWORD),
+        # ('unk0',              DWORD),
+        # ('Type',              VAULT_ELEMENT_TYPE),
+        # ('type',              Flag),
+        # ('type',              DWORD * 14),
+        # ('unk1',              DWORD),
         ('data', DATA),
     ]
 
@@ -213,17 +214,17 @@ PVAULT_ITEM_WIN8 = POINTER(VAULT_ITEM_WIN8)
 
 
 # class VAULT_ITEM_WIN7(Structure):
-# 	_fields_ = [
-# 		('id', 				GUID),
-# 		('pName', 			PWSTR),
-# 		('pResource', 		PVAULT_ITEM_DATA),
-# 		('pUsername', 		PVAULT_ITEM_DATA),
-# 		('pPassword', 		PVAULT_ITEM_DATA), 
-# 		('LastWritten', 	FILETIME), 
-# 		('Flags', 			DWORD),  
-# 		('cbProperties', 	DWORD),
-# 		('Properties', 		PVAULT_ITEM_DATA),
-# 	]
+#   _fields_ = [
+#       ('id',              GUID),
+#       ('pName',           PWSTR),
+#       ('pResource',       PVAULT_ITEM_DATA),
+#       ('pUsername',       PVAULT_ITEM_DATA),
+#       ('pPassword',       PVAULT_ITEM_DATA),
+#       ('LastWritten',     FILETIME),
+#       ('Flags',           DWORD),
+#       ('cbProperties',    DWORD),
+#       ('Properties',      PVAULT_ITEM_DATA),
+#   ]
 # PVAULT_ITEM_WIN7 = POINTER(VAULT_ITEM_WIN7)
 
 class OSVERSIONINFOEXW(Structure):
@@ -567,6 +568,8 @@ def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, use
     if python_version == 2:
         cipherText = str(cipherText)
 
+    decrypted = None
+
     if is_current_user:
         bufferIn = c_buffer(cipherText, len(cipherText))
         blobIn = DATA_BLOB(len(cipherText), bufferIn)
@@ -577,15 +580,32 @@ def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, use
             blobEntropy = DATA_BLOB(len(entropy), bufferEntropy)
 
             if CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, 0, byref(blobOut)):
-                return getData(blobOut).decode("utf-8")
+                decrypted = getData(blobOut).decode("utf-8")
 
         else:
             if CryptUnprotectData(byref(blobIn), None, None, None, None, 0, byref(blobOut)):
-                return getData(blobOut).decode("utf-8")
+                decrypted = getData(blobOut).decode("utf-8")
 
-    elif user_dpapi and user_dpapi.unlocked:
-        # entropy should be an hex value
-        return user_dpapi.decrypt_encrypted_blob(cipherText, entropy_hex=entropy)
+    if not decrypted:
+        can_decrypt = True
+        if not (user_dpapi and user_dpapi.unlocked):
+            from lazagne.config.dpapi_structure import are_masterkeys_retrieved
+            can_decrypt = are_masterkeys_retrieved()
+
+        if can_decrypt:
+            decrypted = user_dpapi.decrypt_encrypted_blob(cipherText)
+            if decrypted is False:
+                decrypted = None
+        else:
+            raise ValueError('MasterKeys not found')
+
+    if not decrypted:
+        if not user_dpapi:
+            raise ValueError('DPApi unavailable')
+        elif not user_dpapi.unlocked:
+            raise ValueError('DPApi locked')
+
+    return decrypted
 
 
 def get_os_version():

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import os
 import sys
 import traceback
@@ -91,7 +91,7 @@ class Wifi(ModuleInfo):
                                             self.error(traceback.format_exc())
                                             values['INFO'] = '[!] Password not found.'
 
-                                if values and values['Authentication'] != 'open':
+                                if values and values.get('Authentication') != 'open':
                                     pwd_found.append(values)
 
                 constant.wifi_password = True
