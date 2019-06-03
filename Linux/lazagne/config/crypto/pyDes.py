@@ -86,6 +86,11 @@ Note: This code was not written for high-end systems needing a fast
 
 import sys
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
 # _pythonMajorVersion is used to handle Python2 and Python3 differences.
 _pythonMajorVersion = sys.version_info[0]
 
@@ -123,7 +128,6 @@ class _baseDes(object):
         self._iv = IV
         self._padding = pad
         self._padmode = padmode
-
     def getKey(self):
         """getKey() -> bytes"""
         return self.__key
