@@ -86,11 +86,6 @@ Note: This code was not written for high-end systems needing a fast
 
 import sys
 
-try:
-    unicode
-except NameError:
-    unicode = str
-
 # _pythonMajorVersion is used to handle Python2 and Python3 differences.
 _pythonMajorVersion = sys.version_info[0]
 
@@ -235,7 +230,7 @@ class _baseDes(object):
         # Only accept byte strings or ascii unicode values, otherwise
         # there is no way to correctly decode the data into bytes.
         if _pythonMajorVersion < 3:
-            if isinstance(data, unicode):
+            if isinstance(data, unicode):  # noqa
                 raise ValueError("pyDes can only work with bytes, not Unicode strings.")
         else:
             if isinstance(data, str):
