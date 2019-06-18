@@ -141,7 +141,7 @@ def run_lazagne(category_selected='all', subcategories={}, password=None, intera
     # If keychains has been decrypted, launch again some module
     chrome_key = get_safe_storage_key('Chrome Safe Storage')
     if chrome_key:
-        for r in run_module({'chrome': Chrome(safe_storage_key=chrome_key)}):
+        for r in run_module({'chrome': Chrome(safe_storage_key=chrome_key)}, subcategories):
             yield r
 
     constant.stdout_result.append(constant.finalResults)
