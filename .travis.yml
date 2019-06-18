@@ -5,11 +5,9 @@ lint_steps: &lint_steps
   before_install:
     - pip install --upgrade pip
     - pip install flake8
-  script: flake8 . --count --select=E9,F63,F72,F82 --show-source --statistics --builtins="unicode"
+  script: flake8 . --count --select=E9,F63,F72,F82 --show-source --statistics
 
 matrix:
-  allow_failures:
-    - python: '3.7'
   include:
     - name: "Test and deploy on Python 2.7"
       python: '2.7'

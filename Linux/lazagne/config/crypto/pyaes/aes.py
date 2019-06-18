@@ -74,7 +74,7 @@ def _concat_list(a, b):
 # Python 3 compatibility
 try:
     xrange
-except Exception:
+except NameError:
     xrange = range
 
     # Python 3 supports bytes, which is already an array of integers
