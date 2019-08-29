@@ -100,7 +100,7 @@ Supported software
 | Multimedia | EyeCON<br> |  |  |
 | PHP | Composer<br> |  |  |
 | SVN | Tortoise  | | |
-| Sysadmin | Apache Directory Studio<br> CoreFTP<br> CyberDuck<br> FileZilla<br> FTPNavigator<br> OpenSSH<br> OpenVPN<br> PuttyCM<br>RDPManager<br> VNC<br> WinSCP<br> Windows Subsystem for Linux | AWS<br>  Docker<br> Environnement variable<br> FileZilla<br> FileZilla Server<br> History files<br> Shares <br> SSH private keys |  |
+| Sysadmin | Apache Directory Studio<br> CoreFTP<br> CyberDuck<br> FileZilla<br> FileZilla Server<br> FTPNavigator<br> OpenSSH<br> OpenVPN<br> PuttyCM<br>RDPManager<br> VNC<br> WinSCP<br> Windows Subsystem for Linux | AWS<br>  Docker<br> Environnement variable<br> FileZilla<br> History files<br> Shares <br> SSH private keys |  |
 | Wifi | Wireless Network | Network Manager<br> WPA Supplicant |  |
 | Internal mechanism passwords storage | Autologon<br> MSCache<br> Credential Files<br> Credman <br> DPAPI Hash <br> Hashdump (LM/NT)<br> LSA secret<br> Vault Files | GNOME Keyring<br> Kwallet<br> Hashdump | Keychains<br> Hashdump |
 
