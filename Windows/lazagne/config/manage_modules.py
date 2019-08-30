@@ -39,6 +39,7 @@ from lazagne.softwares.sysadmin.apachedirectorystudio import ApacheDirectoryStud
 from lazagne.softwares.sysadmin.coreftp import CoreFTP
 from lazagne.softwares.sysadmin.cyberduck import Cyberduck
 from lazagne.softwares.sysadmin.filezilla import Filezilla
+from lazagne.softwares.sysadmin.filezillaserver import FilezillaServer
 from lazagne.softwares.sysadmin.ftpnavigator import FtpNavigator
 from lazagne.softwares.sysadmin.opensshforwindows import OpenSSHForWindows
 from lazagne.softwares.sysadmin.openvpn import OpenVPN
@@ -139,6 +140,7 @@ def get_modules():
         CoreFTP(),
         Cyberduck(),
         Filezilla(),
+        FilezillaServer(),
         FtpNavigator(),
         Puttycm(),
         OpenSSHForWindows(),
