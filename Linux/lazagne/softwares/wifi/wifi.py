@@ -38,4 +38,4 @@ class Wifi(ModuleInfo):
             else:
                 self.info('You need sudo privileges')
 
-                return pwd_found
+            return pwd_found
