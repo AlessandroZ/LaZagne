@@ -8,6 +8,7 @@ from lazagne.softwares.browsers.mozilla import firefox_browsers
 from lazagne.softwares.browsers.opera import Opera
 from lazagne.softwares.browsers.chrome import Chrome
 # sysadmin
+from lazagne.softwares.sysadmin.apachedirectorystudio import ApacheDirectoryStudio
 from lazagne.softwares.sysadmin.filezilla import Filezilla
 from lazagne.softwares.sysadmin.fstab import Fstab
 from lazagne.softwares.sysadmin.env_variable import Env_variable
@@ -58,6 +59,7 @@ def get_modules():
         Thunderbird(),
         DbVisualizer(),
         Env_variable(),
+        ApacheDirectoryStudio(),
         Filezilla(),
         Fstab(),
         # Mozilla(),
