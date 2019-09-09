@@ -27,6 +27,7 @@ from ..addrspace import HiveFileAddressSpace
 from .rawreg import *
 from lazagne.config.crypto.rc4 import RC4
 from lazagne.config.crypto.pyDes import des, ECB
+from lazagne.config.crypto.pyaes.aes import AESModeOfOperationCBC
 from lazagne.config.winstructure import char_to_int, chr_or_byte, int_or_bytes
 
 
@@ -61,6 +62,8 @@ almpassword = b"LMPASSWORD\0"
 
 empty_lm = codecs.decode('aad3b435b51404eeaad3b435b51404ee', 'hex')
 empty_nt = codecs.decode('31d6cfe0d16ae931b73c59d7e0c089c0', 'hex')
+
+AES_BLOCK_SIZE = 16
 
 
 def str_to_key(s):
@@ -156,12 +159,22 @@ def get_hbootkey(samaddr, bootkey):
     if not F:
         return None
 
-    md5 = hashlib.md5(F[0x70:0x80] + aqwerty + bootkey + anum)
-    rc4_key = md5.digest()
-    rc4 = RC4(rc4_key)
+    revision = ord(F[0x00])
+    if revision == 2:
+        md5 = hashlib.md5(F[0x70:0x80] + aqwerty + bootkey + anum)
+        rc4_key = md5.digest()
+        rc4 = RC4(rc4_key)
+        hbootkey = rc4.encrypt(F[0x80:0xA0])
 
-    hbootkey = rc4.encrypt(F[0x80:0xA0])
-    return hbootkey
+        return hbootkey
+
+    elif revision == 3:
+        iv = F[0x78:0x88]
+        encryptedHBootKey = F[0x88:0xA8]
+        cipher = AESModeOfOperationCBC(bootkey, iv=iv)
+        hbootkey = b"".join([cipher.decrypt(encryptedHBootKey[i:i + AES_BLOCK_SIZE]) for i in range(0, len(encryptedHBootKey), AES_BLOCK_SIZE)])
+
+        return hbootkey[:16]
 
 
 def get_user_keys(samaddr):
@@ -178,6 +191,8 @@ def get_user_keys(samaddr):
 
 
 def decrypt_single_hash(rid, hbootkey, enc_hash, lmntstr):
+    if enc_hash == "":
+        return ""
     (des_k1, des_k2) = sid_to_key(rid)
     d1 = des(des_k1, ECB)
     d2 = des(des_k2, ECB)
@@ -190,20 +205,17 @@ def decrypt_single_hash(rid, hbootkey, enc_hash, lmntstr):
     return hash_
 
 
-def decrypt_hashes(rid, enc_lm_hash, enc_nt_hash, hbootkey):
-    # LM Hash
-    if enc_lm_hash:
-        lmhash = decrypt_single_hash(rid, hbootkey, enc_lm_hash, almpassword)
-    else:
-        lmhash = b""
+def decrypt_single_salted_hash(rid, hbootkey, enc_hash, lmntstr, salt):
+    if enc_hash == "":
+        return ""
+    (des_k1, des_k2) = sid_to_key(rid)
+    d1 = des(des_k1, ECB)
+    d2 = des(des_k2, ECB)
+    cipher = AESModeOfOperationCBC(hbootkey, salt)
+    obfkey = b"".join([cipher.decrypt(enc_hash[i:i + AES_BLOCK_SIZE]) for i in range(0, len(enc_hash), AES_BLOCK_SIZE)])
 
-    # NT Hash
-    if enc_nt_hash:
-        nthash = decrypt_single_hash(rid, hbootkey, enc_nt_hash, antpassword)
-    else:
-        nthash = b""
-
-    return lmhash, nthash
+    hash_ = d1.decrypt(obfkey[:8]) + d2.decrypt(obfkey[8:16])
+    return hash_
 
 
 def get_user_hashes(user_key, hbootkey):
@@ -211,18 +223,41 @@ def get_user_hashes(user_key, hbootkey):
     rid = int(user_key.Name, 16)
     V = None
     for v in values(user_key):
-        if v.Name == b'V':
+        if v.Name == 'V':
             V = samaddr.read(v.Data.value, v.DataLength.value)
-    if not V: return None, None
-    hash_offset = unpack("<L", V[0x9c:0x9c + 4])[0] + 0xCC
+    if not V: return None
+    hash_offset = unpack("<L", V[0xa8:0xa8+4])[0] + 0xCC
 
-    lm_exists = True if unpack("<L", V[0x9c + 4:0x9c + 8])[0] == 20 else False
-    nt_exists = True if unpack("<L", V[0x9c + 16:0x9c + 20])[0] == 20 else False
+    lm_offset_bytes = V[0x9c:0x9c+4]
+    nt_offset_bytes = V[0x9c+12:0x9c+16]
+    lm_offset = unpack("<L", lm_offset_bytes)[0] + 204
+    nt_offset = unpack("<L", nt_offset_bytes)[0] + 204
 
-    enc_lm_hash = V[hash_offset + 4:hash_offset + 20] if lm_exists else ""
-    enc_nt_hash = V[hash_offset + (24 if lm_exists else 8):hash_offset + (
-        24 if lm_exists else 8) + 16] if nt_exists else ""
-    return decrypt_hashes(rid, enc_lm_hash, enc_nt_hash, hbootkey)
+    lm_revision = int(codecs.encode(V[lm_offset+2:lm_offset+3], 'hex').decode(), 16)
+    if lm_revision == 1:
+        lm_exists = True if unpack("<L", V[0x9c+4:0x9c+8])[0] == 20 else False
+        enc_lm_hash = V[hash_offset+4:hash_offset+20] if lm_exists else ""
+        lmhash = decrypt_single_hash(rid, hbootkey, enc_lm_hash, almpassword)
+    
+    elif lm_revision == 2:
+        lm_exists = True if unpack("<L", V[0x9c+4:0x9c+8])[0] == 56 else False
+        lm_salt = V[hash_offset+4:hash_offset+20] if lm_exists else ""
+        enc_lm_hash = V[hash_offset+20:hash_offset+52] if lm_exists else ""
+        lmhash = decrypt_single_salted_hash(rid, hbootkey, enc_lm_hash, almpassword, lm_salt)
+
+    nt_revision = int(codecs.encode(V[nt_offset+2:nt_offset+3], 'hex').decode(), 16)
+    if nt_revision == 1:
+        nt_exists = True if unpack("<L", V[0x9c+16:0x9c+20])[0] == 20 else False
+        enc_nt_hash = V[nt_offset+4:nt_offset+20] if nt_exists else ""
+        nthash = decrypt_single_hash(rid, hbootkey, enc_nt_hash, antpassword)
+    
+    elif nt_revision == 2:
+        nt_exists = True if unpack("<L", V[0x9c+16:0x9c+20])[0] == 56 else False
+        nt_salt = V[nt_offset+8:nt_offset+24] if nt_exists else ""
+        enc_nt_hash = V[nt_offset+24:nt_offset+56] if nt_exists else ""
+        nthash = decrypt_single_salted_hash(rid, hbootkey, enc_nt_hash, antpassword, nt_salt)
+
+    return lmhash, nthash
 
 
 def get_user_name(user_key):
