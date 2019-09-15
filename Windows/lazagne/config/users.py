@@ -76,6 +76,6 @@ def get_username_winapi():
             size.value = len(_buffer)
         
         else:
-            return # Unusual error
+            return os.getenv('username') # Unusual error
 
     return _buffer.value
