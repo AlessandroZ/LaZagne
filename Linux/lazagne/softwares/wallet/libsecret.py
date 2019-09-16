@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config import homes
 from binascii import hexlify
@@ -88,8 +89,10 @@ class Libsecret(ModuleInfo):
                     }
 
                     # for k, v in item.get_attributes().iteritems():
-                    # 	values[unicode(k)] = unicode(v)
+                    #   values[unicode(k)] = unicode(v)
                     items.append(values)
+                    if item.get_label() == 'Chromium Safe Storage':
+                        constant.chrome_storage = item.get_secret()
 
             try:
                 bus.flush()
