@@ -36,11 +36,12 @@ class Chrome(ModuleInfo):
         try:
             cursor.execute('SELECT origin_url,username_value,password_value FROM logins')
             for url, user, password in cursor:
-                yield {
-                    'URL': url,
-                    'Login': user,
-                    'Password': password
-                }
+                if not user=="":
+                    yield {
+                        'URL': url,
+                        'Login': user,
+                        'Password': password
+                    }
         except Exception as e:
             self.debug(e)
 
