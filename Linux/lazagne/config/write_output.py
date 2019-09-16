@@ -204,7 +204,7 @@ class StandardOutput():
             # Write credentials into a text file
             self.checks_write(to_write, software_name)
         else:
-            print_debug("INFO", "No passwords found")
+            print_debug("INFO", "No passwords found\n")
 
 
 def print_debug(error_level, message):
