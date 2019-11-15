@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import codecs
 import os
 
@@ -164,7 +164,7 @@ class SystemDpapi(object):
             LSASecrets().run()
 
         if constant.lsa_secrets:
-            masterkeydir = u'C:\\Windows\\System32\\Microsoft\\Protect\\S-1-5-18\\User'
+            masterkeydir = u'\\\\%s\\C$\\Windows\\System32\\Microsoft\\Protect\\S-1-5-18\\User' % os.environ['COMPUTERNAME']
             if os.path.exists(masterkeydir):
                 self.smkp = MasterKeyPool()
                 self.smkp.load_directory(masterkeydir)
@@ -181,6 +181,6 @@ class SystemDpapi(object):
         Decrypt wifi password
         """
         if self.smkp:
-            blob = DPAPIBlob(key_material.decode('hex'))
+            blob = DPAPIBlob(codecs.decode(key_material, 'hex'))
             ok, msg = blob.decrypt_encrypted_blob(mkp=self.smkp)
             return manage_response(ok, msg)

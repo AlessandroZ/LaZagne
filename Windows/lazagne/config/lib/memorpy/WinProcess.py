@@ -39,12 +39,12 @@ class WinProcess(BaseProcess):
         super(WinProcess, self).__init__()
         if pid:
             self._open(int(pid), debug=debug)
-            
+
         elif name:
             self._open_from_name(name, debug=debug)
         else:
             raise ValueError("You need to instanciate process with at least a name or a pid")
-        
+
         if self.is_64bit():
             si = self.GetNativeSystemInfo()
             self.max_addr = si.lpMaximumApplicationAddress
@@ -81,7 +81,7 @@ class WinProcess(BaseProcess):
         PROCESS_VM_READ = 0x0010
 
         psapi.EnumProcesses(byref(lpidProcess), cb, byref(cbNeeded))
-        nReturned = cbNeeded.value/sizeof(c_ulong())
+        nReturned = int(cbNeeded.value/sizeof(c_ulong()))
 
         pidProcess = [i for i in lpidProcess][:nReturned]
         for pid in pidProcess:

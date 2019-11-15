@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import tempfile
 import random
 import string
@@ -9,13 +9,13 @@ date = time.strftime("%d%m%Y_%H%M%S")
 tmp = tempfile.gettempdir()
 
 
-class constant():
+class constant:
     folder_name = '.'
     file_name_results = 'credentials_{current_time}'.format(
         current_time=date
     )  # The extension is added depending on the user output choice
     max_help = 27
-    CURRENT_VERSION = '2.4.3' 
+    CURRENT_VERSION = '2.4.3'
     output = None
     modules_dic = {}
     nb_password_found = 0  # Total password found

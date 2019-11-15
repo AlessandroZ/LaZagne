@@ -74,7 +74,7 @@ def get_username_winapi():
         if ctypes.GetLastError() == 122:
             _buffer = ctypes.create_unicode_buffer(len(_buffer)*2)
             size.value = len(_buffer)
-        
+
         else:
             return os.getenv('username') # Unusual error
 

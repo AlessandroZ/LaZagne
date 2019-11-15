@@ -21,7 +21,7 @@ sys.setrecursionlimit(10000)
 def create_module_dic():
     if constant.modules_dic:
         return constant.modules_dic
-    
+
     modules = {}
 
     # Define a dictionary for all modules
@@ -58,7 +58,7 @@ def run_modules(module, subcategories={}, system_module=False):
     Run modules inside a category (could be one or multiple modules)
     """
     modules_to_launch = []
-    
+
     # Launch only a specific module
     for i in subcategories:
         if subcategories[i] and i in module:
@@ -187,7 +187,7 @@ def run_lazagne(category_selected='all', subcategories={}, password=None):
     constant.is_current_user = True
     constant.username = get_username_winapi()
     if not constant.username.endswith('$'):
-        
+
         constant.finalResults = {'User': constant.username}
         constant.st.print_user(constant.username)
         yield 'User', constant.username
@@ -197,7 +197,7 @@ def run_lazagne(category_selected='all', subcategories={}, password=None):
         for r in run_category(category_selected, subcategories):
             yield r
         constant.stdout_result.append(constant.finalResults)
-    
+
     # Check if admin to impersonate
     if ctypes.windll.shell32.IsUserAnAdmin() != 0:
 
