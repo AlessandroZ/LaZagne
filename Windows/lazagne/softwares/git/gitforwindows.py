@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import os
 
-try: 
+try:
     from urlparse import urlparse
-except ImportError: 
+except ImportError:
     from urllib import parse as urlparse
 
 from lazagne.config.constant import constant

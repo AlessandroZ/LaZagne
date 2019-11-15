@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # Author: Nicolas VERDIER (contact@n1nj4.eu)
 
-""" 
+"""
 This script uses memorpy to dumps cleartext passwords from browser's memory
 It has been tested on both windows 10 and ubuntu 16.04
 The regex have been taken from the mimikittenz https://github.com/putterpanda/mimikittenz
@@ -106,7 +106,7 @@ class MemoryDump(ModuleInfo):
                 if k.run(full_exe_path=full_exe_path):
                     for keepass in constant.keepass:
                         data = keepass.get('KcpPassword', None)
-                        if data: 
+                        if data:
                             pwd_found.append({
                                 'Category': 'KeePass',
                                 'KeyType': data['KeyType'],

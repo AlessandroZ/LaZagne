@@ -117,7 +117,7 @@ def get_secret_by_name(secaddr, name, lsakey, vista):
     if not root:
         return None
 
-    enc_secret_key = open_key(root, [b"Policy", b"Secrets", name, b"CurrVal"])
+    enc_secret_key = open_key(root, [b"Policy", b"Secrets", name.encode(), b"CurrVal"])
     if not enc_secret_key:
         return None
 

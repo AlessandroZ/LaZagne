@@ -108,13 +108,13 @@ def dump_hashes(sysaddr, secaddr, vista):
     if not root:
         return []
 
-    cache = open_key(root, ["Cache"])
+    cache = open_key(root, [b"Cache"])
     if not cache:
         return []
 
     hashes = []
     for v in values(cache):
-        if v.Name == "NL$Control":
+        if v.Name == b"NL$Control":
             continue
         
         data = v.space.read(v.Data.value, v.DataLength.value)

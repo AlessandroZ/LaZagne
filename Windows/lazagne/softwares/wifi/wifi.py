@@ -84,7 +84,7 @@ class Wifi(ModuleInfo):
                                                 password = self.decrypt_using_netsh(ssid=values['SSID'])
 
                                             if password:
-                                                values['Password'] = password
+                                                values['Password'] = password.rstrip("\x00")
                                             else:
                                                 values['INFO'] = '[!] Password not found.'
                                         except Exception:

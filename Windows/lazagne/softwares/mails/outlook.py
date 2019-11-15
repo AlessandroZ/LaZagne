@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*- 
-try: 
+# -*- coding: utf-8 -*-
+try:
     import _winreg as winreg
 except ImportError:
     import winreg

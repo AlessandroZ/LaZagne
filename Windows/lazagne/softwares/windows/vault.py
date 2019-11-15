@@ -48,7 +48,7 @@ class Vault(ModuleInfo):
                                                          items8[j].pUsername, items8[j].unknown0, None, 0,
                                                          byref(pItem8)) == 0:
 
-                                            password = pItem8.contents.pPassword.contents.data.string
+                                            password = ""  # pItem8.contents.pPassword.contents.data.string
                                             # Remove password too long
                                             if password and len(password) < 100:
                                                 values['Password'] = password
