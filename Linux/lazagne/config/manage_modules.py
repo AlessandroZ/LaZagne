@@ -19,6 +19,7 @@ from lazagne.softwares.sysadmin.docker import Docker
 from lazagne.softwares.sysadmin.cli import Cli
 from lazagne.softwares.sysadmin.gftp import gFTP
 from lazagne.softwares.sysadmin.keepassconfig import KeePassConfig
+from lazagne.softwares.sysadmin.grub import Grub
 # chats
 from lazagne.softwares.chats.pidgin import Pidgin
 from lazagne.softwares.chats.psi import PSI
@@ -76,6 +77,7 @@ def get_modules():
         Cli(),
         gFTP(),
         KeePassConfig(),
+        Grub(),
         SQLDeveloper(),
         Squirrel(),
         Wifi(),
