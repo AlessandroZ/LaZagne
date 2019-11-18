@@ -53,6 +53,7 @@ class Grub(ModuleInfo):
         for grub_file in grub_conf_files:
             if os.path.exists(grub_file):
                 conf = open(grub_file).read()
+                user, password = '', ''
                 if conf.partition('password --md5 ')[1] == 'password --md5 ':
                     hash = conf.partition('password --md5 ')[2].partition('\n')[0]
                     result = self.dictionary_attack(hash)
