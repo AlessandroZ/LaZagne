@@ -35,7 +35,7 @@ def get_root(address_space):
 def open_key(root, key):
     if not key:
         return root
-    
+
     keyname = key.pop(0)
     for s in subkeys(root):
         if s.Name.upper() == keyname.upper():

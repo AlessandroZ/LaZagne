@@ -27,7 +27,7 @@ from struct import unpack
 
 def get_ptr_type(structure, member):
     """Return the type a pointer points to.
-       
+
        Arguments:
          structure : the name of the structure from vtypes
          member : a list of members
@@ -47,7 +47,7 @@ def get_ptr_type(structure, member):
 
 class Obj(object):
     """Base class for all objects.
-       
+
        May return a subclass for certain data types to allow
        for special handling.
     """
@@ -62,7 +62,7 @@ class Obj(object):
         else:
             obj = object.__new__(typ)
             return obj
-    
+
     def __init__(self, name, address, space):
         self.name = name
         self.address = address
@@ -72,7 +72,7 @@ class Obj(object):
         # to show up in values() or members(), even if they do not
         # appear in the vtype definition
         self.extra_members = []
-    
+
     def __getattribute__(self, attr):
         try:
             return object.__getattribute__(self, attr)
@@ -86,7 +86,7 @@ class Obj(object):
             off, tp = get_obj_offset(types, [self.name, attr])
         except Exception:
             raise AttributeError("'%s' has no attribute '%s'" % (self.name, attr))
-        
+
         if tp == 'array':
             a_len = types[self.name][1][attr][1][1]
             l = []
@@ -121,7 +121,7 @@ class Obj(object):
             return Obj(other, self.address, self.space)
         else:
             raise ValueError("Must provide a type name as string for casting")
-    
+
     def members(self):
         """Return a list of this object's members, sorted by offset."""
 
@@ -132,7 +132,7 @@ class Obj(object):
 
     def values(self):
         """Return a dictionary of this object's members and their values"""
-        
+
         valdict = {}
         for k in self.members():
             valdict[k] = getattr(self, k)
@@ -140,7 +140,7 @@ class Obj(object):
 
     def bytes(self, length=-1):
         """Get bytes starting at the address of this object.
-        
+
            Arguments:
              length : the number of bytes to read. Default: size of
                 this object.
@@ -157,7 +157,7 @@ class Obj(object):
             return builtin_types[self.name][0]
         else:
             return types[self.name][0]
-    
+
     def __repr__(self):
         return "<%s @%08x>" % (self.name, self.address)
 
@@ -181,7 +181,7 @@ class Obj(object):
 
 class Primitive(Obj):
     """Class to represent a primitive data type.
-       
+
        Attributes:
          value : the python primitive value of this type
     """
@@ -198,7 +198,7 @@ class Primitive(Obj):
             self.value = None
         else:
             self.value = unpack(fmt,data)[0]
-    
+
     def __repr__(self):
         return repr(self.value)
 
@@ -208,7 +208,7 @@ class Primitive(Obj):
 
 class Pointer(Obj):
     """Class to represent pointers.
-    
+
        value : the object pointed to
 
        If an attribute is not found in this instance,
@@ -226,7 +226,7 @@ class Pointer(Obj):
             self.value = Pointer(ptr_type[0], ptr_address, self.space, ptr_type[1])
         else:
             self.value = Obj(ptr_type[0], ptr_address, self.space)
-    
+
     def __getattribute__(self, attr):
         # It's still nice to be able to access things through pointers
         # without having to explicitly dereference them, so if we don't
@@ -236,7 +236,7 @@ class Pointer(Obj):
             return super(Pointer, self).__getattribute__(attr)
         except AttributeError:
             return getattr(self.value, attr)
-    
+
     def __repr__(self):
         return "<pointer to [%s @%08x]>" % (self.value.name, self.value.address)
 

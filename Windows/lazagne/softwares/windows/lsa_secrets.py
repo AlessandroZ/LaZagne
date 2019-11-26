@@ -24,7 +24,7 @@ class LSASecrets(ModuleInfo):
         # Get LSA Secrets
         secrets = get_file_secrets(constant.hives['system'], constant.hives['security'], is_vista_or_higher)
         if secrets:
-            # Clear DPAPI master key 
+            # Clear DPAPI master key
             clear = secrets[b'DPAPI_SYSTEM']
             size = struct.unpack_from("<L", clear)[0]
             secrets[b'DPAPI_SYSTEM'] = clear[16:16 + 44]

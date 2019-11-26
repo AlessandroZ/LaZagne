@@ -116,11 +116,11 @@ def dump_hashes(sysaddr, secaddr, vista):
     for v in values(cache):
         if v.Name == b"NL$Control":
             continue
-        
+
         data = v.space.read(v.Data.value, v.DataLength.value)
 
         (uname_len, domain_len, domain_name_len, enc_data, ch) = parse_cache_entry(data)
-        
+
         # Skip if nothing in this cache entry
         if uname_len == 0:
             continue
@@ -133,7 +133,7 @@ def dump_hashes(sysaddr, secaddr, vista):
         (username, domain, domain_name, hash) = parse_decrypted_cache(dec_data, uname_len, domain_len, domain_name_len)
         hashes.append((username, domain, domain_name, hash))
 
-    return hashes 
+    return hashes
 
 
 def dump_file_hashes(syshive_fname, sechive_fname, vista):

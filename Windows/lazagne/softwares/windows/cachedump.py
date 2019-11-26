@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 from .creddump7.win32.domcachedump import dump_file_hashes
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import get_os_version

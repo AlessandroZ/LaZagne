@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.winstructure import *
 
@@ -23,11 +23,11 @@ class Credman(ModuleInfo):
                 c = creds[i].contents
                 if c.Type == CRED_TYPE_GENERIC or c.Type == CRED_TYPE_DOMAIN_VISIBLE_PASSWORD:
                     # Remove password too long
-                    if c.CredentialBlobSize.real < 200:
+                    if c.CredentialBlobSize.real < 2000:
                         pwd_found.append({
                             'URL': c.TargetName,
                             'Login': c.UserName,
-                            'Password': c.CredentialBlob[:c.CredentialBlobSize.real]  # \\x00 could be deleted
+                            'Password': c.CredentialBlob[:c.CredentialBlobSize.real].replace(b"\x00", b"")  # \\x00 could be deleted
                         })
 
             CredFree(creds)
