@@ -161,6 +161,24 @@ class DATA(Structure):
     ]
 
 
+class DATA2(Structure):
+    _fields_ = [
+        # ('boolean',       BOOL),
+        # ('short',             SHORT),
+        # ('unsignedShort',     WORD),
+        # ('int',           LONG),
+        # ('unsignedInt',   ULONG),
+        ('double',            DOUBLE),
+        ('guid', GUID),
+        ('string', LPWSTR),
+        # ('byteArray', VAULT_BYTE_BUFFER),
+        # ('protectedArray', VAULT_BYTE_BUFFER),
+        # ('attribute', PVAULT_CREDENTIAL_ATTRIBUTEW),
+        ('Sid',           PSID)
+        # ('sid', DWORD)
+    ]
+
+
 class Flag(Structure):
     _fields_ = [
         ('0x00', DWORD),
@@ -195,13 +213,28 @@ class VAULT_ITEM_DATA(Structure):
 PVAULT_ITEM_DATA = POINTER(VAULT_ITEM_DATA)
 
 
+class VAULT_ITEM_DATA2(Structure):
+    _fields_ = [
+        # ('schemaElementId',   DWORD),
+        # ('unk0',              DWORD),
+        # ('Type',              VAULT_ELEMENT_TYPE),
+        # ('type',              Flag),
+        # ('type',              DWORD * 14),
+        # ('unk1',              DWORD),
+        ('data', DATA2),
+    ]
+
+
+PVAULT_ITEM_DATA2 = POINTER(VAULT_ITEM_DATA2)
+
+
 class VAULT_ITEM_WIN8(Structure):
     _fields_ = [
         ('id', GUID),
         ('pName', PWSTR),
         ('pResource', PVAULT_ITEM_DATA),
         ('pUsername', PVAULT_ITEM_DATA),
-        ('pPassword', PVAULT_ITEM_DATA),
+        ('pPassword', PVAULT_ITEM_DATA2),
         ('unknown0', PVAULT_ITEM_DATA),
         ('LastWritten', FILETIME),
         ('Flags', DWORD),
@@ -587,10 +620,10 @@ def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, use
                 decrypted = getData(blobOut).decode("utf-8")
 
     if not decrypted:
-        can_decrypt = True
-        if not (user_dpapi and user_dpapi.unlocked):
-            from lazagne.config.dpapi_structure import are_masterkeys_retrieved
-            can_decrypt = are_masterkeys_retrieved()
+        can_decrypt = False
+        # if not (user_dpapi and user_dpapi.unlocked):
+        #     from lazagne.config.dpapi_structure import are_masterkeys_retrieved
+        #     can_decrypt = are_masterkeys_retrieved()
 
         if can_decrypt:
             decrypted = user_dpapi.decrypt_encrypted_blob(cipherText)

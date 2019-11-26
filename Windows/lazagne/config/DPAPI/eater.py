@@ -58,7 +58,7 @@ class Eater(object):
 
     def eat(self, fmt):
         """Parses data with the given format string.
-        
+
         Returns an array of elements or just one element depending on fmt.
 
         """
