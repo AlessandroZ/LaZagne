@@ -7,7 +7,6 @@ import codecs
 
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
-from pypykatz.pypykatz import pypykatz
 
 
 class Pypykatz(ModuleInfo):
@@ -24,6 +23,7 @@ class Pypykatz(ModuleInfo):
     def run(self):
         mimi = None
         try:
+            from pypykatz.pypykatz import pypykatz
             mimi = pypykatz.go_live()
         except Exception:
             pass
