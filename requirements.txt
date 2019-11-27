@@ -3,4 +3,4 @@ psutil; sys_platform == 'linux' or sys_platform == 'linux2'
 pyasn1
 rsa; sys_platform == 'win32'
 secretstorage; sys_platform == 'linux' or sys_platform == 'linux2'
-pypykatz; sys_platform == 'win32'
+https://github.com/skelsec/pypykatz.git; sys_platform == 'win32'
