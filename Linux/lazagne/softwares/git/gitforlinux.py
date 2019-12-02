@@ -1,5 +1,6 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import os
+import psutil
 
 try: 
     from urlparse import urlparse
@@ -7,6 +8,7 @@ except ImportError:
     from urllib.parse import urlparse
 
 from lazagne.config.module_info import ModuleInfo
+from lazagne.config import homes
 
 
 class GitForLinux(ModuleInfo):
@@ -40,20 +42,32 @@ class GitForLinux(ModuleInfo):
         """
         Main function
         """
+        known_locations = set()
 
         # According to the "git-credential-store" documentation:
         # Build a list of locations in which git credentials can be stored
-        locations = [
-            os.path.join(os.path.expanduser("~"), '.git-credentials'),
-            os.path.join(os.path.expanduser("~"), '.config/git/credentials'),
-        ]
-        if "XDG_CONFIG_HOME" in os.environ:
-            locations.append(os.path.join(os.environ.get('XDG_CONFIG_HOME'), 'git/credentials'))
 
         # Apply the password extraction on the defined locations
         pwd_found = []
-        for location in locations:
+        for location in homes.get(directory=[u'.git-credentials', u'.config/git/credentials']):
             pwd_found += self.extract_credentials(location)
+            known_locations.add(location)
+
+        # Read Env variable from another user
+        for process in psutil.process_iter():
+            try:
+                environ = process.environ()
+            except Exception:
+                continue
+
+            for var in ('XDG_CONFIG_HOME'):
+                if var not in environ or environ[var] in known_locations:
+                        continue
+
+                # Env variable found
+                location = environ[var]
+                known_locations.add(location)
+                pwd_found += self.extract_credentials(os.path.join(location, 'git/credentials'))
 
         # Filter duplicates
         return [{'URL': url, 'Login': login, 'Password': password} for url, login, password in set(pwd_found)]
