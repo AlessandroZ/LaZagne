@@ -4,7 +4,7 @@ import os
 try: 
     from urlparse import urlparse
 except ImportError: 
-    from urllib import parse as urlparse
+    from urllib.parse import urlparse
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
