@@ -36,6 +36,9 @@ from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
 
 # memory
 from lazagne.softwares.memory.mimipy import Mimipy
+
+# git
+from lazagne.softwares.git.gitforlinux import GitForLinux
 try:
     from lazagne.softwares.memory.memorydump import MemoryDump
 except ImportError:
@@ -51,7 +54,8 @@ def get_categories():
         'memory': {'help': 'Retrieve passwords from memory'},
         'wifi': {'help': 'Wifi'},
         'browsers': {'help': 'Web browsers supported'},
-        'wallet': {'help': 'Windows credentials (credential manager, etc.)'}
+        'wallet': {'help': 'Windows credentials (credential manager, etc.)'},
+        'git': {'help': 'GIT clients supported'}
     }
     return category
 
@@ -84,7 +88,8 @@ def get_modules():
         Wpa_supplicant(),
         Kde(),
         Libsecret(), 
-        Mimipy()
+        Mimipy(),
+        GitForLinux()
     ]
 
     # very long to execute
