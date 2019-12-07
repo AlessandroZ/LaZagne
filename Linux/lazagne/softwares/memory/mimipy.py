@@ -20,6 +20,7 @@ import traceback
 
 from lazagne.config.lib.memorpy import *
 from lazagne.config.module_info import ModuleInfo
+from lazagne.softwares.browsers.mozilla import python_version
 
 
 class Mimipy(ModuleInfo):
@@ -139,6 +140,7 @@ class Mimipy(ModuleInfo):
                                 password_tested.add(p)
                                 for user, h in self.shadow_hashes:
                                     if crypt.crypt(p.decode('latin'), h) == h:
+                                        p = p if python_version == 2 else p.decode()
                                         yield (rule["desc"], user, p)
 
     def mimipy_loot_passwords(self, optimizations='nsrx'):
