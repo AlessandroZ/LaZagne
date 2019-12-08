@@ -49,7 +49,7 @@ class GitForLinux(ModuleInfo):
 
         # Apply the password extraction on the defined locations
         pwd_found = []
-        for location in homes.get(directory=[u'.git-credentials', u'.config/git/credentials']):
+        for location in homes.get(file=[u'.git-credentials', u'.config/git/credentials']):
             pwd_found += self.extract_credentials(location)
             known_locations.add(location)
 
