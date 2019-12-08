@@ -60,7 +60,7 @@ class GitForLinux(ModuleInfo):
             except Exception:
                 continue
 
-            for var in ('XDG_CONFIG_HOME'):
+            for var in ('XDG_CONFIG_HOME', ):
                 if var not in environ or environ[var] in known_locations:
                         continue
 
