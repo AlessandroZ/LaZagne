@@ -3,9 +3,9 @@ import os
 import psutil
 
 try: 
-    from urlparse import urlparse
+    from urlparse import urlparse, unquote
 except ImportError: 
-    from urllib.parse import urlparse
+    from urllib.parse import urlparse, unquote
 
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config import homes
@@ -31,9 +31,9 @@ class GitForLinux(ModuleInfo):
                     if len(cred) > 0:
                         parts = urlparse(cred)
                         pwd_found.append((
-                            parts.geturl().replace(parts.username + ":" + parts.password + "@", "").strip(),
-                            parts.username,
-                            parts.password
+                            unquote(parts.geturl().replace(parts.username + ":" + parts.password + "@", "").strip()),
+                            unquote(parts.username),
+                            unquote(parts.password)
                         ))
 
         return pwd_found
@@ -49,7 +49,7 @@ class GitForLinux(ModuleInfo):
 
         # Apply the password extraction on the defined locations
         pwd_found = []
-        for location in homes.get(directory=[u'.git-credentials', u'.config/git/credentials']):
+        for location in homes.get(file=[u'.git-credentials', u'.config/git/credentials']):
             pwd_found += self.extract_credentials(location)
             known_locations.add(location)
 
@@ -60,7 +60,7 @@ class GitForLinux(ModuleInfo):
             except Exception:
                 continue
 
-            for var in ('XDG_CONFIG_HOME'):
+            for var in ('XDG_CONFIG_HOME', ):
                 if var not in environ or environ[var] in known_locations:
                         continue
 
