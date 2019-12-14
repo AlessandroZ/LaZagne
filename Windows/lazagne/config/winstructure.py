@@ -429,6 +429,38 @@ try:
 
     prototype = WINFUNCTYPE(ULONG, PHANDLE)
     vaultCloseVault = prototype(("VaultCloseVault", windll.vaultcli))
+
+    def get_vault_objects_for_this_version_of_windows():
+        """
+        @return: Tuple[
+                        Type of vault item,
+                        Pointer to type of vault item,
+                        VaultGetItem function as Callable[[vault_handle, vault_item_prt, password_vault_item_ptr], int]
+                       ]
+        """
+        os_version_float = float(get_os_version())
+        if os_version_float == 6.1:
+            #  Windows 7
+            return (
+                VAULT_ITEM_WIN7,
+                PVAULT_ITEM_WIN7,
+                lambda hVault, pVaultItem, pPasswordVaultItem:
+                        vaultGetItem7(hVault, byref(pVaultItem.id), pVaultItem.pResource, pVaultItem.pUsername,
+                                      None, 0, byref(pPasswordVaultItem))
+            )
+        elif os_version_float > 6.1:
+            #  Later than Windows7
+            return (
+                VAULT_ITEM_WIN8,
+                PVAULT_ITEM_WIN8,
+                lambda hVault, pVaultItem, pPasswordVaultItem:
+                        vaultGetItem8(hVault, byref(pVaultItem.id), pVaultItem.pResource, pVaultItem.pUsername,
+                                      pVaultItem.pPackageSid,  # additional parameter compared to Windows 7
+                                      None, 0, byref(pPasswordVaultItem))
+            )
+
+        raise Exception("Vault is not supported for this version of OS")
+
 except Exception:
     pass
 
