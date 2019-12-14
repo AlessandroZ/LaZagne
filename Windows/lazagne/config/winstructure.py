@@ -202,7 +202,7 @@ class VAULT_ITEM_WIN8(Structure):
         ('pResource', PVAULT_ITEM_DATA),
         ('pUsername', PVAULT_ITEM_DATA),
         ('pPassword', PVAULT_ITEM_DATA),
-        ('unknown0', PVAULT_ITEM_DATA),
+        ('pPackageSid', PVAULT_ITEM_DATA),
         ('LastWritten', FILETIME),
         ('Flags', DWORD),
         ('cbProperties', DWORD),
