@@ -213,19 +213,19 @@ class VAULT_ITEM_WIN8(Structure):
 PVAULT_ITEM_WIN8 = POINTER(VAULT_ITEM_WIN8)
 
 
-# class VAULT_ITEM_WIN7(Structure):
-#   _fields_ = [
-#       ('id',              GUID),
-#       ('pName',           PWSTR),
-#       ('pResource',       PVAULT_ITEM_DATA),
-#       ('pUsername',       PVAULT_ITEM_DATA),
-#       ('pPassword',       PVAULT_ITEM_DATA),
-#       ('LastWritten',     FILETIME),
-#       ('Flags',           DWORD),
-#       ('cbProperties',    DWORD),
-#       ('Properties',      PVAULT_ITEM_DATA),
-#   ]
-# PVAULT_ITEM_WIN7 = POINTER(VAULT_ITEM_WIN7)
+class VAULT_ITEM_WIN7(Structure):
+  _fields_ = [
+      ('id',              GUID),
+      ('pName',           PWSTR),
+      ('pResource',       PVAULT_ITEM_DATA),
+      ('pUsername',       PVAULT_ITEM_DATA),
+      ('pPassword',       PVAULT_ITEM_DATA),
+      ('LastWritten',     FILETIME),
+      ('Flags',           DWORD),
+      ('cbProperties',    DWORD),
+      ('Properties',      PVAULT_ITEM_DATA),
+  ]
+PVAULT_ITEM_WIN7 = POINTER(VAULT_ITEM_WIN7)
 
 class OSVERSIONINFOEXW(Structure):
     _fields_ = [
@@ -421,8 +421,8 @@ try:
                             POINTER(PVAULT_ITEM_WIN8))
     vaultGetItem8 = prototype(("VaultGetItem", windll.vaultcli))
 
-    # prototype = WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN7))
-    # vaultGetItem7 = prototype(("VaultGetItem", windll.vaultcli))
+    prototype = WINFUNCTYPE(ULONG, HANDLE, LPGUID, PVAULT_ITEM_DATA, PVAULT_ITEM_DATA, HWND, DWORD, POINTER(PVAULT_ITEM_WIN7))
+    vaultGetItem7 = prototype(("VaultGetItem", windll.vaultcli))
 
     prototype = WINFUNCTYPE(ULONG, LPVOID)
     vaultFree = prototype(("VaultFree", windll.vaultcli))
