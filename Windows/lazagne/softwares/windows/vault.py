@@ -35,7 +35,7 @@ class Vault(ModuleInfo):
                                 for j in range(cbItems.value):
 
                                     items8 = cast(items, POINTER(VAULT_ITEM_WIN8))
-                                    pItem8 = PVAULT_ITEM_WIN8()
+                                    pPasswordVaultItem8 = PVAULT_ITEM_WIN8()
                                     try:
                                         values = {
                                             'URL': str(items8[j].pResource.contents.data.string),
@@ -46,9 +46,9 @@ class Vault(ModuleInfo):
 
                                         if vaultGetItem8(hVault, byref(items8[j].id), items8[j].pResource,
                                                          items8[j].pUsername, items8[j].pPackageSid, None, 0,
-                                                         byref(pItem8)) == 0:
+                                                         byref(pPasswordVaultItem8)) == 0:
 
-                                            password = pItem8.contents.pPassword.contents.data.string
+                                            password = pPasswordVaultItem8.contents.pPassword.contents.data.string
                                             # Remove password too long
                                             if password and len(password) < 100:
                                                 values['Password'] = password
@@ -58,8 +58,8 @@ class Vault(ModuleInfo):
                                     except Exception as e:
                                         self.debug(e)
 
-                                    if pItem8:
-                                        vaultFree(pItem8)
+                                    if pPasswordVaultItem8:
+                                        vaultFree(pPasswordVaultItem8)
 
                                 if items:
                                     vaultFree(items)
