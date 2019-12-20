@@ -107,7 +107,7 @@ class HiveFileAddressSpace:
                 stuff_read = "\0" * first_block
 
         new_vaddr = vaddr + first_block
-        for i in range(0, full_blocks):
+        for i in range(0, int(full_blocks)):
             paddr = self.vtop(new_vaddr)
             if not paddr and zero:
                 stuff_read = stuff_read + "\0" * BLOCK_SIZE
