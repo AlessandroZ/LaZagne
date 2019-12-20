@@ -2,9 +2,9 @@
 import os
 
 try: 
-    from urlparse import urlparse, unquote
+    from urlparse import urlparse
 except ImportError: 
-    from urllib.parse import urlparse, unquote
+    from urllib.parse import urlparse
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
@@ -31,9 +31,9 @@ class GitForWindows(ModuleInfo):
                     if len(cred) > 0:
                         parts = urlparse(cred)
                         pwd_found.append((
-                            unquote(parts.geturl().replace(parts.username + ":" + parts.password + "@", "").strip()),
-                            unquote(parts.username),
-                            unquote(parts.password)
+                            parts.geturl().replace(parts.username + ":" + parts.password + "@", "").strip(),
+                            parts.username,
+                            parts.password
                         ))
 
         return pwd_found
