@@ -159,7 +159,7 @@ def get_hbootkey(samaddr, bootkey):
     if not F:
         return None
 
-    revision = ord(F[0x00])
+    revision = ord(F[0x00:0x01])
     if revision == 2:
         md5 = hashlib.md5(F[0x70:0x80] + aqwerty + bootkey + anum)
         rc4_key = md5.digest()
