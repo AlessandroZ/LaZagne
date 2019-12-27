@@ -175,9 +175,9 @@ class StandardOutput(object):
                 for pwd in pwd_found:
 
                     # Detect which kinds of password has been found
-                    lower_list = [s.lower() for s in pwd]
+                    pwd_lower_keys = {k.lower(): v for k, v in pwd.items()}
                     for p in ('password', 'key', 'hash'):
-                        pwd_category = [s for s in lower_list if p in s]
+                        pwd_category = [s for s in pwd_lower_keys if p in s]
                         if pwd_category:
                             pwd_category = pwd_category[0]
                             break
@@ -185,11 +185,12 @@ class StandardOutput(object):
                     write_it = False
                     passwd = None
                     try:
+                        passwd_str = pwd_lower_keys[pwd_category]
                         # Do not print empty passwords
-                        if not pwd[pwd_category.capitalize()]:
+                        if not passwd_str:
                             continue
 
-                        passwd = string_to_unicode(pwd[pwd_category.capitalize()])
+                        passwd = string_to_unicode(passwd_str)
                     except Exception:
                         pass
 
