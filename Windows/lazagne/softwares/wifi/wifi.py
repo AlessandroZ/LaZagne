@@ -21,7 +21,10 @@ class Wifi(ModuleInfo):
         if constant.system_dpapi and constant.system_dpapi.unlocked:
             decrypted_blob = constant.system_dpapi.decrypt_wifi_blob(key)
             if decrypted_blob:
-                return decrypted_blob.decode(sys.getfilesystemencoding())
+                try:
+                    return decrypted_blob.decode(sys.getfilesystemencoding())
+                except:
+                    return str(decrypted_blob)
 
     def decrypt_using_netsh(self, ssid):
         """
