@@ -93,7 +93,7 @@ class Mozilla(ModuleInfo):
                         profile_path = os.path.join(directory, cp.get(section, 'Path').strip())
 
                     if profile_path:
-                        profile_path.replace('/', '\\')
+                        profile_path = profile_path.replace('/', '\\')
                         profile_list.append(profile_path)
 
         except Exception as e:
