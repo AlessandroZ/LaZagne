@@ -23,7 +23,7 @@ class Wifi(ModuleInfo):
             if decrypted_blob:
                 try:
                     return decrypted_blob.decode(sys.getfilesystemencoding())
-                except:
+                except UnicodeDecodeError:
                     return str(decrypted_blob)
 
     def decrypt_using_netsh(self, ssid):
