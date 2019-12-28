@@ -60,7 +60,7 @@ from lazagne.config.lib.memorpy import *
 # ]
 
 browser_list = ["iexplore.exe", "firefox.exe", "chrome.exe", "opera.exe", "MicrosoftEdge.exe", "microsoftedgecp.exe"]
-keepass_process = 'keepass.exe'
+keepass_process = b'keepass.exe'
 
 
 class MemoryDump(ModuleInfo):
@@ -100,7 +100,7 @@ class MemoryDump(ModuleInfo):
             #                 }
             #             )
 
-            if keepass_process in process.get('name', '').lower():
+            if keepass_process in process.get('name', b'').lower():
                 full_exe_path = get_full_path_from_pid(process.get('pid'))
                 k = KeeThief()
                 if k.run(full_exe_path=full_exe_path):
