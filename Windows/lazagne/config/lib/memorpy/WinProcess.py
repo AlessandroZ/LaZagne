@@ -90,7 +90,7 @@ class WinProcess(BaseProcess):
             if hProcess:
                 psapi.EnumProcessModules(hProcess, byref(hModule), sizeof(hModule), byref(count))
                 psapi.GetModuleBaseNameA(hProcess, hModule.value, modname, sizeof(modname))
-                proc["name"]=modname.value
+                proc["name"]=modname.value.decode()
                 kernel32.CloseHandle(hProcess)
             processes.append(proc)
         return processes
