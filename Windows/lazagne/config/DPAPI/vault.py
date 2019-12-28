@@ -201,7 +201,7 @@ class VaultVcrd(DataStruct):
         self.description = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
         self.attributes_array_size = data.eat("L")
         # 12 is the size of the VAULT_ATTRIBUTE_MAP_ENTRY
-        self.attributes_num = self.attributes_array_size / 12
+        self.attributes_num = self.attributes_array_size // 12
         for i in range(self.attributes_num):
             # 12: size of VaultAttributeMapEntry Structure
             v_map_entry = VaultAttributeMapEntry(data.eat("12s"))
