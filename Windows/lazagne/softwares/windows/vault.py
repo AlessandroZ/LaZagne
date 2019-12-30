@@ -11,7 +11,7 @@ class Vault(ModuleInfo):
     def run(self):
 
         # retrieve passwords (IE, etc.) using the Windows Vault API
-        if float(get_os_version()) <= 6.1:
+        if float(get_os_version()) < 6.1:
             self.info(u'Vault not supported for this OS')
             return
 
@@ -19,7 +19,7 @@ class Vault(ModuleInfo):
         vaults = LPGUID()
         hVault = HANDLE(INVALID_HANDLE_VALUE)
         cbItems = DWORD()
-        items = c_char_p()
+        items_buf = c_char_p()
         pwd_found = []
 
         if vaultEnumerateVaults(0, byref(cbVaults), byref(vaults)) == 0:
@@ -27,28 +27,27 @@ class Vault(ModuleInfo):
                 self.debug(u'No Vaults found')
                 return
             else:
+                VAULT_ITEM_WIN, PVAULT_ITEM_WIN, VaultGetItemFunc = get_vault_objects_for_this_version_of_windows()
                 for i in range(cbVaults.value):
                     if vaultOpenVault(byref(vaults[i]), 0, byref(hVault)) == 0:
                         if hVault:
-                            if vaultEnumerateItems(hVault, 0x200, byref(cbItems), byref(items)) == 0:
+                            if vaultEnumerateItems(hVault, 0x200, byref(cbItems), byref(items_buf)) == 0:
 
                                 for j in range(cbItems.value):
 
-                                    items8 = cast(items, POINTER(VAULT_ITEM_WIN8))
-                                    pItem8 = PVAULT_ITEM_WIN8()
+                                    items = cast(items_buf, POINTER(VAULT_ITEM_WIN))
+                                    pPasswordVaultItem = PVAULT_ITEM_WIN()
                                     try:
                                         values = {
-                                            'URL': str(items8[j].pResource.contents.data.string),
-                                            'Login': str(items8[j].pUsername.contents.data.string)
+                                            'URL': str(items[j].pResource.contents.data.string),
+                                            'Login': str(items[j].pUsername.contents.data.string)
                                         }
-                                        if items8[j].pName:
-                                            values['Name'] = items8[j].pName
+                                        if items[j].pName:
+                                            values['Name'] = items[j].pName
 
-                                        if vaultGetItem8(hVault, byref(items8[j].id), items8[j].pResource,
-                                                         items8[j].pUsername, items8[j].unknown0, None, 0,
-                                                         byref(pItem8)) == 0:
+                                        if VaultGetItemFunc(hVault, items[j], pPasswordVaultItem) == 0:
 
-                                            password = pItem8.contents.pPassword.contents.data.string
+                                            password = pPasswordVaultItem.contents.pPassword.contents.data.string
                                             # Remove password too long
                                             if password and len(password) < 100:
                                                 values['Password'] = password
@@ -58,11 +57,11 @@ class Vault(ModuleInfo):
                                     except Exception as e:
                                         self.debug(e)
 
-                                    if pItem8:
-                                        vaultFree(pItem8)
+                                    if pPasswordVaultItem:
+                                        vaultFree(pPasswordVaultItem)
 
-                                if items:
-                                    vaultFree(items)
+                                if items_buf:
+                                    vaultFree(items_buf)
 
                             vaultCloseVault(byref(hVault))
 

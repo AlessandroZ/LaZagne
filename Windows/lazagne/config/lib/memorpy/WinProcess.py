@@ -81,7 +81,7 @@ class WinProcess(BaseProcess):
         PROCESS_VM_READ = 0x0010
 
         psapi.EnumProcesses(byref(lpidProcess), cb, byref(cbNeeded))
-        nReturned = cbNeeded.value/sizeof(c_ulong())
+        nReturned = int(cbNeeded.value/sizeof(c_ulong()))
 
         pidProcess = [i for i in lpidProcess][:nReturned]
         for pid in pidProcess:
@@ -90,7 +90,7 @@ class WinProcess(BaseProcess):
             if hProcess:
                 psapi.EnumProcessModules(hProcess, byref(hModule), sizeof(hModule), byref(count))
                 psapi.GetModuleBaseNameA(hProcess, hModule.value, modname, sizeof(modname))
-                proc["name"]=modname.value
+                proc["name"]=modname.value.decode()
                 kernel32.CloseHandle(hProcess)
             processes.append(proc)
         return processes
