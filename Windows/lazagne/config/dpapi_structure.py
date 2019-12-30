@@ -181,6 +181,6 @@ class SystemDpapi(object):
         Decrypt wifi password
         """
         if self.smkp:
-            blob = DPAPIBlob(key_material.decode('hex'))
+            blob = DPAPIBlob(codecs.decode(key_material, 'hex'))
             ok, msg = blob.decrypt_encrypted_blob(mkp=self.smkp)
             return manage_response(ok, msg)
