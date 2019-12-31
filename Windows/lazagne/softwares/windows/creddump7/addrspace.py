@@ -83,7 +83,7 @@ class HiveFileAddressSpace:
 
     def read(self, vaddr, length, zero=False):
         first_block = BLOCK_SIZE - vaddr % BLOCK_SIZE
-        full_blocks = ((length + (vaddr % BLOCK_SIZE)) / BLOCK_SIZE) - 1
+        full_blocks = int((length + (vaddr % BLOCK_SIZE)) / BLOCK_SIZE) - 1
         left_over = (length + vaddr) % BLOCK_SIZE
 
         paddr = self.vtop(vaddr)
