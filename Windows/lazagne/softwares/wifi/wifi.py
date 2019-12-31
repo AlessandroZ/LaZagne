@@ -8,6 +8,7 @@ from subprocess import Popen, PIPE
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
+from lazagne.config.winstructure import python_version
 
 
 class Wifi(ModuleInfo):
@@ -21,24 +22,33 @@ class Wifi(ModuleInfo):
         if constant.system_dpapi and constant.system_dpapi.unlocked:
             decrypted_blob = constant.system_dpapi.decrypt_wifi_blob(key)
             if decrypted_blob:
-                return decrypted_blob.decode(sys.getfilesystemencoding())
+                try:
+                    return decrypted_blob.decode(sys.getfilesystemencoding())
+                except UnicodeDecodeError:
+                    return str(decrypted_blob)
 
     def decrypt_using_netsh(self, ssid):
         """
         Does not need admin priv but would work only with english and french systems
         """
+        if python_version == 2: 
+            name = 'содержимое ключа'
+        else: 
+            name = 'содержимое ключа'.encode('utf-8')
+
         language_keys = [
-            'key content', 'contenu de la cl', 'содержимое ключа'
+            b'key content', b'contenu de la cl', name
         ]
+
         self.debug(u'Trying using netsh method')
         process = Popen(['netsh.exe', 'wlan', 'show', 'profile', '{SSID}'.format(SSID=ssid), 'key=clear'],
                         stdin=PIPE,
                         stdout=PIPE,
                         stderr=PIPE)
         stdout, stderr = process.communicate()
-        for st in stdout.decode().split('\n'):
+        for st in stdout.split(b'\n'):
             if any(i in st.lower() for i in language_keys):
-                password = st.split(':')[1].strip()
+                password = st.split(b':')[1].strip()
                 return password
 
     def run(self):
@@ -82,7 +92,6 @@ class Wifi(ModuleInfo):
                                             password = self.decrypt_using_lsa_secret(key=key)
                                             if not password:
                                                 password = self.decrypt_using_netsh(ssid=values['SSID'])
-
                                             if password:
                                                 values['Password'] = password
                                             else:
