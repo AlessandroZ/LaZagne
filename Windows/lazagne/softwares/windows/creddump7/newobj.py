@@ -56,7 +56,7 @@ class Obj(object):
         if name in globals():
             # This is a bit of "magic"
             # Could be replaced with a dict mapping type names to types
-            return globals()[name](name,address,space)
+            return globals()[name](name, address, space)
         elif name in builtin_types:
             return Primitive(name, address, space)
         else:
@@ -94,9 +94,9 @@ class Obj(object):
                 a_off, a_tp = get_obj_offset(types, [self.name, attr, i])
                 if a_tp == 'pointer':
                     ptp = get_ptr_type(self.name, [attr, i])
-                    l.append(Pointer(a_tp, self.address+a_off, self.space, ptp))
+                    l.append(Pointer(a_tp, self.address + a_off, self.space, ptp))
                 else:
-                    l.append(Obj(a_tp, self.address+a_off, self.space))
+                    l.append(Obj(a_tp, self.address + a_off, self.space))
             return l
         elif tp == 'pointer':
             # Can't just return a Obj here, since pointers need to also
@@ -128,7 +128,7 @@ class Obj(object):
         # Could also just return the list
         membs = [(k, v[0]) for k,v in types[self.name][1].items()]
         membs.sort(key=itemgetter(1))
-        return map(itemgetter(0),membs) + self.extra_members
+        return list(map(itemgetter(0),membs)) + self.extra_members
 
     def values(self):
         """Return a dictionary of this object's members and their values"""
