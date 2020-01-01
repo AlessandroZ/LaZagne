@@ -150,7 +150,7 @@ class VaultAttribute(DataStruct):
             self.attr_unknown_4 = data.eat("L")
         self.size = data.eat("L")
         if self.size > 0:
-            self.has_iv = ord(data.eat("1s"))  # To change for Python 3 compatibility
+            self.has_iv = ord(data.eat("1s"))
             
             if self.has_iv == 1:
                 self.iv_size = data.eat("L")
