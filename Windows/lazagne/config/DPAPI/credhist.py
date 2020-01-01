@@ -27,7 +27,7 @@ class RPC_SID(DataStruct):
     def parse(self, data):
         self.version = data.eat("B")
         n = data.eat("B")
-        self.idAuth = struct.unpack(">Q", "\0\0" + data.eat("6s"))[0]
+        self.idAuth = struct.unpack(">Q", b"\0\0" + data.eat("6s"))[0]
         self.subAuth = data.eat("%dL" % n)
 
     def __str__(self):
@@ -90,7 +90,7 @@ class CredhistEntry(DataStruct):
         cleartxt = crypto.dataDecrypt(self.cipherAlgo, self.hashAlgo, self.encrypted, enckey,
                                       self.iv, self.rounds)
         self.pwdhash = cleartxt[:self.shaHashLen]
-        self.ntlm = cleartxt[self.shaHashLen:self.shaHashLen + self.ntHashLen].rstrip("\x00")
+        self.ntlm = cleartxt[self.shaHashLen:self.shaHashLen + self.ntHashLen].rstrip(b"\x00")
         if len(self.ntlm) != 16:
             self.ntlm = None
 
