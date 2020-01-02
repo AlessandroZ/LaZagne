@@ -13,6 +13,7 @@ from lazagne.config.constant import constant
 from lazagne.config.crypto.pyaes import AESModeOfOperationCBC
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config import homes
+from lazagne.softwares.browsers.mozilla import python_version
 
 
 class Chrome(ModuleInfo):
@@ -88,6 +89,7 @@ class Chrome(ModuleInfo):
                                 dklen=self.enc_config['length'])
 
                             password = self.chrome_decrypt(password, key=enc_key, init_vector=self.enc_config['iv'])
+                            password = password if python_version == 2 else password.decode()
                         except Exception:
                             print(traceback.format_exc())
                 if user:
