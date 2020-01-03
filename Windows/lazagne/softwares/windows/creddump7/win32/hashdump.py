@@ -134,10 +134,7 @@ def get_bootkey(sysaddr):
 
     bootkey_scrambled = b""
     for i in range(len(bootkey)):
-        try:
-            bootkey_scrambled += bootkey[p[i]]
-        except TypeError:
-            bootkey_scrambled += bytes([bootkey[p[i]]])
+        bootkey_scrambled += bootkey[p[i]:p[i]+1]
     return bootkey_scrambled
 
 
@@ -159,7 +156,7 @@ def get_hbootkey(samaddr, bootkey):
     if not F:
         return None
 
-    revision = ord(F[0x00])
+    revision = ord(F[0x00:0x01])
     if revision == 2:
         md5 = hashlib.md5(F[0x70:0x80] + aqwerty + bootkey + anum)
         rc4_key = md5.digest()
@@ -223,7 +220,7 @@ def get_user_hashes(user_key, hbootkey):
     rid = int(user_key.Name, 16)
     V = None
     for v in values(user_key):
-        if v.Name == 'V':
+        if v.Name == b'V':
             V = samaddr.read(v.Data.value, v.DataLength.value)
     if not V: return None
     hash_offset = unpack("<L", V[0xa8:0xa8+4])[0] + 0xCC

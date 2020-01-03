@@ -311,7 +311,7 @@ class MasterKeyPool(object):
                 self.preferred_guid = "%s-%s-%s-%s-%s%s" % (
                 format(GUID[0], '08x'), format(GUID[1], '04x'), format(GUID[2], '04x'), format(GUID2[0], '04x'),
                 format(GUID2[1], '08x'), format(GUID2[2], '04x'))
-                return self.preferred_guid
+                return self.preferred_guid.encode()
 
         return False
 

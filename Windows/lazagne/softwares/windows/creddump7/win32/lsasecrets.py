@@ -102,10 +102,10 @@ def decrypt_aes(secret, key):
 
     data = b""
     for i in range(60, len(secret), 16):
-        aes = AESModeOfOperationCBC(aeskey, iv="\x00" * 16)
+        aes = AESModeOfOperationCBC(aeskey, iv=b"\x00" * 16)
         buf = secret[i: i + 16]
         if len(buf) < 16:
-            buf += (16 - len(buf)) * "\00"
+            buf += (16 - len(buf)) * b"\00"
 
         data += aes.decrypt(buf)
 
@@ -116,6 +116,9 @@ def get_secret_by_name(secaddr, name, lsakey, vista):
     root = get_root(secaddr)
     if not root:
         return None
+
+    if isinstance(name, str):
+        name = name.encode()
 
     enc_secret_key = open_key(root, [b"Policy", b"Secrets", name, b"CurrVal"])
     if not enc_secret_key:

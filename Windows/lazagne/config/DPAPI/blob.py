@@ -93,11 +93,11 @@ class DPAPIBlob(DataStruct):
 
                 if "AES" in self.cipherAlgo.name:
                     cipher = AESModeOfOperationCBC(key[:int(self.cipherAlgo.keyLength)],
-                                                   iv="\x00" * int(self.cipherAlgo.ivLength))
+                                                   iv=b"\x00" * int(self.cipherAlgo.ivLength))
                     self.cleartext = b"".join([cipher.decrypt(self.cipherText[i:i + AES_BLOCK_SIZE]) for i in
                                                range(0, len(self.cipherText), AES_BLOCK_SIZE)])
                 else:
-                    cipher = self.cipherAlgo.module(key, CBC, "\x00" * self.cipherAlgo.ivLength)
+                    cipher = self.cipherAlgo.module(key, CBC, b"\x00" * self.cipherAlgo.ivLength)
                     self.cleartext = cipher.decrypt(self.cipherText)
 
                 padding = char_to_int(self.cleartext[-1])

@@ -3,10 +3,11 @@
 
 """
 Code based from these two awesome projects: 
-- DPAPICK 	: https://bitbucket.org/jmichel/dpapick
-- DPAPILAB 	: https://github.com/dfirfpi/dpapilab
+- DPAPICK   : https://bitbucket.org/jmichel/dpapick
+- DPAPILAB  : https://github.com/dfirfpi/dpapilab
 """
 
+import codecs
 import struct
 
 from .blob import DPAPIBlob
@@ -149,7 +150,8 @@ class VaultAttribute(DataStruct):
             self.attr_unknown_4 = data.eat("L")
         self.size = data.eat("L")
         if self.size > 0:
-            self.has_iv = char_to_int(data.eat("1s"))  # To change for Python 3 compatibility
+            self.has_iv = ord(data.eat("1s"))
+            
             if self.has_iv == 1:
                 self.iv_size = data.eat("L")
                 self.iv = data.eat(str(self.iv_size)+ "s")
@@ -193,7 +195,7 @@ class VaultVcrd(DataStruct):
         DataStruct.__init__(self, raw)
 
     def parse(self, data):
-        self.schema_guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
+        self.schema_guid = b"%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
         self.vcrd_unknown_1 = data.eat("L")
         self.last_update = data.eat("Q")
         self.vcrd_unknown_2 = data.eat("L")
@@ -201,8 +203,7 @@ class VaultVcrd(DataStruct):
         self.description = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
         self.attributes_array_size = data.eat("L")
         # 12 is the size of the VAULT_ATTRIBUTE_MAP_ENTRY
-        assert self.attributes_array_size % 12 == 0
-        self.attributes_num = int(self.attributes_array_size / 12)
+        self.attributes_num = self.attributes_array_size // 12
         for i in range(self.attributes_num):
             # 12: size of VaultAttributeMapEntry Structure
             v_map_entry = VaultAttributeMapEntry(data.eat("12s"))
@@ -231,13 +232,13 @@ class VaultVsch(DataStruct):
         self.schema_guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")
         self.vault_vsch_unknown_1 = data.eat("L")
         self.count = data.eat("L")
-        self.schema_name = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.schema_name = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
 
 
 class VaultAttributeItem(object):
     def __init__(self, id_, item):
         self.id = id_
-        self.item = item.encode('hex')
+        self.item = codecs.encode(item, 'hex')
 
 
 class VaultSchemaGeneric(DataStruct):
@@ -300,9 +301,9 @@ class VaultSchemaPin(DataStruct):
         if self.sid_len > 0:
             self.sid = data.eat_sub(self.sid_len)
         self.id_resource = data.eat("L")
-        self.resource = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.resource = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
         self.id_password = data.eat("L")
-        self.authenticator = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')  # Password
+        self.authenticator = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')  # Password
         self.id_pin = data.eat("L")
         self.pin = data.eat_length_and_string("L")
 
@@ -328,11 +329,11 @@ class VaultSchemaWebPassword(DataStruct):
         self.count = data.eat("L")
         self.vault_schema_web_password_unknown1 = data.eat("L")
         self.id_identity = data.eat("L")
-        self.identity = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.identity = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
         self.id_resource = data.eat("L")
-        self.resource = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.resource = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
         self.id_authenticator = data.eat("L")
-        self.authenticator = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.authenticator = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
 
 
 class VaultSchemaActiveSync(DataStruct):
@@ -356,18 +357,18 @@ class VaultSchemaActiveSync(DataStruct):
         self.count = data.eat("L")
         self.vault_schema_activesync_unknown1 = data.eat("L")
         self.id_identity = data.eat("L")
-        self.identity = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.identity = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
         self.id_resource = data.eat("L")
-        self.resource = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00\x00')
+        self.resource = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
         self.id_authenticator = data.eat("L")
-        self.authenticator = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip('\x00').encode('hex')
+        self.authenticator = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00').encode('hex')
 
 
 # Vault Schema Dict
 vault_schemas = {
-    u'ActiveSyncCredentialSchema'		: VaultSchemaActiveSync,
-    u'PIN Logon Vault Resource Schema'	: VaultSchemaPin,
-    u'Windows Web Password Credential'	: VaultSchemaWebPassword,
+    b'ActiveSyncCredentialSchema'       : VaultSchemaActiveSync,
+    b'PIN Logon Vault Resource Schema'  : VaultSchemaPin,
+    b'Windows Web Password Credential'  : VaultSchemaWebPassword,
 }
 
 
@@ -406,7 +407,7 @@ class Vault(object):
         Helper to get the Vault schema to apply on decoded data.
         """
         vault_schema = default_schema
-        schema_file_path = os.path.join(base_dir, guid + '.vsch')
+        schema_file_path = os.path.join(base_dir.encode(), guid + b'.vsch')
         try:
             with open(schema_file_path, 'rb') as fschema:
                 vsch = VaultVsch(fschema.read())
@@ -456,11 +457,11 @@ class Vault(object):
                         fin.seek(attribute.offset)
 
                         v_attribute = VaultAttribute(fin.read())
-                        # print '-id: ', v_attribute.id
-                        # print '-size: ', v_attribute.size
-                        # print '-data: ', repr(v_attribute.data)
-                        # print '-has_iv: ', v_attribute.has_iv
-                        # print '-iv: ', repr(v_attribute.iv)
+                        # print('-id: ', v_attribute.id)
+                        # print('-size: ', v_attribute.size)
+                        # print('-data: ', repr(v_attribute.data))
+                        # print('-has_iv: ', v_attribute.has_iv)
+                        # print('-iv: ', repr(v_attribute.iv))
 
                         decrypted, is_attribute_ex = self.decrypt_vault_attribute(v_attribute, key_aes128, key_aes256)
                         if is_attribute_ex:
@@ -475,7 +476,7 @@ class Vault(object):
                         }
 
                     # Parse value found
-                    for k, v in sorted(attributes_data.iteritems()):
+                    for k, v in sorted(attributes_data.items()):
                         # Parse decrypted data depending on its schema
                         dataout = v['schema'](v['data'])
 

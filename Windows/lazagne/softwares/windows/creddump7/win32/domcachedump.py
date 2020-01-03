@@ -53,11 +53,11 @@ def decrypt_hash_vista(edata, nlkm, ch):
     """
     aes = AESModeOfOperationCBC(nlkm[16:32], iv=ch)
 
-    out = ""
+    out = b""
     for i in range(0, len(edata), 16):
         buf = edata[i:i+16]
         if len(buf) < 16:
-            buf += (16 - len(buf)) * "\00"
+            buf += (16 - len(buf)) * b"\00"
         out += b"".join([aes.decrypt(buf[i:i + AES_BLOCK_SIZE]) for i in range(0, len(buf), AES_BLOCK_SIZE)])
     return out
 
@@ -72,9 +72,9 @@ def parse_cache_entry(cache_data):
 
 def parse_decrypted_cache(dec_data, uname_len, domain_len, domain_name_len):
     uname_off = 72
-    pad = 2 * ((uname_len / 2) % 2)
+    pad = 2 * ((uname_len // 2) % 2)
     domain_off = uname_off + uname_len + pad
-    pad = 2 * ((domain_len / 2) % 2)
+    pad = 2 * ((domain_len // 2) % 2)
     domain_name_off = domain_off + domain_len + pad
 
     data_hash = dec_data[:0x10]
@@ -108,13 +108,13 @@ def dump_hashes(sysaddr, secaddr, vista):
     if not root:
         return []
 
-    cache = open_key(root, ["Cache"])
+    cache = open_key(root, [b"Cache"])
     if not cache:
         return []
 
     hashes = []
     for v in values(cache):
-        if v.Name == "NL$Control":
+        if v.Name == b"NL$Control":
             continue
         
         data = v.space.read(v.Data.value, v.DataLength.value)

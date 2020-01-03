@@ -37,6 +37,9 @@ def open_key(root, key):
         return root
     
     keyname = key.pop(0)
+    if isinstance(keyname, str):
+        keyname = keyname.encode()
+
     for s in subkeys(root):
         if s.Name.upper() == keyname.upper():
             return open_key(s, key)
