@@ -40,7 +40,8 @@ class Skype(ModuleInfo):
 
             # num = winreg.QueryInfoKey(hkey)[1]
             k = winreg.EnumValue(hkey, 0)[1]
-            return win.Win32CryptUnprotectData(k, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+            result_bytes = win.Win32CryptUnprotectData(k, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+            return result_bytes.decode("utf-8")
         except Exception as e:
             self.debug(str(e))
             return False

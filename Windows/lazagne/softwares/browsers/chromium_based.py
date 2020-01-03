@@ -112,8 +112,9 @@ class ChromiumBased(ModuleInfo):
                     # Failed...
                 else:
                     # Decrypt the Password
-                    password = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user,
-                                                       user_dpapi=constant.user_dpapi)
+                    password_bytes = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user,
+                                                             user_dpapi=constant.user_dpapi)
+                    password = password_bytes.decode("utf-8")
 
                 if not url and not login and not password:
                     continue

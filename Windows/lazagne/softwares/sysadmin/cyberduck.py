@@ -37,10 +37,10 @@ class Cyberduck(ModuleInfo):
                             or elem.attrib['name'].startswith('sftp') or elem.attrib['name'].startswith('http') \
                             or elem.attrib['name'].startswith('https'):
                         encrypted_password = base64.b64decode(elem.attrib['value'])
-                        password = Win32CryptUnprotectData(encrypted_password, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+                        password_bytes = Win32CryptUnprotectData(encrypted_password, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
                         pwd_found.append({
                             'URL': elem.attrib['name'],
-                            'Password': password,
+                            'Password': password_bytes.decode("utf-8"),
                         })
                 except Exception as e:
                     self.debug(str(e))

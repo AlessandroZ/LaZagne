@@ -22,10 +22,11 @@ class OpenVPN(ModuleInfo):
             return False
 
     def decrypt_password(self, encrypted_password, entropy):
-        return Win32CryptUnprotectData(encrypted_password,
-                                       entropy=entropy,
-                                       is_current_user=constant.is_current_user,
-                                       user_dpapi=constant.user_dpapi)
+        result_bytes = Win32CryptUnprotectData(encrypted_password,
+                                               entropy=entropy,
+                                               is_current_user=constant.is_current_user,
+                                               user_dpapi=constant.user_dpapi)
+        return result_bytes.decode("utf-8")
 
     def get_credentials(self, key):
         pwd_found = []
