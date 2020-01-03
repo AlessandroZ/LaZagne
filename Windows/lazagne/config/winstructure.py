@@ -640,11 +640,11 @@ def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, use
             blobEntropy = DATA_BLOB(len(entropy), bufferEntropy)
 
             if CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, 0, byref(blobOut)):
-                decrypted = getData(blobOut).decode("utf-8")
+                decrypted = getData(blobOut)
 
         else:
             if CryptUnprotectData(byref(blobIn), None, None, None, None, 0, byref(blobOut)):
-                decrypted = getData(blobOut).decode("utf-8")
+                decrypted = getData(blobOut)
 
     if not decrypted:
         can_decrypt = True
