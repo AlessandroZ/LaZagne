@@ -52,8 +52,8 @@ class Outlook(ModuleInfo):
             k = winreg.EnumValue(hkey, x)
             if 'password' in k[0].lower():
                 try:
-                    password = win.Win32CryptUnprotectData(k[1][1:], is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
-                    values[k[0]] = password
+                    password_bytes = win.Win32CryptUnprotectData(k[1][1:], is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+                    values[k[0]] = password_bytes.decode("utf-8")
                 except Exception as e:
                     self.debug(str(e))
                     values[k[0]] = 'N/A'

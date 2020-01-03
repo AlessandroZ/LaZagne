@@ -117,7 +117,8 @@ class IE(ModuleInfo):
     def decipher_password(self, cipher_text, u):
         pwd_found = []
         # deciper the password
-        pwd = win.Win32CryptUnprotectData(cipher_text, u, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+        pwd_bytes = win.Win32CryptUnprotectData(cipher_text, u, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+        pwd = pwd_bytes.decode("utf-8")
         a = ''
         if pwd:
             for i in range(len(pwd)):
