@@ -426,10 +426,6 @@ CredFree = advapi32.CredFree
 CredFree.restype = PVOID
 CredFree.argtypes = [PVOID]
 
-memcpy = cdll.msvcrt.memcpy
-memcpy.restype = PVOID
-memcpy.argtypes = [PVOID]
-
 LocalFree = kernel32.LocalFree
 LocalFree.restype = HANDLE
 LocalFree.argtypes = [HANDLE]
@@ -600,11 +596,10 @@ def RtlAdjustPrivilege(privilege_id):
 
 
 def getData(blobOut):
-    cbData = int(blobOut.cbData)
+    cbData = blobOut.cbData
     pbData = blobOut.pbData
-    buffer = c_buffer(cbData)
-
-    memcpy(buffer, pbData, cbData)
+    buffer = create_string_buffer(cbData)
+    memmove(buffer, pbData, sizeof(buffer))
     LocalFree(pbData);
     return buffer.raw
 
