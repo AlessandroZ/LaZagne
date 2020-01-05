@@ -117,44 +117,42 @@ class IE(ModuleInfo):
     def decipher_password(self, cipher_text, u):
         pwd_found = []
         # deciper the password
-        pwd_bytes = win.Win32CryptUnprotectData(cipher_text, u, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
-        pwd = pwd_bytes.decode("utf-8")
-        a = ''
-        if pwd:
-            for i in range(len(pwd)):
-                try:
-                    a = pwd[i:].decode('UTF-16LE')
-                    a = a.decode('utf-8')
-                    break
-                except Exception:
-                    return []
-        if not a:
+        pwd = win.Win32CryptUnprotectData(cipher_text, u, is_current_user=constant.is_current_user,
+                                          user_dpapi=constant.user_dpapi)
+        if not pwd:
             return []
-        # the last one is always equal to 0
-        secret = a.split('\x00')
-        if secret[len(secret) - 1] == '':
-            secret = secret[:len(secret) - 1]
 
-        # define the length of the tab
-        if len(secret) % 2 == 0:
-            length = len(secret)
-        else:
-            length = len(secret) - 1
+        separator = b"\x00\x00"
+        if pwd.endswith(separator):
+            pwd = pwd[: -len(separator)]
 
-        # list username / password in clear text
-        password = None
-        for s in range(length):
+        chunks_reversed = pwd.rsplit(separator)[::-1]  # <pwd_n>, <login_n>, ..., <pwd_0>, <login_0>, <SOME_SERVICE_DATA_CHUNKS>
+
+        #  Filter out service data
+        possible_passwords = [x for n, x in enumerate(chunks_reversed) if n % 2 == 0]
+        possible_logins = [x for n, x in enumerate(chunks_reversed) if n % 2 == 1]
+        for possible_login, possible_password in zip(possible_logins, possible_passwords):
+            #  Service data starts with several blocks of "<2_bytes>\x00\x00<10_bytes>"
+            if len(pwd_found) > 0 and len(possible_login) == 2 and len(possible_password) == 10:
+                break
+
             try:
-                if s % 2 != 0:
-                    pwd_found.append({
-                        'URL': u.decode('UTF-16LE'),
-                        'Login': secret[length - s],
-                        'Password': password
-                    })
-                else:
-                    password = secret[length - s]
-            except Exception:
-                self.debug(traceback.format_exc())
+                possible_login_str = possible_login.decode('UTF-16LE')
+                possible_password_str = possible_password.decode('UTF-16LE')
+            except UnicodeDecodeError:
+                if len(pwd_found) > 0:
+                    #  Some passwords have been found. Assume this is service data.
+                    break
+
+                #  No passwords have been found. Assume login or password contains some chars which could not be decoded
+                possible_login_str = str(possible_password)
+                possible_password_str = str(possible_password)
+
+            pwd_found.append({
+                'URL': u.decode('UTF-16LE'),
+                'Login': possible_login_str,
+                'Password': possible_password_str
+            })
 
         return pwd_found
 
