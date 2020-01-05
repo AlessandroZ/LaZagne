@@ -161,24 +161,6 @@ class DATA(Structure):
     ]
 
 
-class DATA2(Structure):
-    _fields_ = [
-        # ('boolean',       BOOL),
-        # ('short',             SHORT),
-        # ('unsignedShort',     WORD),
-        # ('int',           LONG),
-        # ('unsignedInt',   ULONG),
-        ('double',            DOUBLE),
-        ('guid', GUID),
-        ('string', LPWSTR),
-        # ('byteArray', VAULT_BYTE_BUFFER),
-        # ('protectedArray', VAULT_BYTE_BUFFER),
-        # ('attribute', PVAULT_CREDENTIAL_ATTRIBUTEW),
-        ('Sid',           PSID)
-        # ('sid', DWORD)
-    ]
-
-
 class Flag(Structure):
     _fields_ = [
         ('0x00', DWORD),
@@ -202,9 +184,7 @@ class VAULT_ITEM_DATA(Structure):
     _fields_ = [
         # ('schemaElementId',   DWORD),
         # ('unk0',              DWORD),
-        # ('Type',              VAULT_ELEMENT_TYPE),
-        # ('type',              Flag),
-        # ('type',              DWORD * 14),
+        # ('Type',              DWORD),
         # ('unk1',              DWORD),
         ('data', DATA),
     ]
@@ -213,28 +193,14 @@ class VAULT_ITEM_DATA(Structure):
 PVAULT_ITEM_DATA = POINTER(VAULT_ITEM_DATA)
 
 
-class VAULT_ITEM_DATA2(Structure):
-    _fields_ = [
-        # ('schemaElementId',   DWORD),
-        # ('unk0',              DWORD),
-        # ('Type',              VAULT_ELEMENT_TYPE),
-        # ('type',              Flag),
-        # ('type',              DWORD * 14),
-        # ('unk1',              DWORD),
-        ('data', DATA2),
-    ]
-
-
-PVAULT_ITEM_DATA2 = POINTER(VAULT_ITEM_DATA2)
-
-
+# From https://github.com/gentilkiwi/mimikatz/blob/b008188f9fe5668b5dae80c210290c7efa872ffa/mimikatz/modules/kuhl_m_vault.h#L157
 class VAULT_ITEM_WIN8(Structure):
     _fields_ = [
         ('id', GUID),
         ('pName', PWSTR),
         ('pResource', PVAULT_ITEM_DATA),
         ('pUsername', PVAULT_ITEM_DATA),
-        ('pPassword', PVAULT_ITEM_DATA2),
+        ('pPassword', PVAULT_ITEM_DATA),
         ('pPackageSid', PVAULT_ITEM_DATA),
         ('LastWritten', FILETIME),
         ('Flags', DWORD),
@@ -246,18 +212,21 @@ class VAULT_ITEM_WIN8(Structure):
 PVAULT_ITEM_WIN8 = POINTER(VAULT_ITEM_WIN8)
 
 
+# From https://github.com/gentilkiwi/mimikatz/blob/b008188f9fe5668b5dae80c210290c7efa872ffa/mimikatz/modules/kuhl_m_vault.h#L145
 class VAULT_ITEM_WIN7(Structure):
   _fields_ = [
       ('id',              GUID),
       ('pName',           PWSTR),
       ('pResource',       PVAULT_ITEM_DATA),
       ('pUsername',       PVAULT_ITEM_DATA),
-      ('pPassword',       PVAULT_ITEM_DATA2),
+      ('pPassword',       PVAULT_ITEM_DATA),
       ('LastWritten',     FILETIME),
       ('Flags',           DWORD),
       ('cbProperties',    DWORD),
       ('Properties',      PVAULT_ITEM_DATA),
   ]
+
+
 PVAULT_ITEM_WIN7 = POINTER(VAULT_ITEM_WIN7)
 
 class OSVERSIONINFOEXW(Structure):
@@ -425,10 +394,6 @@ CredEnumerate.argtypes = [LPCTSTR, DWORD, POINTER(DWORD), POINTER(POINTER(PCREDE
 CredFree = advapi32.CredFree
 CredFree.restype = PVOID
 CredFree.argtypes = [PVOID]
-
-memcpy = cdll.msvcrt.memcpy
-memcpy.restype = PVOID
-memcpy.argtypes = [PVOID]
 
 LocalFree = kernel32.LocalFree
 LocalFree.restype = HANDLE
@@ -600,11 +565,10 @@ def RtlAdjustPrivilege(privilege_id):
 
 
 def getData(blobOut):
-    cbData = int(blobOut.cbData)
+    cbData = blobOut.cbData
     pbData = blobOut.pbData
-    buffer = c_buffer(cbData)
-
-    memcpy(buffer, pbData, cbData)
+    buffer = create_string_buffer(cbData)
+    memmove(buffer, pbData, sizeof(buffer))
     LocalFree(pbData);
     return buffer.raw
 
@@ -645,11 +609,11 @@ def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, use
             blobEntropy = DATA_BLOB(len(entropy), bufferEntropy)
 
             if CryptUnprotectData(byref(blobIn), None, byref(blobEntropy), None, None, 0, byref(blobOut)):
-                decrypted = getData(blobOut).decode("utf-8")
+                decrypted = getData(blobOut)
 
         else:
             if CryptUnprotectData(byref(blobIn), None, None, None, None, 0, byref(blobOut)):
-                decrypted = getData(blobOut).decode("utf-8")
+                decrypted = getData(blobOut)
 
     if not decrypted:
         can_decrypt = True

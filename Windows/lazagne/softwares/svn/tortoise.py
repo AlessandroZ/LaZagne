@@ -57,11 +57,11 @@ class Tortoise(ModuleInfo):
                     # encrypted the password
                     if result:
                         try:
-                            password = Win32CryptUnprotectData(base64.b64decode(result), is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+                            password_bytes = Win32CryptUnprotectData(base64.b64decode(result), is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
                             pwd_found.append({
                                 'URL': url,
                                 'Login': username,
-                                'Password': str(password)
+                                'Password': password_bytes.decode("utf-8")
                             })
                         except Exception:
                             pass
