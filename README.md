@@ -90,7 +90,7 @@ Supported software
 |  | Windows    | Linux  | Mac |
 | -- | -- | -- | -- |
 | Browsers | 7Star<br> Amigo<br> BlackHawk<br> Brave<br> Centbrowser<br> Chedot<br> Chrome Canary<br> Chromium<br> Coccoc<br> Comodo Dragon<br> Comodo IceDragon<br> Cyberfox<br> Elements Browser<br> Epic Privacy Browser<br> Firefox<br> Google Chrome<br> Icecat<br> K-Meleon<br> Kometa<br> Opera<br> Orbitum<br> Sputnik<br> Torch<br> Uran<br> Vivaldi<br> | Chrome<br> Firefox<br> Opera | Chrome<br> Firefox |
-| Chats | Pigdin<br> Psi<br> Skype| Pigdin<br> Psi |  |
+| Chats | Pidgin<br> Psi<br> Skype| Pidgin<br> Psi |  |
 | Databases | DBVisualizer<br> Postgresql<br> Robomongo<br> Squirrel<br> SQLdevelopper | DBVisualizer<br> Squirrel<br> SQLdevelopper  |  |
 | Games | GalconFusion<br> Kalypsomedia<br> RogueTale<br> Turba |  |  |
 | Git | Git for Windows |  |  |
