@@ -100,15 +100,15 @@ class VaultPolicy(DataStruct):
 
     def parse(self, data):
         self.version = data.eat("L")
-        self.guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
+        self.guid = b"%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
         self.description = data.eat_length_and_string("L").replace(b"\x00", b"")  # Unicode
         self.unknown1 = data.eat("L")
         self.unknown2 = data.eat("L")
         self.unknown3 = data.eat("L")
         # VPOL_STORE
         self.size = data.eat("L")
-        self.unknown4 = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
-        self.unknown5 = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
+        self.unknown4 = b"%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
+        self.unknown5 = b"%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
         # DPAPI_BLOB_STORE
         self.blob_store_size = data.eat("L")
         if self.blob_store_size > 0:
@@ -229,7 +229,7 @@ class VaultVsch(DataStruct):
 
     def parse(self, data):
         self.version = data.eat("L")
-        self.schema_guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")
+        self.schema_guid = b"%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")
         self.vault_vsch_unknown_1 = data.eat("L")
         self.count = data.eat("L")
         self.schema_name = data.eat_length_and_string("L").replace(b"\x00", b"")
@@ -389,7 +389,7 @@ class Vault(object):
         Helper to decrypt VAULT attributes.
         """
         if not vault_attr.size:
-            return '', False
+            return b'', False
 
         if vault_attr.has_iv:  
             cipher = AESModeOfOperationCBC(key_aes256, iv=vault_attr.iv)
