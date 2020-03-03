@@ -7,6 +7,8 @@ import enum
 import json
 import datetime
 import struct
+import sys
+
 from .readers.local.common.version import PROCESSOR_ARCHITECTURE
 
 
@@ -215,9 +217,7 @@ def hexdump(src, length=16, sep='.', start=0):
 	result = []
 
 	# Python3 support
-	try:
-		xrange(0, 1)
-	except NameError:
+	if sys.version_info[0] == 3: 
 		xrange = range
 
 	for i in xrange(0, len(src), length):
