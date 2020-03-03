@@ -35,8 +35,8 @@ class ChromiumBased(ModuleInfo):
                 # Automatic join all other additional profiles
                 for dirs in os.listdir(path):
                     dirs_path = os.path.join(path, dirs)
-                    if (os.path.isdir(dirs_path) == True) and (dirs.startswith('Profile')):
-                        profiles.extend(dirs)
+                    if os.path.isdir(dirs_path) and dirs.startswith('Profile'):
+                        profiles.add(dirs)
 
                 with open(profiles_path) as f:
                     try:
