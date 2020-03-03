@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import base64
 import json
 import os
@@ -8,6 +8,8 @@ import sqlite3
 import string
 import tempfile
 import traceback
+
+from Crypto.Cipher import AES
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
@@ -29,6 +31,7 @@ class ChromiumBased(ModuleInfo):
         for path in [p.format(**constant.profile) for p in self.paths]:
             profiles_path = os.path.join(path, u'Local State')
             if os.path.exists(profiles_path):
+                master_key = None
                 # List all users profile (empty string means current dir, without a profile)
                 profiles = {'Default', ''}
 
@@ -46,6 +49,15 @@ class ChromiumBased(ModuleInfo):
                     except Exception:
                         pass
 
+                with open(profiles_path) as f:
+                    try:
+                        master_key = base64.b64decode(json.load(f)["os_crypt"]["encrypted_key"])
+                        master_key = master_key[5:]  # removing DPAPI
+                        master_key = Win32CryptUnprotectData(master_key, is_current_user=constant.is_current_user,
+                                                user_dpapi=constant.user_dpapi)
+                    except Exception:
+                        master_key = None
+
                 # Each profile has its own password database
                 for profile in profiles:
                     # Some browsers use names other than "Login Data"
@@ -56,10 +68,21 @@ class ChromiumBased(ModuleInfo):
                         continue
                     for db in db_files:
                         if u'login data' in db.lower():
-                            databases.add(os.path.join(path, profile, db))
+                            databases.add((os.path.join(path, profile, db), master_key))
         return databases
 
-    def _export_credentials(self, db_path, is_yandex=False):
+    def _decrypt_v80(self, buff, master_key):
+        try:
+            iv = buff[3:15]
+            payload = buff[15:]
+            cipher = AES.new(master_key, AES.MODE_GCM, iv)
+            decrypted_pass = cipher.decrypt(payload)
+            decrypted_pass = decrypted_pass[:-16].decode()  # remove suffix bytes
+            return decrypted_pass
+        except:
+            pass
+
+    def _export_credentials(self, db_path, is_yandex=False, master_key=None):
         """
         Export credentials from the given database
 
@@ -112,9 +135,20 @@ class ChromiumBased(ModuleInfo):
                     # Failed...
                 else:
                     # Decrypt the Password
-                    password_bytes = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user,
-                                                             user_dpapi=constant.user_dpapi)
-                    password = password_bytes.decode("utf-8")
+                    try:
+                        password_bytes = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user,
+                                                                user_dpapi=constant.user_dpapi)
+                    except AttributeError:
+                        try:
+                            password_bytes = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user,
+                                                                 user_dpapi=constant.user_dpapi)
+                        except:
+                            password_bytes = None
+
+                    if password_bytes is not None:
+                        password = password_bytes.decode("utf-8")
+                    elif master_key:
+                        password = self._decrypt_v80(password, master_key)
 
                 if not url and not login and not password:
                     continue
@@ -156,7 +190,7 @@ class ChromiumBased(ModuleInfo):
 
     def run(self):
         credentials = []
-        for database_path in self._get_database_dirs():
+        for database_path, master_key in self._get_database_dirs():
             is_yandex = False if 'yandex' not in database_path.lower() else True
 
             # Remove Google Chrome false positif
@@ -169,7 +203,7 @@ class ChromiumBased(ModuleInfo):
             path = self.copy_db(database_path)
             if path:
                 try:
-                    credentials.extend(self._export_credentials(path, is_yandex))
+                    credentials.extend(self._export_credentials(path, is_yandex, master_key))
                 except Exception:
                     self.debug(traceback.format_exc())
                 self.clean_file(path)
