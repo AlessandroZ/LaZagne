@@ -361,7 +361,7 @@ class VaultSchemaActiveSync(DataStruct):
         self.id_resource = data.eat("L")
         self.resource = data.eat_length_and_string("L").replace(b"\x00", b"")
         self.id_authenticator = data.eat("L")
-        self.authenticator = data.eat_length_and_string("L").replace(b"\x00", b"").encode('hex')
+        self.authenticator = codecs.encode(data.eat_length_and_string("L").replace(b"\x00", b""), 'hex')
 
 
 # Vault Schema Dict
