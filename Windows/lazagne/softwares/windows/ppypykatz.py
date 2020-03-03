@@ -4,10 +4,11 @@
 # Checks his project here: https://github.com/skelsec/pypykatz
 
 import codecs
+import traceback
 
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
-from pypykatz.pypykatz import pypykatz
+from lazagne.config.lib.pypykatz.pypykatz import pypykatz
 
 
 class Pypykatz(ModuleInfo):
@@ -26,25 +27,26 @@ class Pypykatz(ModuleInfo):
         try:
             mimi = pypykatz.go_live()
         except Exception:
-            pass
+            self.debug(traceback.format_exc())
 
         if mimi:
             results = {}
             logon_sessions = mimi.to_dict().get('logon_sessions', [])
             for logon_session in logon_sessions:
 
-                # Right now kerberos_creds, dpapi_creds and credman_creds results are not used
-                user = logon_sessions[logon_session].to_dict()
+                # Right now kerberos_creds, dpapi_creds results are not used
+                user = logon_sessions[logon_session]
 
                 # Get cleartext password
-                for i in ['ssp_creds', 'livessp_creds', 'tspkg_creds', 'wdigest_creds']:
+                for i in ['credman_creds', 'ssp_creds', 'livessp_creds', 'tspkg_creds', 'wdigest_creds']:
                     for data in user.get(i, []):
-                        if all((data['username'], data['domainname'], data['password'])):
+                        if all((data['username'], data['password'])):
                             login = data['username']
                             if login not in results:
                                 results[login] = {}
 
-                            results[login]['Domain'] = data['domainname']
+                            results[login]['Type'] = i
+                            results[login]['Domain'] = data.get('domainname', 'N/A')
                             results[login]['Password'] = data['password']
 
                 # msv_creds to get sha1 user hash
