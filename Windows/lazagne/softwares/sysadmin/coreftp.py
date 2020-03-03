@@ -14,13 +14,13 @@ class CoreFTP(ModuleInfo):
     def __init__(self):
         ModuleInfo.__init__(self, 'coreftp', 'sysadmin')
 
-        self._secret = "hdfzpysvpzimorhk"
+        self._secret = b"hdfzpysvpzimorhk"
 
     def decrypt(self, hex):
         encoded = binascii.unhexlify(hex)
         aes = AESModeOfOperationECB(self._secret)
         decrypted = aes.decrypt(encoded)
-        return decrypted.split('\x00')[0]
+        return decrypted.split(b'\x00')[0]
 
     def run(self):
         key = None
@@ -32,7 +32,7 @@ class CoreFTP(ModuleInfo):
 
         if key:
             num_profiles = winreg.QueryInfoKey(key)[0]
-            elements = ['Host', 'Port', 'User', 'Password']
+            elements = ['Host', 'Port', 'User', 'PW']
             for n in range(num_profiles):
                 name_skey = winreg.EnumKey(key, n)
                 skey = OpenKey(key, name_skey)
