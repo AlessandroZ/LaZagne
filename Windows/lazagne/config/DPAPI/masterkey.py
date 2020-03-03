@@ -149,7 +149,7 @@ class MasterKeyFile(DataStruct):
     def parse(self, data):
         self.version = data.eat("L")
         data.eat("2L")
-        self.guid = data.eat("72s").decode("UTF-16LE").encode("utf-8")
+        self.guid = data.eat("72s").replace(b"\x00", b"")
         data.eat("2L")
         self.policy = data.eat("L")
         self.masterkeyLen = data.eat("Q")

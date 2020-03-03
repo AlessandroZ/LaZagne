@@ -101,7 +101,7 @@ class VaultPolicy(DataStruct):
     def parse(self, data):
         self.version = data.eat("L")
         self.guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
-        self.description = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
+        self.description = data.eat_length_and_string("L").replace(b"\x00", b"")  # Unicode
         self.unknown1 = data.eat("L")
         self.unknown2 = data.eat("L")
         self.unknown3 = data.eat("L")
@@ -200,7 +200,7 @@ class VaultVcrd(DataStruct):
         self.last_update = data.eat("Q")
         self.vcrd_unknown_2 = data.eat("L")
         self.vcrd_unknown_3 = data.eat("L")
-        self.description = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
+        self.description = data.eat_length_and_string("L").replace(b"\x00", b"")  # Unicode
         self.attributes_array_size = data.eat("L")
         # 12 is the size of the VAULT_ATTRIBUTE_MAP_ENTRY
         self.attributes_num = self.attributes_array_size // 12
@@ -232,7 +232,7 @@ class VaultVsch(DataStruct):
         self.schema_guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")
         self.vault_vsch_unknown_1 = data.eat("L")
         self.count = data.eat("L")
-        self.schema_name = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
+        self.schema_name = data.eat_length_and_string("L").replace(b"\x00", b"")
 
 
 class VaultAttributeItem(object):
@@ -260,7 +260,7 @@ class VaultSchemaGeneric(DataStruct):
             self.attribute_item.append(
                 VaultAttributeItem(
                     id_=data.eat("L"),
-                    item=data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")
+                    item=data.eat_length_and_string("L").replace(b"\x00", b"")
                 )
             )
 
@@ -301,9 +301,9 @@ class VaultSchemaPin(DataStruct):
         if self.sid_len > 0:
             self.sid = data.eat_sub(self.sid_len)
         self.id_resource = data.eat("L")
-        self.resource = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
+        self.resource = data.eat_length_and_string("L").replace(b"\x00", b"")
         self.id_password = data.eat("L")
-        self.authenticator = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')  # Password
+        self.authenticator = data.eat_length_and_string("L").replace(b"\x00", b"")  # Password
         self.id_pin = data.eat("L")
         self.pin = data.eat_length_and_string("L")
 
@@ -329,11 +329,11 @@ class VaultSchemaWebPassword(DataStruct):
         self.count = data.eat("L")
         self.vault_schema_web_password_unknown1 = data.eat("L")
         self.id_identity = data.eat("L")
-        self.identity = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
+        self.identity = data.eat_length_and_string("L").replace(b"\x00", b"")
         self.id_resource = data.eat("L")
-        self.resource = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
+        self.resource = data.eat_length_and_string("L").replace(b"\x00", b"")
         self.id_authenticator = data.eat("L")
-        self.authenticator = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
+        self.authenticator = data.eat_length_and_string("L").replace(b"\x00", b"")
 
 
 class VaultSchemaActiveSync(DataStruct):
@@ -357,11 +357,11 @@ class VaultSchemaActiveSync(DataStruct):
         self.count = data.eat("L")
         self.vault_schema_activesync_unknown1 = data.eat("L")
         self.id_identity = data.eat("L")
-        self.identity = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
+        self.identity = data.eat_length_and_string("L").replace(b"\x00", b"")
         self.id_resource = data.eat("L")
-        self.resource = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00\x00')
+        self.resource = data.eat_length_and_string("L").replace(b"\x00", b"")
         self.id_authenticator = data.eat("L")
-        self.authenticator = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8").rstrip(b'\x00').encode('hex')
+        self.authenticator = data.eat_length_and_string("L").replace(b"\x00", b"").rstrip(b'\x00').encode('hex')
 
 
 # Vault Schema Dict

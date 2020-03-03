@@ -62,12 +62,12 @@ class CredentialDecrypted(DataStruct):
         if self.header_size > 0:
             self.header = CredentialDecryptedHeader()
             self.header.parse(data.eat_sub(self.header_size - 4))
-        self.domain = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
-        self.unk_string1 = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
-        self.unk_string2 = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
-        self.unk_string3 = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
-        self.username = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
-        self.password = data.eat_length_and_string("L").decode("UTF-16LE").encode("utf-8")  # Unicode
+        self.domain = data.eat_length_and_string("L").replace(b"\x00", b"")  # Unicode
+        self.unk_string1 = data.eat_length_and_string("L").replace(b"\x00", b"")  # Unicode
+        self.unk_string2 = data.eat_length_and_string("L").replace(b"\x00", b"")  # Unicode
+        self.unk_string3 = data.eat_length_and_string("L").replace(b"\x00", b"")  # Unicode
+        self.username = data.eat_length_and_string("L").replace(b"\x00", b"")  # Unicode
+        self.password = data.eat_length_and_string("L").replace(b"\x00", b"")  # Unicode
 
 
 class CredFile(DataStruct):
