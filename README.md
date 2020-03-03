@@ -130,7 +130,3 @@ Special thanks
 * mitya57 for [secretstorage](https://github.com/mitya57/secretstorage)
 * All [contributors](https://github.com/AlessandroZ/LaZagne/graphs/contributors) who help me on this project
 
-----
-| __Alessandro ZANNI__    |
-| ------------- |
-| __zanni.alessandro@gmail.com__  |
