@@ -12,6 +12,13 @@ import sys
 from .readers.local.common.version import PROCESSOR_ARCHITECTURE
 
 
+# Python3 support
+try:
+	xrange(0,1)
+except NameError:
+	xrange = range
+
+
 class KatzSystemArchitecture(enum.Enum):
 	X86 = 0
 	X64 = 1
@@ -215,10 +222,6 @@ def hexdump(src, length=16, sep='.', start=0):
 	@note Full support for python2 and python3 !
 	"""
 	result = []
-
-	# Python3 support
-	if sys.version_info[0] == 3: 
-		xrange = range
 
 	for i in xrange(0, len(src), length):
 		subSrc = src[i:i+length]
