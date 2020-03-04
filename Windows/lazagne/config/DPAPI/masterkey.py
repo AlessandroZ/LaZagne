@@ -100,7 +100,7 @@ class CredHist(DataStruct):
 
     def parse(self, data):
         self.version = data.eat("L")
-        self.guid = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")
+        self.guid = b"%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")
 
 
 class DomainKey(DataStruct):
@@ -124,7 +124,7 @@ class DomainKey(DataStruct):
         self.version = data.eat("L")
         self.secretLen = data.eat("L")
         self.accesscheckLen = data.eat("L")
-        self.guidKey = "%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
+        self.guidKey = b"%0x-%0x-%0x-%0x%0x-%0x%0x%0x%0x%0x%0x" % data.eat("L2H8B")  # data.eat("16s")
         self.encryptedSecret = data.eat("%us" % self.secretLen)
         self.accessCheck = data.eat("%us" % self.accesscheckLen)
 
@@ -308,7 +308,7 @@ class MasterKeyPool(object):
 
                 GUID = struct.unpack("<LHH", GUID1)
                 GUID2 = struct.unpack(">HLH", GUID2)
-                self.preferred_guid = "%s-%s-%s-%s-%s%s" % (
+                self.preferred_guid = b"%s-%s-%s-%s-%s%s" % (
                 format(GUID[0], '08x'), format(GUID[1], '04x'), format(GUID[2], '04x'), format(GUID2[0], '04x'),
                 format(GUID2[1], '08x'), format(GUID2[2], '04x'))
                 return self.preferred_guid.encode()
