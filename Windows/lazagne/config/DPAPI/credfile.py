@@ -93,7 +93,7 @@ class CredFile(DataStruct):
         ok, msg = self.blob.decrypt_encrypted_blob(mkp=mkp)
         if ok:
             cred_dec = CredentialDecrypted(msg)
-            if cred_dec.header.unk_type == 3:
+            if cred_dec.header.unk_type in [2, 3]:
                 return True, {
                     'File': credfile,
                     'Domain': cred_dec.domain,
