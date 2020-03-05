@@ -8,7 +8,7 @@ import traceback
 
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config.constant import constant
-from lazagne.config.lib.pypykatz.pypykatz import pypykatz
+from pypykatz.pypykatz import pypykatz
 
 
 class Pypykatz(ModuleInfo):
