@@ -622,17 +622,24 @@ def Win32CryptUnprotectData(cipherText, entropy=False, is_current_user=True, use
             can_decrypt = are_masterkeys_retrieved()
 
         if can_decrypt:
-            decrypted = user_dpapi.decrypt_encrypted_blob(cipherText)
+            try:
+                decrypted = user_dpapi.decrypt_encrypted_blob(cipherText)
+            except:
+                # The encrypted blob cannot be parsed - weird (could happen with chrome v80)
+                return None
             if decrypted is False:
                 decrypted = None
         else:
-            raise ValueError('MasterKeys not found')
+            # raise ValueError('MasterKeys not found')
+            pass
 
     if not decrypted:
         if not user_dpapi:
-            raise ValueError('DPApi unavailable')
+            # raise ValueError('DPApi unavailable')
+            pass
         elif not user_dpapi.unlocked:
-            raise ValueError('DPApi locked')
+            # raise ValueError('DPApi locked')
+            pass
 
     return decrypted
 
