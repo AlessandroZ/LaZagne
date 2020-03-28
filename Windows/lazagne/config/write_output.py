@@ -330,7 +330,7 @@ def write_in_file(result):
                 # Human readable Json format
                 pretty_json = json.dumps(result, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
                 with open(os.path.join(constant.folder_name, constant.file_name_results + '.json'), 'ab+') as f:
-                    f.write(pretty_json.encode())
+                    f.write(pretty_json.encode(encoding='UTF-8',errors="xmlcharrefreplace"))
 
                 constant.st.do_print(u'[+] File written: {file}'.format(
                     file=os.path.join(constant.folder_name, constant.file_name_results + '.json'))
@@ -342,7 +342,7 @@ def write_in_file(result):
             try:
                 with open(os.path.join(constant.folder_name, constant.file_name_results + '.txt'), 'ab+') as f:
                     a = json_to_string(result)
-                    f.write(a.encode())
+                    f.write(a.encode(encoding='UTF-8',errors="xmlcharrefreplace"))
 
                 constant.st.write_footer()
                 constant.st.do_print(u'[+] File written: {file}'.format(
