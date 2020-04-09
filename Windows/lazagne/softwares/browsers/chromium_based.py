@@ -67,7 +67,7 @@ class ChromiumBased(ModuleInfo):
                     except Exception:
                         continue
                     for db in db_files:
-                        if u'login data' in db.lower():
+                        if db.lower() in ['login data', 'ya passman data']:
                             databases.add((os.path.join(path, profile, db), master_key))
         return databases
 
@@ -121,17 +121,25 @@ class ChromiumBased(ModuleInfo):
                 # https://yandex.com/support/browser-passwords-crypto/without-master.html
                 if is_yandex and yandex_enckey:
                     try:
-                        p = json.loads(str(password))
-                    except Exception:
-                        p = json.loads(password)
+                        try:
+                            p = json.loads(str(password))
+                        except Exception:
+                            p = json.loads(password)
 
-                    password = base64.b64decode(p['p'])
+                        password = base64.b64decode(p['p'])
+                    except Exception:
+                        # New version does not use json format
+                        pass
 
                     # Passwords are stored using AES-256-GCM algorithm
                     # The key used to encrypt is stored on the credential manager
 
-                    # from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-                    # aesgcm = AESGCM(yandex_enckey)
+                    # yandex_enckey: 
+                    #   - 4 bytes should be removed to be 256 bits 
+                    #   - these 4 bytes correspond to the nonce ? 
+
+                    # cipher = AES.new(yandex_enckey, AES.MODE_GCM)
+                    # plaintext = cipher.decrypt(password)
                     # Failed...
                 else:
                     # Decrypt the Password
