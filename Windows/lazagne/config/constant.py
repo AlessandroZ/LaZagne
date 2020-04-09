@@ -58,3 +58,4 @@ class constant():
         "winapi": [],
         "dpapi": [],
     }
+    dpapi_cache = {}

@@ -18,6 +18,8 @@ import hashlib
 import struct
 import os
 
+from lazagne.config.constant import constant
+
 
 class MasterKey(DataStruct):
     """
@@ -352,6 +354,14 @@ class MasterKeyPool(object):
         Should be called as a generator (ex: for r in try_credential(sid, password))
         """
 
+        # Check into cache to gain time (avoid checking twice the same thing)
+        if constant.dpapi_cache.get(sid): 
+            if constant.dpapi_cache[sid]['password'] == password: 
+                if constant.dpapi_cache[sid]['decrypted']: 
+                    return True, ''
+                else:
+                    return False, ''
+
         # All master key files have not been already decrypted
         if self.nb_mkf_decrypted != self.nb_mkf:
             for guid in self.keys:
@@ -372,6 +382,11 @@ class MasterKeyPool(object):
                                         yield u'masterkey {masterkey} decrypted using credhists key'.format(
                                             masterkey=mk.guid.decode())
                                         self.credhists[sid].valid = True
+
+                            constant.dpapi_cache[sid] = {
+                                'password': password,
+                                'decrypted': mk.decrypted
+                            }
 
                             if mk.decrypted:
                                 # Save the password found
