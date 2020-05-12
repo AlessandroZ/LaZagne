@@ -9,25 +9,35 @@ import sqlite3
 import struct
 import sys
 import traceback
-from base64 import b64decode
-from binascii import unhexlify
-from hashlib import sha1
+import os
 
-from pyasn1.codec.der import decoder
-
-from lazagne.config.constant import constant
-from lazagne.config.crypto.pyDes import triple_des, CBC
-from lazagne.config.dico import get_dic
 from lazagne.config.module_info import ModuleInfo
+from lazagne.config.crypto.pyDes import triple_des, CBC
+from lazagne.config.crypto.pyaes import AESModeOfOperationCBC
+from lazagne.config.dico import get_dic
+from lazagne.config.constant import constant
+from pyasn1.codec.der import decoder
+from binascii import unhexlify
+from base64 import b64decode
+from hashlib import sha1, pbkdf2_hmac
 
 try:
     from ConfigParser import RawConfigParser  # Python 2.7
 except ImportError:
     from configparser import RawConfigParser  # Python 3
-import os
 
 if sys.version_info[0]:
     python_version = sys.version_info[0]
+
+def l(n):
+    try:
+        return long(n)
+    except NameError:
+        return int(n)
+
+
+CKA_ID = unhexlify('f8000000000000000000000000000001')
+AES_BLOCK_SIZE = 16
 
 
 def convert_to_byte(s):
@@ -35,13 +45,6 @@ def convert_to_byte(s):
         return s
     else:
         return s.encode()
-
-
-def l(n):
-    try:
-        return long(n)
-    except NameError:
-        return int(n)
 
 
 def o(c):
@@ -94,6 +97,7 @@ class Mozilla(ModuleInfo):
         """
         cp = RawConfigParser()
         profile_list = []
+
         try:
             cp.read(os.path.join(directory, 'profiles.ini'))
             for section in cp.sections():
@@ -142,7 +146,8 @@ class Mozilla(ModuleInfo):
 
         else:
             if row:
-                (global_salt, master_password, entrySalt) = self.manage_masterpassword(master_password=u'', key_data=row)
+                (global_salt, master_password, entry_salt) = self.manage_masterpassword(master_password=b'', key_data=row)
+
                 if global_salt:
                     try:
                         # Decrypt 3DES key to decrypt "logins.json" content
@@ -150,25 +155,35 @@ class Mozilla(ModuleInfo):
                         for row in c:
                             if row[0]:
                                 break
+
                         a11 = row[0]  # CKA_VALUE
                         a102 = row[1]  # f8000000000000000000000000000001, CKA_ID
-                        # SEQUENCE {
-                        #     SEQUENCE {
-                        #         OBJECTIDENTIFIER 1.2.840.113549.1.12.5.1.3
-                        #         SEQUENCE {
-                        #             OCTETSTRING entry_salt_for_3des_key
-                        #             INTEGER 01
-                        #         }
-                        #     }
-                        #     OCTETSTRING encrypted_3des_key (with 8 bytes of PKCS#7 padding)
-                        # }
-                        decoded_a11 = decoder.decode(a11)
-                        entry_salt = decoded_a11[0][0][1][0].asOctets()
-                        cipher_t = decoded_a11[0][1].asOctets()
-                        key = self.decrypt_3des(global_salt, master_password, entry_salt, cipher_t)
-                        if key:
-                            self.debug(u'key: {key}'.format(key=repr(key)))
-                            yield key[:24]
+
+                        if python_version == 2:
+                            a102 = str(a102)
+
+                        if a102 == CKA_ID:
+                            # a11  : CKA_VALUE
+                            # a102 : f8000000000000000000000000000001, CKA_ID
+                            # self.print_asn1(a11, len(a11), 0)
+                            # SEQUENCE {
+                            #     SEQUENCE {
+                            #         OBJECTIDENTIFIER 1.2.840.113549.1.12.5.1.3
+                            #         SEQUENCE {
+                            #             OCTETSTRING entry_salt_for_3des_key
+                            #             INTEGER 01
+                            #         }
+                            #     }
+                            #     OCTETSTRING encrypted_3des_key (with 8 bytes of PKCS#7 padding)
+                            # }
+                            decoded_a11 = decoder.decode(a11)
+                            key = self.decrypt_3des(decoded_a11, master_password, global_salt)
+                            if key:
+                                self.debug(u'key: {key}'.format(key=repr(key)))
+                                yield key[:24]
+                        # else:
+                            # Nothing saved
+
                     except Exception:
                         self.debug(traceback.format_exc())
 
@@ -286,21 +301,52 @@ class Mozilla(ModuleInfo):
         return db
 
     @staticmethod
-    def decrypt_3des(global_salt, master_password, entry_salt, encrypted_data):
+    def decrypt_3des(decoded_item, master_password, global_salt):
         """
         User master key is also encrypted (if provided, the master_password could be used to encrypt it)
         """
         # See http://www.drh-consultancy.demon.co.uk/key3.html
-        hp = sha1(global_salt + convert_to_byte(master_password)).digest()
-        pes = entry_salt + convert_to_byte('\x00') * (20 - len(entry_salt))
-        chp = sha1(hp + entry_salt).digest()
-        k1 = hmac.new(chp, pes + entry_salt, sha1).digest()
-        tk = hmac.new(chp, pes, sha1).digest()
-        k2 = hmac.new(chp, tk + entry_salt, sha1).digest()
-        k = k1 + k2
-        iv = k[-8:]
-        key = k[:24]
-        return triple_des(key, CBC, iv).decrypt(encrypted_data)
+        pbeAlgo = str(decoded_item[0][0][0])
+        if pbeAlgo == '1.2.840.113549.1.12.5.1.3': # pbeWithSha1AndTripleDES-CBC
+            entry_salt = decoded_item[0][0][1][0].asOctets()
+            cipher_t = decoded_item[0][1].asOctets()
+
+            # See http://www.drh-consultancy.demon.co.uk/key3.html
+            hp = sha1(global_salt + convert_to_byte(master_password)).digest()
+            pes = entry_salt + convert_to_byte('\x00') * (20 - len(entry_salt))
+            chp = sha1(hp + entry_salt).digest()
+            k1 = hmac.new(chp, pes + entry_salt, sha1).digest()
+            tk = hmac.new(chp, pes, sha1).digest()
+            k2 = hmac.new(chp, tk + entry_salt, sha1).digest()
+            k = k1 + k2
+            iv = k[-8:]
+            key = k[:24]
+            return triple_des(key, CBC, iv).decrypt(cipher_t)
+        
+        # New version
+        elif pbeAlgo == '1.2.840.113549.1.5.13': # pkcs5 pbes2
+
+            assert str(decoded_item[0][0][1][0][0]) == '1.2.840.113549.1.5.12'
+            assert str(decoded_item[0][0][1][0][1][3][0]) == '1.2.840.113549.2.9'
+            assert str(decoded_item[0][0][1][1][0]) == '2.16.840.1.101.3.4.1.42'
+            # https://tools.ietf.org/html/rfc8018#page-23
+            entry_salt = decoded_item[0][0][1][0][1][0].asOctets()
+            iteration_count = int(decoded_item[0][0][1][0][1][1])
+            key_length = int(decoded_item[0][0][1][0][1][2])
+            assert key_length == 32 
+
+            k = sha1(global_salt + master_password).digest()
+            key = pbkdf2_hmac('sha256', k, entry_salt, iteration_count, dklen=key_length)    
+
+            # https://hg.mozilla.org/projects/nss/rev/fc636973ad06392d11597620b602779b4af312f6#l6.49
+            iv = b'\x04\x0e' + decoded_item[0][0][1][1][1].asOctets()
+            # 04 is OCTETSTRING, 0x0e is length == 14
+            encrypted_value = decoded_item[0][1].asOctets()
+            aes = AESModeOfOperationCBC(key, iv=iv)
+            cleartxt = b"".join([aes.decrypt(encrypted_value[i:i + AES_BLOCK_SIZE])
+                             for i in range(0, len(encrypted_value), AES_BLOCK_SIZE)])
+
+            return cleartxt
 
     def extract_secret_key(self, key_data, global_salt, master_password, entry_salt):
 
@@ -311,13 +357,11 @@ class Mozilla(ModuleInfo):
         salt_len = o(priv_key_entry[1])
         name_len = o(priv_key_entry[2])
         priv_key_entry_asn1 = decoder.decode(priv_key_entry[3 + salt_len + name_len:])
-        data = priv_key_entry[3 + salt_len + name_len:]
+        # data = priv_key_entry[3 + salt_len + name_len:]
         # self.print_asn1(data, len(data), 0)
 
         # See https://github.com/philsmd/pswRecovery4Moz/blob/master/pswRecovery4Moz.txt
-        entry_salt = priv_key_entry_asn1[0][0][1][0].asOctets()
-        priv_key_data = priv_key_entry_asn1[0][1].asOctets()
-        priv_key = self.decrypt_3des(global_salt, master_password, entry_salt, priv_key_data)
+        priv_key = self.decrypt_3des(priv_key_entry_asn1, master_password, global_salt)
         # self.print_asn1(priv_key, len(priv_key), 0)
         priv_key_asn1 = decoder.decode(priv_key)
         pr_key = priv_key_asn1[0][2].asOctets()
@@ -370,7 +414,7 @@ class Mozilla(ModuleInfo):
             logins.append((self.decode_login_data(enc_username), self.decode_login_data(enc_password), row[1]))
         return logins
 
-    def manage_masterpassword(self, master_password=u'', key_data=None, new_version=True):
+    def manage_masterpassword(self, master_password=b'', key_data=None, new_version=True):
         """
         Check if a master password is set.
         If so, try to find it using a dictionary attack
@@ -380,24 +424,26 @@ class Mozilla(ModuleInfo):
                                                                                      new_version=new_version)
 
         if not global_salt:
-            self.warning(u'Master Password is used !')
+            self.info(u'Master Password is used !')
             (global_salt, master_password, entry_salt) = self.brute_master_password(key_data=key_data,
                                                                                     new_version=new_version)
             if not master_password:
-                return u'', u'', u''
+                return '', '', ''
 
         return global_salt, master_password, entry_salt
 
-    def is_master_password_correct(self, key_data, master_password=u'', new_version=True):
+    def is_master_password_correct(self, key_data, master_password=b'', new_version=True):
         try:
+            entry_salt = b""
             if not new_version:
                 # See http://www.drh-consultancy.demon.co.uk/key3.html
                 pwd_check = key_data.get(b'password-check')
                 if not pwd_check:
-                    return u'', u'', u''
-                entry_salt_len = o(pwd_check[1])
-                entry_salt = pwd_check[3: 3 + entry_salt_len]
-                encrypted_passwd = pwd_check[-16:]
+                    return '', '', ''
+                # Hope not breaking something (not tested for old version)
+                # entry_salt_len = o(pwd_check[1])
+                # entry_salt = pwd_check[3: 3 + entry_salt_len]
+                # encrypted_passwd = pwd_check[-16:]
                 global_salt = key_data[b'global-salt']
 
             else:
@@ -415,17 +461,15 @@ class Mozilla(ModuleInfo):
                 # 	OCTETSTRING encrypted_password_check
                 # }
                 decoded_item2 = decoder.decode(item2)
-                entry_salt = decoded_item2[0][0][1][0].asOctets()
-                encrypted_passwd = decoded_item2[0][1].asOctets()
 
-            cleartext_data = self.decrypt_3des(global_salt, master_password, entry_salt, encrypted_passwd)
+            cleartext_data = self.decrypt_3des(decoded_item2, master_password, global_salt)
             if cleartext_data != convert_to_byte('password-check\x02\x02'):
-                return u'', u'', u''
+                return '', '', ''
 
             return global_salt, master_password, entry_salt
         except Exception:
             self.debug(traceback.format_exc())
-            return u'', u'', u''
+            return '', '', ''
 
     def brute_master_password(self, key_data, new_version=True):
         """
@@ -444,7 +488,7 @@ class Mozilla(ModuleInfo):
                 return global_salt, master_password, entry_salt
 
         self.warning(u'No password has been found using the default list')
-        return u'', u'', u''
+        return '', '', ''
 
     @staticmethod
     def remove_padding(self, data):
