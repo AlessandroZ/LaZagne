@@ -72,12 +72,12 @@ class StandardOutput():
              "a+").write(header)
 
     def write_footer(self):
-        footer = '\n[+] %s passwords have been found.\r\n\r\n' % str(constant.nbPasswordFound)
+        footer = '\n[+] %s passwords have been found.\r\n\r\n' % str(constant.nb_password_found)
         open(os.path.join(constant.folder_name, '{filename}.txt'.format(filename=constant.file_name_results)),
              "a+").write(footer)
 
     def print_footer(self, elapsed_time=None):
-        footer = '\n[+] %s passwords have been found.\n' % str(constant.nbPasswordFound)
+        footer = '\n[+] %s passwords have been found.\n' % str(constant.nb_password_found)
         if not logging.getLogger().isEnabledFor(logging.INFO):
             footer += 'For more information launch it again with the -v option\n'
         if elapsed_time:
@@ -180,12 +180,12 @@ class StandardOutput():
                     print_debug("ERROR", "Password not found !!!")
                 else:
                     # Store all passwords found on a table => for dictionary attack if master password set
-                    constant.nbPasswordFound += 1
+                    constant.nb_password_found += 1
                     passwd = None
                     try:
                         passwd = pwd[password_category[0].capitalize()]
-                        if passwd not in constant.passwordFound:
-                            constant.passwordFound.append(passwd)
+                        if passwd not in constant.password_found:
+                            constant.password_found.append(passwd)
                     except Exception:
                         pass
 
