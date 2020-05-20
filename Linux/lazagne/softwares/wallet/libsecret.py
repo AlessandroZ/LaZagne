@@ -91,7 +91,7 @@ class Libsecret(ModuleInfo):
                     # for k, v in item.get_attributes().iteritems():
                     #   values[unicode(k)] = unicode(v)
                     items.append(values)
-                    if item.get_label() == 'Chromium Safe Storage':
+                    if item.get_label() == 'Chrome Safe Storage' || item.get_label() == 'Chromium Safe Storage':
                         constant.chrome_storage = item.get_secret()
 
             try:
