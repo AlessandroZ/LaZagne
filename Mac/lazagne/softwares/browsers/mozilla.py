@@ -312,7 +312,7 @@ class Mozilla(ModuleInfo):
             cipher_t = decoded_item[0][1].asOctets()
 
             # See http://www.drh-consultancy.demon.co.uk/key3.html
-            hp = sha1(global_salt + convert_to_byte(master_password)).digest()
+            hp = sha1(global_salt + master_password).digest()
             pes = entry_salt + convert_to_byte('\x00') * (20 - len(entry_salt))
             chp = sha1(hp + entry_salt).digest()
             k1 = hmac.new(chp, pes + entry_salt, sha1).digest()
