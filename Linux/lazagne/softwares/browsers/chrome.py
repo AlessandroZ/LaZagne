@@ -28,7 +28,7 @@ class Chrome(ModuleInfo):
         self.AES_BLOCK_SIZE = 16
 
     def get_paths(self):
-        for profile_dir in homes.get(directory=[u'.config/google-chrome', u'.config/chromium']):
+        for profile_dir in homes.get(directory=constant.chrome_dirs):
             try:
                 subdirs = os.listdir(profile_dir)
             except Exception:
@@ -76,22 +76,30 @@ class Chrome(ModuleInfo):
 
                     # To decrypt it, Chromium Safe Storage from libsecret module is needed
                     if not constant.chrome_storage:
-                        self.info('Password encrypted and chrome secret storage not found')
+                        self.info('Password encrypted and Chrome Secret Storage not found')
                         continue
 
                     else:
+                        psswrd = password
                         try:
-                            enc_key = pbkdf2_hmac(
-                                hash_name='sha1', 
-                                password=constant.chrome_storage, 
-                                salt=self.enc_config['salt'], 
-                                iterations=self.enc_config['iterations'], 
-                                dklen=self.enc_config['length'])
+                            for css in constant.chrome_storage:
+                              enc_key = pbkdf2_hmac(
+                                  hash_name='sha1', 
+                                  password=css, 
+                                  salt=self.enc_config['salt'], 
+                                  iterations=self.enc_config['iterations'], 
+                                  dklen=self.enc_config['length'])
 
-                            password = self.chrome_decrypt(password, key=enc_key, init_vector=self.enc_config['iv'])
-                            password = password if python_version == 2 else password.decode()
+                              password = self.chrome_decrypt(password, key=enc_key, init_vector=self.enc_config['iv'])
+                              password = password if python_version == 2 else password.decode()
+                              if password:
+                                  break
+                              else:
+                                  password = psswrd
+
                         except Exception:
                             print(traceback.format_exc())
+
                 if user:
                     yield {
                         'URL': url,
