@@ -91,8 +91,8 @@ class Libsecret(ModuleInfo):
                     # for k, v in item.get_attributes().iteritems():
                     #   values[unicode(k)] = unicode(v)
                     items.append(values)
-                    if item.get_label() == 'Chrome Safe Storage' or item.get_label() == 'Chromium Safe Storage':
-                        constant.chrome_storage = item.get_secret()
+                    if item.get_label().endswith('Safe Storage'):
+                        constant.chrome_storage.append(item.get_secret())
 
             try:
                 bus.flush()

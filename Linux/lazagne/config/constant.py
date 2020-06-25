@@ -20,4 +20,9 @@ class constant():
     quiet_mode          = False
     st                  = None  # Standard output
     modules_dic         = {}
-    chrome_storage      = None # Retrieved from libsecrets module
+    chrome_storage      = [] # Retrieved from libsecrets module
+    chrome_dirs         = [
+     u'.config/google-chrome',
+     u'.config/chromium',
+     u'.config/BraveSoftware/Brave-Browser'
+    ]
