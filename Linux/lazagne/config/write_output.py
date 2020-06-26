@@ -264,7 +264,7 @@ def parse_json_result_to_buffer(json_string, color=False):
                                                                                                     reset_color=reset)
                             for dic in password_by_category:
                                 try:
-                                    buffer += '%s: %s\r\n' % (dic, password_by_category[dic].encode('utf-8'))
+                                    buffer += '%s: %s\r\n' % (dic, password_by_category[dic])
                                 except Exception:
                                     buffer += '%s: %s\r\n' % (
                                         dic, password_by_category[dic].encode(encoding='utf-8', errors='replace'))
