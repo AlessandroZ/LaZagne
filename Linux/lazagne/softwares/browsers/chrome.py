@@ -17,8 +17,9 @@ from lazagne.softwares.browsers.mozilla import python_version
 
 
 class Chrome(ModuleInfo):
-    def __init__(self):
-        ModuleInfo.__init__(self, 'chrome', 'browsers')
+    def __init__(self, browser_name, path):
+        self.path = path
+        ModuleInfo.__init__(self, browser_name, category='browsers')
         self.enc_config = {
             'iv': b' ' * 16,
             'length': 16,
@@ -28,7 +29,7 @@ class Chrome(ModuleInfo):
         self.AES_BLOCK_SIZE = 16
 
     def get_paths(self):
-        for profile_dir in homes.get(directory=constant.chrome_dirs):
+        for profile_dir in homes.get(directory=self.path):
             try:
                 subdirs = os.listdir(profile_dir)
             except Exception:
@@ -125,3 +126,13 @@ class Chrome(ModuleInfo):
                 all_passwords.append(pw)
 
         return all_passwords
+
+
+# Name, path
+chrome_browsers = [
+    (u'Google Chrome', u'.config/google-chrome'),
+    (u'Chromium', u'.config/chromium'),
+    (u'Brave', u'.config/BraveSoftware/Brave-Browser'),
+]
+
+chrome_browsers = [Chrome(browser_name=name, path=path) for name, path in chrome_browsers]
