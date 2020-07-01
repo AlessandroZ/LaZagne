@@ -133,6 +133,11 @@ chrome_browsers = [
     (u'Google Chrome', u'.config/google-chrome'),
     (u'Chromium', u'.config/chromium'),
     (u'Brave', u'.config/BraveSoftware/Brave-Browser'),
+    (u'SlimJet', u'.config/slimjet'),
+    (u'Dissenter Browser', u'.config/GabAI/Dissenter-Browser'),
+    # (u'SuperBird', u'.config/superbird'),  # FIXME
+    # (u'Vivaldi', u'.config/vivaldi'),  # FIXME returns bytes
+    # (u'Whale', u'.config/naver-whale'),  # FIXME returns bytes
 ]
 
 chrome_browsers = [Chrome(browser_name=name, path=path) for name, path in chrome_browsers]
