@@ -551,12 +551,9 @@ class Mozilla(ModuleInfo):
 # Name, path
 firefox_browsers = [
     (u'firefox', u'.mozilla/firefox'),
-    # Check these paths on Linux systems
-    # (u'blackHawk', u'{APPDATA}\\NETGATE Technologies\\BlackHawk'),
-    # (u'cyberfox', u'{APPDATA}\\8pecxstudios\\Cyberfox'),
-    # (u'comodo icedragon', u'{APPDATA}\\Comodo\\IceDragon'),
-    # (u'k-meleon', u'{APPDATA}\\K-Meleon'),
-    # (u'icecat', u'{APPDATA}\\Mozilla\\icecat'),
+    (u'icecat', u'.mozilla/icecat'),
+    (u'waterfox', u'.waterfox'),
+    # (u'Pale Moon', u'.moonchild productions/pale moon'), FIXME
 ]
 
 firefox_browsers = [Mozilla(browser_name=name, path=path) for name, path in firefox_browsers]
