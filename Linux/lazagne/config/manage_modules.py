@@ -6,7 +6,7 @@ from lazagne.softwares.wallet.libsecret import Libsecret
 # browsers
 from lazagne.softwares.browsers.mozilla import firefox_browsers
 from lazagne.softwares.browsers.opera import Opera
-from lazagne.softwares.browsers.chrome import chrome_browsers
+from lazagne.softwares.browsers.chromium_based import chromium_browsers
 # sysadmin
 from lazagne.softwares.sysadmin.apachedirectorystudio import ApacheDirectoryStudio
 from lazagne.softwares.sysadmin.filezilla import Filezilla
@@ -71,7 +71,7 @@ def get_modules():
         Fstab(),
         # Mozilla(),
         Opera(),
-        #Chrome(),
+        # Chrome(),
         Pidgin(),
         PSI(),
         Shadow(),
@@ -98,4 +98,4 @@ def get_modules():
     # except:
     # 	pass
 
-    return module_names + chrome_browsers + firefox_browsers
+    return module_names + chromium_browsers + firefox_browsers

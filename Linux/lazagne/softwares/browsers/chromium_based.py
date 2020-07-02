@@ -9,6 +9,8 @@ import traceback
 from hashlib import pbkdf2_hmac
 
 # For non-keyring storage
+from Crypto.Cipher import AES
+
 from lazagne.config.constant import constant
 from lazagne.config.crypto.pyaes import AESModeOfOperationCBC
 from lazagne.config.module_info import ModuleInfo
@@ -16,7 +18,7 @@ from lazagne.config import homes
 from lazagne.softwares.browsers.mozilla import python_version
 
 
-class Chrome(ModuleInfo):
+class ChromiumBased(ModuleInfo):
     def __init__(self, browser_name, path):
         self.path = path
         ModuleInfo.__init__(self, browser_name, category='browsers')
@@ -55,6 +57,17 @@ class Chrome(ModuleInfo):
             self.debug(traceback.format_exc())
             return data
 
+    def _decrypt_v80(self, buff, master_key):
+        try:
+            iv = buff[3:15]
+            payload = buff[15:]
+            cipher = AES.new(master_key, AES.MODE_GCM, iv)
+            decrypted_pass = cipher.decrypt(payload)
+            decrypted_pass = decrypted_pass[:-16]  # .decode()  # remove suffix bytes
+            return decrypted_pass
+        except:
+            pass
+
     def chrome_decrypt(self, encrypted_value, key, init_vector):
         encrypted_value = encrypted_value[3:]
         aes = AESModeOfOperationCBC(key, iv=init_vector)
@@ -91,8 +104,11 @@ class Chrome(ModuleInfo):
                                   iterations=self.enc_config['iterations'], 
                                   dklen=self.enc_config['length'])
 
-                              password = self.chrome_decrypt(password, key=enc_key, init_vector=self.enc_config['iv'])
-                              password = password if python_version == 2 else password.decode()
+                              try:
+                                  password = self.chrome_decrypt(password, key=enc_key, init_vector=self.enc_config['iv'])
+                                  password = password if python_version == 2 else password.decode()
+                              except UnicodeDecodeError:
+                                  password = self._decrypt_v80(password, enc_key)
                               if password:
                                   break
                               else:
@@ -129,15 +145,15 @@ class Chrome(ModuleInfo):
 
 
 # Name, path
-chrome_browsers = [
+chromium_browsers = [
     (u'Google Chrome', u'.config/google-chrome'),
     (u'Chromium', u'.config/chromium'),
     (u'Brave', u'.config/BraveSoftware/Brave-Browser'),
     (u'SlimJet', u'.config/slimjet'),
     (u'Dissenter Browser', u'.config/GabAI/Dissenter-Browser'),
+    (u'Vivaldi', u'.config/vivaldi'),
     # (u'SuperBird', u'.config/superbird'),  # FIXME
-    # (u'Vivaldi', u'.config/vivaldi'),  # FIXME returns bytes
     # (u'Whale', u'.config/naver-whale'),  # FIXME returns bytes
 ]
 
-chrome_browsers = [Chrome(browser_name=name, path=path) for name, path in chrome_browsers]
+chromium_browsers = [ChromiumBased(browser_name=name, path=path) for name, path in chromium_browsers]
