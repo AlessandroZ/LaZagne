@@ -28,6 +28,7 @@ from lazagne.softwares.maven.mavenrepositories import MavenRepositories
 # Memory
 from lazagne.softwares.memory.keepass import Keepass
 from lazagne.softwares.memory.memorydump import MemoryDump
+from lazagne.softwares.memory.onepassword import OnePassword
 # Multimedia
 from lazagne.softwares.multimedia.eyecon import EyeCON
 # Php
@@ -125,6 +126,7 @@ def get_modules():
         # Memory
         MemoryDump(),  # retrieve browsers and keepass passwords
         Keepass(),  # should be launched after memory dump
+        OnePassword(),
 
         # Multimedia
         EyeCON(),
