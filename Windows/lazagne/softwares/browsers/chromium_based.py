@@ -143,20 +143,22 @@ class ChromiumBased(ModuleInfo):
                     # Failed...
                 else:
                     # Decrypt the Password
-                    try:
-                        password_bytes = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user,
-                                                                user_dpapi=constant.user_dpapi)
-                    except AttributeError:
+                    if password and password.startswith(b'v10'):  # chromium > v80
+                        if master_key:
+                            password = self._decrypt_v80(password, master_key)
+                    else:
                         try:
                             password_bytes = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user,
-                                                                 user_dpapi=constant.user_dpapi)
-                        except:
-                            password_bytes = None
+                                                                    user_dpapi=constant.user_dpapi)
+                        except AttributeError:
+                            try:
+                                password_bytes = Win32CryptUnprotectData(password, is_current_user=constant.is_current_user,
+                                                                     user_dpapi=constant.user_dpapi)
+                            except:
+                                password_bytes = None
 
-                    if password_bytes is not None:
-                        password = password_bytes.decode("utf-8")
-                    elif master_key:
-                        password = self._decrypt_v80(password, master_key)
+                        if password_bytes not in [None, False]:
+                            password = password_bytes.decode("utf-8")
 
                 if not url and not login and not password:
                     continue
