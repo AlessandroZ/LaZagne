@@ -16,7 +16,7 @@ matrix:
       language: shell  # 'language: python' is not yet supported on Travis CI macOS
       before_install:
       - python -m pip install --upgrade pip
-      - pip install pyinstaller -r requirements.txt
+      - pip install pyinstaller<4.0 -r requirements.txt  # v4.0 drops support for legacy Python
       script:
        - pyinstaller --onefile Mac/laZagne.py
        - ls -l dist  # See file size (4.8 mb), etc.
