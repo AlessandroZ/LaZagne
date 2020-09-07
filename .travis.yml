@@ -1,5 +1,5 @@
 os: linux
-dist: focal
+dist: bionic  # focal
 language: python
 
 lint_steps: &lint_steps
