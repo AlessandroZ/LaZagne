@@ -34,7 +34,7 @@ before_install:
 - sudo add-apt-repository ppa:ubuntu-wine/ppa -y
 - sudo apt-get update -qq
 - sudo apt-get install -qq wine
-- wget https://www.python.org/ftp/python/2.7.18/python-2.7.18.amd64.msi --output-document=python.msi
+- wget https://www.python.org/ftp/python/2.7.17/python-2.7.17.amd64.msi --output-document=python.msi
 - wine msiexec /i python.msi /qn
 - wget https://files.pythonhosted.org/packages/83/cc/2e39fa39b804f7b6e768a37657d75eb14cd917d1f43f376dad9f7c366ccf/pywin32-224-cp27-cp27m-win_amd64.whl --output-document=pywin32-224-cp27-none-win_amd64.whl
 - wine c:\\Python27\\python.exe -m pip install pywin32-224-cp27-none-win_amd64.whl
