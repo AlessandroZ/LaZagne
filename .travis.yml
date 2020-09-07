@@ -1,5 +1,5 @@
 os: linux
-dist: bionic  # focal
+dist: focal
 language: python
 
 lint_steps: &lint_steps
@@ -11,6 +11,7 @@ lint_steps: &lint_steps
 jobs:
   include:
     - name: "Test and deploy on Python 2.7"
+      dist: xenial  # Wine is not ready for Ubuntu bionic or focal
       python: '2.7'
     - name: "Build on Python 2.7 on macOS"
       os: osx
