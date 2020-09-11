@@ -6,16 +6,16 @@
 # (c) 2004 Matt Johnston <matt @ ucc asn au>
 # This code may be freely used and modified for any purpose.
 
-import sha
 import hmac
 
+from hashlib import sha1
 from struct import pack
 
 BLOCKLEN = 20
 
 
 # this is what you want to call.
-def pbkdf2(password, salt, itercount, keylen, hashfn=sha):
+def pbkdf2(password, salt, itercount, keylen, hashfn=sha1):
     # l - number of output blocks to produce
     l = keylen / BLOCKLEN
     if keylen % BLOCKLEN != 0:
