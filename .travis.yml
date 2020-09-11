@@ -1,4 +1,5 @@
 os: linux
+dist: focal
 language: python
 
 lint_steps: &lint_steps
@@ -7,16 +8,17 @@ lint_steps: &lint_steps
     - pip install flake8
   script: flake8 . --count --select=E9,F63,F72,F82 --show-source --statistics
 
-matrix:
+jobs:
   include:
     - name: "Test and deploy on Python 2.7"
+      dist: xenial  # Wine is not ready for Ubuntu bionic or focal
       python: '2.7'
     - name: "Build on Python 2.7 on macOS"
       os: osx
       language: shell  # 'language: python' is not yet supported on Travis CI macOS
       before_install:
       - python -m pip install --upgrade pip
-      - pip install pyinstaller -r requirements.txt
+      - pip install "pyinstaller<4.0" -r requirements.txt  # v4.0 drops support for legacy Python
       script:
        - pyinstaller --onefile Mac/laZagne.py
        - ls -l dist  # See file size (4.8 mb), etc.
@@ -24,9 +26,8 @@ matrix:
     - name: "Lint on Python 2.7"
       python: '2.7'
       <<: *lint_steps
-    - name: "Lint on Python 3.7"
-      python: '3.7'
-      dist: xenial  # required for Python >= 3.7
+    - name: "Lint on Python 3.8"
+      python: '3.8'
       <<: *lint_steps
 
 before_install:
@@ -37,7 +38,7 @@ before_install:
 - wine msiexec /i python.msi /qn
 - wget https://files.pythonhosted.org/packages/83/cc/2e39fa39b804f7b6e768a37657d75eb14cd917d1f43f376dad9f7c366ccf/pywin32-224-cp27-cp27m-win_amd64.whl --output-document=pywin32-224-cp27-none-win_amd64.whl
 - wine c:\\Python27\\python.exe -m pip install pywin32-224-cp27-none-win_amd64.whl
-- wine c:\\Python27\\python.exe -m pip install pyinstaller -r requirements.txt
+- wine c:\\Python27\\python.exe -m pip install "pyinstaller<4.0" -r requirements.txt
 - wine c:\\Python27\\Scripts\\pyinstaller --noconsole --onefile Windows/lazagne.spec
 - ls -l dist  # See file size (4.8 mb), etc.
 install: true  # do not repeat `pip install -r requirements.txt`
