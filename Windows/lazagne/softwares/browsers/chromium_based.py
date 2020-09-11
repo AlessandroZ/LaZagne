@@ -134,9 +134,9 @@ class ChromiumBased(ModuleInfo):
                     # Passwords are stored using AES-256-GCM algorithm
                     # The key used to encrypt is stored on the credential manager
 
-                    # yandex_enckey: 
-                    #   - 4 bytes should be removed to be 256 bits 
-                    #   - these 4 bytes correspond to the nonce ? 
+                    # yandex_enckey:
+                    #   - 4 bytes should be removed to be 256 bits
+                    #   - these 4 bytes correspond to the nonce ?
 
                     # cipher = AES.new(yandex_enckey, AES.MODE_GCM)
                     # plaintext = cipher.decrypt(password)
@@ -230,6 +230,7 @@ chromium_browsers = [
     (u'chedot', u'{LOCALAPPDATA}\\Chedot\\User Data'),
     (u'chrome canary', u'{LOCALAPPDATA}\\Google\\Chrome SxS\\User Data'),
     (u'chromium', u'{LOCALAPPDATA}\\Chromium\\User Data'),
+    (u'chromium edge', u'{LOCALAPPDATA}\\Microsoft\\Edge\\User Data'),
     (u'coccoc', u'{LOCALAPPDATA}\\CocCoc\\Browser\\User Data'),
     (u'comodo dragon', u'{LOCALAPPDATA}\\Comodo\\Dragon\\User Data'),  # Comodo IceDragon is Firefox-based
     (u'elements browser', u'{LOCALAPPDATA}\\Elements Browser\\User Data'),
