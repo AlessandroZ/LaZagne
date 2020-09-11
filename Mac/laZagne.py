@@ -192,7 +192,7 @@ if __name__ == '__main__':
                 parser_tab += categories[c]['subparser']
         parser_tab += [PWrite]
         dic_tmp = {c: {'parents': parser_tab, 'help': 'Run %s module' % c}}
-        dic = dict(dic.items() + dic_tmp.items())
+        dic = dict(list(dic.items()) + list(dic_tmp.items()))
 
     subparsers = parser.add_subparsers(help='Choose a main command')
     for d in dic:
