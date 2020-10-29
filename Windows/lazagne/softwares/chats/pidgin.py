@@ -20,7 +20,7 @@ class Pidgin(ModuleInfo):
             for account in root.findall('account'):
                 name = account.find('name')
                 password = account.find('password')
-                if all((name, password)):
+                if None not in (name, password):
                     pwd_found.append({
                         'Login': name.text,
                         'Password': password.text
