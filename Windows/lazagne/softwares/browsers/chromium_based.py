@@ -143,7 +143,7 @@ class ChromiumBased(ModuleInfo):
                     # Failed...
                 else:
                     # Decrypt the Password
-                    if password and password.startswith(b'v10'):  # chromium > v80
+                    if password and str(password).startswith(b'v10'):  # chromium > v80
                         if master_key:
                             password = self._decrypt_v80(password, master_key)
                     else:
