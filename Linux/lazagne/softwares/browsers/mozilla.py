@@ -7,7 +7,6 @@ import hmac
 import json
 import sqlite3
 import struct
-import sys
 import traceback
 import os
 
@@ -15,7 +14,7 @@ from lazagne.config.module_info import ModuleInfo
 from lazagne.config.crypto.pyDes import triple_des, CBC
 from lazagne.config.crypto.pyaes import AESModeOfOperationCBC
 from lazagne.config.dico import get_dic
-from lazagne.config.constant import constant
+from lazagne.config.constant import constant, python_version
 from pyasn1.codec.der import decoder
 from lazagne.config import homes
 from binascii import unhexlify
@@ -27,8 +26,6 @@ try:
 except ImportError:
     from configparser import RawConfigParser  # Python 3
 
-if sys.version_info[0]:
-    python_version = sys.version_info[0]
 
 def l(n):
     try:

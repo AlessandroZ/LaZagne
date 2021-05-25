@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
+import sys
 import time
 
 date = time.strftime("%d%m%Y_%H%M%S")
@@ -21,3 +22,7 @@ class constant():
     st                  = None  # Standard output
     modules_dic         = {}
     chrome_storage      = [] # Retrieved from libsecrets module
+
+
+if sys.version_info[0]:
+    python_version = sys.version_info[0]

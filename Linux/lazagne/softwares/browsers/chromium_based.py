@@ -11,11 +11,10 @@ from hashlib import pbkdf2_hmac
 # For non-keyring storage
 from Crypto.Cipher import AES
 
-from lazagne.config.constant import constant
+from lazagne.config.constant import constant, python_version
 from lazagne.config.crypto.pyaes import AESModeOfOperationCBC
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config import homes
-from lazagne.softwares.browsers.mozilla import python_version
 
 
 class ChromiumBased(ModuleInfo):
