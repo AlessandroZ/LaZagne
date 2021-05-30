@@ -1,7 +1,7 @@
 from lazagne.config.soft_import_module import soft_import
 
-
-ChromiumBased = soft_import("lazagne.softwares.browsers.chromium_based", "ChromiumBased")
+chromium_based_module_location = "lazagne.softwares.browsers.chromium_based", "ChromiumBased"
+ChromiumBased = soft_import(*chromium_based_module_location)
 
 # Name, path
 chromium_browsers_paths = [

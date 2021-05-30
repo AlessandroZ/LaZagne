@@ -28,34 +28,34 @@ def get_categories():
     return category
 
 
-def get_modules():
-    module_names = [
-        soft_import("lazagne.softwares.mails.clawsmail", "ClawsMail")(),
-        soft_import("lazagne.softwares.mails.thunderbird", "Thunderbird")(),
-        soft_import("lazagne.softwares.databases.dbvis", "DbVisualizer")(),
-        soft_import("lazagne.softwares.sysadmin.env_variable", "Env_variable")(),
-        soft_import("lazagne.softwares.sysadmin.apachedirectorystudio", "ApacheDirectoryStudio")(),
-        soft_import("lazagne.softwares.sysadmin.filezilla", "Filezilla")(),
-        soft_import("lazagne.softwares.sysadmin.fstab", "Fstab")(),
-        soft_import("lazagne.softwares.browsers.opera", "Opera")(),
-        soft_import("lazagne.softwares.chats.pidgin", "Pidgin")(),
-        soft_import("lazagne.softwares.chats.psi", "PSI")(),
-        soft_import("lazagne.softwares.sysadmin.shadow", "Shadow")(),
-        soft_import("lazagne.softwares.sysadmin.aws", "Aws")(),
-        soft_import("lazagne.softwares.sysadmin.docker", "Docker")(),
-        soft_import("lazagne.softwares.sysadmin.ssh", "Ssh")(),
-        soft_import("lazagne.softwares.sysadmin.cli", "Cli")(),
-        soft_import("lazagne.softwares.sysadmin.gftp", "gFTP")(),
-        soft_import("lazagne.softwares.sysadmin.keepassconfig", "KeePassConfig")(),
-        soft_import("lazagne.softwares.sysadmin.grub", "Grub")(),
-        soft_import("lazagne.softwares.databases.sqldeveloper", "SQLDeveloper")(),
-        soft_import("lazagne.softwares.databases.squirrel", "Squirrel")(),
-        soft_import("lazagne.softwares.wifi.wifi", "Wifi")(),
-        soft_import("lazagne.softwares.wifi.wpa_supplicant", "Wpa_supplicant")(),
-        soft_import("lazagne.softwares.wallet.kde", "Kde")(),
-        soft_import("lazagne.softwares.wallet.libsecret", "Libsecret")(),
-        soft_import("lazagne.softwares.memory.mimipy", "Mimipy")(),
-        soft_import("lazagne.softwares.git.gitforlinux", "GitForLinux")()
+def get_modules_names():
+    return [
+        ("lazagne.softwares.mails.clawsmail", "ClawsMail"),
+        ("lazagne.softwares.mails.thunderbird", "Thunderbird"),
+        ("lazagne.softwares.databases.dbvis", "DbVisualizer"),
+        ("lazagne.softwares.sysadmin.env_variable", "Env_variable"),
+        ("lazagne.softwares.sysadmin.apachedirectorystudio", "ApacheDirectoryStudio"),
+        ("lazagne.softwares.sysadmin.filezilla", "Filezilla"),
+        ("lazagne.softwares.sysadmin.fstab", "Fstab"),
+        ("lazagne.softwares.browsers.opera", "Opera"),
+        ("lazagne.softwares.chats.pidgin", "Pidgin"),
+        ("lazagne.softwares.chats.psi", "PSI"),
+        ("lazagne.softwares.sysadmin.shadow", "Shadow"),
+        ("lazagne.softwares.sysadmin.aws", "Aws"),
+        ("lazagne.softwares.sysadmin.docker", "Docker"),
+        ("lazagne.softwares.sysadmin.ssh", "Ssh"),
+        ("lazagne.softwares.sysadmin.cli", "Cli"),
+        ("lazagne.softwares.sysadmin.gftp", "gFTP"),
+        ("lazagne.softwares.sysadmin.keepassconfig", "KeePassConfig"),
+        ("lazagne.softwares.sysadmin.grub", "Grub"),
+        ("lazagne.softwares.databases.sqldeveloper", "SQLDeveloper"),
+        ("lazagne.softwares.databases.squirrel", "Squirrel"),
+        ("lazagne.softwares.wifi.wifi", "Wifi"),
+        ("lazagne.softwares.wifi.wpa_supplicant", "Wpa_supplicant"),
+        ("lazagne.softwares.wallet.kde", "Kde"),
+        ("lazagne.softwares.wallet.libsecret", "Libsecret"),
+        ("lazagne.softwares.memory.mimipy", "Mimipy"),
+        ("lazagne.softwares.git.gitforlinux", "GitForLinux")
     ]
 
     # very long to execute
@@ -64,4 +64,7 @@ def get_modules():
     # except:
     # 	pass
 
-    return module_names + chromium_browsers + firefox_browsers
+
+def get_modules():
+    modules = [soft_import(package_name, module_name)() for package_name, module_name in get_modules_names()]
+    return modules + chromium_browsers + firefox_browsers
