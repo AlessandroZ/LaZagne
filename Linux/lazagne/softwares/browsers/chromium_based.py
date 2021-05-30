@@ -141,18 +141,3 @@ class ChromiumBased(ModuleInfo):
                 all_passwords.append(pw)
 
         return all_passwords
-
-
-# Name, path
-chromium_browsers = [
-    (u'Google Chrome', u'.config/google-chrome'),
-    (u'Chromium', u'.config/chromium'),
-    (u'Brave', u'.config/BraveSoftware/Brave-Browser'),
-    (u'SlimJet', u'.config/slimjet'),
-    (u'Dissenter Browser', u'.config/GabAI/Dissenter-Browser'),
-    (u'Vivaldi', u'.config/vivaldi'),
-    # (u'SuperBird', u'.config/superbird'),  # FIXME
-    # (u'Whale', u'.config/naver-whale'),  # FIXME returns bytes
-]
-
-chromium_browsers = [ChromiumBased(browser_name=name, path=path) for name, path in chromium_browsers]

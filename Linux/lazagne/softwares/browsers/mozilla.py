@@ -543,14 +543,3 @@ class Mozilla(ModuleInfo):
                 self.info(u'Database empty')
 
         return pwd_found
-
-
-# Name, path
-firefox_browsers = [
-    (u'firefox', u'.mozilla/firefox'),
-    (u'icecat', u'.mozilla/icecat'),
-    (u'waterfox', u'.waterfox'),
-    # (u'Pale Moon', u'.moonchild productions/pale moon'), FIXME
-]
-
-firefox_browsers = [Mozilla(browser_name=name, path=path) for name, path in firefox_browsers]
