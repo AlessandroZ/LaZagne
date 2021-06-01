@@ -25,7 +25,7 @@ def soft_import(package_name, module_name):
 class _MOCK_ImportErrorInModule(ModuleInfo):
 
     def __init__(self, name, exception):
-        super().__init__(name, "unused")
+        super(_MOCK_ImportErrorInModule, self).__init__(name, "unused")
         self.__message_to_print = "Module %s is not used due to unresolved dependence:\r\n%s" % (name, str(exception))
 
     def run(self):
