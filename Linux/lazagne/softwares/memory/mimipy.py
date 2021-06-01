@@ -20,7 +20,7 @@ import traceback
 
 from lazagne.config.lib.memorpy import *
 from lazagne.config.module_info import ModuleInfo
-from lazagne.softwares.browsers.mozilla import python_version
+from lazagne.config.constant import python_version
 
 
 class Mimipy(ModuleInfo):

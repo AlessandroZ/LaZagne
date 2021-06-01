@@ -7,7 +7,6 @@ import hmac
 import json
 import sqlite3
 import struct
-import sys
 import traceback
 import os
 
@@ -15,7 +14,7 @@ from lazagne.config.module_info import ModuleInfo
 from lazagne.config.crypto.pyDes import triple_des, CBC
 from lazagne.config.crypto.pyaes import AESModeOfOperationCBC
 from lazagne.config.dico import get_dic
-from lazagne.config.constant import constant
+from lazagne.config.constant import constant, python_version
 from pyasn1.codec.der import decoder
 from lazagne.config import homes
 from binascii import unhexlify
@@ -27,8 +26,6 @@ try:
 except ImportError:
     from configparser import RawConfigParser  # Python 3
 
-if sys.version_info[0]:
-    python_version = sys.version_info[0]
 
 def l(n):
     try:
@@ -546,14 +543,3 @@ class Mozilla(ModuleInfo):
                 self.info(u'Database empty')
 
         return pwd_found
-
-
-# Name, path
-firefox_browsers = [
-    (u'firefox', u'.mozilla/firefox'),
-    (u'icecat', u'.mozilla/icecat'),
-    (u'waterfox', u'.waterfox'),
-    # (u'Pale Moon', u'.moonchild productions/pale moon'), FIXME
-]
-
-firefox_browsers = [Mozilla(browser_name=name, path=path) for name, path in firefox_browsers]

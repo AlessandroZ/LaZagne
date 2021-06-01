@@ -1,44 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
-# keyring
-from lazagne.softwares.wallet.kde import Kde
-from lazagne.softwares.wallet.libsecret import Libsecret
+# -*- coding: utf-8 -*-
+
+from lazagne.config.soft_import_module import soft_import
 # browsers
-from lazagne.softwares.browsers.mozilla import firefox_browsers
-from lazagne.softwares.browsers.opera import Opera
-from lazagne.softwares.browsers.chromium_based import chromium_browsers
-# sysadmin
-from lazagne.softwares.sysadmin.apachedirectorystudio import ApacheDirectoryStudio
-from lazagne.softwares.sysadmin.filezilla import Filezilla
-from lazagne.softwares.sysadmin.fstab import Fstab
-from lazagne.softwares.sysadmin.env_variable import Env_variable
-from lazagne.softwares.sysadmin.shadow import Shadow
-from lazagne.softwares.sysadmin.aws import Aws
-from lazagne.softwares.sysadmin.ssh import Ssh
-from lazagne.softwares.sysadmin.docker import Docker
-from lazagne.softwares.sysadmin.cli import Cli
-from lazagne.softwares.sysadmin.gftp import gFTP
-from lazagne.softwares.sysadmin.keepassconfig import KeePassConfig
-from lazagne.softwares.sysadmin.grub import Grub
-# chats
-from lazagne.softwares.chats.pidgin import Pidgin
-from lazagne.softwares.chats.psi import PSI
-# mails
-from lazagne.softwares.mails.clawsmail import ClawsMail
-from lazagne.softwares.mails.thunderbird import Thunderbird
-# wifi
-from lazagne.softwares.wifi.wifi import Wifi
-from lazagne.softwares.wifi.wpa_supplicant import Wpa_supplicant
-# databases
-from lazagne.softwares.databases.squirrel import Squirrel
-from lazagne.softwares.databases.dbvis import DbVisualizer
-from lazagne.softwares.databases.sqldeveloper import SQLDeveloper
+from lazagne.softwares.browsers.firefox_browsers import firefox_browsers
+from lazagne.softwares.browsers.chromium_browsers import chromium_browsers
 
-# memory
-from lazagne.softwares.memory.mimipy import Mimipy
-
-# git
-from lazagne.softwares.git.gitforlinux import GitForLinux
 try:
     from lazagne.softwares.memory.memorydump import MemoryDump
 except ImportError:
@@ -55,41 +22,40 @@ def get_categories():
         'wifi': {'help': 'Wifi'},
         'browsers': {'help': 'Web browsers supported'},
         'wallet': {'help': 'Windows credentials (credential manager, etc.)'},
-        'git': {'help': 'GIT clients supported'}
+        'git': {'help': 'GIT clients supported'},
+        'unused': {'help': 'This modules could not be used because of broken dependence'}
     }
     return category
 
 
-def get_modules():
-    module_names = [
-        ClawsMail(),
-        Thunderbird(),
-        DbVisualizer(),
-        Env_variable(),
-        ApacheDirectoryStudio(),
-        Filezilla(),
-        Fstab(),
-        # Mozilla(),
-        Opera(),
-        # Chrome(),
-        Pidgin(),
-        PSI(),
-        Shadow(),
-        Aws(),
-        Docker(),
-        Ssh(),
-        Cli(),
-        gFTP(),
-        KeePassConfig(),
-        Grub(),
-        SQLDeveloper(),
-        Squirrel(),
-        Wifi(),
-        Wpa_supplicant(),
-        Kde(),
-        Libsecret(), 
-        Mimipy(),
-        GitForLinux()
+def get_modules_names():
+    return [
+        ("lazagne.softwares.mails.clawsmail", "ClawsMail"),
+        ("lazagne.softwares.mails.thunderbird", "Thunderbird"),
+        ("lazagne.softwares.databases.dbvis", "DbVisualizer"),
+        ("lazagne.softwares.sysadmin.env_variable", "Env_variable"),
+        ("lazagne.softwares.sysadmin.apachedirectorystudio", "ApacheDirectoryStudio"),
+        ("lazagne.softwares.sysadmin.filezilla", "Filezilla"),
+        ("lazagne.softwares.sysadmin.fstab", "Fstab"),
+        ("lazagne.softwares.browsers.opera", "Opera"),
+        ("lazagne.softwares.chats.pidgin", "Pidgin"),
+        ("lazagne.softwares.chats.psi", "PSI"),
+        ("lazagne.softwares.sysadmin.shadow", "Shadow"),
+        ("lazagne.softwares.sysadmin.aws", "Aws"),
+        ("lazagne.softwares.sysadmin.docker", "Docker"),
+        ("lazagne.softwares.sysadmin.ssh", "Ssh"),
+        ("lazagne.softwares.sysadmin.cli", "Cli"),
+        ("lazagne.softwares.sysadmin.gftp", "gFTP"),
+        ("lazagne.softwares.sysadmin.keepassconfig", "KeePassConfig"),
+        ("lazagne.softwares.sysadmin.grub", "Grub"),
+        ("lazagne.softwares.databases.sqldeveloper", "SQLDeveloper"),
+        ("lazagne.softwares.databases.squirrel", "Squirrel"),
+        ("lazagne.softwares.wifi.wifi", "Wifi"),
+        ("lazagne.softwares.wifi.wpa_supplicant", "Wpa_supplicant"),
+        ("lazagne.softwares.wallet.kde", "Kde"),
+        ("lazagne.softwares.wallet.libsecret", "Libsecret"),
+        ("lazagne.softwares.memory.mimipy", "Mimipy"),
+        ("lazagne.softwares.git.gitforlinux", "GitForLinux")
     ]
 
     # very long to execute
@@ -98,4 +64,7 @@ def get_modules():
     # except:
     # 	pass
 
-    return module_names + chromium_browsers + firefox_browsers
+
+def get_modules():
+    modules = [soft_import(package_name, module_name)() for package_name, module_name in get_modules_names()]
+    return modules + chromium_browsers + firefox_browsers
