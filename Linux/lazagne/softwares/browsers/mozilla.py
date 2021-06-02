@@ -537,7 +537,7 @@ class Mozilla(ModuleInfo):
                                 }
                             )
                         except Exception:
-                            self.debug(u'An error occured decrypting the password: {error}'.format(
+                            self.debug(u'An error occurred decrypting the password: {error}'.format(
                                 error=traceback.format_exc()))
             else:
                 self.info(u'Database empty')
