@@ -19,7 +19,7 @@ ex: ('-s', action='store_true', dest='skype', help='skype')
 
 from lazagne.config.write_output import print_debug
 
-class ModuleInfo():
+class ModuleInfo(object):
     def __init__(self, name, category, options={}, suboptions=[]):
         self.name = name
         self.category = category
