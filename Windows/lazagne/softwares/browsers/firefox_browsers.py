@@ -1,6 +1,9 @@
 from lazagne.config.soft_import_module import soft_import
 
-Mozilla = soft_import("lazagne.softwares.browsers.mozilla", "Mozilla")
+
+mozilla_module_location = "lazagne.softwares.browsers.mozilla", "Mozilla"
+
+Mozilla = soft_import(*mozilla_module_location)
 
 # Name, path
 firefox_browsers = [

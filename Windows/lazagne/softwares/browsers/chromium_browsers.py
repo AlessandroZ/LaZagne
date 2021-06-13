@@ -1,8 +1,11 @@
 from lazagne.config.soft_import_module import soft_import
 
-ChromiumBased = soft_import("lazagne.softwares.browsers.chromium_based", "ChromiumBased")
-# Name, path or a list of paths
 
+chromium_based_module_location = "lazagne.softwares.browsers.chromium_based", "ChromiumBased"
+
+ChromiumBased = soft_import(*chromium_based_module_location)
+
+# Name, path or a list of paths
 chromium_browsers = [
     (u'7Star', u'{LOCALAPPDATA}\\7Star\\7Star\\User Data'),
     (u'amigo', u'{LOCALAPPDATA}\\Amigo\\User Data'),
