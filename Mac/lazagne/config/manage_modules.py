@@ -14,15 +14,19 @@ def get_categories():
     return category
 
 
-def get_modules():
-    module_names = [
+def get_modules_names():
+    return [
         # system
-        soft_import("lazagne.softwares.system.hashdump", "HashDump")(),
-        soft_import("lazagne.softwares.system.chainbreaker", "ChainBreaker")(),
-        soft_import("lazagne.softwares.system.system", "System")(),
+        ("lazagne.softwares.system.hashdump", "HashDump"),
+        ("lazagne.softwares.system.chainbreaker", "ChainBreaker"),
+        ("lazagne.softwares.system.system", "System"),
         # mails
-        soft_import("lazagne.softwares.mails.thunderbird", "Thunderbird")(),
+        ("lazagne.softwares.mails.thunderbird", "Thunderbird"),
         # browsers
-        soft_import("lazagne.softwares.browsers.chrome", "Chrome")(),
+        ("lazagne.softwares.browsers.chrome", "Chrome")
     ]
-    return module_names + firefox_browsers
+
+
+def get_modules():
+    modules = [soft_import(package_name, module_name)() for package_name, module_name in get_modules_names()]
+    return modules + firefox_browsers
