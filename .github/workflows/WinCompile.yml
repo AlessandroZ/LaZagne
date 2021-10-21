@@ -18,6 +18,7 @@ jobs:
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
         path: Windows
+        requirements: requirements.txt
 
     - uses: actions/upload-artifact@v2
       with:
