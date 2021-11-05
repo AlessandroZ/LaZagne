@@ -13,6 +13,7 @@ chromium_browsers_paths = [
     (u'Vivaldi', u'.config/vivaldi'),
     (u'Microsoft Edge (Dev)', u'.config/microsoft-edge-dev'),
     (u'Microsoft Edge (Beta)', u'.config/microsoft-edge-beta'),
+    (u'Microsoft Edge', u'.config/microsoft-edge'),
     # (u'SuperBird', u'.config/superbird'),  # FIXME
     # (u'Whale', u'.config/naver-whale'),  # FIXME returns bytes
 ]
