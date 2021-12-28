@@ -54,9 +54,9 @@ class Libsecret(ModuleInfo):
             if not collections:
                 try:
                     # Python 3
-                    from jeepney.integrate.blocking import connect_and_authenticate
+                    from jeepney.io.blocking import open_dbus_connection
                     make_auth_external.uid = uid
-                    bus = connect_and_authenticate(session)
+                    bus = open_dbus_connection(session)
                     collections = secretstorage.get_all_collections(bus)
                 except Exception:
                     self.error(traceback.format_exc())
