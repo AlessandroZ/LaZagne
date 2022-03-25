@@ -58,6 +58,7 @@ def get_modules_names():
         ("lazagne.softwares.sysadmin.vnc", "Vnc"),
         ("lazagne.softwares.sysadmin.winscp", "WinSCP"),
         ("lazagne.softwares.sysadmin.wsl", "Wsl"),
+        ("lazagne.softwares.sysadmin.mRemoteNG", "mRemoteNG"),
 # Wifi
         ("lazagne.softwares.wifi.wifi", "Wifi"),
 # Windows
