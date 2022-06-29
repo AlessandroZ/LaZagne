@@ -287,7 +287,7 @@ class MasterKeyPool(object):
         """
         if os.path.exists(credfile):
             try:
-                with open(credfile) as f:
+                with open(credfile, 'rb') as f:
                     self.credhists[sid] = CredHistFile(f.read())
             except Exception:
                 pass
