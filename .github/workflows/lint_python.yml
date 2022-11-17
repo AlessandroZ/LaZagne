@@ -4,12 +4,14 @@ jobs:
   lint_python:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
       - run: pip install --upgrade pip wheel
       - run: pip install bandit black codespell flake8 flake8-2020 flake8-bugbear
                          flake8-comprehensions isort mypy pytest pyupgrade safety
-      - run: bandit --recursive --skip B101,B105,B106,B108,B110,B112,B303,B311,B314,B318,B404,B405,B408,B413,B602,B603,B605,B607,B608 .
+      - run: bandit --recursive --skip B101,B105,B106,B108,B110,B112,B303,B311,B314,B318,B324,B404,B405,B408,B413,B602,B603,B605,B607,B608 .
       - run: black --check . || true
       - run: codespell || true  # --ignore-words-list="" --skip="*.css,*.js,*.lock"
       - run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
