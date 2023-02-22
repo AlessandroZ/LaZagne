@@ -18,7 +18,7 @@ jobs:
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
         path: Windows
-        requirements: requirements.txt
+        requirements: ../requirements.txt
 
     - name: Create Release
       id: create_release
