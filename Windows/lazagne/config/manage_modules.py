@@ -53,6 +53,7 @@ def get_modules_names():
         ("lazagne.softwares.sysadmin.keepassconfig", "KeePassConfig"),
         ("lazagne.softwares.sysadmin.iisapppool", "IISAppPool"),
         ("lazagne.softwares.sysadmin.puttycm", "Puttycm"),
+        ("lazagne.softwares.sysadmin.rclone", "Rclone"),
         ("lazagne.softwares.sysadmin.rdpmanager", "RDPManager"),
         ("lazagne.softwares.sysadmin.unattended", "Unattended"),
         ("lazagne.softwares.sysadmin.vnc", "Vnc"),

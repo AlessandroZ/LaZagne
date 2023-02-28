@@ -43,6 +43,7 @@ def get_modules_names():
         ("lazagne.softwares.sysadmin.shadow", "Shadow"),
         ("lazagne.softwares.sysadmin.aws", "Aws"),
         ("lazagne.softwares.sysadmin.docker", "Docker"),
+        ("lazagne.softwares.sysadmin.rclone", "Rclone"),
         ("lazagne.softwares.sysadmin.ssh", "Ssh"),
         ("lazagne.softwares.sysadmin.cli", "Cli"),
         ("lazagne.softwares.sysadmin.gftp", "gFTP"),
