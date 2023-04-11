@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 import base64
 
 from xml.etree.cElementTree import ElementTree
@@ -17,7 +17,8 @@ class RDPManager(ModuleInfo):
     def decrypt_password(self, encrypted_password):
         try:
             decoded = base64.b64decode(encrypted_password)
-            password_decrypted_bytes = Win32CryptUnprotectData(decoded, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
+            password_decrypted_bytes = Win32CryptUnprotectData(decoded, is_current_user=constant.is_current_user,
+                                                               user_dpapi=constant.user_dpapi)
             password_decrypted = password_decrypted_bytes.decode("utf-8")
             password_decrypted = password_decrypted.replace('\x00', '')
         except Exception:
@@ -95,3 +96,32 @@ class RDPManager(ModuleInfo):
                     pass
 
                 return pwd_found
+
+    def parse_xml(self, xml_file):
+            import xml.etree.ElementTree as ET
+            tree = ET.parse(xml_file)
+            root = tree.getroot()
+            res = []
+            for server in root.findall('.//server'):
+                # get the name element
+                host = None
+                username = None
+                password = None
+
+                hostTag = server.find('properties/name')
+                if hostTag is not None:
+                    host = hostTag.text
+
+                # get the username and password elements
+                usernameTag = server.find('logonCredentials/userName')
+                if usernameTag is not None:
+                    username = usernameTag.text
+                passwordTag = server.find('logonCredentials/password')
+                if passwordTag is not None:
+                    password = passwordTag.text
+                    password = self.decrypt_password(password)
+
+                # print the results
+                print(f"host: {host}, Username: {username}, Password: {password}")
+                res += [{'URL': host, 'Login': username, 'Password': password}]
+            return res
