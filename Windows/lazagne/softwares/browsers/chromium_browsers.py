@@ -22,6 +22,7 @@ chromium_browsers = [
     (u'google chrome', u'{LOCALAPPDATA}\\Google\\Chrome\\User Data'),
     (u'kometa', u'{LOCALAPPDATA}\\Kometa\\User Data'),
     (u'opera', u'{APPDATA}\\Opera Software\\Opera Stable'),
+    (u'opera gx', u'{APPDATA}\\Opera Software\\Opera GX Stable'),
     (u'orbitum', u'{LOCALAPPDATA}\\Orbitum\\User Data'),
     (u'sputnik', u'{LOCALAPPDATA}\\Sputnik\\Sputnik\\User Data'),
     (u'torch', u'{LOCALAPPDATA}\\Torch\\User Data'),
