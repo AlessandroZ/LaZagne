@@ -20,7 +20,7 @@ class Env_variable(ModuleInfo):
         known_tokens = set()
 
         blacklist = (
-            'PWD', 'OLDPWD', 'SYSTEMD_NSS_BYPASS_BUS'
+            'PWD', 'OLDPWD', 'SYSTEMD_NSS_BYPASS_BUS', 'SYSTEMD_NSS_DYNAMIC_BYPASS'
         )
 
         proxies = (

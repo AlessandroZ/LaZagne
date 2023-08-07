@@ -4,6 +4,7 @@ from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
 from lazagne.config import homes
 from binascii import hexlify
+import pwd
 import traceback
 
 try:
@@ -80,12 +81,13 @@ class Libsecret(ModuleInfo):
 
                 for item in storage:
                     values = {
-                        'created': str(datetime.datetime.fromtimestamp(item.get_created())),
-                        'modified': str(datetime.datetime.fromtimestamp(item.get_modified())),
-                        'content-type': item.get_secret_content_type(),
-                        'label': item.get_label(),
+                        'Owner': pwd.getpwuid(uid).pw_name,
+                        'Collection': label,
+                        'Label': item.get_label(),
+                        'Content-Type': item.get_secret_content_type(),
                         'Password': item.get_secret().decode('utf8'),
-                        'collection': label,
+                        'Created': str(datetime.datetime.fromtimestamp(item.get_created())),
+                        'Modified': str(datetime.datetime.fromtimestamp(item.get_modified())),
                     }
 
                     # for k, v in item.get_attributes().iteritems():
