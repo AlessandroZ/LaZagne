@@ -4,6 +4,9 @@ __The LaZagne Project !!!__
 
 Description
 ----
+
+[![Build and Upload LaZagne Release](https://github.com/nunomourinho/LaZagne/actions/workflows/WinCompile.yml/badge.svg)](https://github.com/nunomourinho/LaZagne/actions/workflows/WinCompile.yml)
+
 The __LaZagne project__ is an open source application used to __retrieve lots of passwords__ stored on a local computer. 
 Each software stores its passwords using different techniques (plaintext, APIs, custom algorithms, databases, etc.). This tool has been developed for the purpose of finding these passwords for the most commonly-used software. 
 
