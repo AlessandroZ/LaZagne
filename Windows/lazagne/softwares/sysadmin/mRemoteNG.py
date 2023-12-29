@@ -13,6 +13,7 @@ __source__ = "https://github.com/mauricelambert/mRemoteNGpasswordsStealer"
 
 from lazagne.config.write_output import print_debug
 from lazagne.config.module_info import ModuleInfo
+from lazagne.config.constant import constant
 
 from Crypto.Util.Padding import unpad
 from hashlib import pbkdf2_hmac, md5
@@ -21,7 +22,6 @@ from Crypto.Cipher import AES
 from base64 import b64decode
 from os.path import join
 from io import BytesIO
-from os import environ
 from glob import glob
 
 
@@ -178,7 +178,7 @@ class mRemoteNG(ModuleInfo):
 
         return glob(
             join(
-                environ["APPDATA"],
+                constant.profile['APPDATA'],
                 "mRemoteNG",
                 "confCons.xml*",
             )

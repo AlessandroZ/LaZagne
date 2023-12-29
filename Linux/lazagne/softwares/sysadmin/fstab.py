@@ -17,11 +17,12 @@ class Fstab(ModuleInfo):
             try:
                 with open(path) as fstab:
                     for line in fstab:
-                        if line.startswith('#'):
+                        line = line.strip()
+                        if not line or line.startswith('#'):
                             continue
 
-                        filesystem, mount_point, _type, options, dump, _pass = line.strip().split()
-                        if 'password' in options:
+                        filesystem, mount_point, _type, options, dump, _pass = line.split()
+                        if 'pass' in options or 'cred' in options:
                             pwd_found.append({
                                 'Filesystem': filesystem,
                                 'Mount Point': mount_point,

@@ -33,7 +33,7 @@ class Shadow(ModuleInfo):
             '1': 'MD5',
             '2': 'Blowfish',
             '5': 'SHA-256',
-            '6': 'SHA-512',  # Used by all modern computers
+            '6': 'SHA-512',
         }
 
         # For Debug information
@@ -63,16 +63,16 @@ class Shadow(ModuleInfo):
         return False
 
     def run(self):
-        # Need admin privilege
-        if os.getuid() == 0:
+        shadow_file = '/etc/shadow'
+        if os.access(shadow_file, os.R_OK):
             pwd_found = []
-            with open('/etc/shadow', 'r') as shadow_file:
+            with open(shadow_file, 'r') as shadow_file:
                 for line in shadow_file.readlines():
                     user_hash = line.replace('\n', '')
                     line = user_hash.split(':')
 
                     # Check if a password is defined
-                    if not line[1] in ['x', '*', '!']:
+                    if not line[1] in ['x', '*', '!', '!!']:
                         user = line[0]
                         crypt_pwd = line[1]
 
@@ -84,8 +84,8 @@ class Shadow(ModuleInfo):
                         else:
                             # No clear text password found - save hash
                             pwd_found.append({
+                                'Login': user_hash.split(':')[0].replace('\n', ''),
                                 'Hash': ':'.join(user_hash.split(':')[1:]),
-                                'Login': user_hash.split(':')[0].replace('\n', '')
                             })
 
                 return pwd_found
