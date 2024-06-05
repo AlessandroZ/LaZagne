@@ -71,7 +71,7 @@ def save_hives():
     for h in constant.hives:
         if not os.path.exists(constant.hives[h]):
             try:
-                cmdline = 'reg.exe save hklm\%s %s' % (h, constant.hives[h])
+                cmdline = 'reg.exe save hklm\\%s %s' % (h, constant.hives[h])
                 command = ['cmd.exe', '/c', cmdline]
                 info = subprocess.STARTUPINFO()
                 info.dwFlags = STARTF_USESHOWWINDOW
