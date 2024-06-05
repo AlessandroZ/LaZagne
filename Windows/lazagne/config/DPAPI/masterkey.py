@@ -13,12 +13,14 @@ from .system import CredSystem
 from .eater import DataStruct, Eater
 from collections import defaultdict
 
+import binascii
 import codecs
 import hashlib
 import struct
 import os
 
 from lazagne.config.constant import constant
+from lazagne.config.crypto.md4 import MD4
 
 
 class MasterKey(DataStruct):
@@ -66,10 +68,19 @@ class MasterKey(DataStruct):
         except Exception:
             return
 
-        for algo in ["sha1", "md4"]:
-            self.decrypt_with_hash(sid=sid, pwdhash=hashlib.new(algo, pwd).digest())
-            if self.decrypted:
-                break
+        # sha1 
+        self.decrypt_with_hash(sid=sid, pwdhash=hashlib.new("sha1", pwd).digest())
+        if self.decrypted:
+            return
+
+        # md4
+        self.decrypt_with_hash(sid=sid, pwdhash=binascii.unhexlify(MD4(pwd).hexdigest()))
+
+        # hashlib does not support md4 hash anymore 
+        # for algo in ["sha1", "md4"]:
+        #     self.decrypt_with_hash(sid=sid, pwdhash=hashlib.new(algo, pwd).digest())
+        #     if self.decrypted:
+        #         break
 
     def decrypt_with_key(self, pwdhash):
         """
