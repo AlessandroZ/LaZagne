@@ -104,6 +104,18 @@ Supported software
 | Internal mechanism passwords storage | Autologon<br> MSCache<br> Credential Files<br> Credman <br> DPAPI Hash <br> Hashdump (LM/NT)<br> LSA secret<br> Vault Files | GNOME Keyring<br> Kwallet<br> Hashdump | Keychains<br> Hashdump |
 
 
+Compile
+----
+
+* Using Pyinstaller
+```
+pyinstaller --additional-hooks-dir=. -F --onefile laZagne.py
+```
+* Using Nuitka
+```
+python3 -m nuitka --standalone --onefile --include-package=lazagne laZagne.py
+```
+
 For developers
 ----
 Please refer to the wiki before opening an issue to understand how to compile the project or to develop a new module.
