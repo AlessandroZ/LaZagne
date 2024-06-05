@@ -99,7 +99,7 @@ Supported software
 | Multimedia | EyeCON<br> |  |  |
 | PHP | Composer<br> |  |  |
 | SVN | Tortoise  | | |
-| Sysadmin | Apache Directory Studio<br> CoreFTP<br> CyberDuck<br> FileZilla<br> FileZilla Server<br> FTPNavigator<br> OpenSSH<br> OpenVPN<br> KeePass Configuration Files (KeePass1, KeePass2)<br> PuttyCM<br>Rclone<br>RDPManager<br> VNC<br> WinSCP<br> Windows Subsystem for Linux | Apache Directory Studio<br> AWS<br>  Docker<br> Environnement variable<br> FileZilla<br> gFTP<br> History files<br> Shares <br> SSH private keys <br> KeePass Configuration Files (KeePassX, KeePass2) <br> Grub <br> Rclone |  |
+| Sysadmin | Apache Directory Studio<br> CoreFTP<br> CyberDuck<br> FileZilla<br> FileZilla Server<br> FTPNavigator<br> OpenSSH<br> OpenVPN<br> mRemoteNG <br> KeePass Configuration Files (KeePass1, KeePass2)<br> PuttyCM<br>Rclone<br>RDPManager<br> VNC<br> WinSCP<br> Windows Subsystem for Linux | Apache Directory Studio<br> AWS<br>  Docker<br> Environnement variable<br> FileZilla<br> gFTP<br> History files<br> Shares <br> SSH private keys <br> KeePass Configuration Files (KeePassX, KeePass2) <br> Grub <br> Rclone |  |
 | Wifi | Wireless Network | Network Manager<br> WPA Supplicant |  |
 | Internal mechanism passwords storage | Autologon<br> MSCache<br> Credential Files<br> Credman <br> DPAPI Hash <br> Hashdump (LM/NT)<br> LSA secret<br> Vault Files | GNOME Keyring<br> Kwallet<br> Hashdump | Keychains<br> Hashdump |
 
