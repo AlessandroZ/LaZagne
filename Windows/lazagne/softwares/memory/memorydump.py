@@ -59,8 +59,8 @@ from lazagne.config.lib.memorpy import *
 # 	("Cpanel","user=(?P<Login>.{1,50})&pass=(?P<Password>.{1,50})"),
 # ]
 
-browser_list = ["iexplore.exe", "firefox.exe", "chrome.exe", "opera.exe", "MicrosoftEdge.exe", "microsoftedgecp.exe"]
-keepass_process = 'keepass.exe'
+# browser_list = ["iexplore.exe", "firefox.exe", "chrome.exe", "opera.exe", "MicrosoftEdge.exe", "microsoftedgecp.exe"]
+# keepass_process = 'keepass.exe'
 
 
 class MemoryDump(ModuleInfo):
@@ -70,8 +70,12 @@ class MemoryDump(ModuleInfo):
         ModuleInfo.__init__(self, 'memory_dump', 'memory', options)
 
     def run(self):
-        pwd_found = []
-        for process in Process.list():
+        # Too much detected (at least keethief binary), not supported anymore
+        self.debug(u'Not supported anymore !')
+        return []
+
+        # pwd_found = []
+        # for process in Process.list():
             # if not memorpy:
             #     if process.get('name', '').lower() in browser_list:
             #         # Get only child process
@@ -100,18 +104,18 @@ class MemoryDump(ModuleInfo):
             #                 }
             #             )
 
-            if keepass_process in process.get('name', '').lower():
-                full_exe_path = get_full_path_from_pid(process.get('pid'))
-                k = KeeThief()
-                if k.run(full_exe_path=full_exe_path):
-                    for keepass in constant.keepass:
-                        data = keepass.get('KcpPassword', None)
-                        if data: 
-                            pwd_found.append({
-                                'Category': 'KeePass',
-                                'KeyType': data['KeyType'],
-                                'Login': data['Database'],
-                                'Password': data['Password']
-                            })
+        #     if keepass_process in process.get('name', '').lower():
+        #         full_exe_path = get_full_path_from_pid(process.get('pid'))
+        #         k = KeeThief()
+        #         if k.run(full_exe_path=full_exe_path):
+        #             for keepass in constant.keepass:
+        #                 data = keepass.get('KcpPassword', None)
+        #                 if data: 
+        #                     pwd_found.append({
+        #                         'Category': 'KeePass',
+        #                         'KeyType': data['KeyType'],
+        #                         'Login': data['Database'],
+        #                         'Password': data['Password']
+        #                     })
 
-        return pwd_found
+        # return pwd_found
