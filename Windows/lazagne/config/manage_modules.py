@@ -3,6 +3,9 @@ from lazagne.config.soft_import_module import soft_import
 from lazagne.softwares.browsers.chromium_browsers import chromium_browsers
 from lazagne.softwares.browsers.firefox_browsers import firefox_browsers
 
+# mails
+from lazagne.softwares.mails.thunderbird_mails import thunderbird_mails
+
 
 def get_modules_names():
     return [
@@ -27,7 +30,6 @@ def get_modules_names():
         ("lazagne.softwares.git.gitforwindows", "GitForWindows"),
 # Mails
         ("lazagne.softwares.mails.outlook", "Outlook"),
-        ("lazagne.softwares.mails.thunderbird", "Thunderbird"),
 # Maven
         ("lazagne.softwares.maven.mavenrepositories", "MavenRepositories"),
 # Memory
@@ -101,4 +103,4 @@ def get_categories():
 
 def get_modules():
     modules = [soft_import(package_name, module_name)() for package_name, module_name in get_modules_names()]
-    return modules + chromium_browsers + firefox_browsers
+    return modules + chromium_browsers + firefox_browsers + thunderbird_mails

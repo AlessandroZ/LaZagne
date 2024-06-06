@@ -74,9 +74,9 @@ def long_to_bytes(n, blocksize=0):
 
 class Mozilla(ModuleInfo):
 
-    def __init__(self, browser_name, path):
+    def __init__(self, browser_name, path, category='browsers'):
         self.path = path
-        ModuleInfo.__init__(self, browser_name, category='browsers')
+        ModuleInfo.__init__(self, browser_name, category=category)
 
     def get_firefox_profiles(self, directory):
         """
