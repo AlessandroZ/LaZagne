@@ -93,7 +93,7 @@ Supported software
 | Databases | DBVisualizer<br> Postgresql<br> Robomongo<br> Squirrel<br> SQLdevelopper | DBVisualizer<br> Squirrel<br> SQLdevelopper  |  |
 | Games | GalconFusion<br> Kalypsomedia<br> RogueTale<br> Turba |  |  |
 | Git | Git for Windows |  |  |
-| Mails | Outlook<br> Thunderbird  | Clawsmail<br> Thunderbird |  |
+| Mails | Epyrus <br> Interlink <br> Outlook<br> Thunderbird  | Clawsmail<br> Thunderbird |  |
 | Maven | Maven Apache<br> |  |  |
 | Dumps from memory | Keepass<br> Mimikatz method | System Password |  |
 | Multimedia | EyeCON<br> |  |  |
