@@ -6,6 +6,9 @@ from lazagne.config.soft_import_module import soft_import
 from lazagne.softwares.browsers.firefox_browsers import firefox_browsers
 from lazagne.softwares.browsers.chromium_browsers import chromium_browsers
 
+# mails
+from lazagne.softwares.mails.thunderbird_mails import thunderbird_mails
+
 try:
     from lazagne.softwares.memory.memorydump import MemoryDump
 except ImportError:
@@ -31,7 +34,6 @@ def get_categories():
 def get_modules_names():
     return [
         ("lazagne.softwares.mails.clawsmail", "ClawsMail"),
-        ("lazagne.softwares.mails.thunderbird", "Thunderbird"),
         ("lazagne.softwares.databases.dbvis", "DbVisualizer"),
         ("lazagne.softwares.sysadmin.env_variable", "Env_variable"),
         ("lazagne.softwares.sysadmin.apachedirectorystudio", "ApacheDirectoryStudio"),
@@ -68,4 +70,4 @@ def get_modules_names():
 
 def get_modules():
     modules = [soft_import(package_name, module_name)() for package_name, module_name in get_modules_names()]
-    return modules + chromium_browsers + firefox_browsers
+    return modules + chromium_browsers + firefox_browsers + thunderbird_mails
