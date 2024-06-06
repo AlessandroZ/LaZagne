@@ -13,6 +13,8 @@ firefox_browsers = [
     (u'comodo IceDragon', u'{APPDATA}\\Comodo\\IceDragon'),
     (u'k-Meleon', u'{APPDATA}\\K-Meleon'),
     (u'icecat', u'{APPDATA}\\Mozilla\\icecat'),
+    (u'pale Moon', u'{APPDATA}\\Moonchild Productions\\Pale Moon'),
+    (u'basilisk', u'{APPDATA}\\Basilisk-Dev\\Basilisk'),
 ]
 
 firefox_browsers = [Mozilla(browser_name=name, path=path) for name, path in firefox_browsers]
