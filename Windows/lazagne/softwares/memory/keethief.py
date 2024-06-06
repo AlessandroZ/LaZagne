@@ -10,19 +10,19 @@ from lazagne.config.execute_cmd import powershell_execute
 
 class KeeThief():
 
-    def launch_kee_thief(self):
-        # Awesome work of harmjoy (thanks to him)
-        # From https://github.com/adaptivethreat/KeeThief/blob/master/PowerShell/KeeThief.ps1
-        func = 'Get-Process KeePass | Get-KeePassDatabaseKey'
-        return powershell_execute(SCRIPT, func)
+    # def launch_kee_thief(self):
+    #     # Awesome work of harmjoy (thanks to him)
+    #     # From https://github.com/adaptivethreat/KeeThief/blob/master/PowerShell/KeeThief.ps1
+    #     func = 'Get-Process KeePass | Get-KeePassDatabaseKey'
+    #     return powershell_execute(SCRIPT, func)
 
-    def check_if_version_2x(self, full_exe_path):
-        dirname = os.path.dirname(full_exe_path.decode(sys.getfilesystemencoding()))
-        # version 1 use an ini configuration file
-        if os.path.exists(os.path.join(dirname, u'KeePass.config.xml')):
-            return True
-        else:
-            return False
+    # def check_if_version_2x(self, full_exe_path):
+    #     dirname = os.path.dirname(full_exe_path.decode(sys.getfilesystemencoding()))
+    #     # version 1 use an ini configuration file
+    #     if os.path.exists(os.path.join(dirname, u'KeePass.config.xml')):
+    #         return True
+    #     else:
+    #         return False
 
     def run(self, full_exe_path):
 
