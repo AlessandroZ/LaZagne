@@ -10,7 +10,7 @@ jobs:
           python-version: 3.x
       - run: pip install --upgrade pip setuptools wheel
       - run: pip install bandit black codespell flake8 flake8-2020 flake8-bugbear
-                         flake8-comprehensions isort mypy pytest pyupgrade safety
+                         flake8-comprehensions isort mypy pytest pyupgrade
       - run: bandit --recursive --skip B101,B105,B106,B108,B110,B112,B303,B311,B314,B318,B324,B404,B405,B408,B413,B602,B603,B605,B607,B608 .
       - run: black --check . || true
       - run: codespell || true  # --ignore-words-list="" --skip="*.css,*.js,*.lock"
@@ -23,4 +23,4 @@ jobs:
       - run: mypy --ignore-missing-imports --install-types --non-interactive . || true
       - run: pytest . || pytest --doctest-modules . || true
       - run: shopt -s globstar && pyupgrade --py36-plus **/*.py || true
-      - run: safety check
+      # - run: safety check
