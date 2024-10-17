@@ -60,7 +60,7 @@ class ChromiumBased(ModuleInfo):
         try:
             iv = buff[3:15]
             payload = buff[15:]
-            cipher = AES.new(master_key, AES.MODE_GCM, iv)
+            cipher = AES.new(master_key, AES.MODE_CBC, iv)
             decrypted_pass = cipher.decrypt(payload)
             decrypted_pass = decrypted_pass[:-16]  # .decode()  # remove suffix bytes
             return decrypted_pass
