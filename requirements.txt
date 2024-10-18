@@ -1,5 +1,6 @@
 psutil; sys_platform == 'linux' or sys_platform == 'linux2'
 secretstorage; sys_platform == 'linux' or sys_platform == 'linux2'
+dbus-python; sys_platform == 'linux' or sys_platform == 'linux2'
 pyasn1
 enum34; python_version < '3.4' and sys_platform == 'win32'
 rsa; sys_platform == 'win32'
