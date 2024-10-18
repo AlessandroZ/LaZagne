@@ -56,11 +56,11 @@ class ChromiumBased(ModuleInfo):
             self.debug(traceback.format_exc())
             return data
 
-    def _decrypt_v80(self, buff, master_key):
+    def _decrypt_v80(self, buff, master_key, AES_mode):
         try:
             iv = buff[3:15]
             payload = buff[15:]
-            cipher = AES.new(master_key, AES.MODE_GCM, iv)
+            cipher = AES.new(master_key, AES_mode, iv)
             decrypted_pass = cipher.decrypt(payload)
             decrypted_pass = decrypted_pass[:-16]  # .decode()  # remove suffix bytes
             return decrypted_pass
@@ -107,7 +107,11 @@ class ChromiumBased(ModuleInfo):
                                   password = self.chrome_decrypt(password, key=enc_key, init_vector=self.enc_config['iv'])
                                   password = password if python_version == 2 else password.decode()
                               except UnicodeDecodeError:
-                                  password = self._decrypt_v80(password, enc_key)
+                                  password = self._decrypt_v80(password, enc_key, AES.MODE_GCM)
+                                  try:
+                                      password=password.decode()
+                                  except UnicodeDecodeError :
+                                      password = self._decrypt_v80(password, enc_key, AES.MODE_CBC)
                               if password:
                                   break
                               else:
