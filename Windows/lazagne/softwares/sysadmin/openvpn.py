@@ -26,7 +26,7 @@ class OpenVPN(ModuleInfo):
                                                entropy=entropy,
                                                is_current_user=constant.is_current_user,
                                                user_dpapi=constant.user_dpapi)
-        return result_bytes.decode("utf-8")
+        return result_bytes.decode("utf16")
 
     def get_credentials(self, key):
         pwd_found = []
@@ -39,7 +39,7 @@ class OpenVPN(ModuleInfo):
                 encrypted_password = winreg.QueryValueEx(skey, "auth-data")[0]
                 entropy = winreg.QueryValueEx(skey, "entropy")[0][:-1]
                 password = self.decrypt_password(encrypted_password, entropy)
-                values['Password'] = password.decode('utf16')
+                values['Password'] = password
             except Exception as e:
                 self.debug(str(e))
             pwd_found.append(values)
