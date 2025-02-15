@@ -523,7 +523,7 @@ class Mozilla(ModuleInfo):
             for profile in self.get_firefox_profiles(self.path):
                 self.info(u'Profile path found: {profile}'.format(profile=profile))
 
-                credentials = self.getLoginData(profile)
+                credentials = self.get_login_data(profile)
                 if credentials:
                     for key in self.get_key(profile):
                         for user, password, url in credentials:
