@@ -15,7 +15,7 @@ class constant():
         current_time=date
     )  # The extension is added depending on the user output choice
     max_help = 27
-    CURRENT_VERSION = '2.4.4' 
+    CURRENT_VERSION = '2.4.7' 
     output = None
     modules_dic = {}
     nb_password_found = 0  # Total password found
