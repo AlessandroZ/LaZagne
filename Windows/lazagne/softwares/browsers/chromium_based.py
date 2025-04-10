@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+
+# Thank you all for the Yandex browser support: 
+# - https://github.com/AlessandroZ/LaZagne/issues/483
+# Here are great projects: 
+# - https://github.com/Goodies365/YandexDecrypt
+# - https://github.com/LimerBoy/Soviet-Thief
+
 import base64
 import json
 import os
@@ -10,6 +17,8 @@ import tempfile
 import traceback
 
 from Crypto.Cipher import AES
+from Crypto.Hash import SHA1
+from Crypto.Util.Padding import unpad
 
 from lazagne.config.constant import constant
 from lazagne.config.module_info import ModuleInfo
@@ -20,7 +29,7 @@ from lazagne.softwares.windows.credman import Credman
 class ChromiumBased(ModuleInfo):
     def __init__(self, browser_name, paths):
         self.paths = paths if isinstance(paths, list) else [paths]
-        self.database_query = 'SELECT action_url, username_value, password_value FROM logins'
+        self.database_query = 'SELECT origin_url, username_value, password_value FROM logins'
         ModuleInfo.__init__(self, browser_name, 'browsers', winapi_used=True)
 
     def _get_database_dirs(self):
@@ -82,7 +91,50 @@ class ChromiumBased(ModuleInfo):
         except:
             pass
 
-    def _export_credentials(self, db_path, is_yandex=False, master_key=None):
+    def _yandex_extract_enc_key(self, db_cursor, decrypted_key):
+        db_cursor.execute('SELECT value FROM meta WHERE key = \'local_encryptor_data\'')
+        local_encryptor = db_cursor.fetchone()
+
+        # Check local encryptor values
+        if local_encryptor == None:
+            self.debug('[!] Failed to read local encryptor')
+            return None
+
+        # Locate encrypted key bytes
+        local_encryptor_data = local_encryptor[0]
+        index_enc_data = local_encryptor_data.find(b'v10')
+        if index_enc_data == -1:
+            self.debug('[!] Encrypted key blob not found')
+            return None
+
+        # Extract cipher data
+        encrypted_key_blob = local_encryptor_data[index_enc_data + 3 : index_enc_data + 3 + 96]
+        nonce = encrypted_key_blob[:12]
+        ciphertext = encrypted_key_blob[12:-16]
+        tag = encrypted_key_blob[-16:]
+
+        # Initialize the AES cipher
+        aes_decryptor = AES.new(decrypted_key, AES.MODE_GCM, nonce=nonce)
+
+        # Decrypt the key
+        decrypted_data = aes_decryptor.decrypt_and_verify(ciphertext, tag)
+
+        # Check signature
+        if int.from_bytes(decrypted_data[:4], 'little') != 0x20120108:
+            print('[!] Signature of decrypted local_encryptor_data incorrect')
+            return None
+
+        # Got the key :P
+        return decrypted_data[4:36]
+
+    def _yandex_decrypt(self, key : bytes, encrypted_data : bytes, nonce : bytes, tag : bytes, aad : bytes) -> str:
+        cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+        if aad:
+            cipher.update(aad)
+        decrypted_data = cipher.decrypt_and_verify(encrypted_data, tag)
+        return decrypted_data.decode('utf-8')
+
+    def _export_credentials(self, db_path, is_yandex=False, master_key=None, original_path=None):
         """
         Export credentials from the given database
 
@@ -91,57 +143,67 @@ class ChromiumBased(ModuleInfo):
         :rtype: tuple
         """
         credentials = []
-        yandex_enckey = None
 
         if is_yandex:
-            try:
-                credman_passwords = Credman().run()
-                for credman_password in credman_passwords:
-                    if b'Yandex' in credman_password.get('URL', b''):
-                        if credman_password.get('Password'):
-                            yandex_enckey = credman_password.get('Password')
-                            self.info('EncKey found: {encKey}'.format(encKey=repr(yandex_enckey)))
-            except Exception:
-                self.debug(traceback.format_exc())
-                # Passwords could not be decrypted without encKey
-                self.info('EncKey has not been retrieved')
+            localState = os.path.join(original_path.split('User Data')[0], 'User Data', 'Local State')
+            if not os.path.exists(localState):
                 return []
 
-        try:
-            conn = sqlite3.connect(db_path)
-            cursor = conn.cursor()
-            cursor.execute(self.database_query)
-        except Exception:
-            self.debug(traceback.format_exc())
-            return credentials
+            with open(localState, 'rb') as fjson:
+                encrypted_key = base64.b64decode(json.load(fjson)['os_crypt']['encrypted_key'])[5:]
+                decrypted_key = Win32CryptUnprotectData(encrypted_key, is_current_user=constant.is_current_user,
+                                                                        user_dpapi=constant.user_dpapi)
 
-        for url, login, password in cursor.fetchall():
             try:
-                # Yandex passwords use a masterkey stored on windows credential manager
-                # https://yandex.com/support/browser-passwords-crypto/without-master.html
-                if is_yandex and yandex_enckey:
+                conn = sqlite3.connect(db_path)
+                cursor = conn.cursor()
+            except Exception:
+                self.debug(traceback.format_exc())
+                return []
+
+            enc_key = self._yandex_extract_enc_key(cursor, decrypted_key)
+            if not enc_key:
+                self.info('[!] Failed to extract enc key')
+                return []
+            self.debug('Encrypted key found: %s' % enc_key)
+
+            # Execute queries
+            cursor.execute('SELECT origin_url, username_element, username_value, password_element, password_value, signon_realm FROM logins')
+            for url, username_element, username, password_element, password, signon_realm in cursor.fetchall():
+                if type(url) == bytes:
+                    url = url.decode()
+                # Get AAD
+                str_to_hash = f'{url}\0{username_element}\0{username}\0{password_element}\0{signon_realm}'
+                hash_obj = SHA1.new()
+                hash_obj.update(str_to_hash.encode('utf-8'))
+                # Decrypt password value
+                if len(password) > 0:
                     try:
-                        try:
-                            p = json.loads(str(password))
-                        except Exception:
-                            p = json.loads(password)
+                        decrypted = self._yandex_decrypt(
+                            key=enc_key,
+                            encrypted_data=password[12:-16],
+                            nonce=password[:12],
+                            tag=password[-16:],
+                            aad=hash_obj.digest()
+                        )
+                        credentials.append((url, username, decrypted))
+                    except Exception as e: 
+                        print(e)
 
-                        password = base64.b64decode(p['p'])
-                    except Exception:
-                        # New version does not use json format
-                        pass
+        else:
+            try:
+                conn = sqlite3.connect(db_path)
+                cursor = conn.cursor()
+                cursor.execute(self.database_query)
+            except Exception:
+                self.debug(traceback.format_exc())
+                return credentials
 
-                    # Passwords are stored using AES-256-GCM algorithm
-                    # The key used to encrypt is stored on the credential manager
+            for url, login, password in cursor.fetchall():
+                try:
+                    if type(url) == bytes:
+                        url = url.decode()
 
-                    # yandex_enckey:
-                    #   - 4 bytes should be removed to be 256 bits
-                    #   - these 4 bytes correspond to the nonce ?
-
-                    # cipher = AES.new(yandex_enckey, AES.MODE_GCM)
-                    # plaintext = cipher.decrypt(password)
-                    # Failed...
-                else:
                     # Decrypt the Password
                     if password and password.startswith(b'v10'):  # chromium > v80
                         if master_key:
@@ -160,14 +222,14 @@ class ChromiumBased(ModuleInfo):
                         if password_bytes not in [None, False]:
                             password = password_bytes.decode("utf-8")
 
-                if not url and not login and not password:
-                    continue
+                    if not url and not login and not password:
+                        continue
 
-                credentials.append((url, login, password))
-            except Exception:
-                self.debug(traceback.format_exc())
+                    credentials.append((url, login, password))
+                except Exception:
+                    self.debug(traceback.format_exc())
 
-        conn.close()
+            conn.close()
         return credentials
 
     def copy_db(self, database_path):
@@ -210,12 +272,12 @@ class ChromiumBased(ModuleInfo):
             self.debug('Database found: {db}'.format(db=database_path))
 
             # Copy database before to query it (bypass lock errors)
-            path = self.copy_db(database_path)
-            if path:
+            cp_path = self.copy_db(database_path)
+            if cp_path:
                 try:
-                    credentials.extend(self._export_credentials(path, is_yandex, master_key))
+                    credentials.extend(self._export_credentials(cp_path, is_yandex, master_key, database_path))
                 except Exception:
                     self.debug(traceback.format_exc())
-                self.clean_file(path)
+                self.clean_file(cp_path)
 
         return [{'URL': url, 'Login': login, 'Password': password} for url, login, password in set(credentials)]
