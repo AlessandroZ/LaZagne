@@ -2,23 +2,31 @@ name: Build and Upload LaZagne Release
 
 on:
   push:
-    # Sequence of patterns matched against refs/tags
     tags:
-    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+      - 'v*' # Matches tags like v1.0, v20.15.10
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Build Application
-      uses: JackMcKew/pyinstaller-action-windows@main
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
       with:
-        path: Windows
-        requirements: requirements.txt
+        python-version: 3.11
+
+    - name: Install Dependencies
+      run: |
+        cd Windows
+        pip install -r requirements.txt
+
+    - name: Build Executable with PyInstaller
+      run: |
+        cd Windows
+        pyinstaller lazagne.spec
 
     - name: Create Release
       id: create_release
