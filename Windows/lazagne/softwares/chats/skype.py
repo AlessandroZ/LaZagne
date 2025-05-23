@@ -40,8 +40,7 @@ class Skype(ModuleInfo):
 
             # num = winreg.QueryInfoKey(hkey)[1]
             k = winreg.EnumValue(hkey, 0)[1]
-            result_bytes = win.Win32CryptUnprotectData(k, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
-            return result_bytes.decode("utf-8")
+            return win.Win32CryptUnprotectData(k, is_current_user=constant.is_current_user, user_dpapi=constant.user_dpapi)
         except Exception as e:
             self.debug(str(e))
             return False
@@ -61,20 +60,26 @@ class Skype(ModuleInfo):
         enc_binary = binascii.unhexlify(enc_hex)
 
         # retrieve the salt
-        salt = hashlib.sha1('\x00\x00\x00\x00' + key).digest() + hashlib.sha1('\x00\x00\x00\x01' + key).digest()
+        salt = hashlib.sha1(b'\x00\x00\x00\x00' + key).digest() + hashlib.sha1(b'\x00\x00\x00\x01' + key).digest()
 
         # encrypt value used with the XOR operation
         aes_key = self.aes_encrypt(struct.pack('I', 0) * 4, salt[0:32])[0:16]
 
         # XOR operation
         decrypted = []
+
+        #  Make code python3-compatible
+        if win.python_version == 3:
+            enc_binary = [bytes([x]) for x in enc_binary]
+            aes_key = [bytes([x]) for x in aes_key]
+
         for d in range(16):
             decrypted.append(struct.unpack('B', enc_binary[d])[0] ^ struct.unpack('B', aes_key[d])[0])
 
         # cast the result byte
-        tmp = ''
+        tmp = b''
         for dec in decrypted:
-            tmp = tmp + struct.pack(">I", dec).strip('\x00')
+            tmp = tmp + struct.pack(">I", dec).strip(b'\x00')
 
         # byte to hex
         return binascii.hexlify(tmp)
@@ -82,7 +87,7 @@ class Skype(ModuleInfo):
     def dictionary_attack(self, login, md5):
         wordlist = constant.password_found + get_dic()
         for word in wordlist:
-            hash_ = hashlib.md5('%s\nskyper\n%s' % (login, word)).hexdigest()
+            hash_ = hashlib.md5(('%s\nskyper\n%s' % (login, word)).encode()).hexdigest()
             if hash_ == md5:
                 return word
         return False
@@ -112,7 +117,7 @@ class Skype(ModuleInfo):
                     self.warning(u'No credential stored on the config.xml file.')
                 else:
                     # decrypt the hash to get the md5 to brue force
-                    values['Hash'] = self.get_md5_hash(enc_hex, key)
+                    values['Hash'] = self.get_md5_hash(enc_hex, key).decode()
                     values['Pattern to bruteforce using md5'] = win.string_to_unicode(values['Login']) + u'\\nskyper\\n<password>'
 
                     # Try a dictionary attack on the hash
