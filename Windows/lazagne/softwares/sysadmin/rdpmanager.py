@@ -46,12 +46,12 @@ class RDPManager(ModuleInfo):
         try:
             for r in root.findall(element):
                 values = {}
-                for child in r.getchildren():
+                for child in list(r):
                     if child.tag == 'properties':
-                        for c in child.getchildren():
+                        for c in list(child):
                             values = self.check_tag_content(values, c)
                     elif child.tag == 'logonCredentials':
-                        for c in child.getchildren():
+                        for c in list(child):
                             values = self.check_tag_content(values, c)
                     else:
                         values = self.check_tag_content(values, child)
@@ -125,3 +125,4 @@ class RDPManager(ModuleInfo):
                 print(f"host: {host}, Username: {username}, Password: {password}")
                 res += [{'URL': host, 'Login': username, 'Password': password}]
             return res
+
