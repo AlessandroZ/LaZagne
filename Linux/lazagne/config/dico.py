@@ -500,4 +500,5 @@ def get_dic():
         b"123abc",
         b"speedy",
         b"buffalo",
-        b"kitty"]
+        b"kitty",
+    ]
